@@ -1,8 +1,9 @@
-"""Required bounded native-source consumers; full-season tenure acceptance stays OPEN.
+"""Required bounded consumers without a qualified interval ledger in their stage.
 
 No NBA acquisition, publication, or synthetic membership data. The three scoped
 answers use exact-game association on every selected game. The ordinary combined
-season positive cannot be accepted until the native tenure sources qualify.
+season positive is unavailable in THIS source-only stage. A separately qualified
+full-season stage is checked by cloud_poeltl_full_season_real_data.py.
 """
 
 import hashlib
@@ -193,7 +194,7 @@ def test_native_exact_game_date_scopes_and_single_club_control(tmp_path, monkeyp
         assert control.result_status == "ok" and control.to_dict()["sections"]["count"] == [
             {"count": 0}
         ]
-        # Guard only. This does NOT replace the unfinished full-season positive.
+        # Missing-ledger control only; the separately qualified stage remains positive.
         full = execute_natural_query("How many games did Jakob Poeltl miss in 2022-23?")
         assert full.result_status == "no_result" and full.result_reason == "no_data"
         assert full.result.metadata["membership_coverage"]["missed_games"] is None
@@ -213,7 +214,7 @@ def test_native_exact_game_date_scopes_and_single_club_control(tmp_path, monkeyp
                     base_manifest=base_manifest,
                     answers=receipts,
                     single_club_control=dict(player="Kevon Looney", played=82, missed=0),
-                    ordinary_combined_season_positive="UNFINISHED: native tenure original capture blocked403",
+                    ordinary_combined_season_positive="unavailable in this source-only stage; see separately qualified full-season acceptance",
                     full_season_nba_acceptance=False,
                     production_writes=0,
                 ),

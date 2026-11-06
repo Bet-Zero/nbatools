@@ -1,0 +1,81 @@
+version: 1
+cases:
+- id: poeltl_qualified_full
+  query: How many games did Jakob Poeltl miss in 2022-23?
+  category: participation
+  priority: p1
+  answer_text_policy: requires_backend_answer_text
+  expected_status: ok
+  expected_route: game_finder
+  expected_sections:
+  - count
+  expected_row_counts:
+    count: 1
+    finder: 9
+  hard_assertions:
+  - path: result.sections.count.0.count
+    equals: 9
+  - path: result.metadata.without_player
+    equals: Jakob Poeltl
+  review_notes: Qualified isolated historical stage only; independent-source-oracle.json
+    supplies tenure/population/explicitDNP IDs. No production publication or clinical
+    inference.
+- id: poeltl_qualified_home
+  query: How many home games did Jakob Poeltl miss in 2022-23?
+  category: participation
+  priority: p1
+  answer_text_policy: requires_backend_answer_text
+  expected_status: ok
+  expected_route: game_finder
+  expected_sections:
+  - count
+  expected_row_counts:
+    count: 1
+    finder: 6
+  hard_assertions:
+  - path: result.sections.count.0.count
+    equals: 6
+  - path: result.metadata.without_player
+    equals: Jakob Poeltl
+  review_notes: Qualified isolated historical stage only; independent-source-oracle.json
+    supplies tenure/population/explicitDNP IDs. No production publication or clinical
+    inference.
+- id: poeltl_qualified_lakers
+  query: How many games did Jakob Poeltl miss against the Lakers in 2022-23?
+  category: participation
+  priority: p1
+  answer_text_policy: requires_backend_answer_text
+  expected_status: ok
+  expected_route: game_finder
+  expected_sections:
+  - count
+  expected_row_counts:
+    count: 1
+    finder: 1
+  hard_assertions:
+  - path: result.sections.count.0.count
+    equals: 1
+  - path: result.metadata.without_player
+    equals: Jakob Poeltl
+  review_notes: Qualified isolated historical stage only; independent-source-oracle.json
+    supplies tenure/population/explicitDNP IDs. No production publication or clinical
+    inference.
+- id: poeltl_qualified_toronto_zero
+  query: How many games did Jakob Poeltl miss for the Raptors in 2022-23?
+  category: participation
+  priority: p1
+  answer_text_policy: requires_backend_answer_text
+  expected_status: ok
+  expected_route: game_finder
+  expected_sections:
+  - count
+  expected_row_counts:
+    count: 1
+  hard_assertions:
+  - path: result.sections.count.0.count
+    equals: 0
+  - path: result.metadata.without_player
+    equals: Jakob Poeltl
+  review_notes: Qualified isolated historical stage only; independent-source-oracle.json
+    supplies tenure/population/explicitDNP IDs. No production publication or clinical
+    inference.

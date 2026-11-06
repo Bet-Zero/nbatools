@@ -453,10 +453,14 @@ Common combinations:
   metric or broader membership certification. Unread additional clauses cannot fall through
   and count appearances. Unknown membership/participation withholds totals and
   remains visible in `metadata.membership_coverage`.
-  Native date-bounded Poeltl2022-23 controls return9Spurs missed games through
-  February8 and0Raptors missed games after February9; full combined-season
-  positive acceptance is **unfinished** pending DQ-004 native tenure evidence.
-  Controlled other-player transfers verify combined totals, not NBA tenure.
+  Qualified Poeltl2022-23 historical staging now answers the ordinary full-season
+  question:81eligible games=72played+9explicitDNP (SAS55=46+9,TOR26=26+0).
+  The recovered three-article tenure chain and every game ID are independently
+  verified in PR590. Feb9 remains unknown for date-only membership; neither club
+  played then. Natural/structured/HTTP filters and unknown safeguards pass.
+  This version is qualified staging, not production-published data or fresh
+  coverage. Without that certified ledger, a source-only stage still withholds.
+  Controlled other-player transfers verify generalized behavior, not NBA tenure.
 - structured dated membership: `player_membership` with `player_id`, ISO `date`,
   `season`, optional `team_id` and optional `game_id`. Date-only answers require
   independently qualified inclusive membership intervals. Exact-game answers also

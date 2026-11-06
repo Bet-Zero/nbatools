@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "version": "poeltl-tenure-qualified-v1-20261106",
+  "classification": "source_qualified_historical_membership_for_staging",
+  "baseline": "f06464577b105c039b1e543eaf91d2ed75d03699",
+  "source_receipt_url": "https://github.com/Bet-Zero/nbatools/pull/587#issuecomment-6682443108",
+  "files": {
+    "collection.zip": "42134b026ae53e9ca3c731815f3290cc79937d14b5768c1f1eda9c9a7547361e",
+    "capture-receipt.json": "f194129df2b936a77b91aa6a9292e970d1f3a6f2ff04f80dcda8060a0fcf16c2",
+    "2022-23.csv": "cd623ccdf95d8a412dd6de11d5fa0ca793dfef547f19751df2fe8150e08d372d",
+    "independent-source-oracle.json": "c83efdbb4543a5c15b3861da065c7cae4ec161b35c299e1255722754eea1e43f"
+  },
+  "original_receipt_classification": "original_capture_only_not_qualified",
+  "source_chain": [
+    {
+      "file": "tenure.html",
+      "url": "https://www.nba.com/raptors/news/raptors-extend-poeltl",
+      "captured_at": "2026-11-06T10:10:04.123204+00:00",
+      "http_status": 200,
+      "sha256": "4af4b343c948e0fbe28b1f49fb1f7cfad65638de48fbf35e7a2a4c44fa27239d",
+      "size_bytes": 175970,
+      "state": "received_unqualified"
+    },
+    {
+      "file": "trade.html",
+      "url": "https://www.nba.com/raptors/news/raptors-acquire-poeltl-from-san-antonio",
+      "captured_at": "2026-11-06T10:10:06.808596+00:00",
+      "http_status": 200,
+      "sha256": "23f9c10ff29bf887bd3e83557efba68b5754a88e55c18cfc4cc2d79822000eb5",
+      "size_bytes": 173329,
+      "state": "received_unqualified"
+    },
+    {
+      "file": "return.html",
+      "url": "https://www.nba.com/raptors/news/raptors-re-sign-poeltl",
+      "captured_at": "2026-11-06T10:10:08.868381+00:00",
+      "http_status": 200,
+      "sha256": "95ba9440784d6ffa3666e8d9f318561dd6a3d059b262dc4ce1ea6958262e3ed2",
+      "size_bytes": 177083,
+      "state": "received_unqualified"
+    }
+  ],
+  "row_provenance": [
+    {
+      "team_id": 1610612759,
+      "primary_source_sha256": "4af4b343c948e0fbe28b1f49fb1f7cfad65638de48fbf35e7a2a4c44fa27239d",
+      "required_supporting_source_sha256": [
+        "4af4b343c948e0fbe28b1f49fb1f7cfad65638de48fbf35e7a2a4c44fa27239d",
+        "23f9c10ff29bf887bd3e83557efba68b5754a88e55c18cfc4cc2d79822000eb5",
+        "95ba9440784d6ffa3666e8d9f318561dd6a3d059b262dc4ce1ea6958262e3ed2"
+      ]
+    },
+    {
+      "team_id": 1610612761,
+      "primary_source_sha256": "95ba9440784d6ffa3666e8d9f318561dd6a3d059b262dc4ce1ea6958262e3ed2",
+      "required_supporting_source_sha256": [
+        "4af4b343c948e0fbe28b1f49fb1f7cfad65638de48fbf35e7a2a4c44fa27239d",
+        "23f9c10ff29bf887bd3e83557efba68b5754a88e55c18cfc4cc2d79822000eb5",
+        "95ba9440784d6ffa3666e8d9f318561dd6a3d059b262dc4ce1ea6958262e3ed2"
+      ]
+    }
+  ],
+  "meaning": "All three official originals jointly establish finite exclusive tenure; the primary source hash alone is not its whole proof.",
+  "unknown_calendar_dates": [
+    "2023-02-09"
+  ],
+  "unknown_date_reason": "Intraday transaction; neither qualified candidate club has a game that date. No full-day date-only answer is certified.",
+  "scope": {
+    "player_id": 1627751,
+    "season": "2022-23",
+    "season_type": "Regular Season",
+    "calendar_start": "2022-10-18",
+    "calendar_end": "2023-04-09"
+  },
+  "source_review": "independent-source-verdict.md",
+  "consumer_acceptance": "Tracked separately by required tests, independent consumer review and task PR receipts; capture metadata is never relabeled.",
+  "production_publication": false
+}

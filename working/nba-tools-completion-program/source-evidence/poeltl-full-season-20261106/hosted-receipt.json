@@ -1,0 +1,37 @@
+{
+  "run_url": "https://github.com/Bet-Zero/nbatools/actions/runs/42209600862",
+  "reviewed_sha": "4f0b010e62400818a663acca6a628948065093cf",
+  "request_sha": "0fbd7facfcdfb977060fe161a2caacf8cf957124",
+  "generation": "availability-lebron-season-v1-20261031",
+  "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "required_numerical": {
+    "selected": 5,
+    "executed": 5,
+    "passed": 5,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0
+  },
+  "qualified_stage_rawqa": {
+    "cases": 4,
+    "checks": 27,
+    "passed_cases": 4,
+    "suspicious_flags": 0
+  },
+  "preserved_base_rawqa": {
+    "case": "k08_compact_home_absence_season",
+    "cases": 1,
+    "checks": 7,
+    "failed_checks": 0,
+    "suspicious_flags": 0
+  },
+  "artifact": {
+    "id": 13497373776,
+    "sha256": "1d6365a4bcef8aab355d6d0a40e57334e0e715caccb5417c666ad4348a01598f"
+  },
+  "independent_review": "independent-consumer-review.md",
+  "scope": "Qualified isolated historical stage only; no production publication",
+  "no_new_source_downloads": true,
+  "production_writes": 0
+}

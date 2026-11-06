@@ -1,0 +1,33 @@
+{
+  "classification": "original_capture_only_not_qualified",
+  "collector": "system_curl_verified_tls",
+  "records": [
+    {
+      "file": "tenure.html",
+      "url": "https://www.nba.com/raptors/news/raptors-extend-poeltl",
+      "captured_at": "2026-11-06T10:10:04.123204+00:00",
+      "http_status": 200,
+      "sha256": "4af4b343c948e0fbe28b1f49fb1f7cfad65638de48fbf35e7a2a4c44fa27239d",
+      "size_bytes": 175970,
+      "state": "received_unqualified"
+    },
+    {
+      "file": "trade.html",
+      "url": "https://www.nba.com/raptors/news/raptors-acquire-poeltl-from-san-antonio",
+      "captured_at": "2026-11-06T10:10:06.808596+00:00",
+      "http_status": 200,
+      "sha256": "23f9c10ff29bf887bd3e83557efba68b5754a88e55c18cfc4cc2d79822000eb5",
+      "size_bytes": 173329,
+      "state": "received_unqualified"
+    },
+    {
+      "file": "return.html",
+      "url": "https://www.nba.com/raptors/news/raptors-re-sign-poeltl",
+      "captured_at": "2026-11-06T10:10:08.868381+00:00",
+      "http_status": 200,
+      "sha256": "95ba9440784d6ffa3666e8d9f318561dd6a3d059b262dc4ce1ea6958262e3ed2",
+      "size_bytes": 177083,
+      "state": "received_unqualified"
+    }
+  ]
+}

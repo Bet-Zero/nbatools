@@ -3,7 +3,7 @@
   "kind": "data_quality_work_item",
   "id": "DQ-004",
   "title": "Poeltl2022-23 native dated-membership evidence unavailable through cloud HTML route",
-  "status": "blocked_evidence",
+  "status": "resolved",
   "owner_role": "agent_1_application_acquisition",
   "claim": null,
   "created_on": "2026-11-06",
@@ -21,12 +21,16 @@
       1610612759,
       1610612761
     ],
-    "scope": "Full candidate-club chronology; proposed SAS seasonstart-Feb8 / TOR Feb10-Apr9, not qualified NBA intervals"
+    "scope": "Qualified finite2022-23regular-season SAS2022-10-18..2023-02-08 / TOR2023-02-10..2023-04-09; Feb9date-onlyunknown, no candidate club game."
   },
   "source_evidence": {
     "archive_originals": "working/nba-tools-completion-program/source-evidence/multi-team-absence-20261106/archive-originals.zip",
     "archive_zip_sha256": "6e4b06650519da0b9bfc46269fff5e4f0c231949d8922585e7f4590fbac9d6a1",
-    "native_tenure_source_hashes": null,
+    "native_tenure_source_hashes": [
+      "4af4b343c948e0fbe28b1f49fb1f7cfad65638de48fbf35e7a2a4c44fa27239d",
+      "23f9c10ff29bf887bd3e83557efba68b5754a88e55c18cfc4cc2d79822000eb5",
+      "95ba9440784d6ffa3666e8d9f318561dd6a3d059b262dc4ce1ea6958262e3ed2"
+    ],
     "urls": [
       "https://www.nba.com/raptors/news/raptors-extend-poeltl",
       "https://www.nba.com/raptors/news/raptors-acquire-poeltl-from-san-antonio",
@@ -38,17 +42,60 @@
   "failure": {
     "check": "native original provenance plus complete dated-membership qualification",
     "missing_evidence": "Native official tenure/transaction article bodies; extracted web text is a lead, not certified original bytes.",
-    "known_result": "72 appearances and9 exact DNPs independently replayed; proposed81=72+9 is conditional until tenure qualifies."
+    "known_result": "72 appearances and9 exact DNPs independently replayed; proposed81=72+9 is conditional until tenure qualifies.",
+    "historical": true,
+    "original_affected_scope": "Full candidate-club chronology; proposed SAS seasonstart-Feb8 / TOR Feb10-Apr9, not qualified NBA intervals"
   },
   "blocking_scope": {
-    "data_acceptance": "Ordinary combined full-season Poeltl positive remains UNFINISHED",
+    "data_acceptance": "Resolved for this full-season historical staged population; all other unqualified scope remains outside acceptance.",
     "product_development": false,
     "production_publication": "Not authorized"
   },
-  "next_evidence_trigger": "Capture these exact3 public bodies through existing acquisition laptop, then independently qualify boundaries/chronology and replay all81eligible IDs. Do not reacquire20 successful archive originals.",
+  "next_evidence_trigger": "None for accepted finite scope. Reuse preserved originals/qualified ledger; publication and other seasons/players need their own existing safeguards.",
   "do_not_repeat": "Do not retry unchanged cloud HTML route or substitute transaction date/appearance endpoints alone for full tenure.",
-  "resolution": null,
-  "independent_review": null,
-  "qualified_output_version": null,
-  "fingerprint": "e3aefb47a224116a06c05e6f20f38ff01f95c5558beef87baecfbee219fc200f"
+  "resolution": {
+    "scope": "Qualified finite2022-23regular-season historical staging; not production publication",
+    "version": "poeltl-tenure-qualified-v1-20261106",
+    "membership_intervals": [
+      {
+        "team": "SAS",
+        "start_date": "2022-10-18",
+        "end_date": "2023-02-08"
+      },
+      {
+        "team": "TOR",
+        "start_date": "2023-02-10",
+        "end_date": "2023-04-09"
+      }
+    ],
+    "unknown_calendar_date": "2023-02-09;intraday transfer,neitherclubhasagame",
+    "eligible_games": 81,
+    "played": 72,
+    "explicit_dnp": 9,
+    "unknown_game_observations": 0,
+    "original_failed_cloud_attempt": "Preserved unchanged under last_attempt; overcome by authenticated owner capture, no repeat downloads",
+    "qualified_ledger": "working/nba-tools-completion-program/source-evidence/poeltl-full-season-20261106/2022-23.csv",
+    "qualification": "working/nba-tools-completion-program/source-evidence/poeltl-full-season-20261106/qualification.json",
+    "hosted_receipt": "working/nba-tools-completion-program/source-evidence/poeltl-full-season-20261106/hosted-receipt.json"
+  },
+  "independent_review": {
+    "reviewer": "/root/poeltl_source_checker;separateCodexsession,exactmodelnotexposed",
+    "reviewed_sha": "4f0b010e62400818a663acca6a628948065093cf",
+    "source_review": "working/nba-tools-completion-program/source-evidence/poeltl-full-season-20261106/independent-source-verdict.md",
+    "consumer_review": "working/nba-tools-completion-program/source-evidence/poeltl-full-season-20261106/independent-consumer-review.md",
+    "check_groups": 13,
+    "query_invocations": 31,
+    "skipped": 0,
+    "application_failures": 0
+  },
+  "qualified_output_version": "poeltl-tenure-qualified-v1-20261106",
+  "fingerprint": "e3aefb47a224116a06c05e6f20f38ff01f95c5558beef87baecfbee219fc200f",
+  "recovered_originals": {
+    "receipt_reference": "https://github.com/Bet-Zero/nbatools/pull/587#issuecomment-6682443108",
+    "package": "working/nba-tools-completion-program/source-evidence/poeltl-full-season-20261106",
+    "collection_sha256": "42134b026ae53e9ca3c731815f3290cc79937d14b5768c1f1eda9c9a7547361e",
+    "capture_receipt_unchanged": true,
+    "source_review": "independent-source-verdict.md",
+    "source_qualification": "Finite SAS-through-Feb8/TOR-from-Feb10 supported by all3originals;Feb9date-onlyunknown preserved. Independent consumer review and required read-only hosted acceptance completed; see resolution and hosted receipt."
+  }
 }
