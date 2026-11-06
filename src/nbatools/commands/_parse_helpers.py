@@ -3780,7 +3780,7 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
     # Explicit equality preserves the defensive score even with the points
     # noun elided, using the same subject/suffix ownership as other bounds.
     for m in re.finditer(
-        rf"(?:{_MIN_SUBJECTS}|{_OPPONENT_SCORERS}){STAT_EQUALITY_OPERATOR}\s*{_NUM}{_POINT_SUFFIX}",
+        rf"{_RANGE_LEAD}{STAT_EQUALITY_OPERATOR}\s*{_NUM}{_POINT_SUFFIX}",
         text,
     ):
         value = float(m.group(1))

@@ -207,8 +207,9 @@ def test_conflicting_owned_equality_does_not_discard_trailing_floor(owner):
     assert "primary_count" not in result.metadata
 
 
+@pytest.mark.parametrize("suffix", ["points", ""])
 @pytest.mark.parametrize("verb", ["holding", "held", "limiting"])
-def test_defensive_governor_preserves_equality_owner(verb):
+def test_defensive_governor_preserves_equality_owner(verb, suffix):
     teams = pd.read_csv(ROOT / "team_game_stats/2025-26_regular_season.csv")
     expected = teams.loc[teams.team_abbr.eq("BOS")].merge(
         teams.loc[teams.pts.eq(102), ["game_id", "team_id"]].rename(
@@ -217,7 +218,7 @@ def test_defensive_governor_preserves_equality_owner(verb):
         on=["game_id", "opponent_team_id"],
     )
     answer = execute_natural_query(
-        f"Celtics record when {verb} opponents to exactly 102 points in 2025-26"
+        f"Celtics record when {verb} opponents to exactly 102 {suffix} in 2025-26"
     )
     assert answer.result_status == "ok", answer.metadata
     row = answer.to_dict()["sections"]["summary"][0]
