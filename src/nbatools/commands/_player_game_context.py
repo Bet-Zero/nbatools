@@ -1956,8 +1956,9 @@ def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> Non
             "min_value": item["min_value"],
             "max_value": item["max_value"],
         }
-        if item["side"] == "opponent" and item.get("team") in opponents:
-            target["opponent_team"] = item["team"]
+        named_opponent = item.get("opponent_team") or item.get("team")
+        if item["side"] == "opponent" and named_opponent in opponents:
+            target["opponent_team"] = named_opponent
         if not any(
             c["stat"] == target["stat"]
             and _same_bound(c, target)

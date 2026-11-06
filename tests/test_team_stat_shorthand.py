@@ -192,3 +192,26 @@ def test_opponent_noun_and_team_noun_preserve_separate_rows():
     assert result.result_status == "ok", result.metadata
     assert ids(result.result.to_dict()["sections"]["game_log"]) == set(expected.game_id)
     assert {c["stat"] for c in result.metadata["conditions"]} == {"opponent_ast", "team_ast"}
+
+
+@pytest.mark.parametrize("opponents", ["BOS and DEN", "Celtics and Nuggets"])
+def test_named_opponent_owner_survives_noun_context(opponents):
+    teams, players = raw_rows()
+    own = teams.loc[teams.team_abbr.eq("GSW") & teams.pts.ge(80)]
+    opposing = teams.loc[
+        teams.team_abbr.eq("BOS") & teams.ast.ge(20), ["game_id", "team_id"]
+    ].rename(columns={"team_id": "opponent_team_id"})
+    qualified = own.merge(opposing, on=["game_id", "opponent_team_id"], validate="one_to_one")
+    expected = players.loc[players.player_name.eq("Stephen Curry")].merge(
+        qualified[["game_id", "team_id"]], on=["game_id", "team_id"], validate="one_to_one"
+    )
+    answer = execute_natural_query(
+        f"Stephen Curry games vs {opponents} when BOS had at least 20 assists "
+        "with 80+ team points in 2025-26"
+    )
+    assert answer.result_status == "ok", answer.metadata
+    assert ids(answer.result.to_dict()["sections"]["finder"]) == set(expected.game_id)
+    assert any(
+        c["stat"] == "opponent_ast" and c.get("opponent_team") == "BOS"
+        for c in answer.metadata["conditions"]
+    )
