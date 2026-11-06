@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "classification": "next_scope_priority_not_requirement_closure_or_new_tracker",
+  "retained_requirements": "https://github.com/Bet-Zero/nbatools/pull/462#issuecomment-6440042622",
+  "retained_positive_count": 46,
+  "newly_deduced_requirement_closures": 0,
+  "recommended_main_objective": "Complete source-qualified BOS/Tatum2023-24 observed82-game participation via16fixed archive originals before new dated-membership source contracts.",
+  "support": "Existing shared scalar/pair absence, primary-player20/30point bounds, team120point bounds and missed/home counts already have mapped fixture evidence; historical567Tatum74/0/8 is a real remaining input dependency. Collection never labels those8 unknownsDNP.",
+  "no_collection_runtime_followon": {
+    "retained_literal": "Lakers record with Davis and Reaves missing",
+    "current_controlled_parse": "multi_player_availability unsupported in2023-24; equivalent OUT resolves AD+Reaves as without_player",
+    "cause": "shared _PAIR_PARTICIPATION suffix lacks MISSING",
+    "scope": "One direct46 legitimate positive remains unfinished. Repair shared whole-game pair state admission across existing consumers with unknown/source/extra-actor guards; no actor-name allowance. Do not implement while current combined gate is pending.",
+    "potential_existing_source_controls": [
+      "AD/Reaves2023-24 complete known-empty pair",
+      "Luka/Reaves2025-26 qualified nonempty pair"
+    ]
+  },
+  "deferred": {
+    "OR": "Not a direct46 obligation or necessary dependency here.",
+    "actor_stat_composition": "Bounded primary-player thresholds already supported; broader actor-bound team records remain separate unfinished work.",
+    "dated_membership": "BOS+NYK Tatum applicability remains data/contract-blocked; full BOS season states do not establish intervals or membership on unrelated game dates."
+  },
+  "new_source_body_calls": 0,
+  "runtime_changes": 0,
+  "production_writes": 0
+}

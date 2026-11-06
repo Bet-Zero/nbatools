@@ -435,8 +435,18 @@ Common combinations:
   The answer and Dates badge retain that set. The shared `game_finder` engine
   also accepts structured `game_dates` as a nonempty list of ISO dates. All
   selected games still need qualified participation; OR/compressed-date wording
-  and dated membership remain separate limits. The two-game LeBron example is
+  remain separate limits. Optional qualified dated membership excludes verified
+  nonmembers without supplying missing participation facts. The two-game LeBron example is
   verified only on the retained unpublished PDF stage, not new production data.
+- structured dated membership: `player_membership` with `player_id`, ISO `date`,
+  `season`, optional `team_id` and optional `game_id`. Date-only answers require
+  independently qualified inclusive membership intervals. Exact-game answers also
+  accept qualified listed/played evidence for that game and validate date/sides.
+  Results distinguish member, verified nonmember and unknown; participation stays
+  unknown without a positive played or explicit DNP fact. Controlled fixture/API
+  checks verify date boundaries, transfer gaps and missing data. No production
+  interval coverage, injury inference or natural membership-question grammar is
+  claimed. Existing natural absence/record filters use this shared membership logic.
 - explicit last-N played-pair team records distinguish original and qualifying samples: `Lakers record against Celtics within their last 1 game with Jayson Tatum playing while Anthony Davis plays in 2023-24` selects the original meeting first, then qualifies both players; `among` and `of` window forms are equivalent; singular `within their last game` / `among their last meeting` means one original meeting, as does the explicit `in their last 1 original game`. `in their last 1 qualifying game` qualifies both players before selecting the most recent matching meeting. This bounded slice requires one explicit season, a whole-game matchup and exactly two resolved played predicates. Opponent/venue/date context chooses the candidate games before either selection. Other consumers/compositions remain unfinished. Bare new separate-predicate last-N requests retain their containment; default native cooperative and legacy structured window behavior remain cohort-first.
 - home / away
 - wins / losses

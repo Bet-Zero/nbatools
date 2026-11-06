@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Exact model identifier unavailable; separate checker agent, no cross-model claim",
+  "approval": "PASS_BOUNDED_16_ORIGINAL_SOURCE_COLLECTION_PLAN_ONLY",
+  "reviewed_revision": "188c900d9bfe022ff9ede41eda5577bd388e5424",
+  "tree": "f3b33a86c330088e1ce629be9f4425ac311309e1",
+  "input_sha256": {
+    "collection_request": "b91224596ce7aa8585b320b0d0e46d96025f788524e93ca81c76a87c4dee6d74",
+    "source_metadata": "277ecee93f9d23521baf40502e92dbb720f47961032bb701fa1bc72338c7f4da",
+    "priority_assessment": "54098386364158aeefcea80270b717491de893a504c0365ca0188d4137b66625"
+  },
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "accepted_unknown_scope": {
+    "original_run": 41283790679,
+    "original_artifact_sha256": "3b09d74c9deb5915033b3b28518a5926056e7c37ede6a0f24281d41a337312db",
+    "acceptance_member_sha256": "a5124ffd55734ee699e37474b05311554cddf4cbef41c9592019431235f029ea",
+    "season": "2023-24",
+    "team_id": 1610612738,
+    "player_id": 1628369,
+    "observed_games": 82,
+    "played": 74,
+    "did_not_play": 0,
+    "unknown": 8,
+    "missed_games": null,
+    "normal_incomplete_participation_error_only": true,
+    "source_hashes": {
+      "metadata/player_names.csv": "f7097aaefe54b986ea5036e3c9ca5ca4c05a58266aa6cd0e2b4710e4cfe5f1b2",
+      "raw/games/2023-24_regular_season.csv": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346",
+      "raw/player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760",
+      "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+      "raw/player_game_availability/2023-24_regular_season.csv": "b10efe323a7c78b824a19641d25cb777db4ba98c1c1aa9a9ebb39e72acf717d9"
+    },
+    "exact_missing_keys": [
+      {
+        "game_id": "0022300373",
+        "game_date": "2023-12-20",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022300432",
+        "game_date": "2023-12-29",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022300507",
+        "game_date": "2024-01-08",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022300984",
+        "game_date": "2024-03-18",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022301011",
+        "game_date": "2024-03-22",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022301134",
+        "game_date": "2024-04-07",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022301173",
+        "game_date": "2024-04-12",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022301186",
+        "game_date": "2024-04-14",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      }
+    ],
+    "existing2023_import_groups": 17,
+    "overlap_unknown_with_existing_groups": []
+  },
+  "cached_metadata_validation": [
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "year": 2024,
+      "endpoint_response_sha256": "8d889036ca92c30ceca8c6d1dfd3fcbb892851b965b7e0e3ab438a6ac2e0b998",
+      "year_response_sha256": "6aa654a686e57e8434db13e1e9469be38937dbeec5d66774b891ea31f2dbeb70",
+      "year_tree_sha": "6574f199b535956ae379d5a0080be339942cb022",
+      "selected_leaves": 8,
+      "untruncated_entries": 1396
+    },
+    {
+      "endpoint": "boxscoresummaryv2",
+      "year": 2024,
+      "endpoint_response_sha256": "51f34a5b473471712aa87fa10cd69c41ec0209d24cd1318400fd77930244128b",
+      "year_response_sha256": "29472bdacf720055c2b280c59b2e2fb8ec8532adb248dfc82048a60d5db64764",
+      "year_tree_sha": "9b8a3cbe3b18437a0280450980032ebf99996f46",
+      "selected_leaves": 8,
+      "untruncated_entries": 1396
+    }
+  ],
+  "source_minimization": {
+    "new_target_keys": 8,
+    "unique_games": 8,
+    "files": 16,
+    "endpoints": [
+      "boxscoretraditionalv3",
+      "boxscoresummaryv2"
+    ],
+    "year_folder": 2024,
+    "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+    "total_expected_bytes": 183218,
+    "max_file_bytes": 20351,
+    "no_overlap_with_known_retained_source_filenames": true,
+    "no_new_metadata_or_source_network_calls_by_checker": true,
+    "representative_recollection_unnecessary": "Same endpoint pair/year and unchanged strict importer were already source-qualified and staged for15 historical LAL groups; no new adapter/schema or unknown source route is being introduced."
+  },
+  "approved_reader_scope": {
+    "exact_request_files_only": true,
+    "max_reader_calls": 16,
+    "attempts_per_file": 1,
+    "no_retry_exception": true,
+    "max_body_bytes": 2000000,
+    "total_max_bytes": 183218,
+    "zip_bytes": 20000000,
+    "expanded_bytes": 100000000,
+    "max_members": 2000,
+    "metered_overage_usd": 0,
+    "route": "Existing approved GitHub immutable-blob reader; preserve exact UTF8 bodies, expected Git blob hash/size and SHA256 plus retrieval UTC/source URL/attribution. Original NBA capture time remains unknown.",
+    "no_credentials_cost_or_permission_expansion": true
+  },
+  "required_after_capture": [
+    "Independently qualify complete listed populations, literal clocks, exact game/date/sides/scores and target identity/state. Do not infer DNP from omission/zero/unknown.",
+    "Retain every original and failed qualification; no automatic retries, clock carry or fallback expansion without concrete findings.",
+    "Existing strict producer/canonical validation must pass on the pinned BASE; preserve old68 cells/two import records and original sources in a separate same-BASE overlay.",
+    "Any subsequent union must preserve already accepted historical597/17 and other cohorts by exact equality, after actual source/staging acceptance.",
+    "No dated-membership, clinical status, all-season freshness or full-slice claim follows from complete BOS observed-season participation."
+  ],
+  "priority_review": "A small real source dependency74/0/8 can close another season-long observed population using already qualified historical structured formats. Paired MISSING remains a separate literal direct46 parser obligation, not OR or requirement closure. Plan does not relabel unknowns DNP or claim completion.",
+  "source_qualification_accepted": false,
+  "staging_accepted": false,
+  "requirement_closures": 0,
+  "production_publication_approved": false,
+  "source_body_calls_by_checker": 0,
+  "production_writes": 0
+}

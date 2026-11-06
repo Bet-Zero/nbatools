@@ -145,6 +145,12 @@ def build_report(
         teams = pd.read_csv(verified("raw/team_game_stats/" + suffix))
         verified("raw/player_season_advanced/" + suffix, optional=True)
         verified("raw/player_game_availability/" + suffix, optional=True)
+        from nbatools.commands._dated_membership import load_membership
+
+        verified(f"raw/player_team_membership/{season}.csv", optional=True)
+        intervals = load_membership([season])
+        for digest in set(intervals.source_sha256):
+            verified(f"raw/player_team_membership_sources/{digest}.source")
         games = _observed_team_games(catalog, teams, season, season_type, team_id)
         observed_count = len(games)
         if game_ids is not None:
@@ -155,7 +161,12 @@ def build_report(
             raise ValueError("No requested observed final team games")
         appearances = load_player_games_for_seasons([season], season_type)
         observations = participation.load_observations([season], season_type)
-        identities = pd.concat([appearances, observations], ignore_index=True)
+        combination_error = None
+        try:
+            combined, _ = participation.combined_observations([season], season_type)
+        except (ValueError, FileNotFoundError) as exc:
+            combination_error = str(exc)
+        identities = pd.concat([appearances, observations, intervals], ignore_index=True)
         names = identities.loc[pd.to_numeric(identities.player_id).eq(player_id), "player_name"]
         names = names.dropna().astype(str).unique()
         if len({participation.player_name_key(name) for name in names}) != 1:
@@ -170,17 +181,28 @@ def build_report(
                 player_id=player_id,
                 state="unknown",
             )
-            candidate = game.to_frame().T
             try:
-                absent = participation.filter_absent(candidate, name, [season], season_type)
-                played = participation.filter_played(candidate, name, [season], season_type)
-                row["state"] = (
-                    "did_not_play"
-                    if not absent.empty
-                    else "played"
-                    if not played.empty
-                    else "same_game_other_side"
+                if combination_error is not None:
+                    raise ValueError(combination_error)
+                state, membership = participation.game_participation(
+                    combined,
+                    intervals,
+                    player_id,
+                    int(game.game_id),
+                    team_id,
+                    pd.Timestamp(game.game_date).date(),
+                    other_team=int(game.opponent_team_id),
                 )
+                row["state"] = (
+                    "same_game_other_side"
+                    if state == "not_member" and membership.basis == "exact_game"
+                    else state
+                )
+                row["membership_state"] = membership.state
+                row["member_team_id"] = membership.team_id
+                row["membership_basis"] = membership.basis
+                if state == "unknown":
+                    row["qualification_error"] = "Incomplete game-day participation evidence"
             except (ValueError, FileNotFoundError) as exc:
                 row["qualification_error"] = str(exc)
             rows.append(row)
@@ -207,6 +229,7 @@ def build_report(
             counts={
                 key: counts[key]
                 for key in ["played", "did_not_play", "same_game_other_side", "unknown"]
+                + (["not_member"] if counts["not_member"] else [])
             },
             complete_requested_population=not missing,
             missed_games=counts["did_not_play"] if not missing else None,

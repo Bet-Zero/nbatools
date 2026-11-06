@@ -42,6 +42,7 @@ export type RouteName =
   | "player_game_finder"
   | "game_finder"
   | "player_game_summary"
+  | "player_membership"
   | "game_summary"
   | "player_compare"
   | "team_compare"

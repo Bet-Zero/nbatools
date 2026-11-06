@@ -2657,7 +2657,14 @@ def filter_with_player(
     from nbatools.commands._player_identity import select_player_rows
 
     observed = load_observations(seasons, season_type)
+    from nbatools.commands._dated_membership import load_membership
+
+    intervals = load_membership(seasons)
     for name in with_player.split(" and "):
+        if not select_player_rows(intervals, name).empty:
+            return filter_played(
+                df, with_player, seasons, season_type, allow_appearance_omission=True
+            )
         listed = select_player_rows(observed, name)
         if not listed.empty:
             # Merge exact-game source facts with positive appearances before

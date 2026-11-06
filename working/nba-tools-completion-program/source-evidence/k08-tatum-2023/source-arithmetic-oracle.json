@@ -1,0 +1,182 @@
+{
+  "schema_version": 1,
+  "classification": "source_arithmetic_projection_not_canonical_consumer_acceptance",
+  "request_sha256": "b91224596ce7aa8585b320b0d0e46d96025f788524e93ca81c76a87c4dee6d74",
+  "sources_manifest_sha256": "b262fa528acd053b94e3f573f6905fa69bd63cd4d9e92896b5a530c23b910065",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "canonical_core_accepted": false,
+  "full_required_slice_accepted": false,
+  "production_writes": 0,
+  "new_source_calls_by_qualifier": 0,
+  "accepted_old_report": {
+    "artifact_sha256": "3b09d74c9deb5915033b3b28518a5926056e7c37ede6a0f24281d41a337312db",
+    "member": "acquired_data/historical-participation-stage/historical-participation-acceptance/acceptance.json",
+    "scope": "incomplete_other_scope",
+    "counts": {
+      "played": 74,
+      "did_not_play": 0,
+      "same_game_other_side": 0,
+      "unknown": 8
+    },
+    "source_hashes": {
+      "metadata/player_names.csv": "f7097aaefe54b986ea5036e3c9ca5ca4c05a58266aa6cd0e2b4710e4cfe5f1b2",
+      "raw/games/2023-24_regular_season.csv": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346",
+      "raw/player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760",
+      "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+      "raw/player_game_availability/2023-24_regular_season.csv": "b10efe323a7c78b824a19641d25cb777db4ba98c1c1aa9a9ebb39e72acf717d9"
+    }
+  },
+  "source_games": [
+    {
+      "game_id": "0022300373",
+      "game_date": "2023-12-20",
+      "team_id": 1610612738,
+      "opponent_team_id": 1610612758,
+      "team_abbr": "BOS",
+      "opponent_team_abbr": "SAC",
+      "is_home": false,
+      "pts": 144,
+      "opponent_pts": 119,
+      "wl": "W",
+      "tatum_state": "did_not_play"
+    },
+    {
+      "game_id": "0022300432",
+      "game_date": "2023-12-29",
+      "team_id": 1610612738,
+      "opponent_team_id": 1610612761,
+      "team_abbr": "BOS",
+      "opponent_team_abbr": "TOR",
+      "is_home": true,
+      "pts": 120,
+      "opponent_pts": 118,
+      "wl": "W",
+      "tatum_state": "did_not_play"
+    },
+    {
+      "game_id": "0022300507",
+      "game_date": "2024-01-08",
+      "team_id": 1610612738,
+      "opponent_team_id": 1610612754,
+      "team_abbr": "BOS",
+      "opponent_team_abbr": "IND",
+      "is_home": false,
+      "pts": 131,
+      "opponent_pts": 133,
+      "wl": "L",
+      "tatum_state": "did_not_play"
+    },
+    {
+      "game_id": "0022300984",
+      "game_date": "2024-03-18",
+      "team_id": 1610612738,
+      "opponent_team_id": 1610612765,
+      "team_abbr": "BOS",
+      "opponent_team_abbr": "DET",
+      "is_home": true,
+      "pts": 119,
+      "opponent_pts": 94,
+      "wl": "W",
+      "tatum_state": "did_not_play"
+    },
+    {
+      "game_id": "0022301011",
+      "game_date": "2024-03-22",
+      "team_id": 1610612738,
+      "opponent_team_id": 1610612765,
+      "team_abbr": "BOS",
+      "opponent_team_abbr": "DET",
+      "is_home": false,
+      "pts": 129,
+      "opponent_pts": 102,
+      "wl": "W",
+      "tatum_state": "did_not_play"
+    },
+    {
+      "game_id": "0022301134",
+      "game_date": "2024-04-07",
+      "team_id": 1610612738,
+      "opponent_team_id": 1610612757,
+      "team_abbr": "BOS",
+      "opponent_team_abbr": "POR",
+      "is_home": true,
+      "pts": 124,
+      "opponent_pts": 107,
+      "wl": "W",
+      "tatum_state": "did_not_play"
+    },
+    {
+      "game_id": "0022301173",
+      "game_date": "2024-04-12",
+      "team_id": 1610612738,
+      "opponent_team_id": 1610612766,
+      "team_abbr": "BOS",
+      "opponent_team_abbr": "CHA",
+      "is_home": true,
+      "pts": 131,
+      "opponent_pts": 98,
+      "wl": "W",
+      "tatum_state": "did_not_play"
+    },
+    {
+      "game_id": "0022301186",
+      "game_date": "2024-04-14",
+      "team_id": 1610612738,
+      "opponent_team_id": 1610612764,
+      "team_abbr": "BOS",
+      "opponent_team_abbr": "WAS",
+      "is_home": true,
+      "pts": 132,
+      "opponent_pts": 122,
+      "wl": "W",
+      "tatum_state": "did_not_play"
+    }
+  ],
+  "qualified_new_states": {
+    "did_not_play": 8
+  },
+  "prospective_observed82": {
+    "played": 74,
+    "did_not_play": 8,
+    "unknown": 0,
+    "missed_game_ids": [
+      22300373,
+      22300432,
+      22300507,
+      22300984,
+      22301011,
+      22301134,
+      22301173,
+      22301186
+    ],
+    "home_missed_game_ids": [
+      22300432,
+      22300984,
+      22301134,
+      22301173,
+      22301186
+    ],
+    "home_missed": 5
+  },
+  "without_tatum_record_from_source_scores": {
+    "game_ids": [
+      22300373,
+      22300432,
+      22300507,
+      22300984,
+      22301011,
+      22301134,
+      22301173,
+      22301186
+    ],
+    "games": 8,
+    "wins": 7,
+    "losses": 1,
+    "pts_sum": 1030,
+    "pts_avg": 128.75
+  },
+  "source_projection_complete": true,
+  "season_consumer_accepted": false,
+  "clinical_truth": null
+}

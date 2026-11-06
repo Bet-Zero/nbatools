@@ -583,8 +583,8 @@ OR consumers remain unfinished and may retain their existing unsupported reason.
   primary player only through the same game/team/date; explicit DNP supports a
   zero count, unknown or missing selected evidence does not. Source-only played
   observations can select games without adding fabricated player statistics.
-  Existing appearance-backed presence remains supported. Dated membership
-  retains its separate support limits.
+  Existing appearance-backed presence remains supported. Optional qualified dated
+  membership follows the contract below; missing intervals remain unknown.
 - **States:** `played` requires positive game minutes,
   `did_not_play` requires an explicit upstream
   DNP/DND/Inactive/Not-With-Team report and zero or missing minutes, and
@@ -755,7 +755,61 @@ OR consumers remain unfinished and may retain their existing unsupported reason.
   pipeline publication/version checks and read-only runtime access remain unchanged.
 
 
-### Optional source-reported absence reasons
+### Dated NBA player membership (optional qualified inputs)
+
+`data/raw/player_team_membership/{season}.csv` contains finite, **inclusive**
+calendar intervals keyed by player/team/start/end/state. Columns are `season`,
+`player_id`, `player_name`, `team_id`, `start_date`, `end_date`,
+`membership_state`, `coverage_scope`, `source`, and `source_sha256`.
+`membership_state` is `member` or `not_member`; scope must be
+`explicit_dated_nba_membership`. A member row certifies **exclusive NBA team
+membership throughout the entire interval**; a negative row certifies only the
+named team. Outside an interval, membership remains unknown. Same-day transfer
+uncertainty requires an unknown gap, not guessed boundary ordering.
+
+Original evidence is retained separately as
+`raw/player_team_membership_sources/{source_sha256}.source`; runtime verifies its
+bytes against the hash. Source is an official `https://[www.]nba.com/...` URL.
+Schema/hash checks establish receipt integrity, not NBA tenure truth. A producer
+must separately qualify each entire interval and its inclusive boundaries from
+attributable dated evidence, independently review it, and pin normalized rows,
+originals and qualification receipts in the selected immutable generation before
+qualified use. No current roster snapshot, first/last appearance, isolated
+transaction date or unrelated same-date game automatically supplies an interval.
+There is no automatic tenure collector or production interval population in this
+change; controlled fixture intervals verify software only.
+
+`_dated_membership` validates and resolves these facts. Contradictory overlapping
+clubs, explicit positive/negative overlap, invalid dates/IDs and original-hash
+mismatch reject. Caches are keyed by selected generation/root (including the
+provisional snapshot hash); corrections require a new version or explicit local
+cache invalidation. The shared participation classifier combines intervals only
+with the **exact requested game's** canonical positive appearance or qualified
+listed observation. It returns `played`, explicit `did_not_play`, `not_member`,
+or `unknown`. Membership never supplies a missing participation observation.
+Nonmembers are excluded from both played and missed samples; unknowns prevent a
+verified missed total. Existing static filters and predicate ownership still
+select the population before participation qualification.
+
+The structured `player_membership` route takes positive `player_id`, ISO `date`,
+`season`, optional `team_id`, optional `game_id`, and `season_type` (Regular Season
+or Playoffs). It uses the normal summary/API/JSON contract, exposing
+`membership_state`, `member_team_id`, `participation_state` and `evidence_basis`.
+A date-only query uses qualified intervals; an exact-game query can additionally
+use that game's observations after checking canonical date/sides. Unknowns remain
+literal unknowns with a null club, not verified zeros or no-NBA-team claims.
+Negative-only evidence cannot identify another club. No medical/status/absence
+reason is inferred. Existing natural absence queries consume the same classifier;
+a new natural-language membership-question grammar is not claimed.
+
+The read-only `tools.participation_coverage` authenticates optional membership
+CSVs and originals against its pinned manifest. Per-game rows expose membership
+state/club/basis. Existing `same_game_other_side` counts retain their meaning;
+`not_member` is additionally counted when dated evidence excludes a team. Neither
+observed catalog completeness nor interval existence establishes complete NBA
+season coverage. Production publication remains separately authorized.
+
+## Optional source-reported absence reasons
 
 `raw/player_game_absence_reasons/{season}_{season_type_safe}.csv` is a companion
 at `(game_id, team_id, player_id)` grain. It never replaces participation, source

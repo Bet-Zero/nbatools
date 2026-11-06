@@ -1,0 +1,630 @@
+{
+  "schema_version": 1,
+  "classification": "source_projected_observed_season_oracle_not_staged_or_published",
+  "listed_fact_journal": {
+    "path": "working/nba-tools-completion-program/source-evidence/k08-tatum-2023/listed-fact-journal.json",
+    "sha256": "91dfa1ff88b1b6c3d2562d705b38b6fba3f3052ac1bbee0ca6dca8472a525dde",
+    "size_bytes": 425172
+  },
+  "source_groups": 8,
+  "source_rows": 278,
+  "played_rows": 173,
+  "did_not_play_rows": 105,
+  "team_id": 1610612738,
+  "player_id": 1628369,
+  "season": "2023-24",
+  "projected_observed_games": 82,
+  "projected_played": 74,
+  "projected_did_not_play": 8,
+  "projected_unknown": 0,
+  "target_DNP_game_ids": [
+    "0022300373",
+    "0022300432",
+    "0022300507",
+    "0022300984",
+    "0022301011",
+    "0022301134",
+    "0022301173",
+    "0022301186"
+  ],
+  "target_home_DNP_game_ids": [
+    "0022300432",
+    "0022300984",
+    "0022301134",
+    "0022301173",
+    "0022301186"
+  ],
+  "source_score_record": {
+    "games": 8,
+    "wins": 7,
+    "losses": 1,
+    "points_sum": 1030,
+    "points_average": 128.75
+  },
+  "projected_games": [
+    {
+      "game_id": "0022300065",
+      "game_date": "2023-10-25",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300080",
+      "game_date": "2023-10-27",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300103",
+      "game_date": "2023-10-30",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300118",
+      "game_date": "2023-11-01",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300136",
+      "game_date": "2023-11-04",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300154",
+      "game_date": "2023-11-06",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300159",
+      "game_date": "2023-11-08",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300010",
+      "game_date": "2023-11-10",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300174",
+      "game_date": "2023-11-11",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300188",
+      "game_date": "2023-11-13",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300194",
+      "game_date": "2023-11-15",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300031",
+      "game_date": "2023-11-17",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300213",
+      "game_date": "2023-11-19",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300217",
+      "game_date": "2023-11-20",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300228",
+      "game_date": "2023-11-22",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300043",
+      "game_date": "2023-11-24",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300246",
+      "game_date": "2023-11-26",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300053",
+      "game_date": "2023-11-28",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300275",
+      "game_date": "2023-12-01",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022301202",
+      "game_date": "2023-12-04",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022301227",
+      "game_date": "2023-12-08",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300305",
+      "game_date": "2023-12-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300319",
+      "game_date": "2023-12-14",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300329",
+      "game_date": "2023-12-15",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300344",
+      "game_date": "2023-12-17",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300362",
+      "game_date": "2023-12-19",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300373",
+      "game_date": "2023-12-20",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "did_not_play",
+      "qualification_error": "Incomplete game-day participation coverage for Jayson Tatum"
+    },
+    {
+      "game_id": "0022300389",
+      "game_date": "2023-12-23",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300403",
+      "game_date": "2023-12-25",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300421",
+      "game_date": "2023-12-28",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300432",
+      "game_date": "2023-12-29",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "did_not_play",
+      "qualification_error": "Incomplete game-day participation coverage for Jayson Tatum"
+    },
+    {
+      "game_id": "0022300448",
+      "game_date": "2023-12-31",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300462",
+      "game_date": "2024-01-02",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300479",
+      "game_date": "2024-01-05",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300493",
+      "game_date": "2024-01-06",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300507",
+      "game_date": "2024-01-08",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "did_not_play",
+      "qualification_error": "Incomplete game-day participation coverage for Jayson Tatum"
+    },
+    {
+      "game_id": "0022300517",
+      "game_date": "2024-01-10",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300528",
+      "game_date": "2024-01-11",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300542",
+      "game_date": "2024-01-13",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300563",
+      "game_date": "2024-01-15",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300571",
+      "game_date": "2024-01-17",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300586",
+      "game_date": "2024-01-19",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300603",
+      "game_date": "2024-01-21",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300611",
+      "game_date": "2024-01-22",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300630",
+      "game_date": "2024-01-25",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300646",
+      "game_date": "2024-01-27",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300659",
+      "game_date": "2024-01-29",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300670",
+      "game_date": "2024-01-30",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300684",
+      "game_date": "2024-02-01",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300706",
+      "game_date": "2024-02-04",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300729",
+      "game_date": "2024-02-07",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300743",
+      "game_date": "2024-02-09",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300759",
+      "game_date": "2024-02-11",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300771",
+      "game_date": "2024-02-13",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300780",
+      "game_date": "2024-02-14",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300797",
+      "game_date": "2024-02-22",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300816",
+      "game_date": "2024-02-24",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300836",
+      "game_date": "2024-02-27",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300859",
+      "game_date": "2024-03-01",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300872",
+      "game_date": "2024-03-03",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300886",
+      "game_date": "2024-03-05",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300906",
+      "game_date": "2024-03-07",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300920",
+      "game_date": "2024-03-09",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300938",
+      "game_date": "2024-03-11",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300943",
+      "game_date": "2024-03-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300955",
+      "game_date": "2024-03-14",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300980",
+      "game_date": "2024-03-17",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022300984",
+      "game_date": "2024-03-18",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "did_not_play",
+      "qualification_error": "Incomplete game-day participation coverage for Jayson Tatum"
+    },
+    {
+      "game_id": "0022300998",
+      "game_date": "2024-03-20",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022301011",
+      "game_date": "2024-03-22",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "did_not_play",
+      "qualification_error": "Incomplete game-day participation coverage for Jayson Tatum"
+    },
+    {
+      "game_id": "0022301023",
+      "game_date": "2024-03-23",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022301034",
+      "game_date": "2024-03-25",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022301060",
+      "game_date": "2024-03-28",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022301074",
+      "game_date": "2024-03-30",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022301087",
+      "game_date": "2024-04-01",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022301105",
+      "game_date": "2024-04-03",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022301118",
+      "game_date": "2024-04-05",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022301134",
+      "game_date": "2024-04-07",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "did_not_play",
+      "qualification_error": "Incomplete game-day participation coverage for Jayson Tatum"
+    },
+    {
+      "game_id": "0022301148",
+      "game_date": "2024-04-09",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022301167",
+      "game_date": "2024-04-11",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "game_id": "0022301173",
+      "game_date": "2024-04-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "did_not_play",
+      "qualification_error": "Incomplete game-day participation coverage for Jayson Tatum"
+    },
+    {
+      "game_id": "0022301186",
+      "game_date": "2024-04-14",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "did_not_play",
+      "qualification_error": "Incomplete game-day participation coverage for Jayson Tatum"
+    }
+  ],
+  "canonical_stage_accepted": false,
+  "production_writes": 0
+}

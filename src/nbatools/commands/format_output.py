@@ -71,6 +71,7 @@ ROUTE_TO_QUERY_CLASS = {
     "player_compare": "comparison",
     "team_compare": "comparison",
     "team_record": "summary",
+    "player_membership": "summary",
     "team_matchup_record": "comparison",
     "team_record_leaderboard": "leaderboard",
     "player_split_summary": "split_summary",

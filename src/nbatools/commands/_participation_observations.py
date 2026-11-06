@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from dataclasses import replace
 
 import pandas as pd
 
@@ -140,22 +141,8 @@ def filter_played(
     )
 
 
-def _filter_observed(
-    candidates: pd.DataFrame,
-    names: str,
-    seasons: list[str],
-    season_type: str,
-    *,
-    opponent_context: bool,
-    state: str,
-    allow_appearance_omission: bool = False,
-) -> pd.DataFrame:
-    """Require every named predicate to be known across the original sample."""
-    if candidates.empty:
-        return candidates.copy()
-    team_column = "team_id"
-    if not {"game_id", team_column, "game_date"}.issubset(candidates.columns):
-        raise ValueError("Participation requires game, date and explicit team identity")
+def combined_observations(seasons: list[str], season_type: str) -> tuple[pd.DataFrame, set[int]]:
+    """Join qualified listed evidence with canonical positive appearances."""
     observations = load_observations(seasons, season_type)
     # Positive played rows establish play, and disprove an absence predicate.
     # They never establish
@@ -190,15 +177,39 @@ def _filter_observed(
         known = set(zip(observations.game_id, observations.player_id))
         extra = played.loc[[key not in known for key in zip(played.game_id, played.player_id)]]
         observations = pd.concat([observations, extra], ignore_index=True)
+    return observations, appearance_ids
+
+
+def _filter_observed(
+    candidates: pd.DataFrame,
+    names: str,
+    seasons: list[str],
+    season_type: str,
+    *,
+    opponent_context: bool,
+    state: str,
+    allow_appearance_omission: bool = False,
+) -> pd.DataFrame:
+    """Require every named predicate to be known across the original sample."""
+    if candidates.empty:
+        return candidates.copy()
+    team_column = "team_id"
+    if not {"game_id", team_column, "game_date"}.issubset(candidates.columns):
+        raise ValueError("Participation requires game, date and explicit team identity")
+    from nbatools.commands._dated_membership import load_membership
+
+    observations, appearance_ids = combined_observations(seasons, season_type)
+    intervals = load_membership(seasons)
     games, teams = _ids(candidates.game_id), _ids(candidates[team_column])
     dates = pd.to_datetime(candidates.game_date, errors="raise").dt.date
     keep = pd.Series(True, index=candidates.index)
     for name in re.split(r"\s+and\s+", names.strip(), flags=re.IGNORECASE):
-        matching = observations.loc[player_name_mask(observations, name)]
+        matching = pd.concat([observations, intervals], ignore_index=True)
+        matching = matching.loc[player_name_mask(matching, name)]
         ids = set(matching.player_id) | {
             int(value) for value in player_ids_for_name(name) if str(value).isdigit()
         }
-        available_ids = set(observations.loc[observations.player_id.isin(ids), "player_id"])
+        available_ids = ids & (set(intervals.player_id) | set(observations.player_id))
         if len(available_ids) != 1:
             raise ValueError(f"Unavailable or ambiguous participation identity for {name}")
         player_id = available_ids.pop()
@@ -211,6 +222,14 @@ def _filter_observed(
             opposing = _ids(candidates.opponent_team_id)
             on_own = any((g, t) in lookup.index for g, t in zip(games, teams))
             on_opponent = any((g, t) in lookup.index for g, t in zip(games, opposing))
+            if not intervals.empty:
+                from nbatools.commands._dated_membership import membership_on_date
+
+                memberships = [
+                    membership_on_date(intervals, player_id, day).team_id for day in dates
+                ]
+                on_own |= any(m == t for m, t in zip(memberships, teams))
+                on_opponent |= any(m == t for m, t in zip(memberships, opposing))
             if on_own and on_opponent:
                 raise ValueError(f"Ambiguous team ownership for {name}'s participation")
             if on_opponent:
@@ -222,34 +241,71 @@ def _filter_observed(
             else [None] * len(candidates)
         )
         for game, team_id, date, other_team in zip(games, predicate_teams, dates, opponent_ids):
-            if (game, team_id) not in lookup.index:
-                # Positive same-game membership on the opposing team proves
-                # this is not a same-team absence. Omission alone proves nothing.
+            status, _ = game_participation(
+                rows,
+                intervals,
+                player_id,
+                int(game),
+                int(team_id),
+                date,
+                other_team=other_team if not opponent_context else None,
+            )
+            if status == "unknown":
                 if (
-                    not opponent_context
-                    and other_team != team_id
-                    and (game, other_team) in lookup.index
-                ):
-                    other = lookup.loc[(game, other_team)]
-                    if pd.Timestamp(other.game_date).date() == date:
-                        states.append(False)
-                        continue
-                if (
-                    allow_appearance_omission
+                    state == "played"
+                    and allow_appearance_omission
                     and player_id in appearance_ids
                     and not rows.game_id.eq(game).any()
                 ):
-                    # Preserve existing appearance-based played filtering where
-                    # no same-game source fact exists. This is not DNP proof.
                     states.append(False)
                     continue
-                raise ValueError(f"Incomplete game-day participation coverage for {name}")
-            row = lookup.loc[(game, team_id)]
-            if pd.Timestamp(row.game_date).date() != date or row.participation_state == "unknown":
-                raise ValueError(f"Unqualified game-day participation for {name}")
-            states.append(row.participation_state == state)
+                qualifier = "Unqualified" if rows.game_id.eq(game).any() else "Incomplete"
+                raise ValueError(f"{qualifier} game-day participation coverage for {name}")
+            states.append(status == state)
         keep &= pd.Series(states, index=candidates.index)
     return candidates.loc[keep].copy()
+
+
+def game_participation(
+    observations: pd.DataFrame,
+    intervals: pd.DataFrame,
+    player_id: int,
+    game_id: int,
+    team_id: int,
+    day,
+    *,
+    other_team: int | None = None,
+):
+    """Four-state game classifier shared by filters, coverage and API consumers."""
+    from nbatools.commands._dated_membership import membership_on_date
+
+    exact = observations.loc[
+        observations.player_id.eq(player_id) & observations.game_id.eq(game_id)
+    ]
+    if len(exact) > 1:
+        raise ValueError("Duplicate exact-game membership evidence")
+    row = exact.iloc[0] if len(exact) else None
+    exact_team = None
+    if row is not None:
+        if pd.Timestamp(row.game_date).date() != day:
+            raise ValueError("Unqualified game-day participation date")
+        if row.participation_state in {"played", "did_not_play"}:
+            if int(row.team_id) not in {team_id, other_team}:
+                raise ValueError("Exact-game membership outside the requested game sides")
+            exact_team = int(row.team_id)
+    membership = membership_on_date(intervals, player_id, day, team_id, exact_team_id=exact_team)
+    if exact_team is not None and row is not None:
+        digest = row.get("source_sha256")
+        if isinstance(digest, str) and re.fullmatch(r"[0-9a-f]{64}", digest):
+            membership = replace(
+                membership,
+                source_hashes=tuple(sorted(set(membership.source_hashes) | {digest})),
+            )
+    if membership.state == "not_member":
+        return "not_member", membership
+    if row is not None and exact_team == team_id:
+        return row.participation_state, membership
+    return "unknown", membership
 
 
 def qualified_report_observation(

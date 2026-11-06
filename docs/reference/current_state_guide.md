@@ -349,6 +349,11 @@ complete answer. Unsupported routes keep explicit boundary notes.
   Missing or untrusted coverage, multi-player on/off requests, and slices
   outside the source contract return explicit unsupported/no-result responses.
   Whole-game `without_player` absence remains a separate game-log filter.
+  Its shared classifier also accepts optional qualified dated membership, excluding
+  verified nonmembers while requiring explicit participation for member games.
+  Structured `player_membership` exposes date/club and exact-game evidence with
+  explicit unknowns; interval behavior is fixture-verified, with no production
+  interval population or all-history completeness claim.
 - Lineup queries execute on `lineup_summary` and `lineup_leaderboard` when
   trusted `league_lineup_viz` rows cover the requested season, season type,
   unit size, minimum-minute threshold, and lineup members. Missing or untrusted
