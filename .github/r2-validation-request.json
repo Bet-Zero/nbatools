@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "3105fee4dabfe8826d10151cbe932699800b2af9",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/cloud_team_stat_shorthand_real_data.py::test_qualified_team_noun_thresholds_across_consumers",
+    "tests/cloud_multi_team_absence_real_data.py::test_native_exact_game_date_scopes_and_single_club_control",
+    "tests/cloud_tatum_2023_participation_stage_real_data.py::test_new_tatum_population_is_qualified_before_joint_composition",
+    "tests/test_compact_absence_scope_real_data.py::test_compact_home_absence_matches_literal_qualified_rows_and_api"
+  ],
+  "raw_qa_cases": [
+    "team_noun_looney_summary_2022_23",
+    "team_noun_warriors_record_2022_23",
+    "team_noun_looney_inclusive_2022_23",
+    "k08_compact_home_absence_season"
+  ]
+}
