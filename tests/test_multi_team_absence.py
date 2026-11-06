@@ -218,3 +218,27 @@ def test_unread_stat_condition_never_counts_appearances(transferred, tail):
     result = execute_natural_query(f"How many games did Jimmy Butler miss in 2025-26 {tail}?")
     assert result.result_status != "ok", result.metadata
     assert "count" not in result.result.to_dict()["sections"]
+
+
+def test_explicit_dnp_club_is_never_hidden_when_it_has_no_appearances_or_interval(transferred):
+    root, _, _ = transferred
+    path = root / f"data/raw/player_game_stats/{SEASON}_regular_season.csv"
+    rows = pd.read_csv(path)
+    rows.loc[~(rows.player_id.eq(PID) & rows.team_id.eq(1610612748))].to_csv(path, index=False)
+    path = root / f"data/raw/player_game_availability/{SEASON}_regular_season.csv"
+    rows = pd.read_csv(path)
+    rows.loc[rows.player_id.eq(PID) & rows.team_id.eq(1610612748), "participation_state"] = (
+        "did_not_play"
+    )
+    rows.to_csv(path, index=False)
+    path = root / f"data/raw/player_team_membership/{SEASON}.csv"
+    rows = pd.read_csv(path)
+    rows.loc[~rows.team_id.eq(1610612748)].to_csv(path, index=False)
+    reset_data_source_cache()
+    result = execute_natural_query("How many games did Jimmy Butler miss in 2025-26?")
+    # Incomplete chronology cannot yield a one-club subtotal that hides MIA.
+    assert result.result_status == "no_result", result.metadata
+    coverage = result.result.metadata["membership_coverage"]
+    assert {r["team_abbr"] for r in coverage["by_team"]} == {"LAL", "MIA"}
+    assert next(r["did_not_play"] for r in coverage["by_team"] if r["team_abbr"] == "MIA") == 4
+    assert coverage["missed_games"] is None

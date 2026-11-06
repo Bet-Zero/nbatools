@@ -11317,7 +11317,17 @@ def _missed_games(parsed: dict) -> dict | None:
     try:
         dated = load_membership(seasons)
         dated = dated.loc[player_name_mask(dated, player) & dated.membership_state.eq("member")]
-        multiple_clubs = dated.team_id.nunique() > 1 or len(teams) > 1
+        from nbatools.commands._participation_observations import load_observations
+
+        observed = load_observations(seasons, season_type)
+        observed = observed.loc[
+            player_name_mask(observed, player)
+            & observed.participation_state.isin(["played", "did_not_play"])
+        ]
+        qualified_clubs = set(dated.team_id) | set(observed.team_id)
+        if rows is not None:
+            qualified_clubs.update(rows.team_id)
+        multiple_clubs = len(qualified_clubs) > 1 or len(teams) > 1
     except (ValueError, FileNotFoundError):
         # Let the shared execution boundary report unqualified evidence; never
         # answer a one-club subtotal after interpretation lost membership facts.
