@@ -1,0 +1,26 @@
+{
+  "decision": "approved_scoped_integration_subject_to_exact_head_ci_and_landing_gates",
+  "reviewed_revision": "a93aa4b8eaeb1d9e2c00765d9349d2bc1205d9c6",
+  "prior_reviewed_revision": "580cc61099a462918175fdb4881cfcb4fb1608be",
+  "reviewer_session": "/root/multi_team_checker",
+  "reviewer_model": "Codex; exact model identifier unavailable",
+  "independent_delta_fixture": "passed; three exact original-club DNP IDs retained without tenure, total withheld",
+  "independent_final_native_replay": "passed",
+  "r2_evidence_reuse": {
+    "applicable": true,
+    "run_id": 42185414036,
+    "source_revision": "580cc61099a462918175fdb4881cfcb4fb1608be",
+    "request_sha": "25b806517c8a086d5cdc9d5c4e58e51f19b9bca3",
+    "selected": 3,
+    "executed": 3,
+    "passed": 3,
+    "skips_failures_errors_xfails": 0,
+    "reason": "Qualified club unions and route decisions identical for Poeltl SAS/TOR, Looney GSW, Tatum BOS and LeBron LAL; classifier, inputs, filters, labels, required harnesses unchanged"
+  },
+  "full_season_nba_positive_accepted": false,
+  "receipt_sha256": "d04b9080a3ad538c903c599204df011e097e475484aa7595993e384a0d70cd84",
+  "changed_file_sha256": {
+    "src/nbatools/commands/natural_query.py": "49801ec218d43caa69063b40ac1e366596fef7762dd9b4afd56540b5b3052f76",
+    "tests/test_multi_team_absence.py": "bbf7e78e3be081cc0fc7ea6b3a896ceaaaf9609924379ef522439f9f0ac8989b"
+  }
+}

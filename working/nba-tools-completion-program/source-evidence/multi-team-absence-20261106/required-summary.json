@@ -1,0 +1,21 @@
+{
+  "candidate_sha": "25b806517c8a086d5cdc9d5c4e58e51f19b9bca3",
+  "generation": "availability-lebron-season-v1-20261031",
+  "scope": "targeted",
+  "required_selection": [
+    "tests/cloud_multi_team_absence_real_data.py::test_native_exact_game_date_scopes_and_single_club_control",
+    "tests/cloud_tatum_2023_participation_stage_real_data.py::test_new_tatum_population_is_qualified_before_joint_composition",
+    "tests/test_compact_absence_scope_real_data.py::test_compact_home_absence_matches_literal_qualified_rows_and_api"
+  ],
+  "required_test_limit": 100,
+  "selected": 3,
+  "executed": 3,
+  "passed": 3,
+  "skipped": 0,
+  "failed": 0,
+  "errors": 0,
+  "xfailed": 0,
+  "pytest_exit": 0,
+  "conclusion": "success",
+  "problems": []
+}

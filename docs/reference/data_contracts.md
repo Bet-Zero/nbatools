@@ -809,6 +809,35 @@ state/club/basis. Existing `same_game_other_side` counts retain their meaning;
 observed catalog completeness nor interval existence establishes complete NBA
 season coverage. Production publication remains separately authorized.
 
+### Missed-game populations across clubs
+
+`game_finder(membership_player="<full name>", ...)` selects explicit DNPs
+across qualified dated club-game populations using the same classifier. Optional
+`team` restricts the club; ordinary non-rest missed-game questions choose this
+path when appearances or qualified positive membership expose multiple clubs.
+A club with no appearances still contributes its verified DNP games. Negative
+membership alone does not introduce a club. Existing season/type, opponent,
+venue, calendar and team-stat filters retain their meaning.
+
+`metadata.membership_coverage` carries the exact candidate `(game_id,team_id)`
+rows and separate membership/participation states, per-season/team candidate and
+eligible counts, played/DNP/nonmember/unknown counts, and a null missed total
+while membership or participation is unresolved. Both sides of one game remain
+separate until qualified membership selects the player's side. Unknown member
+participation remains in the eligible denominator. `complete` concerns the
+requested observed candidate-club catalog, not independently complete historical
+NBA coverage. Full club chronology and intervals require external source
+qualification; a schema-valid arbitrary CSV is never that qualification.
+
+For an unscoped club question, an unknown membership date on which a candidate
+club plays withholds the verified total. An idle transfer day can stay unknown
+without adding nonexistent team games. No full-season native Poeltl tenure
+population is adopted: DQ-004 remains a source dependency. Its81=72+9 proposed
+season arithmetic is conditional. Actual exact-game-qualified date scopes are
+SAS through2023-02-08 (55games,46played,9DNP) and TOR from2023-02-10
+(26games,26played,0DNP). These use native retained observations on every game,
+not first/last appearance inference. No production data is changed.
+
 ## Optional source-reported absence reasons
 
 `raw/player_game_absence_reasons/{season}_{season_type_safe}.csv` is a companion

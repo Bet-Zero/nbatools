@@ -11247,7 +11247,9 @@ def _missed_games(parsed: dict) -> dict | None:
     if len(who.split()) > 3 or _team_mentions(who) or _MISSED_NOT_A_COUNT.search(who):
         # "how many games did the Lakers win when LeBron missed": not his count.
         return None
-    rest = shape.group("rest")
+    from nbatools.commands._membership_games import read_missed_team_conditions
+
+    rest, missed_conditions = read_missed_team_conditions(shape.group("rest"))
     from nbatools.commands._date_utils import MONTH_NAME_TO_NUM, read_explicit_date_list
     from nbatools.commands._matchup_utils import _tail_is_read_scope
 
@@ -11278,7 +11280,11 @@ def _missed_games(parsed: dict) -> dict | None:
                 "additional condition; no partial sample is answered"
             ]
             return refused
-        return None
+        # A recognized missed-game subject with an unread condition must not
+        # fall through to an appearance finder and silently count played games.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["missed_games_extra_clause"]
+        return refused
     if parsed.get("season_list") or (
         re.search(r"\b\d{4}(?:-\d{2})?\s+and\s+\d{4}", q) and not parsed.get("start_season")
     ):
@@ -11305,21 +11311,44 @@ def _missed_games(parsed: dict) -> dict | None:
     except FileNotFoundError:
         rows = None
     teams = sorted(set(rows["team_abbr"])) if rows is not None else []
-    if len(teams) != 1 or (parsed.get("team") and parsed["team"] != teams[0]):
-        # Traded (or not found): the games he missed are not one team's.
+    from nbatools.commands._dated_membership import load_membership
+    from nbatools.commands._player_identity import player_name_mask
+
+    try:
+        dated = load_membership(seasons)
+        dated = dated.loc[player_name_mask(dated, player) & dated.membership_state.eq("member")]
+        from nbatools.commands._participation_observations import load_observations
+
+        observed = load_observations(seasons, season_type)
+        observed = observed.loc[
+            player_name_mask(observed, player)
+            & observed.participation_state.isin(["played", "did_not_play"])
+        ]
+        qualified_clubs = set(dated.team_id) | set(observed.team_id)
+        if rows is not None:
+            qualified_clubs.update(rows.team_id)
+        multiple_clubs = len(qualified_clubs) > 1 or len(teams) > 1
+    except (ValueError, FileNotFoundError):
+        # Let the shared execution boundary report unqualified evidence; never
+        # answer a one-club subtotal after interpretation lost membership facts.
+        multiple_clubs = True
+    selected_team = parsed.get("team") or (
+        teams[0] if len(teams) == 1 and not multiple_clubs else None
+    )
+    membership_scope = (
+        multiple_clubs or len(teams) != 1 or bool(parsed.get("team") and parsed["team"] != teams[0])
+    )
+    # Reported rest has its own source/reason contract; do not broaden it here.
+    if membership_scope and reported_rest:
         refused = _single_season_refusal(parsed)
         refused["route_kwargs"]["unsupported_filters"] = ["missed_games_team"]
-        refused["notes"] = [
-            "unsupported_boundary: games missed are counted over one team's season; this "
-            "player played for more than one team (or none) in that span"
-        ]
         return refused
     kwargs = {
         "season": season,
         "start_season": parsed.get("start_season"),
         "end_season": parsed.get("end_season"),
         "season_type": season_type,
-        "team": teams[0],
+        "team": selected_team,
         "opponent": parsed.get("opponent"),
         "home_only": bool(parsed.get("home_only")),
         "away_only": bool(parsed.get("away_only")),
@@ -11331,6 +11360,10 @@ def _missed_games(parsed: dict) -> dict | None:
         "sort_by": "game_date",
         "limit": 100000,
     }
+    if missed_conditions:
+        kwargs["conditions"] = missed_conditions
+    if membership_scope:
+        kwargs["membership_player"] = player
     if reported_rest:
         kwargs["without_player_reason"] = "reported_rest"
     if game_dates:
@@ -11344,17 +11377,26 @@ def _missed_games(parsed: dict) -> dict | None:
         # none is an answer, not an empty sample).
         count_intent=True,
         player=None,
-        team=teams[0],
+        team=selected_team,
         notes=list(parsed.get("notes") or [])
         + [
             (
                 f"reported_rest_games: {teams[0]} games {player} was officially reported resting"
                 if reported_rest
-                else f"missed_games: {teams[0]} games {player} did not play"
+                else f"missed_games: {selected_team or 'NBA'} games {player} did not play"
             )
             + ("; home" if kwargs["home_only"] else "; road" if kwargs["away_only"] else "")
         ],
     )
+    if missed_conditions:
+        out.update(
+            conditions=missed_conditions,
+            threshold_conditions=missed_conditions,
+            extra_conditions=[],
+            stat=None,
+            min_value=None,
+            max_value=None,
+        )
     for key in ("season", "start_season", "end_season"):
         out[key] = kwargs[key]
     if game_dates:

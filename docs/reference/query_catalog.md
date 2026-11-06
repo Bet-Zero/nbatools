@@ -438,6 +438,19 @@ Common combinations:
   remain separate limits. Optional qualified dated membership excludes verified
   nonmembers without supplying missing participation facts. The two-game LeBron example is
   verified only on the retained unpublished PDF stage, not new production data.
+- General missed-game execution can combine a player's qualified club-game
+  populations without player/team/trade exceptions. The existing structured
+  `game_finder` accepts `membership_player`; natural missed questions use that
+  path for multiple observed/qualified clubs. Qualified evidence remains required
+  for every eligible game, including an original club with zero appearances.
+  Team-owned statistical clauses such as `when his team scored at least100
+  points` use team-game filters; unread additional clauses cannot fall through
+  and count appearances. Unknown membership/participation withholds totals and
+  remains visible in `metadata.membership_coverage`.
+  Native date-bounded Poeltl2022-23 controls return9Spurs missed games through
+  February8 and0Raptors missed games after February9; full combined-season
+  positive acceptance is **unfinished** pending DQ-004 native tenure evidence.
+  Controlled other-player transfers verify combined totals, not NBA tenure.
 - structured dated membership: `player_membership` with `player_id`, ISO `date`,
   `season`, optional `team_id` and optional `game_id`. Date-only answers require
   independently qualified inclusive membership intervals. Exact-game answers also

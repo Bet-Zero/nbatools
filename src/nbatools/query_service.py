@@ -427,7 +427,9 @@ def _build_applied_filters(
     if opponent:
         value = ", ".join(opponent) if isinstance(opponent, list) else opponent
         applied_filters.append({"label": "Opponent", "value": value, "kind": "team"})
-    without_player = route_kwargs.get("without_player", source.get("without_player"))
+    without_player = route_kwargs.get(
+        "without_player", source.get("without_player")
+    ) or route_kwargs.get("membership_player", source.get("membership_player"))
     with_player = route_kwargs.get("with_player", source.get("with_player"))
     if without_player:
         applied_filters.append(
@@ -2101,6 +2103,12 @@ def _add_missed_games_metadata(metadata: dict[str, Any], result: Any) -> None:
     )
     team = team_context.get("team_name") or listed_name or team_context.get("team_abbr")
     team = team or match.group(1)
+    coverage = getattr(result, "metadata", {}).get("membership_coverage")
+    if coverage:
+        if match.group(1) == "NBA":
+            team = "NBA"
+        elif len(coverage["by_team"]) == 1:
+            team = coverage["by_team"][0].get("team_name") or team
     player = match.group(2)
     opponent_context = metadata.get("opponent_context") or {}
     opponent = opponent_context.get("team_name") or opponent_context.get("team_abbr")
@@ -2120,6 +2128,19 @@ def _add_missed_games_metadata(metadata: dict[str, Any], result: Any) -> None:
             ],
         )
     )
+    predicates = []
+    for condition in metadata.get("conditions") or []:
+        stat = str(condition["stat"])
+        owner = "opponent" if stat.startswith("opponent_") else "team"
+        metric = stat.removeprefix("opponent_")
+        bounds = []
+        if condition.get("min_value") is not None:
+            bounds.append(_minimum_threshold_phrase(condition["min_value"]))
+        if condition.get("max_value") is not None:
+            bounds.append(_maximum_threshold_phrase(condition["max_value"]))
+        predicates.append(f"{owner} {stat_phrase_label(metric)} {' and '.join(bounds)}")
+    if predicates:
+        context += " with " + "; ".join(predicates)
     n = int(result.count)
     venue = f"{match.group(3)} " if match.group(3) else ""
     games = "game" if n == 1 else "games"
@@ -2132,6 +2153,11 @@ def _add_missed_games_metadata(metadata: dict[str, Any], result: Any) -> None:
         metadata["answer_phrase"] = (
             f"{player} had {n} {team} {venue}{games} with officially reported Rest {context}."
         )
+    if coverage and match.group(1) == "NBA":
+        totals = "; ".join(
+            f"{row['team_abbr']}: {row['did_not_play']}" for row in coverage["by_team"]
+        )
+        metadata["answer_phrase"] += f" By team: {totals}."
     metadata["count_phrase"] = metadata["answer_phrase"]
 
 
@@ -3383,6 +3409,8 @@ def _finalize_natural_query_result(
             metadata,
             result.games,
         )
+    if "membership_coverage" in getattr(result, "metadata", {}):
+        metadata["membership_coverage"] = result.metadata["membership_coverage"]
     _bind_selected_summary_player(metadata, result)
     _add_game_summary_answer_metadata(metadata, result)
     _add_team_advanced_scalar_answer_metadata(metadata, result)
@@ -3831,7 +3859,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         "opponent_division": kwargs.get("opponent_division"),
         "opponent_team_abbrs": kwargs.get("opponent_team_abbrs"),
         "with_player": kwargs.get("with_player"),
-        "without_player": kwargs.get("without_player"),
+        "without_player": kwargs.get("without_player") or kwargs.get("membership_player"),
         "without_player_reason": kwargs.get("without_player_reason"),
         "unresolved_availability_player": kwargs.get("unresolved_availability_player"),
         "unsupported_filters": unsupported_filters,
@@ -3917,6 +3945,8 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
             route=route,
         )
 
+    if "membership_coverage" in getattr(result, "metadata", {}):
+        metadata["membership_coverage"] = result.metadata["membership_coverage"]
     _bind_selected_summary_player(metadata, result)
     _add_game_summary_answer_metadata(metadata, result)
     _add_team_stretch_answer_metadata(metadata, result)

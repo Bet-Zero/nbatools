@@ -1,0 +1,29 @@
+{
+  "dataset_source_sha256": "04d3562ca95976278569c70c50dfc521e984300fc6af0f6d5ac21e21d2af9f06",
+  "source_url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/leaguegamefinder/2023/regular-season.json",
+  "status": "initial_source_validation_failures; no correction or statistical qualification",
+  "failures": [
+    {
+      "game_id": "0022200749",
+      "game_date": "2023-01-28",
+      "team": "BOS",
+      "reported_pts": 125,
+      "opponent": "LAL",
+      "opponent_reported_pts": 121,
+      "reported_plus_minus": 3,
+      "computed_score_margin": 4,
+      "impact": "Outside selected player/club population. Broad preliminary consistency assertion stopped; no cleanup investigation performed."
+    },
+    {
+      "game_id": "0022200138",
+      "game_date": "2022-11-05",
+      "team": "SAS",
+      "reported_pts": 101,
+      "opponent": "DEN",
+      "opponent_reported_pts": 126,
+      "reported_plus_minus": -20,
+      "computed_score_margin": -25,
+      "impact": "Eligible played game; this margin is unqualified. Participation/game-ID/absence count proof does not depend on reported margin; do not treat this source row as statistically clean."
+    }
+  ]
+}
