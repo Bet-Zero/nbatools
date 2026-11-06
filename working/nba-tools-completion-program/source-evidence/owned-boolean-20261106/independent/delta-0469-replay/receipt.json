@@ -1,0 +1,62 @@
+{
+  "revision": "0469b4e696691f3cd0118ebb62f3d0c3d8ce7911",
+  "checks": [
+    {
+      "control": "opponent_is_own_team",
+      "passed": true
+    },
+    {
+      "control": "unknown_opponent_id",
+      "passed": true
+    },
+    {
+      "control": "context_date_mismatch",
+      "passed": true
+    },
+    {
+      "control": "nullable_venue",
+      "passed": true
+    },
+    {
+      "control": "nullable_opponent_scope",
+      "passed": true
+    },
+    {
+      "control": "unrequested_nullable_rate",
+      "passed": true
+    },
+    {
+      "headline": "2 distinct players had a matching game in the 2025-26 regular season."
+    },
+    {
+      "control": "plain_owned_AND_complete_headline",
+      "passed": true
+    },
+    {
+      "control": "How many Nikola Jokic and Missing Player games had (over 20 points or exactly 100 team points) in 2025-26?",
+      "passed": true
+    },
+    {
+      "control": "How many distinct players had (over 20 points or the team did not score exactly 100 points) in 2025-26?",
+      "passed": true
+    },
+    {
+      "control": "How many distinct players had (over 20 points or exactly 100 team points) against Unlistedclub in 2025-26?",
+      "passed": true
+    },
+    {
+      "control": "resolved_full_name_Stephen Curry",
+      "passed": true
+    },
+    {
+      "control": "resolved_full_name_Kevon Looney",
+      "passed": true
+    },
+    {
+      "control": "resolved_full_name_Jakob Poeltl",
+      "passed": true
+    }
+  ],
+  "failures": [],
+  "calls": 28
+}

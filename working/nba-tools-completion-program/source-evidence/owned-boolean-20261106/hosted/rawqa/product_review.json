@@ -1,0 +1,1414 @@
+{
+  "run_id": "r2_validation",
+  "scope": "custom_selection",
+  "corpus_path": "qa/raw_query_answer_corpus.yaml",
+  "case_count": 9,
+  "source_commit": "65077c7c6441c40fb56196cb82e4919d4107e12b",
+  "source_tree_clean": true,
+  "corpus_sha256": "d62a1dbe2f70eaea0112bfb5fd83f54f346b9da1d9ac0fb4eeca3288ca43335a",
+  "case_ids": [
+    "k08_compact_home_absence_season",
+    "k03_distinct_or_2022",
+    "k03_player_game_or_2022",
+    "k03_distinct_or_qualified_zero_2022",
+    "k03_distinct_or_owner_example_2023",
+    "k03_owned_boolean_team_distinct_2022",
+    "k03_owned_boolean_team_games_2022",
+    "k03_owned_boolean_opponent_distinct_2022",
+    "k03_owned_boolean_opponent_games_2022"
+  ],
+  "selected_cases_sha256": "c02072256bb2000c22879239266e03c641b517e329ea65efa1ebf8245e788546",
+  "output_sha256": "c0fc81801b40ebaf4b103f4d97a566c0b50a691146fbcf973eb2fd224da29625",
+  "data_generation": "availability-lebron-season-v1-20261031",
+  "machine_regression": "pass",
+  "coverage_declaration": "missing_variants",
+  "review_declaration": "human_review_pending",
+  "review_closure": {
+    "state": "human_review_pending",
+    "notes": "The prior 127-case June 8 closure predated the current corpus and was not commit, content, output, generation, or reviewer bound. A new complete closure requires an exact retained review artifact and human certification."
+  },
+  "closure_integrity": {
+    "state": "not_declared",
+    "errors": []
+  },
+  "family_registry_surface": "public_query_acceptance",
+  "family_summary": [
+    {
+      "id": "player_stats_this_season",
+      "label": "Player stats this season",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do player-season fragments, sentences, and aliases stay on the player summary route?",
+        "Do unresolved player names fail cleanly without a broad summary?"
+      ]
+    },
+    {
+      "id": "team_records",
+      "label": "Team records",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do single-team record phrasings preserve location, season, opponent, conference, and division qualifiers?",
+        "Do matchup and no-subject division leaderboard siblings route intentionally while mixed conference-plus-division and playoff division siblings avoid broad fallback?"
+      ]
+    },
+    {
+      "id": "team_record_availability",
+      "label": "Team record with or without player",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do presence and absence wording stay on the team-record route?",
+        "Does compound or unresolved availability fail cleanly without a broad record?"
+      ]
+    },
+    {
+      "id": "player_summaries_recent_form",
+      "label": "Player summaries and recent form",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do recent-form and last-N phrases preserve player summary scope?",
+        "Do comparison siblings and unresolved player names avoid broad fallback?"
+      ]
+    },
+    {
+      "id": "leaderboards",
+      "label": "Leaderboards",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do stat aliases and filters remain attached to the requested leaderboard?",
+        "Do top-single-game and unsupported-stat siblings avoid default-points fallback?"
+      ]
+    },
+    {
+      "id": "top_single_game_performances",
+      "label": "Top single-game performances",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do single-game phrases remain distinct from per-game season leaderboards?",
+        "Do stat typos fail cleanly without falling back to scoring games?"
+      ]
+    },
+    {
+      "id": "count_queries",
+      "label": "Count queries",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do count fragments retain the requested player, event, and window?",
+        "Do unsupported broad-count and typo forms avoid unrelated answers?"
+      ]
+    },
+    {
+      "id": "game_finders",
+      "label": "Game finders",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do finder fragments and sentences retain all threshold and context filters?",
+        "Do empty samples and unresolved players avoid broad finder results?"
+      ]
+    },
+    {
+      "id": "splits",
+      "label": "Splits",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do player and team split qualifiers route to the intended split result?",
+        "Do unsupported role combinations and unresolved players fail cleanly?"
+      ]
+    },
+    {
+      "id": "streaks",
+      "label": "Streaks",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do longest/current streak phrases preserve thresholds and player scope?",
+        "Do subjective trend and typo forms avoid broad streak or finder fallback?"
+      ]
+    },
+    {
+      "id": "rolling_stretches",
+      "label": "Rolling stretches",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do rolling-window phrases preserve player, metric, and window size?",
+        "Do unsupported team and unresolved-player forms fail cleanly?"
+      ]
+    },
+    {
+      "id": "comparisons",
+      "label": "Comparisons",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do objective comparison phrases remain separate from subjective winner questions?",
+        "Do team, player, and matchup comparison siblings route intentionally?"
+      ]
+    },
+    {
+      "id": "playoff_history",
+      "label": "Playoff history",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do history, matchup, appearance, and round phrases preserve playoff scope?",
+        "Do opponent-quality siblings and unresolved teams avoid broad playoff fallback?"
+      ]
+    },
+    {
+      "id": "date_window_filters",
+      "label": "Date and window filters",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do exact dates, month windows, relative windows, and date anchors stay attached?",
+        "Do malformed or unsupported anchors avoid full-scope fallback?"
+      ]
+    },
+    {
+      "id": "unsupported_subjective_narrative",
+      "label": "Unsupported subjective and narrative questions",
+      "public_surface": false,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do subjective and narrative questions decline cleanly?",
+        "Does wording variation avoid accidental leaderboard or summary fallback?"
+      ]
+    },
+    {
+      "id": "typo_partial_entity_behavior",
+      "label": "Typo and partial-entity guardrails",
+      "public_surface": false,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "short",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do unresolved entities fail clearly instead of widening query scope?",
+        "Which typo and partial-name forms should remain unsupported by product decision?"
+      ]
+    }
+  ],
+  "variant_checklist": [
+    {
+      "family": "player_stats_this_season",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_stats_this_season",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_stats_this_season",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_stats_this_season",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_stats_this_season",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_stats_this_season",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_stats_this_season",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_records",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_records",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_records",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_records",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_records",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_records",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_records",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_record_availability",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_record_availability",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_record_availability",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_record_availability",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_record_availability",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_record_availability",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_record_availability",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_summaries_recent_form",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_summaries_recent_form",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_summaries_recent_form",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_summaries_recent_form",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_summaries_recent_form",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_summaries_recent_form",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_summaries_recent_form",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "leaderboards",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "leaderboards",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "leaderboards",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "leaderboards",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "leaderboards",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "leaderboards",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "leaderboards",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "top_single_game_performances",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "top_single_game_performances",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "top_single_game_performances",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "top_single_game_performances",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "top_single_game_performances",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "top_single_game_performances",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "top_single_game_performances",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "count_queries",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "count_queries",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "count_queries",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "count_queries",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "count_queries",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "count_queries",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "count_queries",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "game_finders",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "game_finders",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "game_finders",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "game_finders",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "game_finders",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "game_finders",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "game_finders",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "splits",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "splits",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "splits",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "splits",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "splits",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "splits",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "splits",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "streaks",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "streaks",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "streaks",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "streaks",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "streaks",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "streaks",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "streaks",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "rolling_stretches",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "rolling_stretches",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "rolling_stretches",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "rolling_stretches",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "rolling_stretches",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "rolling_stretches",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "rolling_stretches",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "comparisons",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "comparisons",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "comparisons",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "comparisons",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "comparisons",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "comparisons",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "comparisons",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "playoff_history",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "playoff_history",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "playoff_history",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "playoff_history",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "playoff_history",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "playoff_history",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "playoff_history",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "date_window_filters",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "date_window_filters",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "date_window_filters",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "date_window_filters",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "date_window_filters",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "date_window_filters",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "date_window_filters",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "unsupported_subjective_narrative",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "unsupported_subjective_narrative",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "unsupported_subjective_narrative",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "unsupported_subjective_narrative",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "unsupported_subjective_narrative",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "unsupported_subjective_narrative",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "unsupported_subjective_narrative",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "typo_partial_entity_behavior",
+      "variant": "canonical",
+      "state": "not_applicable",
+      "case_ids": [],
+      "reason": "Domain-specific typo guards belong to their owning feature families."
+    },
+    {
+      "family": "typo_partial_entity_behavior",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "typo_partial_entity_behavior",
+      "variant": "sentence",
+      "state": "not_applicable",
+      "case_ids": [],
+      "reason": "Domain-specific typo guards belong to their owning feature families."
+    },
+    {
+      "family": "typo_partial_entity_behavior",
+      "variant": "synonym",
+      "state": "not_applicable",
+      "case_ids": [],
+      "reason": "Domain-specific typo guards belong to their owning feature families."
+    },
+    {
+      "family": "typo_partial_entity_behavior",
+      "variant": "inverse_sibling",
+      "state": "not_applicable",
+      "case_ids": [],
+      "reason": "Domain-specific typo guards belong to their owning feature families."
+    },
+    {
+      "family": "typo_partial_entity_behavior",
+      "variant": "nearby_unsupported",
+      "state": "not_applicable",
+      "case_ids": [],
+      "reason": "Domain-specific typo guards belong to their owning feature families."
+    },
+    {
+      "family": "typo_partial_entity_behavior",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    }
+  ],
+  "representative_rows": [],
+  "unsupported_no_broad_fallback_rows": [],
+  "product_decisions": [],
+  "suspicious_rows": []
+}

@@ -1,0 +1,49 @@
+{
+  "reviewed_revision": "736b3d0df63d86a06983fd2d765a1a000e063d8d",
+  "verdict": "APPROVED_BOUNDED_SOURCE_AND_CONSUMERS_FOR_REQUIRED_NUMERICAL_GATE",
+  "reviewer": "Separate Codex independent application checker /root/poeltl_source_checker; exact backend model ID unavailable; no Claude/human/cross-model claim",
+  "frozen_oracle_sha256": "4d16e0cfa11d3bc4e6e1cc9af93700610ae4d81c6416964f342ef3f19b85a44b",
+  "frozen_28_heldouts_sha256": "d8588c162450649e1885d0dfd9ef7bc0deeeeb48b6eb48f8ab449c2971fb09a7",
+  "actual_final_executions": {
+    "controlled": {
+      "groups_passed": 29,
+      "query_invocations": 57,
+      "failures": 0,
+      "skips": 0,
+      "receipt": "final-controlled-736b/receipt.json"
+    },
+    "governor_boundaries": {
+      "controls_passed": 15,
+      "failures": 0,
+      "receipt": "elision-delta-736b.json",
+      "meaning": "All4originalgovernorforms plus limited/stayed/kept variants contained; parentheses and explicit noun-owned independent siblings positive; originalwrongzero now withheld unfinished;2freshrelatedwording positives"
+    }
+  },
+  "reuse": {
+    "exact0469": {
+      "controls_passed": 14,
+      "query_invocations": 28,
+      "failures": 0,
+      "receipt": "delta-0469-replay/receipt.json",
+      "scope": "Revealed27Curry/11Looney/18Poeltl samegamekey/identity NL+HTTP+structured+HTTP,listforms,extraactors; strictselfopponent/unknownID/date; requestedvenue/opponent-nullscope;unrequestednullablerate;completeANDheadline. Final736delta only adds syntax provenance bit and replaces governorclassification, leaves this source/identity/scope/join/data/arithmetic/headline code unchanged. Noun-owned finalcontrolled replay confirms flagfalse leaves unchanged."
+    },
+    "initial3f3": {
+      "native_pass_groups": 15,
+      "native_calls": 39,
+      "failed_named_player_groups": 3,
+      "receipt": "native-3f3f/receipt.json",
+      "scope": "All25of28positive languagecases passed exact initialsource, including full native IDs/occurrencevectors/sums.3named failures preserved literally and repaired on0469.736 provenance metadata affects classification/containment only; no numeric leafbounds/evaluator/source/staging/valid joins or identity arithmetic change. Finalcontrolled recapture verifies grouping/owner evaluation. Newstrict validation accepts qualified native keys/dates verified in0469 named replay and directraworacle."
+    },
+    "broad": "Author-reported immutable3f3 broad10307pass/1863unavailabledata skips/1grouped-basefailure retained. Independently verified unchanged original groupedbase regression on0469:1passed;1needsdata companion skipped. Original own-only natural base+mask path restored; final736 only provenanceguard delta. Narrow source review, relevant targeted controls, exact-head fast CI plus actualrequired33R2 are appropriate; no broad3f3 result relabelled green/currenthead."
+  },
+  "remaining_limits": [
+    "Elided verbal team/opponent lists are safely refused and explicitly unfinished, not positive implementation.",
+    "Broader branch entity scopes, global NBAfixture projection, ranked/windowed extensions remain separate follow-ons.",
+    "Qualified retained/staged NBA source scope is not production publication, deployment, all46positive/Core1 or currentfreshness acceptance.",
+    "Exact-head blocking CI and actualrequired33R2/RawQA stillmandatory; finalreceipt review separate."
+  ],
+  "required_selection": "Newowned2+originalK0312+originalK058+Poeltl4+equality3+distinctOR3+teamnoun1=33anticipatedexecutedtests; actualcollection/zerorequiredskips and sourcebindings must match. Reuse unaffectedaccepted source/capture tests explicitly, no newsource download.",
+  "acceptance_view": "Bounded revised12row/46denominator documentation approved separately; originalbaselineSHA433f49... unchanged; knownpairedmissing12next.",
+  "production_writes": 0,
+  "active_pointer_changes": 0
+}

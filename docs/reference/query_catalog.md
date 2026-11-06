@@ -1430,3 +1430,9 @@ team/opponent governor cannot silently change the next statistic into a player
 statistic; such elision is safely withheld pending full list interpretation. Numerical,
 rendering and deployed acceptance are recorded separately in the application
 checkpoint; these examples do not assert current production readiness.
+
+The qualified retained 2022–23 owned-team example selects **82 distinct players
+across 263 matching player-games**; the opposing-score example selects **63 across
+176**. Exact raw identities and occurrence vectors were independently checked,
+with 33/33 required numerical cases and 9 RawQA cases/52checks in PR593. These are
+historical pinned-data results; current production readiness remains separate.

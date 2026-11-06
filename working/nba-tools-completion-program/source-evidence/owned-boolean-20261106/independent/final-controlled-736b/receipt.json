@@ -1,0 +1,288 @@
+{
+  "reviewed_revision": "736b3d0df63d86a06983fd2d765a1a000e063d8d",
+  "checker": "Separate Codex checker session /root/poeltl_source_checker; exact backend model not exposed",
+  "oracle_sha256": "4d16e0cfa11d3bc4e6e1cc9af93700610ae4d81c6416964f342ef3f19b85a44b",
+  "phase": "controlled",
+  "checks": [
+    {
+      "query": "How many distinct players had (over 20 points or over 10 assists) with exactly 100 team points in 2025-26?",
+      "oracle": "carry_controlled_team_owned",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "count_phrase": "2 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or over 10 assists) with exactly 100 team points",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (over 20 points or exactly 100 team points) in 2025-26?",
+      "oracle": "c_player_or_team",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "count_phrase": "3 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or exactly 100 team points)",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many player games with (over 20 points or exactly 100 team points) in 2025-26?",
+      "oracle": "c_player_or_team",
+      "grain": "player_games",
+      "data": "controlled",
+      "passed": true,
+      "count_phrase": "There were 5 matching player-games in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or exactly 100 team points)",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (over 20 points or exactly 100 opponent points) in 2025-26?",
+      "oracle": "c_player_or_opponent",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "count_phrase": "3 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or exactly 100 opponent points)",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had ((over 20 points and exactly 100 team points) or (over 10 assists and exactly 100 opponent points)) in 2025-26?",
+      "oracle": "c_nested_owners",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "count_phrase": "3 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "((over 20 points and exactly 100 team points) or (over 10 assists and exactly 100 opponent points))",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (over 20 points or over 10 assists) and exactly 100 opponent points in 2025-26?",
+      "oracle": "c_outer_opponent",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "count_phrase": "2 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or over 10 assists) and exactly 100 opponent points",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (exactly 100 team points or exactly 100 opponent points) and at least 20 points in 2025-26?",
+      "oracle": "c_both_owner_or",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "count_phrase": "2 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(exactly 100 team points or exactly 100 opponent points) and at least 20 points",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (over 20 points or over 100 team points) in 2025-26?",
+      "oracle": "c_strict_team",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "count_phrase": "2 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or over 100 team points)",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (over 20 points or at least 100 team points) in 2025-26?",
+      "oracle": "c_inclusive_team",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "count_phrase": "3 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or at least 100 team points)",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (exactly 0 team points or over 90 points) in 2025-26?",
+      "oracle": "c_team_exact_zero",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "count_phrase": "0 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(exactly 0 team points or over 90 points)",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many Nuggets players had (over 20 points or exactly 100 team points) in 2025-26?",
+      "oracle": "c_scoped_den",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "count_phrase": "2 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or exactly 100 team points)",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (over 20 points or exactly 100 team points) against the Warriors in 2025-26?",
+      "oracle": "c_scoped_opponent",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "count_phrase": "2 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or exactly 100 team points)",
+          "kind": "boolean"
+        },
+        {
+          "label": "Opponent",
+          "value": "GSW",
+          "kind": "team"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (over 20 points or the team scored exactly 100 points) in 2025-26?",
+      "oracle": "c_player_or_team",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "count_phrase": "3 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or the team scored exactly 100 points)",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "structured": "over 20 points or exactly 100 team points",
+      "oracle": "c_player_or_team",
+      "passed": true
+    },
+    {
+      "structured": "over 20 points or exactly 100 opponent points",
+      "oracle": "c_player_or_opponent",
+      "passed": true
+    },
+    {
+      "structured": "(over 20 points and exactly 100 team points) or (over 10 assists and exactly 100 opponent points)",
+      "oracle": "c_nested_owners",
+      "passed": true
+    },
+    {
+      "structured": "(over 20 points or over 10 assists) and exactly 100 opponent points",
+      "oracle": "c_outer_opponent",
+      "passed": true
+    },
+    {
+      "structured": "exactly 0 team points or over 90 points",
+      "oracle": "c_team_exact_zero",
+      "passed": true
+    },
+    {
+      "damage": "missing_team_source",
+      "passed": true,
+      "reason": "no_data"
+    },
+    {
+      "damage": "missing_own_join",
+      "passed": true,
+      "reason": "no_data"
+    },
+    {
+      "damage": "missing_opponent_join",
+      "passed": true,
+      "reason": "no_data"
+    },
+    {
+      "damage": "unknown_team_pts",
+      "passed": true,
+      "reason": "no_data"
+    },
+    {
+      "damage": "unknown_team_ast",
+      "passed": true,
+      "reason": "no_data"
+    },
+    {
+      "damage": "unknown_opponent_pts",
+      "passed": true,
+      "reason": "no_data"
+    },
+    {
+      "damage": "conflicting_team_duplicate",
+      "passed": true,
+      "reason": "no_data"
+    },
+    {
+      "unbound_clause": "while injured",
+      "passed": true
+    },
+    {
+      "unbound_clause": "and (over 20 points against Boston or exactly 100 team points against Phoenix)",
+      "passed": true
+    },
+    {
+      "unbound_clause": "against Unlistedclub",
+      "passed": true
+    },
+    {
+      "unbound_clause": "when the Lakers score exactly 100 points",
+      "passed": true
+    }
+  ],
+  "failures": [],
+  "query_invocations": 57,
+  "production_writes": 0,
+  "skipped": 0
+}

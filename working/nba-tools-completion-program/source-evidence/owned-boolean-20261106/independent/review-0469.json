@@ -1,0 +1,23 @@
+{
+  "revision": "0469b4e696691f3cd0118ebb62f3d0c3d8ce7911",
+  "verdict": "CHANGES_REQUIRED_ONE_DEFENSIVE_ELISION_GUARD",
+  "review": "Actual exactdelta source review, independent revealedidentity/key/source/scope/headline replay; originalpositive restored test",
+  "delta_receipt": "delta-0469-replay/receipt.json",
+  "delta_controls_passed": 14,
+  "delta_calls": 28,
+  "delta_failures": 0,
+  "elision_receipt": "elision-delta-0469.json",
+  "elision_controls_passed": 11,
+  "elision_controls_failed": 1,
+  "remaining_finding": "Recognized held opponents under100points and under20assists still silently owns secondAST asplayerstat. Require complete defensive verbal source classification or safely contained unfinished before numerical approval.",
+  "original_grouped_base_test": {
+    "node": "tests/test_query_service.py::TestCountFinalizerParity::test_grouped_or_evaluates_against_an_unfiltered_base",
+    "passed": 1,
+    "assertions_unchanged": true,
+    "companion_needs_data_skipped": 1,
+    "reason": "tests/test_query_service.py::TestCountFinalizerParity::test_top_level_and_grouped_or_are_result_equivalent marked needs_data; absentlocalqualifiedbase; not claimed aspass"
+  },
+  "broad_applicability": "Parent-reported actual3f3broad10307passed/1863unavailabledata skips/1grouped-basefailure remains literal. Narrow finalrepair source/defaultpaths/delta controls and exactheadCI+required33R2 may establish applicability without redundantfullbroad execution, provided remainingguard repaired; never relabel3f3executed evidence currenthead.",
+  "source_replay_semantics": "Independent originaloracle/28heldouts hashes unchanged. Validrawarithmetic and contextjoinvalues unchanged by guarddelta.25priorpositive languagecases may reuse source/frozenkey proof; revealed3nowregressions pass exactdelta.",
+  "production_changes": 0
+}

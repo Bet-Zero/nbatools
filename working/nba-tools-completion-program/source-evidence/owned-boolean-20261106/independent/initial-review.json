@@ -1,0 +1,44 @@
+{
+  "reviewed_revision": "3f3f9ae481ef796fa1988f53e6854d1a68d24463",
+  "verdict": "CHANGES_REQUIRED",
+  "checker": "Independent Codex session /root/poeltl_source_checker; exact backend model unavailable",
+  "controlled": {
+    "groups_passed": 29,
+    "calls": 57,
+    "failures": 0,
+    "receipt": "results-3f3f/receipt.json"
+  },
+  "native": {
+    "groups_passed": 15,
+    "calls": 39,
+    "failed_groups": 3,
+    "receipt": "native-3f3f/receipt.json"
+  },
+  "findings": [
+    {
+      "severity": "blocking",
+      "scope": "named-player complete-envelope identity claim",
+      "detail": "Three frozen ordinary full-name Curry/Looney/Poeltl positives resolve correctly, then fail outer residual guard because static PLAYER_ALIASES claims do not cover resolved canonical names. Expected raw27/11/18 appearances. Fix general resolved identity ownership, preserve unknown extra actors."
+    },
+    {
+      "severity": "blocking",
+      "scope": "new plain-owned AND count label",
+      "detail": "Correct2 distinctplayers for over20PTS AND exact100TEAMPTS, but primary count_phrase describes over20PTS alone, whose independentpopulation is3. Full appliedfilter survives, yet primary phrasing must retain the whole predicate or use honest matching-game wording."
+    },
+    {
+      "severity": "review_constraint",
+      "scope": "strict context source contradiction",
+      "detail": "Current opt-in guard rejects missing joins/cells and duplicate keys but does not reject a playeropponentID equalling ownteamID or mismatched same-ID teamdate. Invalid-source damage, not qualified source arithmetic failure; do not claim covered by strictguard. Source-contract/domain applicability must be explicit."
+    }
+  ],
+  "positive_scope": "Shared owned AST, exactbase-before-evaluation, fullPGkeys/IDoccurrences/sums, strict/inclusive/equality/0vs0+, commonfilters, existingqualifiedsource/stage safeguarding otherwise verified. Allcarryforward3 exactoracles match.",
+  "reused": "No reused execution is relabelled newhead; no hostedrequiredapproval yet.",
+  "production_changes": 0,
+  "supplemental_elision": {
+    "artifact": "elision-probe-3f3f.json",
+    "actual_trusted_count": 0,
+    "independent_expected_players": 479,
+    "independent_expected_player_games": 2509,
+    "meaning": "Explicit verbal team governor cannot silently turn elidedsecondstat into playerstat. Fullsupport or safecontainedunfinished required."
+  }
+}

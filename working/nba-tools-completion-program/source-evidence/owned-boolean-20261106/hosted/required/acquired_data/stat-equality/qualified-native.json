@@ -1,0 +1,20 @@
+[
+  {
+    "query": "Jakob Poeltl average rebounds with exactly 110 team points in 2022-23",
+    "game_ids": [
+      22200209,
+      22200269,
+      22201150
+    ],
+    "rebounds_sum": 38
+  },
+  {
+    "query": "How many games did Jakob Poeltl miss in 2022-23 with exactly 112 team points?",
+    "game_ids": [
+      22200406,
+      22200420
+    ],
+    "count": 2,
+    "answer": "Jakob Poeltl missed 2 NBA games in the 2022-23 regular season with team points exactly 112. By team: SAS: 2; TOR: 0."
+  }
+]

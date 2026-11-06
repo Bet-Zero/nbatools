@@ -1,0 +1,35 @@
+{
+  "run_id": 42245902610,
+  "request_sha": "65077c7c6441c40fb56196cb82e4919d4107e12b",
+  "reviewed_parent": "736b3d0df63d86a06983fd2d765a1a000e063d8d",
+  "generation": "availability-lebron-season-v1-20261031",
+  "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "required_job": 127988369238,
+  "rawqa_job": 127988369265,
+  "required_artifact": {
+    "id": 13518361131,
+    "size": 38043,
+    "sha256": "d0a3ed6e8b475c3f1cd4e70a0c56042b43c541f2108b5dfe658f00b0dd6d718e"
+  },
+  "rawqa_artifact": {
+    "id": 13517906125,
+    "size": 97904,
+    "sha256": "36a7673e186d8adef675b5927eccfa471af7808311d3ae3f4978d1c3e4b24441"
+  },
+  "required": {
+    "selected": 33,
+    "executed": 33,
+    "passed": 33,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0
+  },
+  "rawqa": {
+    "cases": 9,
+    "checks_passed": 52,
+    "suspicious": 0
+  },
+  "classification": "qualified_historical_numerical_and_rendered_acceptance_not_production",
+  "publication_or_data_pointer_writes": 0
+}
