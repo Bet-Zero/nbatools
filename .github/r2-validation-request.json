@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "2f0ba1be2292f693b1d68e452a5c72e0ca0e2c89",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/test_k01_identity_real_data.py",
+    "tests/test_k02_explicit_season_real_data.py",
+    "tests/test_sample_order_contract_real_data.py",
+    "tests/test_recent_window_meaning_real_data.py",
+    "tests/test_k04_ranking_real_data.py",
+    "tests/test_k06_comparison_real_data.py",
+    "tests/test_k09_sequences_real_data.py",
+    "tests/test_k10_history_real_data.py",
+    "tests/test_k11_population_real_data.py",
+    "tests/cloud_durant_franchise_stage_real_data.py::test_durant_full_population_and_original_franchise_consumers"
+  ],
+  "raw_qa_cases": []
+}
