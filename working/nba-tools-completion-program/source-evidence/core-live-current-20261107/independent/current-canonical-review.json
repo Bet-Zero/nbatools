@@ -1,0 +1,99 @@
+{
+  "games": {
+    "old_rows_preserved_all_cells": 107,
+    "added": 16
+  },
+  "team_game_stats": {
+    "old_rows_preserved_all_cells": 214,
+    "added": 32
+  },
+  "player_game_stats": {
+    "old_rows_preserved_all_cells": 2413,
+    "added": 368
+  },
+  "validation_failures": [
+    {
+      "name": "player_game_starter_roles",
+      "validation": {
+        "errors": [
+          "coverage missing 368 requested keys"
+        ],
+        "state": "failed"
+      },
+      "missing_keys": 368
+    },
+    {
+      "name": "player_game_period_stats",
+      "validation": {
+        "errors": [
+          "coverage missing 2208 requested keys"
+        ],
+        "state": "failed"
+      },
+      "missing_keys": 2208
+    },
+    {
+      "name": "team_game_period_stats",
+      "validation": {
+        "errors": [
+          "coverage missing 192 requested keys"
+        ],
+        "state": "failed"
+      },
+      "missing_keys": 192
+    },
+    {
+      "name": "player_season_advanced",
+      "validation": {
+        "errors": [
+          "coverage missing 4 requested keys"
+        ],
+        "state": "failed"
+      },
+      "missing_keys": 4
+    },
+    {
+      "name": "play_by_play_events",
+      "validation": {
+        "errors": [],
+        "state": "unavailable"
+      },
+      "missing_keys": 0
+    },
+    {
+      "name": "player_game_clutch_stats",
+      "validation": {
+        "errors": [],
+        "state": "unavailable"
+      },
+      "missing_keys": 0
+    },
+    {
+      "name": "team_game_clutch_stats",
+      "validation": {
+        "errors": [],
+        "state": "unavailable"
+      },
+      "missing_keys": 0
+    },
+    {
+      "name": "team_player_on_off_summary",
+      "validation": {
+        "errors": [],
+        "state": "unavailable"
+      },
+      "missing_keys": 0
+    },
+    {
+      "name": "league_lineup_viz",
+      "validation": {
+        "errors": [],
+        "state": "unavailable"
+      },
+      "missing_keys": 0
+    }
+  ],
+  "manifest_all18_files_match": true,
+  "targeted_source_to_canonical_vectors_match": true,
+  "retained_six_bodies_original_custody_match": true
+}

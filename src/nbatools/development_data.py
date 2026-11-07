@@ -123,8 +123,31 @@ class DevelopmentSnapshot:
             nonmetrics = {"start_position", "comment", "jersey_number", "weight", "height"}
             if "/rosters/" in str(path) or "/teams/" in str(path):
                 nonmetrics.update(numeric.columns)
+            family = Path(self._relative(path)).parent.name
+            if family == "games":
+                # Canonical game identity deliberately leaves unsupported catalog
+                # metadata blank. Pandas infers an all-blank text column as float;
+                # this does not make it a statistical input to a record/count.
+                nonmetrics.update(
+                    {
+                        "game_datetime",
+                        "arena",
+                        "city",
+                        "attendance",
+                        "overtime_periods",
+                        "playoff_round",
+                        "series_id",
+                        "series_game_number",
+                    }
+                )
+            elif family == "player_game_availability":
+                nonmetrics.update({"source_comment", "identity_source_sha256"})
             numeric = numeric.drop(columns=list(nonmetrics & set(numeric.columns)))
             missing = numeric.isna()
+            if family == "player_game_availability" and "source_minutes" in missing:
+                # Explicit nonparticipation has no played clock. Leave the null
+                # intact; played/unknown rows still cannot lose a numeric input.
+                missing["source_minutes"] &= ~frame["participation_state"].eq("did_not_play")
             # A 0/0 shooting ratio has no attempts, rather than an unknown
             # source count. Preserve its null; complete counts still aggregate.
             for ratio, made, attempts in (

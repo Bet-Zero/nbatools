@@ -34,6 +34,7 @@ def test_multi_opponent_subject_rows_and_labels(monkeypatch):
         if case["operation"] == "record":
             queries += [
                 "What was New York’s away record against Miami and Washington in 2023-24?",
+                "What was New York’s away record against either Miami or Washington in 2023-24?",
                 "Against Miami and Washington, what was New York’s away record in 2023-24?",
             ]
         for query in queries:

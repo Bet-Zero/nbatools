@@ -1,0 +1,156 @@
+{
+  "classification": "Independent final-game schedule/Summary score/period identity denominator; not period-stat/rate qualification",
+  "new16": [
+    {
+      "game_id": "0022600173",
+      "periods": 4,
+      "ot": 0,
+      "required_quarter_half_windows": 6,
+      "source_sha256": "e3a1eacf5d0eee5aa977713f5f6f929b3b09a2c8cf8eb7c39510b69c5433c129",
+      "played_player_rows": 19,
+      "required_player_period_keys": 114
+    },
+    {
+      "game_id": "0022600174",
+      "periods": 4,
+      "ot": 0,
+      "required_quarter_half_windows": 6,
+      "source_sha256": "53b7f97583e1385d2cbaabe8dfdf2e1af55d499d1711a06e9f6e90bf54e4d43f",
+      "played_player_rows": 22,
+      "required_player_period_keys": 132
+    },
+    {
+      "game_id": "0022600175",
+      "periods": 4,
+      "ot": 0,
+      "required_quarter_half_windows": 6,
+      "source_sha256": "8b5742a78cc876725e7638619c17acd8c65cc4f8befce5495e5aef0dd9dee3c5",
+      "played_player_rows": 22,
+      "required_player_period_keys": 132
+    },
+    {
+      "game_id": "0022600176",
+      "periods": 4,
+      "ot": 0,
+      "required_quarter_half_windows": 6,
+      "source_sha256": "89f2e19915dfa5650ee30d9ead41e6991374327b0ef38d97d86de3660f62132c",
+      "played_player_rows": 23,
+      "required_player_period_keys": 138
+    },
+    {
+      "game_id": "0022600177",
+      "periods": 4,
+      "ot": 0,
+      "required_quarter_half_windows": 6,
+      "source_sha256": "0471ac1bb84cc405657134db5907a8e6ba4f3001989a882ff3b37cc2a7a6f706",
+      "played_player_rows": 29,
+      "required_player_period_keys": 174
+    },
+    {
+      "game_id": "0022600178",
+      "periods": 4,
+      "ot": 0,
+      "required_quarter_half_windows": 6,
+      "source_sha256": "457ff8d4b81a09321d8157448061138c62b97ccdaddfcb91d988cfa4d417a750",
+      "played_player_rows": 24,
+      "required_player_period_keys": 144
+    },
+    {
+      "game_id": "0022600179",
+      "periods": 5,
+      "ot": 1,
+      "required_quarter_half_windows": 7,
+      "source_sha256": "de13c75daf1917ca27336c13b21d0ba0a2f646d51e279707173c7709ebae3d90",
+      "played_player_rows": 20,
+      "required_player_period_keys": 140
+    },
+    {
+      "game_id": "0022600180",
+      "periods": 4,
+      "ot": 0,
+      "required_quarter_half_windows": 6,
+      "source_sha256": "4a0b610f9c5c4810ef5fd2e1ad6d667a9959e387b89cd9d3e82f83b6f335ab0c",
+      "played_player_rows": 21,
+      "required_player_period_keys": 126
+    },
+    {
+      "game_id": "0022600181",
+      "periods": 4,
+      "ot": 0,
+      "required_quarter_half_windows": 6,
+      "source_sha256": "493bb82a8e7b234a807f2ea3a952ee45b7276650cc9d999b3b73ed0db32e741b",
+      "played_player_rows": 19,
+      "required_player_period_keys": 114
+    },
+    {
+      "game_id": "0022600182",
+      "periods": 4,
+      "ot": 0,
+      "required_quarter_half_windows": 6,
+      "source_sha256": "568af971f12da8efbf266d454bbb16110486337b10caae3be7430263bf7d0fc4",
+      "played_player_rows": 26,
+      "required_player_period_keys": 156
+    },
+    {
+      "game_id": "0022600183",
+      "periods": 4,
+      "ot": 0,
+      "required_quarter_half_windows": 6,
+      "source_sha256": "b0f1e21ef13e25fb1b92884388c6087a1ad48028e31415d8758cd748a4ca9ade",
+      "played_player_rows": 26,
+      "required_player_period_keys": 156
+    },
+    {
+      "game_id": "0022600184",
+      "periods": 4,
+      "ot": 0,
+      "required_quarter_half_windows": 6,
+      "source_sha256": "566cc92e6d96610aef9772218bc0f5bc5cb98bfd6ea6adb800579ae4a0007172",
+      "played_player_rows": 19,
+      "required_player_period_keys": 114
+    },
+    {
+      "game_id": "0022600185",
+      "periods": 4,
+      "ot": 0,
+      "required_quarter_half_windows": 6,
+      "source_sha256": "2534d1a243efd2b3bc4830458b8a0830701e1912c8ba9d144d96c5c19cc26434",
+      "played_player_rows": 25,
+      "required_player_period_keys": 150
+    },
+    {
+      "game_id": "0022600186",
+      "periods": 5,
+      "ot": 1,
+      "required_quarter_half_windows": 7,
+      "source_sha256": "a0b34323717f2988ae98b4b0fb52d49fe7cf97fa8071d9d7a1b8fc0e6d6d1483",
+      "played_player_rows": 21,
+      "required_player_period_keys": 147
+    },
+    {
+      "game_id": "0022600187",
+      "periods": 4,
+      "ot": 0,
+      "required_quarter_half_windows": 6,
+      "source_sha256": "fd31097a49464812c86f35cc56acd2b35a4b66fe30d67d29e50362f1fc70bc33",
+      "played_player_rows": 25,
+      "required_player_period_keys": 150
+    },
+    {
+      "game_id": "0022600188",
+      "periods": 4,
+      "ot": 0,
+      "required_quarter_half_windows": 6,
+      "source_sha256": "1599725ae9e4143d70a2ad3c68e6283152033d5cf82fb76548281e39ced5e8f4",
+      "played_player_rows": 27,
+      "required_player_period_keys": 162
+    }
+  ],
+  "new_windows": 98,
+  "old107_windows": 647,
+  "total_windows": 745,
+  "qualified_source_files": 16,
+  "required_new_team_period_keys": 196,
+  "required_new_player_period_keys": 2249,
+  "qualification_limit": "Expected complete all-quarter/half key lattice only; no inference of a played period or invented zero statistics from a whole-game appearance."
+}

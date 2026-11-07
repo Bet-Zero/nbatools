@@ -1,0 +1,125 @@
+{
+  "source_body_and_gitblob_checks": 16,
+  "schedule_final_identity_date_score_and_period_sums_match": true,
+  "new_games": [
+    {
+      "game_id": "0022600173",
+      "periods": 4,
+      "windows": 6,
+      "players": 19,
+      "required_player_keys": 114
+    },
+    {
+      "game_id": "0022600174",
+      "periods": 4,
+      "windows": 6,
+      "players": 22,
+      "required_player_keys": 132
+    },
+    {
+      "game_id": "0022600175",
+      "periods": 4,
+      "windows": 6,
+      "players": 22,
+      "required_player_keys": 132
+    },
+    {
+      "game_id": "0022600176",
+      "periods": 4,
+      "windows": 6,
+      "players": 23,
+      "required_player_keys": 138
+    },
+    {
+      "game_id": "0022600177",
+      "periods": 4,
+      "windows": 6,
+      "players": 29,
+      "required_player_keys": 174
+    },
+    {
+      "game_id": "0022600178",
+      "periods": 4,
+      "windows": 6,
+      "players": 24,
+      "required_player_keys": 144
+    },
+    {
+      "game_id": "0022600179",
+      "periods": 5,
+      "windows": 7,
+      "players": 20,
+      "required_player_keys": 140
+    },
+    {
+      "game_id": "0022600180",
+      "periods": 4,
+      "windows": 6,
+      "players": 21,
+      "required_player_keys": 126
+    },
+    {
+      "game_id": "0022600181",
+      "periods": 4,
+      "windows": 6,
+      "players": 19,
+      "required_player_keys": 114
+    },
+    {
+      "game_id": "0022600182",
+      "periods": 4,
+      "windows": 6,
+      "players": 26,
+      "required_player_keys": 156
+    },
+    {
+      "game_id": "0022600183",
+      "periods": 4,
+      "windows": 6,
+      "players": 26,
+      "required_player_keys": 156
+    },
+    {
+      "game_id": "0022600184",
+      "periods": 4,
+      "windows": 6,
+      "players": 19,
+      "required_player_keys": 114
+    },
+    {
+      "game_id": "0022600185",
+      "periods": 4,
+      "windows": 6,
+      "players": 25,
+      "required_player_keys": 150
+    },
+    {
+      "game_id": "0022600186",
+      "periods": 5,
+      "windows": 7,
+      "players": 21,
+      "required_player_keys": 147
+    },
+    {
+      "game_id": "0022600187",
+      "periods": 4,
+      "windows": 6,
+      "players": 25,
+      "required_player_keys": 150
+    },
+    {
+      "game_id": "0022600188",
+      "periods": 4,
+      "windows": 6,
+      "players": 27,
+      "required_player_keys": 162
+    }
+  ],
+  "new_windows": 98,
+  "old_accepted_windows_reused": 647,
+  "total_windows": 745,
+  "new_team_period_keys": 196,
+  "new_player_period_keys": 2249,
+  "period_values_qualified": false,
+  "old_provisional_validator_denominator_understates_OT": true
+}
