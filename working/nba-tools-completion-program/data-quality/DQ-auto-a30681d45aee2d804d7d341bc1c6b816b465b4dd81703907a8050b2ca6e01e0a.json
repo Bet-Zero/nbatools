@@ -25,7 +25,7 @@
     },
     "snapshot": "current123-required-source-development-v3"
   },
-  "next_evidence": "Actual new16 Traditional+Advanced period originals via the existing collector from a working source route; no unchanged repeat of the diagnosed Actions timeout.",
+  "next_evidence": "Return of the single reviewed exact196-job laptop package; then independently qualify actual new window sources and OTplayer keys. No unchanged Actions retry.",
   "observations": [
     {
       "evidence": {
@@ -2368,5 +2368,12 @@
     "evidence": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107/period-capture-failure/original-artifact.zip",
     "recovery_run_id": 42343933162,
     "retry_trigger": "Changed source availability or a working existing approved acquisition route, not elapsed time alone"
+  },
+  "prepared_handoff": {
+    "reference": "working/nba-tools-completion-program/source-evidence/period-acquisition-20261107/README.md",
+    "package_sha256": "5156e94b425ded08573ca8138d53d4a9cfb35e2aa856d3a902c654b4bb5b3e44",
+    "reviewed_revision": "66e8ab4c41f308f566ba38059809c37ccfc80c24",
+    "new_source_attempts": 0,
+    "qualified_new_period_windows": 0
   }
 }

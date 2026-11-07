@@ -1,0 +1,52 @@
+{
+  "base_main": "226f62b5360b621bc52ce59df3239eda065f87ef",
+  "scope": "Generated acquisition package and source-inventory handoff only; no application, collector, source data, validator or numerical expectation changes",
+  "accepted_evidence_reused": [
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107/required-v3-binding.json",
+      "sha256": "7fddd4bc5d1d8e4cce3748a1e441a1e5530e79da70cecf74a79bb3904d5f6aa8"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107/current123-required-v3.zip",
+      "sha256": "d6b730742a05653e03f5640f29e4d7e5c0a67ed4297ec99daa35d89875a6c6ef"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107/acceptance-reconciliation.json",
+      "sha256": "fdcdf94493eba17f65195c6186eb01dff04660d5fecdc4a7de201119aed635bc"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107/hosted-current-required/summary.json",
+      "sha256": "d7803adba48a70e699682ef680f2bf453b757da33a29fff9af8456f3e8850d66"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107/hosted-current-required/receipt.json",
+      "sha256": "1069509b45816a745a59c6abc9b22a65af0ed4612adef731b5ee0d182e9960c6"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107/period-capture-failure/original-artifact.zip",
+      "sha256": "f56d9c78c3df5c0c81c6d89e06ab99e147dfaa883b7f21a65ce5886bdfaefcfd"
+    },
+    {
+      "path": "tools/collect_rollover_readiness_laptop.py",
+      "sha256": "d3bff8df0f3f02de2ddc90356b4d3202a332ac7d27f0bc36baa63ef8d5c85ff3"
+    },
+    {
+      "path": "working/nba-tools-completion-program/collection-requests/current123-new16-periods-20261107.json",
+      "sha256": "e06682b8da8eb4b4b5c1a627566b617ae9e0e4fffa70d69f675c4b6f71868268"
+    }
+  ],
+  "new_source_reader_invocations": 0,
+  "new_qualified_period_windows": 0,
+  "required_new_NBA_numerical_execution": "Not applicable until newly returned source bodies exist; prior PR598/599 source/numerical/currentconsumers retained at unchanged code/data identity",
+  "software_checks": "55 focused existing collector/package/request checks passed; all196embedded SDK parameter preflights passed with no network",
+  "all46_original_positives_preserved": true,
+  "all12_Core1_bindings_preserved": true,
+  "production_publication_accepted": false,
+  "independent_review": {
+    "reviewer": "/root/period_source_checker",
+    "model": "unavailable",
+    "reviewed_package_revision": "66e8ab4c41f308f566ba38059809c37ccfc80c24",
+    "reference": "working/nba-tools-completion-program/source-evidence/period-acquisition-20261107/independent/package-review-66e8ab4c.md",
+    "verdict": "approved acquisition/transfer scope; zero new NBA source calls/qualifiedwindows"
+  }
+}

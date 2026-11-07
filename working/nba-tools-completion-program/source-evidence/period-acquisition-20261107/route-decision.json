@@ -1,0 +1,18 @@
+{
+  "base_main": "226f62b5360b621bc52ce59df3239eda065f87ef",
+  "environment_id": "ccarenv_b64_Y2NhcmVudl83OTU1M2Q5NTYxNDg4MTkxYjFiODAyNmQwOWViMGU0Zg",
+  "observations_current": true,
+  "network_policy": "restricted/enforced",
+  "nba_stats_host_allowed": false,
+  "environment_spec_revision": "1_unchanged",
+  "approved_archive_live_head": "e3aa21ccfbb58f37b403cf8160193c821cb7546d",
+  "approved_archive_commit_time": "2026-11-06T13:15:48Z",
+  "same_as_PR599_archive": true,
+  "prior_action_run_id": 42343199090,
+  "prior_action_observation": "One173Q1TraditionalReadTimeout30seconds;0HTTP/responsebytes;195unattempted",
+  "changed_cloud_conditions_found": false,
+  "new_cloud_NBA_reader_invocations": 0,
+  "unchanged_actions_retry": false,
+  "chosen_route": "Previously demonstrated existing acquisition-laptop workflow; actual new196 outcome pending owner run",
+  "scope": "Same fixed123 cutoff/request, not a refresh or new source provider"
+}
