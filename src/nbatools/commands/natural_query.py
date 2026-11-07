@@ -6422,6 +6422,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         and (
             played_pair
             or parsed.get("mixed_availability_requested")
+            or requested_availability_pair(q)
             or _multi_player_availability_boundary(q)
         )
     ):

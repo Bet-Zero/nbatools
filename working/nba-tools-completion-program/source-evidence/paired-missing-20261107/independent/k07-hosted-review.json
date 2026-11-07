@@ -1,0 +1,103 @@
+{
+  "actual_run": 42328521294,
+  "actual_request": "9786c51d72fb3f303dc62039268bde27c72a4e47",
+  "runtime_parent": "cdbf550ce4c0db7f55bc72bfbb80c157f807fca2",
+  "verdict": "APPROVED_UNCHANGED_ORIGINAL_K07_QA12_FOR_BOUNDED_REUSE",
+  "artifact_sha256": "27c66c4be855275cbe0636b34711e871a4ee1494d77f1cad9a9370bf2b2f0b53",
+  "generation": "availability-lebron-season-v1-20261031",
+  "corpus_sha256": "253041d1582fc55eb63f0ebde2eb86e93b9e9a1ecbc9cf9ded24c862c0833d23",
+  "rawqa_cases": 12,
+  "rawqa_checks": 308,
+  "suspicious": 0,
+  "independent_bucket_comparisons": [
+    {
+      "case": "k07_a1",
+      "binding": "K07-A1",
+      "buckets": 2,
+      "all_bucket_WL_PTS_REB_AST_means_match": true,
+      "rendered_snapshot_matches": true
+    },
+    {
+      "case": "k07_a2",
+      "binding": "K07-A2",
+      "buckets": 2,
+      "all_bucket_WL_PTS_REB_AST_means_match": true,
+      "rendered_snapshot_matches": true
+    },
+    {
+      "case": "k07_b1",
+      "binding": "K07-B1",
+      "buckets": 2,
+      "all_bucket_WL_PTS_REB_AST_means_match": true,
+      "rendered_snapshot_matches": true
+    },
+    {
+      "case": "k07_b2",
+      "binding": "K07-B2",
+      "buckets": 2,
+      "all_bucket_WL_PTS_REB_AST_means_match": true,
+      "rendered_snapshot_matches": true
+    },
+    {
+      "case": "k07_c1",
+      "binding": "K07-C1",
+      "buckets": 2,
+      "all_bucket_WL_PTS_REB_AST_means_match": true,
+      "rendered_snapshot_matches": true
+    },
+    {
+      "case": "k07_c2",
+      "binding": "K07-C2",
+      "buckets": 2,
+      "all_bucket_WL_PTS_REB_AST_means_match": true,
+      "rendered_snapshot_matches": true
+    },
+    {
+      "case": "k07_a1_heldout",
+      "binding": "K07-A1",
+      "buckets": 2,
+      "all_bucket_WL_PTS_REB_AST_means_match": true,
+      "rendered_snapshot_matches": true
+    },
+    {
+      "case": "k07_a2_heldout",
+      "binding": "K07-A2",
+      "buckets": 2,
+      "all_bucket_WL_PTS_REB_AST_means_match": true,
+      "rendered_snapshot_matches": true
+    },
+    {
+      "case": "k07_b1_heldout",
+      "binding": "K07-B1",
+      "buckets": 2,
+      "all_bucket_WL_PTS_REB_AST_means_match": true,
+      "rendered_snapshot_matches": true
+    },
+    {
+      "case": "k07_b2_heldout",
+      "binding": "K07-B2",
+      "buckets": 2,
+      "all_bucket_WL_PTS_REB_AST_means_match": true,
+      "rendered_snapshot_matches": true
+    },
+    {
+      "case": "k07_c1_heldout",
+      "binding": "K07-C1",
+      "buckets": 2,
+      "all_bucket_WL_PTS_REB_AST_means_match": true,
+      "rendered_snapshot_matches": true
+    },
+    {
+      "case": "k07_c2_heldout",
+      "binding": "K07-C2",
+      "buckets": 2,
+      "all_bucket_WL_PTS_REB_AST_means_match": true,
+      "rendered_snapshot_matches": true
+    }
+  ],
+  "actual_numerical": "SeparateauthenticatedrequiredJUnit shows12originalK07primary/heldoutcasespass;testsassertqualifiedfilehashes,exactselectedkeys,bucketcounts,W/L/sums/meansandnatural/directstructuredparity. No newarithmetic executionhere.",
+  "reuse": "42fchangesonlyS4receiptlistidentifier3refs;K07tests/runtime/QA/sourceinputsidentical. Initialglobalrunremainsfailed,composedselectorpendingrerun. Noall13single-successfulrunclaim.",
+  "manual_fields": "Originalmachineunreviewed/humanpendingfieldsretained; thisisseparateCodexcheckerreview,nothumancertification",
+  "checker": "SeparateindependentCodexsession /root/poeltl_source_checker; exactmodelIDunavailable",
+  "no_test_rerun_or_source_download": true
+}

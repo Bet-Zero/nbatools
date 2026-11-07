@@ -259,9 +259,11 @@ def test_teammate_after_a_bound_or_before_an_opponent(sparse_root, query, keep):
         # A second name who is not a teammate.
         "LeBron stats with Davis and Curry",
         "Lakers record with LeBron and Tatum",
-        # Medical/status and unspecified missingness are not participation.
+        # Medical causes are not whole-game participation observations.
         "Lakers record with Davis and Reaves injured",
-        "Lakers record with Davis and Reaves missing",
+        "Lakers record with Davis and Reaves missing due to injuries",
+        "Lakers record with Davis and Reaves missing the first quarter",
+        "Lakers record with Davis and Reaves missing from the bench",
         "LeBron James stats with Davis and Reaves injured",
     ],
 )
@@ -269,7 +271,9 @@ def test_unread_availability_still_refuses(sparse_root, query):
     assert execute_natural_query(query).result_status == "no_result"
 
 
-@pytest.mark.parametrize("suffix", ["both out", "out", "not playing"])
+@pytest.mark.parametrize(
+    "suffix", ["both out", "out", "not playing", "missing", "both missing", "were missing"]
+)
 @pytest.mark.parametrize("subject", ["Lakers record", "LeBron James stats"])
 def test_pair_absence_suffixes_apply_both_explicit_observations(sparse_root, suffix, subject):
     root, out = sparse_root
@@ -387,3 +391,30 @@ def test_player_games_with_two_teammates(sparse_root, query, both):
     row = _ok(query)["summary"][0]
     assert row["games"] == len(lebron)
     assert row["pts_avg"] == pytest.approx(lebron["pts"].mean(), abs=1e-3)
+
+
+@pytest.mark.parametrize("suffix", ["missing", "out", "not playing"])
+def test_pair_suffix_before_a_shared_stat_bound(sparse_root, suffix):
+    _, out = sparse_root
+    teams = pd.read_csv(FIXTURE / TEAMS)
+    expected = teams.loc[
+        teams.team_abbr.eq("LAL")
+        & teams.game_id.isin(out["Anthony Davis"] & out["Austin Reaves"])
+        & teams.pts.ge(100)
+    ]
+    assert not expected.empty
+    result = execute_natural_query(
+        f"Lakers record with Davis and Reaves {suffix} and at least 100 points"
+    )
+    assert result.result_status == "ok", result.metadata
+    assert {r["game_id"] for r in result.to_dict()["sections"]["game_log"]} == set(expected.game_id)
+    assert result.metadata["without_player"] == "Anthony Davis and Austin Reaves"
+
+
+@pytest.mark.parametrize("actor", ["LeBron James", "Unknown Person", "Tatum"])
+def test_pair_bound_cannot_hide_a_trailing_actor(sparse_root, actor):
+    result = execute_natural_query(
+        f"Lakers record with Davis and Reaves missing and at least 100 points and {actor}"
+    )
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"

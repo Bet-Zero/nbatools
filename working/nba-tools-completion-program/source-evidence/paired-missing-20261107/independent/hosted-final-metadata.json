@@ -1,0 +1,98 @@
+{
+  "run": {
+    "id": 42329357669,
+    "head_sha": "2e66a484d19ab5d4efc51516103722c3439f27e5",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-07T02:27:37Z",
+    "updated_at": "2026-11-07T02:29:55Z"
+  },
+  "jobs": [
+    {
+      "id": 128272067627,
+      "name": "Resolve and validate request without data credentials",
+      "conclusion": "success"
+    },
+    {
+      "id": 128272129806,
+      "name": "Verify read-only access and pin one generation",
+      "conclusion": "success"
+    },
+    {
+      "id": 128272241548,
+      "name": "Required numerical tests marked needs_data",
+      "conclusion": "success"
+    },
+    {
+      "id": 128272242454,
+      "name": "Filter execution sweep against real R2 data",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 128272242477,
+      "name": "Raw QA corpus against real R2 data",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 128272637276,
+      "name": "Preserve read-only data inventory for cloud agents",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 128272637347,
+      "name": "Preserve manual cloud backup independently of R2",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 128272637755,
+      "name": "Preserve separate-runner restore result with the permanent backup",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 128272637957,
+      "name": "Restore durable release on a separate secret-free runner",
+      "conclusion": "skipped"
+    }
+  ],
+  "artifact_runs": [
+    {
+      "metadata_index": 1,
+      "artifacts": [
+        {
+          "id": 13556552462,
+          "name": "required-numerical-42329357669",
+          "digest": "sha256:00994f00baa79114f8451892d5e52ddba3b09f5da97cbcb17188bca7ee95e90b",
+          "size_in_bytes": 1696281
+        }
+      ]
+    },
+    {
+      "metadata_index": 3,
+      "artifacts": [
+        {
+          "id": 13556965013,
+          "name": "required-numerical-42328521294",
+          "digest": "sha256:976a77f93ef54bbef2ff3e56e04ed7975a486b8003fbc66aabe8da60224aff8c",
+          "size_in_bytes": 1677242
+        },
+        {
+          "id": 13556840054,
+          "name": "raw-qa-42328521294",
+          "digest": "sha256:27c66c4be855275cbe0636b34711e871a4ee1494d77f1cad9a9370bf2b2f0b53",
+          "size_in_bytes": 21798
+        }
+      ]
+    },
+    {
+      "metadata_index": 4,
+      "artifacts": [
+        {
+          "id": 13556547084,
+          "name": "required-numerical-42328911958",
+          "digest": "sha256:b493678a407ce641b23cae7c068e0c8c68659b3997e62379bc51629972f5327a",
+          "size_in_bytes": 1699414
+        }
+      ]
+    }
+  ]
+}

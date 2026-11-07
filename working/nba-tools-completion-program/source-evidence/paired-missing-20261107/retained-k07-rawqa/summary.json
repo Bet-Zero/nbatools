@@ -1,0 +1,160 @@
+{
+  "run_id": "r2_validation",
+  "started_at": "2026-11-07T02:19:01.166850+00:00",
+  "completed_at": "2026-11-07T02:19:19.601761+00:00",
+  "corpus_path": "qa/raw_query_answer_corpus.yaml",
+  "slice_names": [],
+  "case_count": 12,
+  "result_status_counts": {
+    "ok": 12
+  },
+  "category_counts": {
+    "context_filter": 12
+  },
+  "route_counts": {
+    "player_split_summary": 6,
+    "team_split_summary": 6
+  },
+  "manual_review_status_counts": {
+    "unreviewed": 12
+  },
+  "manual_review_tag_counts": {},
+  "answer_text_policy_counts": {
+    "frontend_hero_expected": 12
+  },
+  "answer_text_status_counts": {
+    "frontend_hero_expected": 12
+  },
+  "suspicious_flag_case_count": 0,
+  "suspicious_flag_case_ids": [],
+  "suspicious_flag_counts": {},
+  "informational_flag_case_count": 12,
+  "informational_flag_case_ids": [
+    "k07_a1",
+    "k07_a2",
+    "k07_b1",
+    "k07_b2",
+    "k07_c1",
+    "k07_c2",
+    "k07_a1_heldout",
+    "k07_a2_heldout",
+    "k07_b1_heldout",
+    "k07_b2_heldout",
+    "k07_c1_heldout",
+    "k07_c2_heldout"
+  ],
+  "informational_flag_counts": {
+    "frontend_hero_expected": 12
+  },
+  "verified_outlier_case_count": 0,
+  "verified_outlier_case_ids": [],
+  "verified_outlier_counts": {},
+  "suggested_review_tag_counts": {},
+  "expectation_case_counts": {
+    "pass": 12
+  },
+  "expectation_check_counts": {
+    "pass": 308
+  },
+  "failed_case_ids": [],
+  "slowest_cases": [
+    {
+      "id": "k07_a1",
+      "query": "Celtics record at home against Knicks in 2023-24 and 2025-26 by season",
+      "duration_seconds": 15.312755,
+      "result_status": "ok",
+      "route": "team_split_summary"
+    },
+    {
+      "id": "k07_a2",
+      "query": "Stephen Curry averages with at least 25 points against Portland in 2023-24 and 2025-26 by season",
+      "duration_seconds": 2.371528,
+      "result_status": "ok",
+      "route": "player_split_summary"
+    },
+    {
+      "id": "k07_b2_heldout",
+      "query": "Compare Devin Booker's 2023-24 and 2025-26 season averages only in games with 6 or more assists.",
+      "duration_seconds": 0.163065,
+      "result_status": "ok",
+      "route": "player_split_summary"
+    },
+    {
+      "id": "k07_a2_heldout",
+      "query": "Break Stephen Curry's averages against the Trail Blazers into 2023-24 and 2025-26, using only appearances with 25 or more points.",
+      "duration_seconds": 0.121902,
+      "result_status": "ok",
+      "route": "player_split_summary"
+    },
+    {
+      "id": "k07_b2",
+      "query": "Devin Booker averages with at least 6 assists in 2023-24 and 2025-26 by season",
+      "duration_seconds": 0.121773,
+      "result_status": "ok",
+      "route": "player_split_summary"
+    },
+    {
+      "id": "k07_b1_heldout",
+      "query": "Show Milwaukee's record for each of 2023-24 and 2025-26 in games where the Bucks grabbed at least 45 rebounds.",
+      "duration_seconds": 0.070908,
+      "result_status": "ok",
+      "route": "team_split_summary"
+    },
+    {
+      "id": "k07_c2_heldout",
+      "query": "Against Boston in 2023-24, split Jalen Brunson's averages by home versus away after keeping only his games with at least 20 points.",
+      "duration_seconds": 0.063973,
+      "result_status": "ok",
+      "route": "player_split_summary"
+    },
+    {
+      "id": "k07_c2",
+      "query": "Jalen Brunson home vs away averages against Celtics with at least 20 points in 2023-24",
+      "duration_seconds": 0.062147,
+      "result_status": "ok",
+      "route": "player_split_summary"
+    },
+    {
+      "id": "k07_c1_heldout",
+      "query": "Split Denver's 2023-24 games against Minnesota into home and road records, including only games where Denver scored 110 or more.",
+      "duration_seconds": 0.045342,
+      "result_status": "ok",
+      "route": "team_split_summary"
+    },
+    {
+      "id": "k07_b1",
+      "query": "Bucks record with at least 45 rebounds in 2023-24 and 2025-26 by season",
+      "duration_seconds": 0.040209,
+      "result_status": "ok",
+      "route": "team_split_summary"
+    }
+  ],
+  "output_file_paths": {
+    "report_jsonl": "outputs/raw_query_answer_qa/r2_validation/report.jsonl",
+    "report_md": "outputs/raw_query_answer_qa/r2_validation/report.md",
+    "summary_json": "outputs/raw_query_answer_qa/r2_validation/summary.json",
+    "product_review_md": "outputs/raw_query_answer_qa/r2_validation/product_review.md",
+    "product_review_json": "outputs/raw_query_answer_qa/r2_validation/product_review.json"
+  },
+  "scope": "custom_selection",
+  "source_commit": "9786c51d72fb3f303dc62039268bde27c72a4e47",
+  "source_tree_clean": true,
+  "data_generation": "availability-lebron-season-v1-20261031",
+  "corpus_sha256": "253041d1582fc55eb63f0ebde2eb86e93b9e9a1ecbc9cf9ded24c862c0833d23",
+  "case_ids": [
+    "k07_a1",
+    "k07_a2",
+    "k07_b1",
+    "k07_b2",
+    "k07_c1",
+    "k07_c2",
+    "k07_a1_heldout",
+    "k07_a2_heldout",
+    "k07_b1_heldout",
+    "k07_b2_heldout",
+    "k07_c1_heldout",
+    "k07_c2_heldout"
+  ],
+  "selected_cases_sha256": "461563f1d6f91a9b698e023f290bde53282e2c2f4e4778c88cd789f4cec7fc09",
+  "output_sha256": "d9e4d4b3af9446652dc727c966c6adbef87cb47cfeaf520a41c11abdbe70bd0e"
+}

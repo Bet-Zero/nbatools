@@ -153,6 +153,8 @@ def build_result(
     rank_stat: str | None = None,
     rank_order: str | None = None,
     split_seasons: list[str] | None = None,
+    with_player: str | None = None,
+    without_player: str | None = None,
     **sample_filters,
 ) -> SplitSummaryResult | NoResult:
     """Split one team's sample by home/away, wins/losses, month or season.
@@ -197,6 +199,8 @@ def build_result(
         df=df,
         last_n_scope=last_n_scope,
         sample_seasons=split_seasons if split == "season" else None,
+        with_player=with_player,
+        without_player=without_player,
         **sample_filters,
     )
     if isinstance(df, NoResult):

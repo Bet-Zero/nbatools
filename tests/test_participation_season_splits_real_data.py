@@ -19,6 +19,16 @@ def test_qualified_participation_and_opponent_survive_nonadjacent_season_splits(
     tmp_path, monkeypatch
 ):
     root = _stage_celtics_lakers_reports(tmp_path)
+    verify_qualified_participation_splits(root, monkeypatch)
+
+
+def verify_qualified_participation_splits(root, monkeypatch):
+    """Reuse the bound S4 assertions on a pinned, already qualified data root."""
+    from fastapi.testclient import TestClient
+
+    from nbatools.api import app
+
+    receipts = []
     seasons = ["2023-24", "2025-26"]
     source = {}
     for season in seasons:
@@ -116,15 +126,59 @@ def test_qualified_participation_and_opponent_survive_nonadjacent_season_splits(
                                 expected[stat].mean(), abs=0.001
                             )
                         assert "no games in " + empty in result.result.to_dict()["caveats"]
+                    client = TestClient(app)
+                    response = client.post("/query", json={"query": questions[0]})
+                    structured_kwargs = dict(
+                        split="season",
+                        start_season=seasons[0],
+                        end_season=seasons[1],
+                        split_seasons=seasons,
+                        opponent="LAL",
+                        **identity,
+                        **{relation + "_player": "Jayson Tatum"},
+                    )
+                    api = client.post(
+                        "/structured-query",
+                        json={"route": f"{kind}_split_summary", "kwargs": structured_kwargs},
+                    )
+                    assert response.status_code == api.status_code == 200
+                    for body in [response.json(), api.json()]:
+                        assert body["result_status"] == "ok", body
+                        sections = body["result"]["sections"]
+                        assert sections["summary"][0]["games_total"] == 2
+                        rows = sections["split_comparison"]
+                        assert len(rows) == 1 and rows[0]["bucket"] == selected
+                        assert rows[0]["pts_avg"] == pytest.approx(expected.pts.mean(), abs=0.001)
+                        assert "no games in " + empty in body["result"]["caveats"]
+                    receipts.append(
+                        dict(
+                            kind=kind,
+                            relation=relation,
+                            query=questions[0],
+                            expected_keys=sorted(
+                                map(
+                                    list,
+                                    expected[keys].astype(int).itertuples(index=False, name=None),
+                                )
+                            ),
+                            selected_season=selected,
+                            qualified_empty_season=empty,
+                            points_sum=int(expected.pts.sum()),
+                            points_mean=float(expected.pts.mean()),
+                            answer=response.json(),
+                            structured_answer=api.json(),
+                        )
+                    )
                     from tests.participation_contract_helpers import assert_single_season_controls
 
                     assert_single_season_controls(kind, relation, selected, expected, monkeypatch)
-                    for result in results[:2]:
+                    for result in results:
                         badges = {
                             row["label"]: row["value"] for row in result.metadata["applied_filters"]
                         }
                         assert badges[relation.capitalize() + " player"] == "Jayson Tatum"
                         assert badges["Opponent"] == "LAL"
                         assert badges["Seasons"] == ", ".join(seasons)
+        return receipts
     finally:
         reset_data_source_cache()

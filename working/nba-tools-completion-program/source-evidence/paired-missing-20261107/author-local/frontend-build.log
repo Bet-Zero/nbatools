@@ -1,0 +1,26 @@
+
+> frontend@0.0.0 build
+> tsc -b && vite build
+
+vite v8.1.5 building client environment for production...
+[2Ktransforming...✓ 144 modules transformed.
+rendering chunks...
+computing gzip size...
+../src/nbatools/ui/dist/index.html                               0.85 kB │ gzip:   0.44 kB
+../src/nbatools/ui/dist/assets/AdminFeedbackPage-BOy3kI1V.css    3.18 kB │ gzip:   1.16 kB
+../src/nbatools/ui/dist/assets/ReviewPage-Z-pFk4ZL.css           3.62 kB │ gzip:   1.18 kB
+../src/nbatools/ui/dist/assets/VisualQaPage-DGMi8LNc.css         5.60 kB │ gzip:   1.65 kB
+../src/nbatools/ui/dist/assets/index-Bl6BAKFx.css               70.94 kB │ gzip:  11.67 kB
+../src/nbatools/ui/dist/assets/rolldown-runtime-BHe-jwch.js      0.95 kB │ gzip:   0.56 kB
+../src/nbatools/ui/dist/assets/AdminFeedbackPage-nYwSAP45.js    13.01 kB │ gzip:   3.52 kB
+../src/nbatools/ui/dist/assets/ReviewPage-u8edNHCK.js           15.21 kB │ gzip:   4.87 kB
+../src/nbatools/ui/dist/assets/VisualQaPage-DXlHrTLK.js         27.54 kB │ gzip:   7.67 kB
+../src/nbatools/ui/dist/assets/reviewScreenshots-z_XEUgnp.js   109.84 kB │ gzip:  33.99 kB
+../src/nbatools/ui/dist/assets/index-DKHMgHZ2.js               434.36 kB │ gzip: 126.66 kB
+
+✓ built in 496ms
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

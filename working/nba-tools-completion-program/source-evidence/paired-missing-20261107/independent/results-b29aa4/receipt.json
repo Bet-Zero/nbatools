@@ -1,0 +1,457 @@
+{
+  "reviewed_revision": "b29aa469f80b829c49deec54d495e23956c84aa8",
+  "checker": "Separate Codex session /root/poeltl_source_checker; exact backend model ID unavailable",
+  "frozen_oracle_sha256": "c90bee16e62aa026f66a70e7351fd13e869284aeba3a32bc3defe116f75fc471",
+  "checks": [
+    {
+      "query": "Celtics record with Jayson Tatum and Jaylen Brown missing in 2025-26",
+      "oracle": "bos_pair",
+      "data": "qualified",
+      "shape": "record",
+      "passed": true,
+      "status": "ok",
+      "reason": null,
+      "filters": [
+        {
+          "label": "Without player",
+          "value": "Jayson Tatum and Jaylen Brown",
+          "kind": "player"
+        }
+      ],
+      "answer": null
+    },
+    {
+      "query": "With Brown and Tatum missing, Celtics record in 2025-26",
+      "oracle": "bos_pair",
+      "data": "qualified",
+      "shape": "record",
+      "passed": true,
+      "status": "ok",
+      "reason": null,
+      "filters": [
+        {
+          "label": "Without player",
+          "value": "Jaylen Brown and Jayson Tatum",
+          "kind": "player"
+        }
+      ],
+      "answer": null
+    },
+    {
+      "query": "Celtics record with Tatum and Brown both missing in 2025-26",
+      "oracle": "bos_pair",
+      "data": "qualified",
+      "shape": "record",
+      "passed": true,
+      "status": "ok",
+      "reason": null,
+      "filters": [
+        {
+          "label": "Without player",
+          "value": "Jayson Tatum and Jaylen Brown",
+          "kind": "player"
+        }
+      ],
+      "answer": null
+    },
+    {
+      "query": "Celtics home record with Jayson Tatum and Jaylen Brown missing in 2025-26",
+      "oracle": "bos_pair_home",
+      "data": "qualified",
+      "shape": "record",
+      "passed": true,
+      "status": "ok",
+      "reason": null,
+      "filters": [
+        {
+          "label": "Without player",
+          "value": "Jayson Tatum and Jaylen Brown",
+          "kind": "player"
+        },
+        {
+          "label": "Location",
+          "value": "Home",
+          "kind": "location"
+        }
+      ],
+      "answer": null
+    },
+    {
+      "query": "Celtics record on the road with Tatum and Brown missing in 2025-26",
+      "oracle": "bos_pair_away",
+      "data": "qualified",
+      "shape": "record",
+      "passed": true,
+      "status": "ok",
+      "reason": null,
+      "filters": [
+        {
+          "label": "Without player",
+          "value": "Jayson Tatum and Jaylen Brown",
+          "kind": "player"
+        },
+        {
+          "label": "Location",
+          "value": "Away",
+          "kind": "location"
+        }
+      ],
+      "answer": null
+    },
+    {
+      "query": "Celtics record with Tatum and Brown missing and at least 111 points in 2025-26",
+      "oracle": "bos_pair_pts111",
+      "data": "qualified",
+      "shape": "record",
+      "passed": true,
+      "status": "ok",
+      "reason": null,
+      "filters": [
+        {
+          "label": "Without player",
+          "value": "Jayson Tatum and Jaylen Brown",
+          "kind": "player"
+        },
+        {
+          "label": "pts min",
+          "value": "111.0",
+          "kind": "threshold"
+        }
+      ],
+      "answer": null
+    },
+    {
+      "query": "Celtics record with Tatum and Brown missing from 2025-11-01 to 2026-02-28 in 2025-26",
+      "oracle": "bos_pair_nov_feb",
+      "data": "qualified",
+      "shape": "record",
+      "passed": true,
+      "status": "ok",
+      "reason": null,
+      "filters": [
+        {
+          "label": "Without player",
+          "value": "Jayson Tatum and Jaylen Brown",
+          "kind": "player"
+        },
+        {
+          "label": "Date range",
+          "value": "2025-11-01 \u2013 2026-02-28",
+          "kind": "date"
+        }
+      ],
+      "answer": null
+    },
+    {
+      "query": "Lakers record with Anthony Davis and Austin Reaves missing in 2023-24",
+      "oracle": "lal_pair_zero",
+      "data": "qualified",
+      "shape": "covered_no_match",
+      "passed": true,
+      "status": "no_result",
+      "reason": "no_match",
+      "filters": [
+        {
+          "label": "Without player",
+          "value": "Anthony Davis and Austin Reaves",
+          "kind": "player"
+        }
+      ],
+      "answer": null
+    },
+    {
+      "query": "How many Lakers games with Davis and Reaves missing in 2023-24?",
+      "oracle": "lal_pair_zero",
+      "data": "qualified",
+      "shape": "count",
+      "passed": true,
+      "status": "ok",
+      "reason": null,
+      "filters": [
+        {
+          "label": "Without player",
+          "value": "Anthony Davis and Austin Reaves",
+          "kind": "player"
+        }
+      ],
+      "answer": "The LAL have recorded 0 games in the 2023-24 regular season."
+    },
+    {
+      "query": "LeBron James stats with Davis and Reaves missing in 2023-24",
+      "oracle": "lal_pair_zero",
+      "data": "qualified",
+      "shape": "covered_no_match",
+      "passed": true,
+      "status": "no_result",
+      "reason": "no_match",
+      "filters": [
+        {
+          "label": "Without player",
+          "value": "Anthony Davis and Austin Reaves",
+          "kind": "player"
+        }
+      ],
+      "answer": null
+    },
+    {
+      "query": "Celtics record without Tatum and with Brown in 2025-26",
+      "oracle": "bos_tatum_missing_brown_played",
+      "data": "qualified",
+      "shape": "record",
+      "passed": true,
+      "status": "ok",
+      "reason": null,
+      "filters": [
+        {
+          "label": "Without player",
+          "value": "Jayson Tatum",
+          "kind": "player"
+        },
+        {
+          "label": "With player",
+          "value": "Jaylen Brown",
+          "kind": "player"
+        }
+      ],
+      "answer": null
+    },
+    {
+      "query": "Celtics record without Brown and with Tatum in 2025-26",
+      "oracle": "bos_tatum_played_brown_missing",
+      "data": "qualified",
+      "shape": "record",
+      "passed": true,
+      "status": "ok",
+      "reason": null,
+      "filters": [
+        {
+          "label": "Without player",
+          "value": "Jaylen Brown",
+          "kind": "player"
+        },
+        {
+          "label": "With player",
+          "value": "Jayson Tatum",
+          "kind": "player"
+        }
+      ],
+      "answer": null
+    },
+    {
+      "query": "Celtics record with Tatum and Brown injured in 2025-26",
+      "data": "qualified",
+      "classification": "medical_not_participation",
+      "contained": true,
+      "implemented_positive": false,
+      "status": "no_result",
+      "reason": "filter_not_supported"
+    },
+    {
+      "query": "Celtics record with Tatum and Brown missing because of injuries in 2025-26",
+      "data": "qualified",
+      "classification": "unestablished_medical_cause",
+      "contained": true,
+      "implemented_positive": false,
+      "status": "no_result",
+      "reason": "filter_not_supported"
+    },
+    {
+      "query": "Celtics record with Tatum and Brown missing from the court in 2025-26",
+      "data": "qualified",
+      "classification": "on_court_not_whole_game",
+      "contained": true,
+      "implemented_positive": false,
+      "status": "no_result",
+      "reason": "filter_not_supported"
+    },
+    {
+      "query": "Celtics record with Tatum and Brown missing in the fourth quarter in 2025-26",
+      "data": "qualified",
+      "classification": "period_presence_not_whole_game",
+      "contained": true,
+      "implemented_positive": false,
+      "status": "no_result",
+      "reason": "filter_not_supported"
+    },
+    {
+      "query": "Celtics record with Tatum or Brown missing in 2025-26",
+      "data": "qualified",
+      "classification": "unfinished_OR_participation_not_pairAND",
+      "contained": true,
+      "implemented_positive": false,
+      "status": "no_result",
+      "reason": "unsupported"
+    },
+    {
+      "query": "Celtics record with Tatum and Brown not missing in 2025-26",
+      "data": "qualified",
+      "classification": "negated_absence_unfinished_not_silently_bothDNP",
+      "contained": true,
+      "implemented_positive": false,
+      "status": "no_result",
+      "reason": "filter_not_supported"
+    },
+    {
+      "query": "Celtics record with Tatum and Missing Player missing in 2025-26",
+      "data": "qualified",
+      "classification": "unknown_actor_no_total",
+      "contained": true,
+      "implemented_positive": false,
+      "status": "no_result",
+      "reason": "filter_not_supported"
+    },
+    {
+      "query": "Celtics record with Tatum and Brown missing in 2026-27",
+      "data": "qualified",
+      "classification": "unavailable_explicit_season_no_total",
+      "contained": true,
+      "implemented_positive": false,
+      "status": "no_result",
+      "reason": "filter_not_supported"
+    },
+    {
+      "query": "Heat record with Bam Adebayo and Tyler Herro missing in 2025-26",
+      "oracle": "controlled_mia_pair",
+      "data": "controlled",
+      "shape": "record",
+      "passed": true,
+      "status": "ok",
+      "reason": null,
+      "filters": [
+        {
+          "label": "Without player",
+          "value": "Bam Adebayo and Tyler Herro",
+          "kind": "player"
+        }
+      ],
+      "answer": null
+    },
+    {
+      "query": "Heat record with Herro and Adebayo both missing in 2025-26",
+      "oracle": "controlled_mia_pair",
+      "data": "controlled",
+      "shape": "record",
+      "passed": true,
+      "status": "ok",
+      "reason": null,
+      "filters": [
+        {
+          "label": "Without player",
+          "value": "Tyler Herro and Bam Adebayo",
+          "kind": "player"
+        }
+      ],
+      "answer": null
+    },
+    {
+      "query": "Heat home record with Bam and Tyler missing in 2025-26",
+      "oracle": "controlled_mia_home",
+      "data": "controlled",
+      "shape": "record",
+      "passed": true,
+      "status": "ok",
+      "reason": null,
+      "filters": [
+        {
+          "label": "Without player",
+          "value": "Bam Adebayo and Tyler Herro",
+          "kind": "player"
+        },
+        {
+          "label": "Location",
+          "value": "Home",
+          "kind": "location"
+        }
+      ],
+      "answer": null
+    },
+    {
+      "query": "Jimmy Butler stats with Bam Adebayo and Tyler Herro missing in 2025-26",
+      "oracle": "controlled_mia_player",
+      "data": "controlled",
+      "shape": "player_summary",
+      "passed": true,
+      "status": "ok",
+      "reason": null,
+      "filters": [
+        {
+          "label": "Without player",
+          "value": "Bam Adebayo and Tyler Herro",
+          "kind": "player"
+        }
+      ],
+      "answer": null
+    },
+    {
+      "query": "Heat record with Bam and Herro missing more than ten shots in 2025-26",
+      "data": "controlled",
+      "classification": "missed_stat_not_DNP",
+      "contained": true,
+      "implemented_positive": false,
+      "status": "no_result",
+      "reason": "filter_not_supported"
+    },
+    {
+      "structured": {
+        "team": "BOS",
+        "season": "2025-26",
+        "without_player": "Jayson Tatum and Jaylen Brown"
+      },
+      "oracle": "bos_pair",
+      "passed": true
+    },
+    {
+      "structured": {
+        "team": "LAL",
+        "season": "2023-24",
+        "without_player": "Anthony Davis and Austin Reaves"
+      },
+      "oracle": "lal_pair_zero",
+      "passed": true
+    },
+    {
+      "structured": {
+        "team": "BOS",
+        "season": "2025-26",
+        "without_player": "Jayson Tatum and Jaylen Brown",
+        "home_only": true
+      },
+      "oracle": "bos_pair_home",
+      "passed": true
+    },
+    {
+      "damage": "missing_DNP",
+      "passed": true,
+      "status": "no_result",
+      "reason": "unsupported"
+    },
+    {
+      "damage": "unknown_DNP",
+      "passed": true,
+      "status": "no_result",
+      "reason": "unsupported"
+    },
+    {
+      "damage": "wrong_DNP_team",
+      "passed": true,
+      "status": "no_result",
+      "reason": "unsupported"
+    },
+    {
+      "damage": "wrong_DNP_date",
+      "passed": true,
+      "status": "no_result",
+      "reason": "unsupported"
+    },
+    {
+      "damage": "false_first_cannot_hide_unknown_second",
+      "passed": true,
+      "status": "no_result",
+      "reason": "unsupported"
+    }
+  ],
+  "failures": [],
+  "query_invocations": 52,
+  "production_writes": 0,
+  "source_downloads": 0
+}

@@ -1,0 +1,42 @@
+{
+  "generation": "availability-lebron-season-v1-20261031",
+  "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "records": [
+    {
+      "run": 42328521294,
+      "request": "9786c51d72fb3f303dc62039268bde27c72a4e47",
+      "reviewed_source": "cdbf550ce4c0db7f55bc72bfbb80c157f807fca2",
+      "artifact": 13556965013,
+      "sha256": "976a77f93ef54bbef2ff3e56e04ed7975a486b8003fbc66aabe8da60224aff8c",
+      "actual": "13executed:12K07passed+1composedfailed; literalfailedrun"
+    },
+    {
+      "run": 42328521294,
+      "artifact": 13556840054,
+      "sha256": "27c66c4be855275cbe0636b34711e871a4ee1494d77f1cad9a9370bf2b2f0b53",
+      "actual": "K07RawQA12cases308checks pass0suspicious, unchangedruntime/data/test/caseexpectations reused"
+    },
+    {
+      "run": 42328911958,
+      "request": "c88dab46e82b1d462bf2dec56f7fd9d9f1e2914a",
+      "reviewed_source": "42f81e66dd07b2c51f291d77356cb29bd754663b",
+      "artifact": 13556547084,
+      "sha256": "b493678a407ce641b23cae7c068e0c8c68659b3997e62379bc51629972f5327a",
+      "actual": "composed1pass;8QA50checks pass with5literalfrontendpolicyreviewflags"
+    },
+    {
+      "run": 42329357669,
+      "request": "2e66a484d19ab5d4efc51516103722c3439f27e5",
+      "reviewed_source": "5418dce32a69477853c05ef6fec83490c0d9a0d5",
+      "artifact": 13556552462,
+      "sha256": "00994f00baa79114f8451892d5e52ddba3b09f5da97cbcb17188bca7ee95e90b",
+      "actual": "composed1pass0skip/fail/error/xfail;8QA50pass0suspicious5informational"
+    }
+  ],
+  "artifact_crc_and_sha256_verified": true,
+  "compressed_originals": "Originals authenticated from ownGitHub Actions artifacts; copied exact summaries/JUnit/answer/source-hash receipts retained here. Repeated original NBA source bodies remain in prior retained packages referenced by composed-acceptance validation, not reacquired.",
+  "isolated_stage": "EmbeddedRawQA generation legacy denotes pinned authenticatedbase+overlay localroot, not activeproductiongeneration; fullsource binding in composed-acceptance validation.",
+  "source_replay_validation_complete": false,
+  "full_required_slice_accepted": false,
+  "production_writes": 0
+}

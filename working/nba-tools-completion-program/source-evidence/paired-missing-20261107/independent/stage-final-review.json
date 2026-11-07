@@ -1,0 +1,150 @@
+{
+  "actual_request": "2e66a484d19ab5d4efc51516103722c3439f27e5",
+  "actual_artifact_sha256": "00994f00baa79114f8451892d5e52ddba3b09f5da97cbcb17188bca7ee95e90b",
+  "verdict": "APPROVED_QUALIFIED_NUMERICAL_RENDERED_AND_QA_CLASSIFICATION",
+  "checks": [
+    {
+      "unchanged_accepted_cohorts": 8,
+      "exact_observed_state_vectors": 656,
+      "old_answers_retained": 21,
+      "base_manifest": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+      "producer_source_replay_validation_complete_preserved": false,
+      "separate_actual_source_root_validation": "passed"
+    },
+    {
+      "paired": "BOS",
+      "games": 8,
+      "W_L": [
+        7,
+        1
+      ],
+      "points": 898,
+      "keys_and_3consumers_verified": true
+    },
+    {
+      "paired": "LAL",
+      "games": 0,
+      "W_L": [
+        0,
+        0
+      ],
+      "points": 0,
+      "keys_and_3consumers_verified": true
+    },
+    {
+      "Reaves_qualified_bound_opponent": [
+        22300684
+      ],
+      "stats": [
+        32,
+        2,
+        3
+      ],
+      "qualified_zero_count": 0
+    },
+    {
+      "S4": "team_with",
+      "selected": "2023-24",
+      "empty": "2025-26",
+      "exact_keys": [
+        [
+          22300403,
+          1610612738
+        ],
+        [
+          22300684,
+          1610612738
+        ]
+      ],
+      "means": {
+        "pts": 115.5,
+        "reb": 49.0,
+        "ast": 30.5
+      },
+      "NL_and_structured_HTTP_labels_math_verified": true,
+      "Brown2023_old_raw_numeric_proof_reused": false
+    },
+    {
+      "S4": "team_without",
+      "selected": "2025-26",
+      "empty": "2023-24",
+      "exact_keys": [
+        [
+          22500338,
+          1610612738
+        ],
+        [
+          22500823,
+          1610612738
+        ]
+      ],
+      "means": {
+        "pts": 118.5,
+        "reb": 44.0,
+        "ast": 30.0
+      },
+      "NL_and_structured_HTTP_labels_math_verified": true,
+      "Brown2023_old_raw_numeric_proof_reused": false
+    },
+    {
+      "S4": "player_with",
+      "selected": "2023-24",
+      "empty": "2025-26",
+      "exact_keys": [
+        [
+          22300403,
+          1610612738,
+          1627759
+        ],
+        [
+          22300684,
+          1610612738,
+          1627759
+        ]
+      ],
+      "means": {
+        "pts": 13.5,
+        "reb": 6.5,
+        "ast": 4.5
+      },
+      "NL_and_structured_HTTP_labels_math_verified": true,
+      "Brown2023_old_raw_numeric_proof_reused": true
+    },
+    {
+      "S4": "player_without",
+      "selected": "2025-26",
+      "empty": "2023-24",
+      "exact_keys": [
+        [
+          22500338,
+          1610612738,
+          1627759
+        ],
+        [
+          22500823,
+          1610612738,
+          1627759
+        ]
+      ],
+      "means": {
+        "pts": 31.0,
+        "reb": 8.0,
+        "ast": 7.5
+      },
+      "NL_and_structured_HTTP_labels_math_verified": true,
+      "Brown2023_old_raw_numeric_proof_reused": false
+    },
+    {
+      "actual_staged_QA_cases": 8,
+      "actual_numerical_checks": 50,
+      "suspicious_flags": 0,
+      "suspicious_case_ids": [],
+      "policy_flags_remain_literal": true,
+      "rendered_actual_outputs_correct": true
+    }
+  ],
+  "actual_stage_test_passed": 1,
+  "runtime_source_review": "cdbf550ce4c0db7f55bc72bfbb80c157f807fca2;42flist-renames only",
+  "no_new_test_or_source_execution": true,
+  "all46_Core1_or_production_acceptance": false
+}

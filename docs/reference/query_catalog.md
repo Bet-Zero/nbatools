@@ -1436,3 +1436,16 @@ across 263 matching player-games**; the opposing-score example selects **63 acro
 176**. Exact raw identities and occurrence vectors were independently checked,
 with 33/33 required numerical cases and 9 RawQA cases/52checks in PR593. These are
 historical pinned-data results; current production readiness remains separate.
+
+### Paired whole-game participation wording
+
+A clear pair clause such as `with A and B missing` (including `both missing`
+and `were missing`) binds the same two whole-game absence conditions as
+`without A and B`. Existing team records and supported player consumers keep
+their requested sample, filters and statistical basis. Each player must have
+qualified participation for the actual game/side; missing stat rows or current
+roster membership cannot establish DNP. Medical causes, on-court absence and
+missing-from spatial/role descriptions do not become whole-game nonparticipation.
+Qualified empty records use `no_match`; count questions can return zero. Missing
+coverage stays unavailable. Current application qualification and deployment
+scope are recorded in the single Resume checkpoint.

@@ -1,0 +1,18 @@
+bringing up nodes...
+bringing up nodes...
+
+...............................................................F........ [ 35%]
+........................................................................ [ 70%]
+...........................................................              [100%]
+=================================== FAILURES ===================================
+_ test_unread_availability_still_refuses[Lakers record with Davis and Reaves missing from the bench] _
+[gw4] linux -- Python 3.12.14 /workspace/nbatools/.venv/bin/python
+tests/test_c1_teammate_names.py:271: in test_unread_availability_still_refuses
+    assert execute_natural_query(query).result_status == "no_result"
+E   AssertionError: assert 'ok' == 'no_result'
+E     
+E     - no_result
+E     + ok
+=========================== short test summary info ============================
+FAILED tests/test_c1_teammate_names.py::test_unread_availability_still_refuses[Lakers record with Davis and Reaves missing from the bench]
+1 failed, 202 passed in 22.69s

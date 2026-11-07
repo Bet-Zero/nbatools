@@ -1,0 +1,19 @@
+{
+  "old_actual_stage": 42328911958,
+  "new_actual_stage": 42329357669,
+  "all8retainednumerical_expectation_and_output_fields_identical": true,
+  "fields": [
+    "query",
+    "result_status",
+    "result_reason",
+    "metadata",
+    "sections",
+    "expected",
+    "expectation_results",
+    "applied_filters",
+    "query_output_snapshot"
+  ],
+  "old5suspicious_retained": true,
+  "new0suspicious5informational": true,
+  "request_parent_and_only_request_file_verified": true
+}

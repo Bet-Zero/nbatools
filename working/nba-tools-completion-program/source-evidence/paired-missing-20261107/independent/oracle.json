@@ -1,0 +1,734 @@
+{
+  "baseline": "477c7f13b81290ad1e291118d170e7300b630e0b",
+  "checker": "Independent Codex session /root/poeltl_source_checker; exact backend model unavailable",
+  "meaning": "Missing pair means AND of each named qualified whole-game did_not_play condition on same candidate club/game, never OR, medical cause, roster absence or simultaneous on-court absence. Complete requested coverage before filtering; retain unknown and membership distinctions. Fixed historical slices do not accept current thisseason freshness.",
+  "sources": [
+    {
+      "path": "k08-composition/staging-acceptance-source.zip",
+      "sha256": "4ce53f28bd44230138f000927d3ffa43dbe618759e265ce65e095b505ecb92cf"
+    },
+    {
+      "path": "k08-bos-remaining/coverage-source.zip",
+      "sha256": "a7bd0c019daba938ac60fce80ced7b57953709b59f2ffc87fb910951e5f1401f"
+    },
+    {
+      "path": "k08-direct-dependencies/input-audit-source.zip",
+      "sha256": "33f4a6d9a013da81f3f4c3c25f837c44cd7248de42f425b92e01af68b71cb67a"
+    }
+  ],
+  "cases": {
+    "bos_pair": {
+      "keys": [
+        [
+          22500334,
+          1610612738
+        ],
+        [
+          22500388,
+          1610612738
+        ],
+        [
+          22500559,
+          1610612738
+        ],
+        [
+          22500689,
+          1610612738
+        ],
+        [
+          22500728,
+          1610612738
+        ],
+        [
+          22500839,
+          1610612738
+        ],
+        [
+          22500880,
+          1610612738
+        ],
+        [
+          22501186,
+          1610612738
+        ]
+      ],
+      "games": 8,
+      "wins": 7,
+      "losses": 1,
+      "sums": {
+        "pts": 898.0,
+        "reb": 409.0,
+        "ast": 209.0
+      },
+      "means": {
+        "pts": 112.25,
+        "reb": 51.125,
+        "ast": 26.125
+      }
+    },
+    "lal_pair_zero": {
+      "keys": [],
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "sums": {
+        "pts": 0,
+        "reb": 0,
+        "ast": 0
+      },
+      "means": {
+        "pts": null,
+        "reb": null,
+        "ast": null
+      }
+    },
+    "bos_pair_home": {
+      "keys": [
+        [
+          22500689,
+          1610612738
+        ],
+        [
+          22501186,
+          1610612738
+        ]
+      ],
+      "games": 2,
+      "wins": 2,
+      "losses": 0,
+      "sums": {
+        "pts": 225.0,
+        "reb": 90.0,
+        "ast": 49.0
+      },
+      "means": {
+        "pts": 112.5,
+        "reb": 45.0,
+        "ast": 24.5
+      }
+    },
+    "bos_pair_away": {
+      "keys": [
+        [
+          22500334,
+          1610612738
+        ],
+        [
+          22500388,
+          1610612738
+        ],
+        [
+          22500559,
+          1610612738
+        ],
+        [
+          22500728,
+          1610612738
+        ],
+        [
+          22500839,
+          1610612738
+        ],
+        [
+          22500880,
+          1610612738
+        ]
+      ],
+      "games": 6,
+      "wins": 5,
+      "losses": 1,
+      "sums": {
+        "pts": 673.0,
+        "reb": 319.0,
+        "ast": 160.0
+      },
+      "means": {
+        "pts": 112.16666666666667,
+        "reb": 53.166666666666664,
+        "ast": 26.666666666666668
+      }
+    },
+    "bos_pair_pts111": {
+      "keys": [
+        [
+          22500334,
+          1610612738
+        ],
+        [
+          22500388,
+          1610612738
+        ],
+        [
+          22500689,
+          1610612738
+        ],
+        [
+          22500728,
+          1610612738
+        ],
+        [
+          22501186,
+          1610612738
+        ]
+      ],
+      "games": 5,
+      "wins": 5,
+      "losses": 0,
+      "sums": {
+        "pts": 597.0,
+        "reb": 248.0,
+        "ast": 132.0
+      },
+      "means": {
+        "pts": 119.4,
+        "reb": 49.6,
+        "ast": 26.4
+      }
+    },
+    "bos_pair_nov_feb": {
+      "keys": [
+        [
+          22500334,
+          1610612738
+        ],
+        [
+          22500388,
+          1610612738
+        ],
+        [
+          22500559,
+          1610612738
+        ],
+        [
+          22500689,
+          1610612738
+        ],
+        [
+          22500728,
+          1610612738
+        ],
+        [
+          22500839,
+          1610612738
+        ]
+      ],
+      "games": 6,
+      "wins": 5,
+      "losses": 1,
+      "sums": {
+        "pts": 677.0,
+        "reb": 309.0,
+        "ast": 154.0
+      },
+      "means": {
+        "pts": 112.83333333333333,
+        "reb": 51.5,
+        "ast": 25.666666666666668
+      }
+    },
+    "bos_tatum_missing_brown_played": {
+      "keys": [
+        [
+          22500017,
+          1610612738
+        ],
+        [
+          22500018,
+          1610612738
+        ],
+        [
+          22500021,
+          1610612738
+        ],
+        [
+          22500028,
+          1610612738
+        ],
+        [
+          22500049,
+          1610612738
+        ],
+        [
+          22500060,
+          1610612738
+        ],
+        [
+          22500083,
+          1610612738
+        ],
+        [
+          22500106,
+          1610612738
+        ],
+        [
+          22500117,
+          1610612738
+        ],
+        [
+          22500128,
+          1610612738
+        ],
+        [
+          22500146,
+          1610612738
+        ],
+        [
+          22500158,
+          1610612738
+        ],
+        [
+          22500174,
+          1610612738
+        ],
+        [
+          22500193,
+          1610612738
+        ],
+        [
+          22500209,
+          1610612738
+        ],
+        [
+          22500216,
+          1610612738
+        ],
+        [
+          22500233,
+          1610612738
+        ],
+        [
+          22500250,
+          1610612738
+        ],
+        [
+          22500277,
+          1610612738
+        ],
+        [
+          22500293,
+          1610612738
+        ],
+        [
+          22500302,
+          1610612738
+        ],
+        [
+          22500320,
+          1610612738
+        ],
+        [
+          22500338,
+          1610612738
+        ],
+        [
+          22500358,
+          1610612738
+        ],
+        [
+          22500381,
+          1610612738
+        ],
+        [
+          22500403,
+          1610612738
+        ],
+        [
+          22500426,
+          1610612738
+        ],
+        [
+          22500444,
+          1610612738
+        ],
+        [
+          22500459,
+          1610612738
+        ],
+        [
+          22500474,
+          1610612738
+        ],
+        [
+          22500493,
+          1610612738
+        ],
+        [
+          22500503,
+          1610612738
+        ],
+        [
+          22500520,
+          1610612738
+        ],
+        [
+          22500532,
+          1610612738
+        ],
+        [
+          22500545,
+          1610612738
+        ],
+        [
+          22500580,
+          1610612738
+        ],
+        [
+          22500594,
+          1610612738
+        ],
+        [
+          22500621,
+          1610612738
+        ],
+        [
+          22500637,
+          1610612738
+        ],
+        [
+          22500647,
+          1610612738
+        ],
+        [
+          22500660,
+          1610612738
+        ],
+        [
+          22500673,
+          1610612738
+        ],
+        [
+          22500702,
+          1610612738
+        ],
+        [
+          22500721,
+          1610612738
+        ],
+        [
+          22500741,
+          1610612738
+        ],
+        [
+          22500757,
+          1610612738
+        ],
+        [
+          22500778,
+          1610612738
+        ],
+        [
+          22500799,
+          1610612738
+        ],
+        [
+          22500823,
+          1610612738
+        ],
+        [
+          22500847,
+          1610612738
+        ],
+        [
+          22500859,
+          1610612738
+        ],
+        [
+          22500874,
+          1610612738
+        ],
+        [
+          22500894,
+          1610612738
+        ],
+        [
+          22500959,
+          1610612738
+        ],
+        [
+          22501092,
+          1610612738
+        ],
+        [
+          22501174,
+          1610612738
+        ],
+        [
+          22501206,
+          1610612738
+        ],
+        [
+          22501222,
+          1610612738
+        ]
+      ],
+      "games": 58,
+      "wins": 36,
+      "losses": 22,
+      "sums": {
+        "pts": 6659.0,
+        "reb": 2636.0,
+        "ast": 1402.0
+      },
+      "means": {
+        "pts": 114.8103448275862,
+        "reb": 45.44827586206897,
+        "ast": 24.17241379310345
+      }
+    },
+    "bos_tatum_played_brown_missing": {
+      "keys": [
+        [
+          22501067,
+          1610612738
+        ],
+        [
+          22501085,
+          1610612738
+        ],
+        [
+          22501168,
+          1610612738
+        ]
+      ],
+      "games": 3,
+      "wins": 2,
+      "losses": 1,
+      "sums": {
+        "pts": 329.0,
+        "reb": 133.0,
+        "ast": 72.0
+      },
+      "means": {
+        "pts": 109.66666666666667,
+        "reb": 44.333333333333336,
+        "ast": 24.0
+      }
+    },
+    "controlled_mia_pair": {
+      "keys": [
+        [
+          365,
+          1610612748
+        ],
+        [
+          370,
+          1610612748
+        ],
+        [
+          386,
+          1610612748
+        ]
+      ],
+      "games": 3,
+      "wins": 0,
+      "losses": 3,
+      "sums": {
+        "pts": 244.0,
+        "reb": 122.0,
+        "ast": 71.0
+      },
+      "means": {
+        "pts": 81.33333333333333,
+        "reb": 40.666666666666664,
+        "ast": 23.666666666666668
+      }
+    },
+    "controlled_mia_home": {
+      "keys": [
+        [
+          386,
+          1610612748
+        ]
+      ],
+      "games": 1,
+      "wins": 0,
+      "losses": 1,
+      "sums": {
+        "pts": 94.0,
+        "reb": 48.0,
+        "ast": 26.0
+      },
+      "means": {
+        "pts": 94.0,
+        "reb": 48.0,
+        "ast": 26.0
+      }
+    },
+    "controlled_mia_date": {
+      "keys": [
+        [
+          365,
+          1610612748
+        ],
+        [
+          370,
+          1610612748
+        ]
+      ],
+      "games": 2,
+      "wins": 0,
+      "losses": 2,
+      "sums": {
+        "pts": 150.0,
+        "reb": 74.0,
+        "ast": 45.0
+      },
+      "means": {
+        "pts": 75.0,
+        "reb": 37.0,
+        "ast": 22.5
+      }
+    },
+    "controlled_mia_player": {
+      "keys": [
+        [
+          365,
+          1610612748,
+          202710
+        ],
+        [
+          370,
+          1610612748,
+          202710
+        ],
+        [
+          386,
+          1610612748,
+          202710
+        ]
+      ],
+      "games": 3,
+      "wins": 0,
+      "losses": 3,
+      "sums": {
+        "pts": 49.0,
+        "reb": 21.0,
+        "ast": 17.0
+      },
+      "means": {
+        "pts": 16.333333333333332,
+        "reb": 7.0,
+        "ast": 5.666666666666667
+      }
+    }
+  },
+  "s4": {
+    "2023-24": {
+      "game_ids": [
+        22300403,
+        22300684
+      ],
+      "Tatum_state": "played",
+      "Brown_state": "played",
+      "source_hashes": [
+        "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4",
+        "f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334"
+      ],
+      "team": {
+        "keys": [
+          [
+            22300403,
+            1610612738
+          ],
+          [
+            22300684,
+            1610612738
+          ]
+        ],
+        "games": 2,
+        "wins": 1,
+        "losses": 1,
+        "sums": {
+          "pts": 231.0,
+          "reb": 98.0,
+          "ast": 61.0
+        },
+        "means": {
+          "pts": 115.5,
+          "reb": 49.0,
+          "ast": 30.5
+        }
+      },
+      "player_numeric_reuse": {
+        "games": 2,
+        "wins": 1,
+        "losses": 1,
+        "pts_mean": 13.5,
+        "reb_mean": 6.5,
+        "ast_mean": 4.5,
+        "source": "Previously independently accepted retained official4report/S4numeric receipts; not newly re-derived local Brown2023 CSV rows. PinnedR2base originalCSV/sourcehash check remains required."
+      }
+    },
+    "2025-26": {
+      "game_ids": [
+        22500338,
+        22500823
+      ],
+      "Tatum_state": "did_not_play",
+      "Brown_state": "played",
+      "source_hashes": [
+        "17fa1bc44b172df7afcf2154a64fb39c6d1f26986941a8bf03b82d0fd553f1ec",
+        "7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153"
+      ],
+      "team": {
+        "keys": [
+          [
+            22500338,
+            1610612738
+          ],
+          [
+            22500823,
+            1610612738
+          ]
+        ],
+        "games": 2,
+        "wins": 2,
+        "losses": 0,
+        "sums": {
+          "pts": 237.0,
+          "reb": 88.0,
+          "ast": 60.0
+        },
+        "means": {
+          "pts": 118.5,
+          "reb": 44.0,
+          "ast": 30.0
+        }
+      },
+      "player": {
+        "keys": [
+          [
+            22500338,
+            1610612738,
+            1627759
+          ],
+          [
+            22500823,
+            1610612738,
+            1627759
+          ]
+        ],
+        "games": 2,
+        "wins": 2,
+        "losses": 0,
+        "sums": {
+          "pts": 62.0,
+          "reb": 16.0,
+          "ast": 15.0
+        },
+        "means": {
+          "pts": 31.0,
+          "reb": 8.0,
+          "ast": 7.5
+        }
+      }
+    }
+  },
+  "controlled_scope": {
+    "classification": "synthetic_fixture_only",
+    "observations": "controlled-observations.csv",
+    "method": "Explicit fixture provider injected in checker only; original production qualifier is not weakened and no fabricated NBA source reference used."
+  },
+  "qualified_core_scope": "Retained qualified canonical subsets/unchanged observationbytes forBOS2025-26 andLAL2023-24 only; partialNBAcore, no validation/publication claim. Source originals remain in retained archive and/or authenticatedbase.",
+  "production_writes": 0
+}

@@ -1,0 +1,32 @@
+{
+  "reviewed_revision": "42f81e66dd07b2c51f291d77356cb29bd754663b",
+  "sole_parent": "cdbf550ce4c0db7f55bc72bfbb80c157f807fca2",
+  "verdict": "APPROVED_FAILED_COMPOSED_SELECTOR_ONLY_RERUN",
+  "actual_initial_run": 42328521294,
+  "actual_initial_request": "9786c51d72fb3f303dc62039268bde27c72a4e47",
+  "initial_artifact_sha256": "976a77f93ef54bbef2ff3e56e04ed7975a486b8003fbc66aabe8da60224aff8c",
+  "initial_required": {
+    "selected": 13,
+    "executed": 13,
+    "passed": 12,
+    "failed": 1,
+    "skipped": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "K07_primary_and_heldout_passed": 12,
+    "composed_passed": false
+  },
+  "failure": "S4local variable evidence initialized list then overwritten by source DataFrame; evidence.append raises AttributeError. Initialfailedrun staysfailed; partialpairedchecks arenotcompletecomposedacceptance.",
+  "exact_delta": "Onlytests/test_participation_season_splits_real_data.py differs from approvedcdbf: list initialization,appendandreturnrename fromevidence toreceipts. DataFrameoperand,allassertions/helpers/calls/sourcebytes unchanged. Runtime/QA/K07/workflow/qualification/input bytesidentical.",
+  "reuse": "Initial12K07numericalpasses are actualexecuted and applyunchanged. K07QA12providerartifact review pendinglocaldownload; noallQApassclaimedfromjobstatusalone. SkipunrequestedbaseQAonrepairrunifrequestresolvervalidlydisablesit;8embeddedstagecasesmustexecuteandpass.",
+  "required_rerun": "Existing composed-stage selectoronly1 at42f; mustcompleteall4S4groups,N/L/structuredHTTP,numbers/labels andembedded8RawQAs. Authenticate newrequestsoleparent/diff andactualresultartifact.",
+  "pending": [
+    "Successfulcomposedreceipt/math/source/outputreview",
+    "K07QA12actualartifactreview",
+    "Affected46currentmappingreview",
+    "Finalexact-headblockingCI"
+  ],
+  "checker": "SeparateindependentCodexsession /root/poeltl_source_checker; exactbackendmodelIDunavailable",
+  "production_writes": 0,
+  "source_reacquisition": 0
+}

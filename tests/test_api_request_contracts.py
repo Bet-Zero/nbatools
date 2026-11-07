@@ -183,3 +183,15 @@ def test_every_shipped_route_accepts_its_minimum_request_contract(route: str) ->
 
     assert request.route == route
     assert request.kwargs == kwargs
+
+
+@pytest.mark.parametrize("route", ["team_split_summary", "player_split_summary"])
+@pytest.mark.parametrize("field", ["with_player", "without_player"])
+def test_split_participation_fields_keep_strict_typed_contract(route, field):
+    kwargs = {"split": "season", field: "Jayson Tatum"}
+    assert (
+        StructuredQueryRequest.model_validate({"route": route, "kwargs": kwargs}).kwargs == kwargs
+    )
+    for invalid in [{**kwargs, field: 123}, {**kwargs, "unexecuted_filter": True}]:
+        with pytest.raises(ValueError):
+            StructuredQueryRequest.model_validate({"route": route, "kwargs": invalid})

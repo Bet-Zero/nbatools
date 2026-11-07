@@ -1,0 +1,66 @@
+{
+  "revision": "cdbf550ce4c0db7f55bc72bfbb80c157f807fca2",
+  "checks": [
+    {
+      "positive_suffix": "missing",
+      "games": 5,
+      "passed": true
+    },
+    {
+      "positive_suffix": "out",
+      "games": 5,
+      "passed": true
+    },
+    {
+      "positive_suffix": "not playing",
+      "games": 5,
+      "passed": true
+    },
+    {
+      "extra_tail": "and LeBron James",
+      "passed": true,
+      "reason": "filter_not_supported"
+    },
+    {
+      "extra_tail": "and Missing Player",
+      "passed": true,
+      "reason": "filter_not_supported"
+    },
+    {
+      "extra_tail": "and Missing Player playing",
+      "passed": true,
+      "reason": "filter_not_supported"
+    },
+    {
+      "extra_tail": "and on the bench",
+      "passed": true,
+      "reason": "filter_not_supported"
+    },
+    {
+      "structured_explicit_nonadjacent_labels": true,
+      "passed": true
+    },
+    {
+      "HTTP_type_unknown_field_guard": {
+        "invented_filter": true
+      },
+      "passed": true
+    },
+    {
+      "HTTP_type_unknown_field_guard": {
+        "with_player": [
+          "Jayson Tatum"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "HTTP_type_unknown_field_guard": {
+        "without_player": 17
+      },
+      "passed": true
+    }
+  ],
+  "failures": [],
+  "calls": 12
+}

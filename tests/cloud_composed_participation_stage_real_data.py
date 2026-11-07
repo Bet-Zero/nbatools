@@ -296,6 +296,43 @@ def test_accepted_cohorts_work_together_without_discarded_coverage(tmp_path, mon
             )
             assert response.status_code == 200 and body["result_status"] == "ok"
             assert body["result"]["sections"]["count"] == [{"count": count}]
+        # Finite Core-1 integration on this SAME authenticated composed root.
+        # Original ID12's shared pair interpretation needs a real nonempty
+        # control as well as its qualified historical zero (not missing data).
+        receipt["paired_missing"] = verify_paired_missing(root, oracles, client)
+        from tests.test_participation_season_splits_real_data import (
+            verify_qualified_participation_splits,
+        )
+
+        receipt["s4_integration"] = verify_qualified_participation_splits(root, monkeypatch)
+        import subprocess
+        import sys
+
+        qa = output / "rawqa"
+        cases = [
+            "k08_pair_missing_nonempty",
+            "k08_pair_missing_zero",
+            "k08_pair_missing_zero_count",
+            "k08_pair_missing_player_bound",
+            "k08_s4_team_with",
+            "k08_s4_team_without",
+            "k08_s4_player_with",
+            "k08_s4_player_without",
+        ]
+        subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools/raw_query_answer_qa.py"),
+                "--out",
+                str(qa),
+                "--run-id",
+                "composed-core",
+                "--fail-on-expectation-failure",
+                *[arg for case in cases for arg in ("--case", case)],
+            ],
+            check=True,
+        )
+        receipt["integrated_rawqa"] = json.loads((qa / "composed-core/summary.json").read_text())
         assert len(receipt["coverage"]) == 8 and len(receipt["answers"]) == 21
         assert len(receipt["api_checks"]) == 3
         receipt["consumer_acceptance"] = "passed"
@@ -307,3 +344,156 @@ def test_accepted_cohorts_work_together_without_discarded_coverage(tmp_path, mon
         raise
     finally:
         persist()
+
+
+def verify_paired_missing(root, oracles, client):
+    """Expected sets come from independently accepted explicit state vectors."""
+    evidence = []
+    for team, season, names, people in [
+        ("BOS", "2025-26", "Jayson Tatum and Jaylen Brown", (1628369, 1627759)),
+        ("LAL", "2023-24", "Anthony Davis and Austin Reaves", (203076, 1630559)),
+    ]:
+        reports = [
+            next(r for r in oracles if r["season"] == season and r["player_id"] == pid)
+            for pid in people
+        ]
+        assert all(
+            r["complete_requested_population"] and r["counts"]["unknown"] == 0 for r in reports
+        )
+        state_maps = [
+            {int(r["game_id"]): r["state"] for r in report["games"]} for report in reports
+        ]
+        assert set(state_maps[0]) == set(state_maps[1]) and len(state_maps[0]) == 82
+        ids = {gid for gid in state_maps[0] if all(m[gid] == "did_not_play" for m in state_maps)}
+        teams = pd.read_csv(root / f"raw/team_game_stats/{season}_regular_season.csv")
+        expected = teams.loc[teams.team_abbr.eq(team) & teams.game_id.isin(ids)]
+        assert len(expected) == len(ids)
+        assert len(ids) == (8 if team == "BOS" else 0)
+        queries = (
+            [
+                f"Celtics record with Tatum and Brown missing in {season}",
+                f"Boston record with Jaylen Brown and Jayson Tatum both missing in {season}",
+            ]
+            if team == "BOS"
+            else [
+                f"Lakers record with Davis and Reaves missing in {season}",
+                f"Los Angeles Lakers record with Austin Reaves and Anthony Davis were missing in {season}",
+            ]
+        )
+        kwargs = dict(team=team, season=season, without_player=names)
+        results = [execute_natural_query(q) for q in queries]
+        results.append(execute_structured_query("team_record", **kwargs))
+        responses = [
+            client.post("/query", json={"query": queries[0]}),
+            client.post("/structured-query", json={"route": "team_record", "kwargs": kwargs}),
+        ]
+        assert all(r.status_code == 200 for r in responses)
+        payloads = [r.to_dict() for r in results] + [r.json()["result"] for r in responses]
+        for result in results[:2]:
+            assert result.metadata["team"] == team
+            assert set(result.metadata["without_player"].split(" and ")) == set(
+                names.split(" and ")
+            )
+            assert result.metadata["with_player"] is None
+        for doc in payloads:
+            if expected.empty:
+                assert doc["result_status"] == "no_result" and doc["result_reason"] == "no_match", (
+                    doc
+                )
+                assert not doc["sections"]
+            else:
+                assert doc["result_status"] == "ok", doc
+                assert {int(r["game_id"]) for r in doc["sections"]["game_log"]} == ids
+                summary = doc["sections"]["summary"][0]
+                assert summary["games"] == len(ids)
+                assert summary["wins"] == int(expected.wl.eq("W").sum())
+                assert summary["losses"] == int(expected.wl.eq("L").sum())
+                for stat in ["pts", "reb", "ast"]:
+                    assert summary[stat + "_avg"] == pytest.approx(expected[stat].mean(), abs=0.001)
+        evidence.append(
+            dict(
+                team=team,
+                season=season,
+                players=list(people),
+                queries=queries,
+                game_ids=sorted(ids),
+                games=len(ids),
+                wins=int(expected.wl.eq("W").sum()),
+                losses=int(expected.wl.eq("L").sum()),
+                points_sum=int(expected.pts.sum()),
+                natural=results[0].to_dict(),
+                http=responses[0].json(),
+                structured_http=responses[1].json(),
+                coverage_classification="complete_qualified_observed_population_not_all_historical_tenure",
+            )
+        )
+    # Original neighboring K08 player+bound consumer, now with the same
+    # paired missing interpretation and independently qualified source rows.
+    season = "2023-24"
+    states = [
+        {
+            int(g["game_id"]): g["state"]
+            for g in next(r for r in oracles if r["season"] == season and r["player_id"] == pid)[
+                "games"
+            ]
+        }
+        for pid in (2544, 203076)
+    ]
+    absent = {gid for gid in states[0] if all(m[gid] == "did_not_play" for m in states)}
+    raw = pd.read_csv(root / f"raw/player_game_stats/{season}_regular_season.csv")
+    expected = raw.loc[
+        raw.player_id.eq(1630559)
+        & raw.game_id.isin(absent)
+        & raw.opponent_team_abbr.eq("BOS")
+        & raw.pts.ge(20)
+    ]
+    assert expected.game_id.astype(int).tolist() == [22300684]
+    assert expected[["pts", "reb", "ast"]].iloc[0].tolist() == [32, 2, 3]
+    question = "Austin Reaves games with 20 points with LeBron James and Anthony Davis missing against Boston in 2023-24"
+    kwargs = dict(
+        player="Austin Reaves",
+        team="LAL",
+        season=season,
+        opponent="BOS",
+        without_player="LeBron James and Anthony Davis",
+        stat="pts",
+        min_value=20,
+        limit=None,
+    )
+    results = [
+        execute_natural_query(question),
+        execute_structured_query("player_game_finder", **kwargs),
+    ]
+    responses = [
+        client.post("/query", json={"query": question}),
+        client.post("/structured-query", json={"route": "player_game_finder", "kwargs": kwargs}),
+    ]
+    assert all(r.status_code == 200 for r in responses)
+    for doc in [r.to_dict() for r in results] + [r.json()["result"] for r in responses]:
+        assert doc["result_status"] == "ok"
+        rows = doc["sections"]["finder"]
+        assert len(rows) == 1 and (int(rows[0]["game_id"]), rows[0]["player_id"]) == (
+            22300684,
+            1630559,
+        )
+        assert [rows[0][k] for k in ("pts", "reb", "ast")] == [32, 2, 3]
+    zero_question = "How many Lakers games with Davis and Reaves missing in 2023-24?"
+    zero = execute_natural_query(zero_question)
+    http_zero = client.post("/query", json={"query": zero_question})
+    assert zero.result_status == "ok" and zero.metadata["primary_count"] == 0
+    assert http_zero.status_code == 200 and http_zero.json()["result_status"] == "ok"
+    assert http_zero.json()["result"]["sections"]["count"] == [{"count": 0}]
+    evidence.append(
+        dict(
+            query=question,
+            game_ids=[22300684],
+            player_id=1630559,
+            pts=32,
+            reb=2,
+            ast=3,
+            result=results[0].to_dict(),
+            zero_query=zero_question,
+            zero_count=zero.to_dict(),
+        )
+    )
+    return evidence

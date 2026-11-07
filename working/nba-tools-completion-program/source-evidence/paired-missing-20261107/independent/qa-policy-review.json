@@ -1,0 +1,21 @@
+{
+  "reviewed_policy_revision": "5418dce32a69477853c05ef6fec83490c0d9a0d5",
+  "parent": "42f81e66dd07b2c51f291d77356cb29bd754663b",
+  "delta": "Exactly5answer_text_policy:frontend_hero_expected insertions. No runtime/test/helper/validator/source/numerical expected checks changed.",
+  "verdict": "APPROVED_METADATA_CONTRACT_CORRECTION_NOT_NUMERICAL_WAIVER",
+  "actual_final_classification_run": 42329357669,
+  "final_QA": {
+    "cases": 8,
+    "checks_passed": 50,
+    "suspicious": 0,
+    "frontend_hero_informational": 5
+  },
+  "old_stage_42328911958": {
+    "test_passed": 1,
+    "QA_checks_passed": 50,
+    "suspicious": 5,
+    "retained_literal": true
+  },
+  "numeric_and_rendered_equivalence": "policy-execution-equivalence.json",
+  "actual_review": "hosted-review.md"
+}

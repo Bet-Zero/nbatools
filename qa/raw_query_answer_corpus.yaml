@@ -17755,3 +17755,115 @@ cases:
     - path: result.sections.count.0.count
       equals: 176
     review_notes: Independently frozen PR592 raw-row oracle; player/own-team/opponent ownership joined by exact game and team IDs. Current package verifies complete selected identities and per-player occurrence arithmetic separately from rendering.
+  - id: k08_pair_missing_nonempty
+    query: Celtics record with Tatum and Brown missing in 2025-26
+    category: qualified_pair_participation
+    priority: p0
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections: [summary, game_log]
+    expected_row_counts: {summary: 1, game_log: 8}
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 8
+    - path: result.sections.summary.0.wins
+      equals: 7
+    - path: result.sections.summary.0.losses
+      equals: 1
+    review_notes: Qualified composed stage only; independent explicit Tatum/Brown DNP intersection. Whole-game participation, no medical cause or current-season claim.
+  - id: k08_pair_missing_zero
+    query: Lakers record with Davis and Reaves missing in 2023-24
+    category: qualified_pair_participation
+    priority: p0
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_reason: no_match
+    expected_route: team_record
+    review_notes: Original ID12 fixed historical scope; qualified zero from complete 82-game explicit observations, Reaves played all82. This is not missing data or unsupported interpretation.
+  - id: k08_s4_team_with
+    query: Celtics record vs Lakers with Jayson Tatum in 2023-24 and 2025-26
+    category: participation_season_split
+    priority: p0
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_split_summary
+    expected_sections: [summary, split_comparison]
+    expected_row_counts: {summary: 1, split_comparison: 1}
+    hard_assertions:
+    - path: result.sections.summary.0.games_total
+      equals: 2
+    - path: result.sections.split_comparison.0.bucket
+      equals: 2023-24
+    review_notes: Bound S4 on composed qualified source stage; exact game keys, arithmetic, opposite qualified-empty season and HTTP filter ownership verified by existing S4 helper. No report is downloaded again.
+  - id: k08_s4_team_without
+    query: Celtics record vs Lakers without Jayson Tatum in 2023-24 and 2025-26
+    category: participation_season_split
+    priority: p0
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_split_summary
+    expected_sections: [summary, split_comparison]
+    expected_row_counts: {summary: 1, split_comparison: 1}
+    hard_assertions:
+    - path: result.sections.summary.0.games_total
+      equals: 2
+    - path: result.sections.split_comparison.0.bucket
+      equals: 2025-26
+    review_notes: Bound S4 on composed qualified source stage; exact game keys, arithmetic, opposite qualified-empty season and HTTP filter ownership verified by existing S4 helper. No report is downloaded again.
+  - id: k08_s4_player_with
+    query: Jaylen Brown stats vs Lakers with Jayson Tatum in 2023-24 and 2025-26
+    category: participation_season_split
+    priority: p0
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_split_summary
+    expected_sections: [summary, split_comparison]
+    expected_row_counts: {summary: 1, split_comparison: 1}
+    hard_assertions:
+    - path: result.sections.summary.0.games_total
+      equals: 2
+    - path: result.sections.split_comparison.0.bucket
+      equals: 2023-24
+    review_notes: Bound S4 on composed qualified source stage; exact game keys, arithmetic, opposite qualified-empty season and HTTP filter ownership verified by existing S4 helper. No report is downloaded again.
+  - id: k08_s4_player_without
+    query: Jaylen Brown stats vs Lakers without Jayson Tatum in 2023-24 and 2025-26
+    category: participation_season_split
+    priority: p0
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_split_summary
+    expected_sections: [summary, split_comparison]
+    expected_row_counts: {summary: 1, split_comparison: 1}
+    hard_assertions:
+    - path: result.sections.summary.0.games_total
+      equals: 2
+    - path: result.sections.split_comparison.0.bucket
+      equals: 2025-26
+    review_notes: Bound S4 on composed qualified source stage; exact game keys, arithmetic, opposite qualified-empty season and HTTP filter ownership verified by existing S4 helper. No report is downloaded again.
+  - id: k08_pair_missing_zero_count
+    query: How many Lakers games with Davis and Reaves missing in 2023-24?
+    category: qualified_pair_participation
+    priority: p0
+    expected_status: ok
+    expected_route: game_finder
+    expected_sections: [count]
+    expected_row_counts: {count: 1}
+    hard_assertions:
+    - path: result.sections.count.0.count
+      equals: 0
+    review_notes: Same qualified complete historical ID12 pair-zero sample; numeric count0 is distinct from no_data.
+  - id: k08_pair_missing_player_bound
+    query: Austin Reaves games with 20 points with LeBron James and Anthony Davis missing against Boston in 2023-24
+    category: qualified_pair_participation
+    priority: p0
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections: [finder]
+    expected_row_counts: {finder: 1}
+    hard_assertions:
+    - path: result.sections.finder.0.game_id
+      equals: 22300684
+    - path: result.sections.finder.0.pts
+      equals: 32
+    review_notes: Independently qualified official report pair plus own player bound and named opponent; exactReaves32/2/3 line remains retained.
