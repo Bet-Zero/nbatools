@@ -1,0 +1,97 @@
+{
+  "check": "new period-to-retained-whole defensive rebound basis",
+  "claim": null,
+  "created_at": "2026-11-07T11:38:59.046539+00:00",
+  "dataset": "player_and_team_game_period_stats",
+  "evidence": {
+    "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/collection.zip",
+    "sha256": "81eea4d32217e541cab13783a06031616abb192e56b7c7b37d10f1f460978faf",
+    "source_sha256": "81eea4d32217e541cab13783a06031616abb192e56b7c7b37d10f1f460978faf"
+  },
+  "expected": "independently consistent whole/period rebound credit",
+  "fingerprint": "4294464123002d61e11cd59f7cdebfd1690b172d28b608f26d934e725ecc6c7a",
+  "id": "DQ-auto-4294464123002d61e11cd59f7cdebfd1690b172d28b608f26d934e725ecc6c7a",
+  "impact": "P.J. Washington/DAL DREB/REB and dependent rebound rates/filters for game184 remain numerically unqualified; score/PTS/record unaffected",
+  "independent_review": {
+    "reviewer": "/root/current123_period_source_review",
+    "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/independent-v5-review.md",
+    "comparison": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/independent-v5-comparison.json"
+  },
+  "kind": "data_quality_work_item",
+  "last_attempt": {
+    "snapshot": "current123-period-scorer-development-v5",
+    "evidence": {
+      "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/independent-book-review.md",
+      "sha256": "7cd10060a428540d994dbd29c6fd76fbfa444c27ad3a91d724bd6a000325ce3f",
+      "source_sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+    }
+  },
+  "next_evidence": "No newsource required for this resolved finite count/rebound-rate correction. Preserve all originals and prior failure; old484rate/DQ006/freshness/publication requirements stay separate.",
+  "observations": [
+    {
+      "evidence": {
+        "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/collection.zip",
+        "sha256": "81eea4d32217e541cab13783a06031616abb192e56b7c7b37d10f1f460978faf",
+        "source_sha256": "81eea4d32217e541cab13783a06031616abb192e56b7c7b37d10f1f460978faf"
+      },
+      "snapshot": "current123-period-source-development-v4"
+    },
+    {
+      "snapshot": "current123-period-scorer-development-v5",
+      "evidence": {
+        "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/independent-book-review.md",
+        "sha256": "7cd10060a428540d994dbd29c6fd76fbfa444c27ad3a91d724bd6a000325ce3f",
+        "source_sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+      }
+    }
+  ],
+  "observed": {
+    "fields": {
+      "player_dreb": {
+        "quarter_sum": 5,
+        "retained_whole": 6
+      },
+      "player_reb": {
+        "quarter_sum": 9,
+        "retained_whole": 10
+      },
+      "team_dreb": {
+        "quarter_sum": 31,
+        "retained_whole": 32
+      },
+      "team_reb": {
+        "quarter_sum": 49,
+        "retained_whole": 50
+      }
+    },
+    "game_id": "0022600184",
+    "player_id": 1629023,
+    "team_id": 1610612742,
+    "unknown_fact": "Independent authoritative Washington full-game rebound total and period allocation of the disputed defensive rebound; neither current source basis is selected as truth"
+  },
+  "owner_role": "agent_1_application_acquisition",
+  "resolution": {
+    "version": "current123-period-scorer-development-v5",
+    "manifest_sha256": "535384a4710739a779f0772da4e3bcee023bd88bfed91be16d0103cdf9d8ff75",
+    "book_sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b",
+    "source_credit": "Q2 05:14 Washington defensive rebound following Castle terminalFT2miss and explicit substitution",
+    "changed_count_cells": 8,
+    "independently_rederived_dependent_reb_pct_cells": 38,
+    "new_unknown_cells": 0,
+    "old484_unknowns_unchanged": true,
+    "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/book-correction.json",
+    "source_oracle_sha256": "7d054703091f5f0334d2b01dd7bd978e619d2e36a11eead390fdb23cf0646698",
+    "full_snapshot_accepted": false
+  },
+  "schema_version": 1,
+  "scope": {
+    "game_id": "0022600184",
+    "player_id": 1629023,
+    "season": "2026-27",
+    "season_type": "Regular Season",
+    "team_id": 1610612742
+  },
+  "snapshot": "current123-period-source-development-v4",
+  "source_sha256": "81eea4d32217e541cab13783a06031616abb192e56b7c7b37d10f1f460978faf",
+  "status": "resolved"
+}

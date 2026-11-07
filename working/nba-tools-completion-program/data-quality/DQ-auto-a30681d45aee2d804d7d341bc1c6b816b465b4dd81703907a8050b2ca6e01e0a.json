@@ -1,7 +1,7 @@
 {
   "check": "coverage missing 2208 requested keys",
   "claim": null,
-  "continuation_note": "Agent1 owns bounded acquisition/intake; Agent2 remains stopped. Required failures stay open; no partial snapshot accepted.",
+  "continuation_note": "Agent1 resolved this exact coverage requirement in a new immutable v4; Agent2 stays stopped. No whole-snapshot acceptance or production change.",
   "created_at": "2026-11-07T04:03:50.345098+00:00",
   "dataset": "player_game_period_stats",
   "evidence": {
@@ -15,17 +15,21 @@
   "fingerprint": "a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
   "id": "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
   "impact": "Missing new windows prevent complete123-game quarter/half/OT coverage. OTplayer population requires source-listed original keys; no full-game-player crossjoin or inventedzero. Old484rate unknowns and DQ-006membership are separate.",
-  "independent_review": null,
+  "independent_review": {
+    "reviewer": "/root/current123_period_source_review",
+    "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/independent-candidate-comparison.json",
+    "source_review": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/independent-source-review.md"
+  },
   "kind": "data_quality_work_item",
   "last_attempt": {
+    "snapshot": "current123-period-source-development-v4",
     "evidence": {
-      "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107/current-required/qualification.json",
-      "sha256": "7550e0f0bdb2533c943ec68c503079ec5496cc21b392f75058267c4aaaa0f32a",
-      "source_sha256": "be85196ea842d07449bb83244bc624cc60dda1f29ba1b2db5fe68e07a5e02554"
-    },
-    "snapshot": "current123-required-source-development-v3"
+      "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/qualification.json",
+      "sha256": "f246744df5e6b10eb46965aa45ba1b9c469178b3b2dcdd4e854c58d3fdd37fc6",
+      "source_sha256": "81eea4d32217e541cab13783a06031616abb192e56b7c7b37d10f1f460978faf"
+    }
   },
-  "next_evidence": "Return of the repaired exact196-job Mac package; prior PackageNotFoundError made zero requests. Qualify actual source windows/OTplayers on return. No unchanged Actions retry.",
+  "next_evidence": "No source recapture for this resolved coverage requirement. Other numerical/membership/freshness and delivery acceptance remain separate.",
   "observations": [
     {
       "evidence": {
@@ -42,6 +46,14 @@
         "source_sha256": "be85196ea842d07449bb83244bc624cc60dda1f29ba1b2db5fe68e07a5e02554"
       },
       "snapshot": "current123-required-source-development-v3"
+    },
+    {
+      "snapshot": "current123-period-source-development-v4",
+      "evidence": {
+        "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/qualification.json",
+        "sha256": "f246744df5e6b10eb46965aa45ba1b9c469178b3b2dcdd4e854c58d3fdd37fc6",
+        "source_sha256": "81eea4d32217e541cab13783a06031616abb192e56b7c7b37d10f1f460978faf"
+      }
     }
   ],
   "observed": {
@@ -51,7 +63,16 @@
     "state": "failed"
   },
   "owner_role": "agent_1_application_acquisition",
-  "resolution": null,
+  "resolution": {
+    "scope": "missing source/key coverage only, new v4; original failed versions and observations preserved",
+    "manifest_sha256": "93b2b8f87809727e6fa72a2b3cbfae3e893e5d122bc025aee3ee19bd8254097d",
+    "period_windows": 745,
+    "team_keys": 1490,
+    "new_standard_player_keys": 2208,
+    "new_source_defined_ot_keys": 28,
+    "full_numerical_acceptance": false,
+    "new184rebound_and_old484rate_and_DQ006_separate": true
+  },
   "schema_version": 1,
   "scope": {
     "coverage": {
@@ -2360,7 +2381,7 @@
   },
   "snapshot": "current123-field-qualified-development-v1",
   "source_sha256": "2ce3d80c75102b3d48f6975f67c6da92cbef4f38bd406566d78bf5217e34644d",
-  "status": "blocked_evidence",
+  "status": "resolved",
   "last_source_attempt": {
     "run_id": 42343199090,
     "request_candidate": "578dd16d6ff4137abd13ea69d2276438506ad03b",

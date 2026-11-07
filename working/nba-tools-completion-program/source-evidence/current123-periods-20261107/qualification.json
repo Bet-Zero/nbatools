@@ -1,0 +1,304 @@
+{
+  "acquisition_gap_closed": true,
+  "capture": {
+    "files": 198,
+    "production_writes": 0,
+    "sha256": "81eea4d32217e541cab13783a06031616abb192e56b7c7b37d10f1f460978faf",
+    "state": "unvalidated_staging_only"
+  },
+  "changes": [
+    {
+      "added_rows": 2236,
+      "after_sha256": "be47a96eb51e4845288a787222895023883f5306589d35e42957135c1cf86196",
+      "before_sha256": "2ce3d80c75102b3d48f6975f67c6da92cbef4f38bd406566d78bf5217e34644d",
+      "old_rows": 14547,
+      "path": "data/raw/player_game_period_stats/2026-27_regular_season.csv"
+    },
+    {
+      "added_rows": 196,
+      "after_sha256": "50524a9c6c45e3ee1fe981b3b6cd245d571750222e697c5fe83599e224a24282",
+      "before_sha256": "1bbcd94d3fb05ed44addae2b7f683bba60f863ed4a91ee99f5ba02a137317335",
+      "old_rows": 1294,
+      "path": "data/raw/team_game_period_stats/2026-27_regular_season.csv"
+    }
+  ],
+  "derived_clock_ledger": [
+    {
+      "derived_literal": "5:00",
+      "derived_seconds": 300,
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022600176",
+      "original_literal": "4:60",
+      "original_sha256": "0eda5fa7ae93b82d55b2f18c57e2e008ce61f3ffa93e411df6cc30b500c0d234",
+      "player_id": 1641750,
+      "team_id": 1610612766,
+      "terms": [
+        {
+          "coefficient": 1,
+          "literal": "9:36",
+          "seconds": 576.0,
+          "source_sha256": "57eda50152c90826684c4fbdc247b234ff8283752145d7941010263fd981f7f9",
+          "window": [
+            "0022600176",
+            1,
+            2
+          ]
+        },
+        {
+          "coefficient": -1,
+          "literal": "4:36",
+          "seconds": 276.0,
+          "source_sha256": "50c37bb4c044ae48c04d35462fc9d30d96efa36f904eeab32392fc9aba1fc78c",
+          "window": [
+            "0022600176",
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "derived_literal": "5:00",
+      "derived_seconds": 300,
+      "endpoint": "boxscoreadvancedv3",
+      "game_id": "0022600176",
+      "original_literal": "4:60",
+      "original_sha256": "8ffaf084165c7569b3dda79b25cf77242235babd338b5d2ffed4ab9b20a394ec",
+      "player_id": 1641750,
+      "team_id": 1610612766,
+      "terms": [
+        {
+          "coefficient": 1,
+          "literal": "9:36",
+          "seconds": 576.0,
+          "source_sha256": "f08583233e61975bff66e19b41730022e630513fc7dd636d2a4352eeeed052e5",
+          "window": [
+            "0022600176",
+            1,
+            2
+          ]
+        },
+        {
+          "coefficient": -1,
+          "literal": "4:36",
+          "seconds": 276.0,
+          "source_sha256": "5a966c2da033fcb8dfdeb76bdb73b62bfa31117116a26d36d5be5b78edd517ad",
+          "window": [
+            "0022600176",
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "derived_literal": "10:00",
+      "derived_seconds": 600,
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022600183",
+      "original_literal": "9:60",
+      "original_sha256": "8fcfaea1d05935542504a870be2bc0011885fa1a836d9ef98f6e2a1a8a011c51",
+      "player_id": 1642863,
+      "team_id": 1610612756,
+      "terms": [
+        {
+          "coefficient": 1,
+          "literal": "5:39",
+          "seconds": 339.0,
+          "source_sha256": "e6ca71714b5d1fc125da6d20697b98196e6b7d4fabf9ca30187d39bff6c42f21",
+          "window": [
+            "0022600183",
+            1,
+            1
+          ]
+        },
+        {
+          "coefficient": 1,
+          "literal": "4:21",
+          "seconds": 261.0,
+          "source_sha256": "8e5cb69085048856f094a5d7ecaf9d2972029d4f0a9806695b0fe7d53e8d3cb2",
+          "window": [
+            "0022600183",
+            2,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "derived_literal": "10:00",
+      "derived_seconds": 600,
+      "endpoint": "boxscoreadvancedv3",
+      "game_id": "0022600183",
+      "original_literal": "9:60",
+      "original_sha256": "3a02c1bbad10cc956591f9768ccddd7f289b98c80d7f25c117f85eff651e6f57",
+      "player_id": 1642863,
+      "team_id": 1610612756,
+      "terms": [
+        {
+          "coefficient": 1,
+          "literal": "5:39",
+          "seconds": 339.0,
+          "source_sha256": "a2e6fc9c9d869822f6737d09f8b6be50c7a8dda3e946ad88e2b913cfc242e701",
+          "window": [
+            "0022600183",
+            1,
+            1
+          ]
+        },
+        {
+          "coefficient": 1,
+          "literal": "4:21",
+          "seconds": 261.0,
+          "source_sha256": "a09d3ec0e21130b997c0c7f77118d98747ee74e38fda6c412525d6e58cd6b2eb",
+          "window": [
+            "0022600183",
+            2,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "derived_literal": "8:00",
+      "derived_seconds": 480,
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022600186",
+      "original_literal": "7:60",
+      "original_sha256": "cdd925a94c284aa923ac3483dbaf1790ae3778130f2d0de1e35f746e717aa94d",
+      "player_id": 1627884,
+      "team_id": 1610612746,
+      "terms": [
+        {
+          "coefficient": 1,
+          "literal": "17:52",
+          "seconds": 1072.0,
+          "source_sha256": "e5ed566ecc1fe4cb26539890cc4e557cd8def7f76fd2bb4ef758b279478f0346",
+          "window": [
+            "0022600186",
+            3,
+            4
+          ]
+        },
+        {
+          "coefficient": -1,
+          "literal": "9:52",
+          "seconds": 592.0,
+          "source_sha256": "c6c59a8870ae351c7a12bb8e39afc5757be3579ae678f4ed0fe8c1cea6e344bc",
+          "window": [
+            "0022600186",
+            3,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "derived_literal": "8:00",
+      "derived_seconds": 480,
+      "endpoint": "boxscoreadvancedv3",
+      "game_id": "0022600186",
+      "original_literal": "7:60",
+      "original_sha256": "56ce12cb248078bf617115fa28f6295a3f2e214cbfe596e424e2cefcb7a349b9",
+      "player_id": 1627884,
+      "team_id": 1610612746,
+      "terms": [
+        {
+          "coefficient": 1,
+          "literal": "17:52",
+          "seconds": 1072.0,
+          "source_sha256": "20e249b73bc21d98934c6fb9f9a40a9eab7199fa6eb385320d80286c29c8cb75",
+          "window": [
+            "0022600186",
+            3,
+            4
+          ]
+        },
+        {
+          "coefficient": -1,
+          "literal": "9:52",
+          "seconds": 592.0,
+          "source_sha256": "0c8ae70152d963bd290123a81332f63b5b3fef998ed04143d7df684b0a33da61",
+          "window": [
+            "0022600186",
+            3,
+            3
+          ]
+        }
+      ]
+    }
+  ],
+  "directly_imported": 95,
+  "dq006_membership_separate": true,
+  "full_snapshot_accepted": false,
+  "independently_derived_clock_windows": 3,
+  "new_count_basis_conflict": {
+    "fields": {
+      "player_dreb": {
+        "quarter_sum": 5,
+        "retained_whole": 6
+      },
+      "player_reb": {
+        "quarter_sum": 9,
+        "retained_whole": 10
+      },
+      "team_dreb": {
+        "quarter_sum": 31,
+        "retained_whole": 32
+      },
+      "team_reb": {
+        "quarter_sum": 49,
+        "retained_whole": 50
+      }
+    },
+    "game_id": "0022600184",
+    "player_id": 1629023,
+    "team_id": 1610612742,
+    "unknown_fact": "Independent authoritative Washington full-game rebound total and period allocation of the disputed defensive rebound; neither current source basis is selected as truth"
+  },
+  "old_484_rate_unknowns_preserved": true,
+  "original_source_bytes_changed": false,
+  "ot_unlisted_whole_players_not_fabricated": 13,
+  "parent_manifest_sha256": "5fb3326f512037c69c815a06cb73ab41a9a8187bf5dcdc36cd114f2da7eb6a4c",
+  "period_key_coverage_complete": true,
+  "period_numerical_complete": false,
+  "player_keys_added": 2236,
+  "production_writes": 0,
+  "raw_malformed_clocks_quarantined": [
+    {
+      "error": "Invalid Traditional box-score duration",
+      "key": [
+        "0022600176",
+        2,
+        2
+      ]
+    },
+    {
+      "error": "Invalid Traditional box-score duration",
+      "key": [
+        "0022600183",
+        1,
+        2
+      ]
+    },
+    {
+      "error": "Invalid Traditional box-score duration",
+      "key": [
+        "0022600186",
+        4,
+        4
+      ]
+    }
+  ],
+  "source_listed_zero_clock_rows": 7,
+  "source_ot_player_keys_added": 28,
+  "source_summary_archive_sha256": "dbf426144fe30017bb0b96eac184897ce344938fa73c6670672c150474a5381b",
+  "standard_completed_zero_rows": 317,
+  "standard_player_keys_added": 2208,
+  "team_keys_added": 196,
+  "total_player_keys": 16783,
+  "total_team_keys": 1490,
+  "total_windows": 745,
+  "transport_requests": 196,
+  "windows": 98
+}

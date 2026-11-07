@@ -781,8 +781,13 @@ def build_team_record_result(
             dp.append(f"to {end_date}")
         caveats.append(f"date window: {' '.join(dp)}")
     if period_execution_backed:
-        descriptor = quarter if quarter is not None else half
-        caveats.append(f"period record computed from {descriptor} windows")
+        if quarter is not None:
+            descriptor = (
+                "overtime" if str(quarter).strip().upper() == "OT" else f"quarter {quarter}"
+            )
+        else:
+            descriptor = f"{half} half"
+        caveats.append(f"record computed from {descriptor} scores")
     if series_situation:
         caveats.append(f"playoff series situation: {series_situation_label(series_situation)}")
     if clutch_executed:

@@ -1,0 +1,535 @@
+{
+  "candidate_zip_sha256": "3f00e20684617dc33777fe151b61cf5d9dc91da46661c53572c608caf6102aa5",
+  "manifest_sha256": "535384a4710739a779f0772da4e3bcee023bd88bfed91be16d0103cdf9d8ff75",
+  "count_cells_verified": 8,
+  "complete_window_REB_rate_cells_verified": 38,
+  "actual_changed_cell_tokens": 39,
+  "unchanged_csv_cell_tokens": 830082,
+  "untouched_csv_lines_byte_identical": 18233,
+  "old_v3_prefix_bytes_preserved": true,
+  "unchanged_v4_files": 29,
+  "whole_rebound_count_checks": 63,
+  "half_rebound_count_checks": 126,
+  "old_unknown_cells_preserved": 484,
+  "new_unknowns_created": 0,
+  "new_source_OT_keys_preserved": 28,
+  "embedded_full_proof_semantically_identical": true,
+  "resolved_exception_removed_only_from_v5": true,
+  "remaining_exceptions": [
+    "DQ-001",
+    "DQ-002",
+    "DQ-003",
+    "DQ-006"
+  ],
+  "actual_deltas": [
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        202681,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.038",
+      "after": "0.04"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1628997,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.074",
+      "after": "0.07692307692307693"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1629023,
+        "half",
+        "first"
+      ],
+      "field": "dreb",
+      "before": "1.0",
+      "after": "2"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1629023,
+        "half",
+        "first"
+      ],
+      "field": "reb",
+      "before": "3.0",
+      "after": "4"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1629023,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.061",
+      "after": "0.08163265306122448"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1629655,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.047",
+      "after": "0.046511627906976744"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1630230,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.051",
+      "after": "0.05263157894736842"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1631204,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.111",
+      "after": "0.1111111111111111"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1642258,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.023",
+      "after": "0.023255813953488372"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1642383,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.053",
+      "after": "0.058823529411764705"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1642843,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.067",
+      "after": "0.06896551724137931"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1643516,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.036",
+      "after": "0.037037037037037035"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612759,
+        203084,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.087",
+      "after": "0.08695652173913043"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612759,
+        1628368,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.039",
+      "after": "0.04081632653061224"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612759,
+        1628436,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.043",
+      "after": "0.043478260869565216"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612759,
+        1629640,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.114",
+      "after": "0.11428571428571428"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612759,
+        1630170,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.083",
+      "after": "0.0851063829787234"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612759,
+        1630577,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.087",
+      "after": "0.08888888888888889"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612759,
+        1641705,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.294",
+      "after": "0.30612244897959184"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612759,
+        1642264,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.102",
+      "after": "0.10638297872340426"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612759,
+        1642844,
+        "half",
+        "first"
+      ],
+      "field": "reb_pct",
+      "before": "0.068",
+      "after": "0.07142857142857142"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        202681,
+        "quarter",
+        "2"
+      ],
+      "field": "reb_pct",
+      "before": "0.083",
+      "after": "0.09090909090909091"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1629023,
+        "quarter",
+        "2"
+      ],
+      "field": "dreb",
+      "before": "0.0",
+      "after": "1"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1629023,
+        "quarter",
+        "2"
+      ],
+      "field": "reb",
+      "before": "0.0",
+      "after": "1"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1629023,
+        "quarter",
+        "2"
+      ],
+      "field": "reb_pct",
+      "before": "0.0",
+      "after": "0.045454545454545456"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1630230,
+        "quarter",
+        "2"
+      ],
+      "field": "reb_pct",
+      "before": "0.045",
+      "after": "0.045454545454545456"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1631204,
+        "quarter",
+        "2"
+      ],
+      "field": "reb_pct",
+      "before": "0.111",
+      "after": "0.1111111111111111"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612742,
+        1642843,
+        "quarter",
+        "2"
+      ],
+      "field": "reb_pct",
+      "before": "0.077",
+      "after": "0.08"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612759,
+        203084,
+        "quarter",
+        "2"
+      ],
+      "field": "reb_pct",
+      "before": "0.222",
+      "after": "0.2222222222222222"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612759,
+        1628368,
+        "quarter",
+        "2"
+      ],
+      "field": "reb_pct",
+      "before": "0.087",
+      "after": "0.09090909090909091"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612759,
+        1630170,
+        "quarter",
+        "2"
+      ],
+      "field": "reb_pct",
+      "before": "0.115",
+      "after": "0.12"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612759,
+        1630577,
+        "quarter",
+        "2"
+      ],
+      "field": "reb_pct",
+      "before": "0.105",
+      "after": "0.10526315789473684"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612759,
+        1641705,
+        "quarter",
+        "2"
+      ],
+      "field": "reb_pct",
+      "before": "0.24",
+      "after": "0.25"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612759,
+        1642264,
+        "quarter",
+        "2"
+      ],
+      "field": "reb_pct",
+      "before": "0.167",
+      "after": "0.17391304347826086"
+    },
+    {
+      "dataset": "player",
+      "key": [
+        22600184,
+        1610612759,
+        1642844,
+        "quarter",
+        "2"
+      ],
+      "field": "reb_pct",
+      "before": "0.053",
+      "after": "0.05555555555555555"
+    },
+    {
+      "dataset": "team",
+      "key": [
+        22600184,
+        1610612742,
+        null,
+        "half",
+        "first"
+      ],
+      "field": "dreb",
+      "before": "10",
+      "after": "11"
+    },
+    {
+      "dataset": "team",
+      "key": [
+        22600184,
+        1610612742,
+        null,
+        "half",
+        "first"
+      ],
+      "field": "reb",
+      "before": "19",
+      "after": "20"
+    },
+    {
+      "dataset": "team",
+      "key": [
+        22600184,
+        1610612742,
+        null,
+        "quarter",
+        "2"
+      ],
+      "field": "dreb",
+      "before": "5",
+      "after": "6"
+    },
+    {
+      "dataset": "team",
+      "key": [
+        22600184,
+        1610612742,
+        null,
+        "quarter",
+        "2"
+      ],
+      "field": "reb",
+      "before": "7",
+      "after": "8"
+    }
+  ],
+  "nba_requests_executed_by_checker": 0,
+  "production_writes": 0
+}

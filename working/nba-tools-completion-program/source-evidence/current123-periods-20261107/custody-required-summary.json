@@ -1,0 +1,24 @@
+{
+  "run_id": 42370077859,
+  "summary": {
+    "candidate_sha": "8051fa38dcd570545baa821d1bf95ef22ce5bb43",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_current123_period_integration_real_data.py::test_required_period_source_composition_and_qualified_consumers",
+      "tests/cloud_current123_period_gamebook_real_data.py::test_transfer_retained_game184_book_without_source_retry"
+    ],
+    "required_test_limit": 100,
+    "selected": 2,
+    "executed": 2,
+    "passed": 2,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "source_requests_this_replay": 0
+}

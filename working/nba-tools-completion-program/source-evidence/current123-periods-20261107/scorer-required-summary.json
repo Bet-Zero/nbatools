@@ -1,0 +1,24 @@
+{
+  "run_id": 42371619251,
+  "reviewed_code_sha": "df28ed5d072a0fc2a7bcb5183bc9a53fd23c5881",
+  "summary": {
+    "candidate_sha": "03f0663ccb1120f543ea30d6834f13520baa3261",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_current123_period_integration_real_data.py::test_required_game184_scorer_correction_and_affected_consumers"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "new_source_requests": 0
+}
