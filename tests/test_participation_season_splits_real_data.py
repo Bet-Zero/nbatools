@@ -28,7 +28,7 @@ def verify_qualified_participation_splits(root, monkeypatch):
 
     from nbatools.api import app
 
-    evidence = []
+    receipts = []
     seasons = ["2023-24", "2025-26"]
     source = {}
     for season in seasons:
@@ -150,7 +150,7 @@ def verify_qualified_participation_splits(root, monkeypatch):
                         assert len(rows) == 1 and rows[0]["bucket"] == selected
                         assert rows[0]["pts_avg"] == pytest.approx(expected.pts.mean(), abs=0.001)
                         assert "no games in " + empty in body["result"]["caveats"]
-                    evidence.append(
+                    receipts.append(
                         dict(
                             kind=kind,
                             relation=relation,
@@ -179,6 +179,6 @@ def verify_qualified_participation_splits(root, monkeypatch):
                         assert badges[relation.capitalize() + " player"] == "Jayson Tatum"
                         assert badges["Opponent"] == "LAL"
                         assert badges["Seasons"] == ", ".join(seasons)
-        return evidence
+        return receipts
     finally:
         reset_data_source_cache()
