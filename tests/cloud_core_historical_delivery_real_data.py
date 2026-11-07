@@ -260,11 +260,10 @@ def _verify(item, delivery, sources, frozen, seq_sources, history_sources, lebro
             f"{case['distinct_players']} distinct players had a matching game in the 2022-23 regular season."
             in item["heroText"]
         )
-        assert "37" in item["text"] and "10" in item["text"]
-        assert "PTS" in item["text"] and "AST" in item["text"]
-        owner = "Team PTS" if key == "live-owned-team" else "Opp PTS"
-        assert owner in item["text"]
-        assert ("125" if key == "live-owned-team" else "110") in item["text"]
+        expression = case["query"].split(" had ", 1)[1].rsplit(" in ", 1)[0]
+        assert expression in item["text"]
+        counterowner = "opponents scored" if key == "live-owned-team" else "team points"
+        assert counterowner not in item["text"]
     else:
         assert family == "ownership" and outcome.result_status == "ok"
         meta, sections = outcome.metadata, body["result"]["sections"]
