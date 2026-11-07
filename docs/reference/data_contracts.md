@@ -1054,6 +1054,12 @@ Contract rules:
   key so exact coverage does not confuse non-participation with missing data
 - zero completion applies only to the six standard quarter/half windows;
   overtime rows are never invented for games or players without OT activity
+- snapshot coverage also requires both team OT rows for each source-qualified
+  positive `games.overtime_periods` count; provided negative, fractional, boolean
+  or nonnumeric counts fail validation. Blank counts remain unknown, not zero.
+  Player OT completeness requires the independently qualified source-listed
+  population, including explicit source zero-clock rows, rather than a crossjoin
+  of whole-game participants. The six standard player windows remain required.
 - this contract is period-only; it does not define `clutch`, and no consumer may treat these
   rows as a clutch-capable substitute
 - commands must compare the requested base entity-game key set with this
