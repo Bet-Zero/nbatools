@@ -41,6 +41,31 @@ def compose(output: Path, backlog: Path):
                 changes.append(dict(path=name, before_sha256=sha256(before),
                                     after_sha256=sha256(after)))
                 target.write_bytes(after)
+    # Reuse the accepted647-window stage to fill only its five source-qualified
+    # OT catalog facts. Earlier107catalog blanks are not source-reported zeroes.
+    import pandas as pd
+    catalog_path = output / "data/raw/games/2026-27_regular_season.csv"
+    catalog = pd.read_csv(catalog_path)
+    periods_path = output / "data/raw/team_game_period_stats/2026-27_regular_season.csv"
+    periods = pd.read_csv(periods_path)
+    accepted_ot = set(periods.loc[periods.period_family.eq("overtime"), "game_id"])
+    assert accepted_ot == {22600110, 22600120, 22600128, 22600141, 22600165}
+    old_catalog_path = E.parent / "rollover-2026-27/current-refresh-20261104/summary-catalog.json"
+    original_catalog_raw = old_catalog_path.read_bytes()
+    original_catalog = json.loads(original_catalog_raw)
+    metadata_changes = []
+    for gid in sorted(accepted_ot):
+        fact = original_catalog[f"{gid:010d}"]
+        assert fact["periods"] == 5
+        mask = catalog.game_id.eq(gid)
+        before = catalog.loc[mask, "overtime_periods"].item()
+        assert pd.isna(before)
+        catalog.loc[mask, "overtime_periods"] = 1
+        metadata_changes.append(dict(game_id=gid, field="overtime_periods", before=None, after=1,
+                                     accepted_window_source_sha256=sha256(periods_path.read_bytes()),
+                                     summary_catalog_sha256=sha256(original_catalog_raw),
+                                     original_summary_sha256=fact["summary_sha256"]))
+    catalog.to_csv(catalog_path, index=False)
     _safe_contracts(output, "2026-27", "Regular Season")
     validate_publication(output / "data")
     report = build_slice_manifest("2026-27", "Regular Season", data_root=output / "data",
@@ -69,6 +94,7 @@ def compose(output: Path, backlog: Path):
     write_json(output / "data/metadata/required-current-custody.json", dict(
         parent_development_manifest_sha256=parent_sha, source_stage_sha256=sha256(source_zip.read_bytes()),
         qualified_source_receipt_sha256=sha256(qraw), changed_files=changes,
+        accepted_old_ot_metadata_changes=metadata_changes,
         production_writes=0, full_snapshot_accepted=False,
         new_standard_player_period_keys_missing=2208, new_team_period_keys_missing=196,
         all_source_team_windows_required=745, new_ot_player_keys="unknown pending actual source windows",

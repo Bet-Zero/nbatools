@@ -303,7 +303,7 @@ def test_source_known_team_overtime_is_required_without_invented_player_rows(tmp
     assert len(players) == 12 and not players.period_family.eq("overtime").any()
 
 
-@pytest.mark.parametrize("count", [-1, 1.5, "unqualified"])
+@pytest.mark.parametrize("count", [-1, 1.5, "unqualified", True, False])
 def test_invalid_provided_overtime_count_cannot_bypass_coverage(tmp_path, count):
     _fixture(tmp_path)
     path = tmp_path / "raw/games/2099-00_regular_season.csv"

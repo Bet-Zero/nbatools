@@ -77,10 +77,14 @@ def test_current_starter_natural_structured_http_and_id18_are_distinct_qualified
     # never from either query path. Only keys/counts/PTS are qualified here.
     players = pd.read_csv(root / f"data/raw/player_game_stats/{SUFFIX}")
     roles = pd.read_csv(root / f"data/raw/player_game_starter_roles/{SUFFIX}")
-    expected = players.loc[players.player_id.eq(1630559)].merge(
-        roles[["game_id", "team_id", "player_id", "starter_flag"]],
-        on=["game_id", "team_id", "player_id"],
-        validate="one_to_one",
+    expected = (
+        players.drop(columns="starter_flag", errors="ignore")
+        .loc[players.player_id.eq(1630559)]
+        .merge(
+            roles[["game_id", "team_id", "player_id", "starter_flag"]],
+            on=["game_id", "team_id", "player_id"],
+            validate="one_to_one",
+        )
     )
     expected = expected.loc[expected.starter_flag.eq(1)]
     assert len(expected) == 9 and expected.pts.sum() == 210

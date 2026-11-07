@@ -541,7 +541,8 @@ def apply_cross_dataset_coverage(
         provided = catalog.overtime_periods.notna() & catalog.overtime_periods.astype(
             str
         ).str.strip().ne("")
-        invalid = provided & (counts.isna() | counts.lt(0) | counts.mod(1).ne(0))
+        booleans = catalog.overtime_periods.astype(str).str.lower().isin(["true", "false"])
+        invalid = provided & (booleans | counts.isna() | counts.lt(0) | counts.mod(1).ne(0))
         if invalid.any():
             _fail(records["games"], "invalid source overtime-period count")
         known_ot_games = _keys(

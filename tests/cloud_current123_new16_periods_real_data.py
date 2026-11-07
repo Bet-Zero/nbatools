@@ -74,7 +74,7 @@ def test_capture_only_actual_new16_required_period_sources():
     assert all(r["transport_complete"] for r in report["attempts"])
 
 
-def test_recover_retained_failed_capture_without_source_retry():
+def test_recover_retained_failed_capture_without_source_retry(capfd):
     """Recover one immutable artifact through the existing read-only runner.
 
     Cloud-local egress cannot reach GitHub's artifact CDN. This bounded custody
@@ -124,5 +124,6 @@ def test_recover_retained_failed_capture_without_source_retry():
     (output / "original-artifact.zip").write_bytes(raw)
     # Exact bounded, non-secret public-source/request/JUnit bytes are retained in
     # the existing job log so this temporary artifact is not the sole handoff.
-    print("RETAINED_PERIOD_ARTIFACT_BASE64=" + base64.b64encode(raw).decode())
-    print("RETAINED_PERIOD_ARTIFACT_SHA256=" + expected)
+    with capfd.disabled():
+        print("RETAINED_PERIOD_ARTIFACT_BASE64=" + base64.b64encode(raw).decode(), flush=True)
+        print("RETAINED_PERIOD_ARTIFACT_SHA256=" + expected, flush=True)
