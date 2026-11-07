@@ -391,3 +391,21 @@ def test_player_games_with_two_teammates(sparse_root, query, both):
     row = _ok(query)["summary"][0]
     assert row["games"] == len(lebron)
     assert row["pts_avg"] == pytest.approx(lebron["pts"].mean(), abs=1e-3)
+
+
+@pytest.mark.parametrize("suffix", ["missing", "out", "not playing"])
+def test_pair_suffix_before_a_shared_stat_bound(sparse_root, suffix):
+    _, out = sparse_root
+    teams = pd.read_csv(FIXTURE / TEAMS)
+    expected = teams.loc[
+        teams.team_abbr.eq("LAL")
+        & teams.game_id.isin(out["Anthony Davis"] & out["Austin Reaves"])
+        & teams.pts.ge(100)
+    ]
+    assert not expected.empty
+    result = execute_natural_query(
+        f"Lakers record with Davis and Reaves {suffix} and at least 100 points"
+    )
+    assert result.result_status == "ok", result.metadata
+    assert {r["game_id"] for r in result.to_dict()["sections"]["game_log"]} == set(expected.game_id)
+    assert result.metadata["without_player"] == "Anthony Davis and Austin Reaves"

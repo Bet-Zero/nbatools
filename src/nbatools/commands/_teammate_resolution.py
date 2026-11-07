@@ -168,6 +168,22 @@ _PAIR_PARTICIPATION = re.compile(
 )
 
 
+def _pair_matches(text: str):
+    """An AND before a fully read stat bound ends the name list, not a name."""
+    from nbatools.commands._parse_helpers import extract_threshold_conditions
+
+    bounds = extract_threshold_conditions(text)
+    for match in _PAIR.finditer(text):
+        end = match.end()
+        for bound in bounds:
+            if bound["start"] <= match.start(2):
+                continue
+            join = re.search(r"\s+and\s*$", text[match.start(2) : bound["start"]])
+            if join:
+                end = min(end, match.start(2) + join.start())
+        yield _PAIR.match(text, match.start(), end) if end < match.end() else match
+
+
 def _pair_participation_suffix(text: str, match: re.Match) -> re.Match | None:
     """Keep a missing-from qualifier on the actors unless it is temporal scope."""
     suffix = _PAIR_PARTICIPATION.search(match.group(2).strip())
@@ -343,7 +359,7 @@ def requested_availability_pair(text: str) -> AvailabilityClause | None:
     from nbatools.commands._matchup_utils import _tail_is_read_scope
     from nbatools.commands._parse_helpers import detect_stat
 
-    for match in _PAIR.finditer(text):
+    for match in _pair_matches(text):
         fragment = match.group(2).strip()
         suffix = _pair_participation_suffix(text, match)
         absent = match.group(1) != "with"
@@ -451,7 +467,7 @@ def availability_pair(
     # Stat-bound clauses can precede the named pair. They are not teammate
     # predicates; inspect each complete with/without fragment instead of taking
     # the first "with" in the question.
-    matches = list(_PAIR.finditer(text))
+    matches = list(_pair_matches(text))
     pairs = [m for m in matches if " and " in m.group(2)]
     if len(pairs) != 1:
         return None

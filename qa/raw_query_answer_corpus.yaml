@@ -17775,6 +17775,7 @@ cases:
     query: Lakers record with Davis and Reaves missing in 2023-24
     category: qualified_pair_participation
     priority: p0
+    answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_reason: no_match
     expected_route: team_record
