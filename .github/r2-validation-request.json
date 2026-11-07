@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "9186c8c38b0d4be6f6ef0cb2de65a23fc567579a",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/cloud_current123_period_integration_real_data.py::test_required_period_source_composition_and_qualified_consumers",
+    "tests/cloud_current123_period_gamebook_real_data.py::test_transfer_retained_game184_book_without_source_retry"
+  ],
+  "raw_qa_cases": []
+}
