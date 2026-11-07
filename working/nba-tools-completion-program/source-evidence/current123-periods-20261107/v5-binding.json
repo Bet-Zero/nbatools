@@ -1,0 +1,9 @@
+{
+  "archive": "current123-period-v5.zip",
+  "archive_sha256": "3f00e20684617dc33777fe151b61cf5d9dc91da46661c53572c608caf6102aa5",
+  "book_sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b",
+  "full_snapshot_accepted": false,
+  "manifest_sha256": "535384a4710739a779f0772da4e3bcee023bd88bfed91be16d0103cdf9d8ff75",
+  "parent_manifest_sha256": "93b2b8f87809727e6fa72a2b3cbfae3e893e5d122bc025aee3ee19bd8254097d",
+  "production_writes": 0
+}

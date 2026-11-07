@@ -1,0 +1,30 @@
+{
+  "source_url": "https://statsdmz.nba.com/pdfs/20261104/20261104_DALSAS_book.pdf",
+  "game_id": "0022600184",
+  "request_sha256": "8ae14a5debf33fcdfbc99414d9a6efcc5a04501786cf922b379bcdd7966c771e",
+  "started_at": "2026-11-07T11:45:49.211294+00:00",
+  "attempts": 1,
+  "redirects_followed": 0,
+  "original_retained": true,
+  "pdf_parsed": true,
+  "authoritative_correction_qualified": false,
+  "source_generation_independence": "unestablished",
+  "canonical_writes": 0,
+  "production_writes": 0,
+  "http_status": 200,
+  "response_url": "https://statsdmz.nba.com/pdfs/20261104/20261104_DALSAS_book.pdf",
+  "response_headers": {
+    "Content-Type": "application/pdf",
+    "Content-Length": "152520",
+    "Date": "Sat, 07 Nov 2026 11:45:49 GMT",
+    "ETag": "\"709cd230ee6cdd1:0\"",
+    "Last-Modified": "Thu, 05 Nov 2026 06:23:36 GMT"
+  },
+  "bytes_read": 152520,
+  "sha256_of_bytes_read": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b",
+  "raw_file": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+  "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b",
+  "size_bytes": 152520,
+  "page_count": 20,
+  "finished_at": "2026-11-07T11:45:51.083323+00:00"
+}

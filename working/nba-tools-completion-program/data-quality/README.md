@@ -34,23 +34,28 @@ closes the368role and4Advanced-player missing-key requirements with independent
 source/affected-input checks; original failure records and versions are preserved.
 The role/Advanced resolutions do not certify all season rates or a complete release.
 
-Current period failures remain open:196new team keys and2208standard player keys,
-plus the new OT source-listed player population still unknown. The required total
-is745windows/1490team keys. Earlier2249player planning keys included41whole-game
-players in OT; [independent contract reconciliation](../source-evidence/id18-current-required-20261107/independent/ot-coverage-contract-reconciliation.md)
-proves that the unchanged contract requires actual source-listed OT rows (including
-explicit source zero-clock rows), not invented zeros for every whole-game player.
-The196-body existing collector stopped at its first173Q1Traditional30-second
-ReadTimeout withzero response bytes;195requests were unattempted. Exact originals,
-attempt/unattempted ledger and failed1/0pass summary are retained in the existing
-[evidence package](../source-evidence/id18-current-required-20261107/period-capture-failure/).
-A separate custody recovery passed; source acquisition did not. Do not retry that
-route unchanged. A newly working approved source route is the next trigger.
+The returned PR601 Mac capture now supplies all196sources/98newwindows. The
+[new v4 stage](../source-evidence/current123-periods-20261107/README.md) resolves
+both missing-key entries at the retained123-game cutoff:745windows/1490teamkeys,
+2208newstandard+28actualsourceOTplayerkeys,16783totalplayerrows. Preserve all prior
+failed observations and versions. No41whole-game OTcrossjoin is invented. Three
+malformed clocks are explicitly derived from independently admitted complements;
+original bytes survive. Strict16dataset structural coverage now passes, separately
+from numerical/source/freshness/production acceptance.
 
-These source-family gaps do not duplicate DQ-001–003's484old rate values, establish
-cross-club membership, or authorize publication. Old regulation-only team reports
-are superseded by the source-known OT coverage record; their original failed
-observations remain unchanged.
+The newly found [game184 rebound-basis exception](DQ-auto-4294464123002d61e11cd59f7cdebfd1690b172d28b608f26d934e725ecc6c7a.json)
+is now **resolved in new v5**, after one official scorer-book capture through the
+existing read-onlyActions route. The Q2 05:14 Washington defensive rebound is
+literal in scorer Q2/H1 and PBP:8count corrections and38dependent REB% fractions
+are independently source-qualified. Both old originals and v4 remain immutable;
+there are **zero new unknowns**. Do not recollect the196period successes or the
+singlebook without changed evidence.
+
+This resolution does not close the unchanged484old rate facts/DQ001–003 or
+DQ006membership. The strict development reader's file-level unknown guard still
+refuses all player-period delivery because of those484nulls; qualified team score/
+record/rebound positives work. Do not call a refusal a positive or relax the guard.
+Existing Actions173Q1timeout remains historical and must not be retried unchanged.
 
 **Do not reopen resolved0142,0138,0009AST or0160timing** merely because an older
 handoff says blocked. PR582 accepts the relevant scorer facts and independent

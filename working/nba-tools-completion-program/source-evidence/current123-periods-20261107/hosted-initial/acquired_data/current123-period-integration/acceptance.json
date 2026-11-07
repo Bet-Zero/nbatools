@@ -1,0 +1,23 @@
+{
+  "candidate_sha": "2c82a949825bf64905e1622f7638d6d48dbbc48b",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "development_manifest_sha256": "93b2b8f87809727e6fa72a2b3cbfae3e893e5d122bc025aee3ee19bd8254097d",
+  "original_requests": 196,
+  "newly_integrated_windows": 98,
+  "new_standard_player_keys": 2208,
+  "new_source_ot_player_keys": 28,
+  "new_team_keys": 196,
+  "total_period_windows": 745,
+  "total_player_keys": 16783,
+  "total_team_keys": 1490,
+  "period_acquisition_and_key_coverage_complete": true,
+  "strict_structural_validation": "passed",
+  "numerical_source_oracle_new_keys": "passed_with_explicit184_rebound_basis_conflict",
+  "affected_team_record_consumers": "quarter_half_OT_natural_structured_HTTP_pass",
+  "player_period_delivery": "blocked_old484_unknowns_not_positive_acceptance",
+  "new184_rebound_fact": "open_separate_source_exception",
+  "old484_rate_unknowns": "preserved",
+  "dq006": "separate_unresolved",
+  "whole_snapshot_accepted": false,
+  "production_writes": 0
+}
