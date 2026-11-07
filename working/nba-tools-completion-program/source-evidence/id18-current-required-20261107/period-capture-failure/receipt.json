@@ -1,0 +1,16 @@
+{
+  "original_run_id": 42343199090,
+  "original_request_sha": "f6b576c3f2d44bf03de17d81bbb1d0af77301a3c",
+  "reviewed_source_sha": "578dd16d6ff4137abd13ea69d2276438506ad03b",
+  "artifact_id": 13562477912,
+  "artifact_size_bytes": 16637,
+  "artifact_sha256": "f56d9c78c3df5c0c81c6d89e06ab99e147dfaa883b7f21a65ce5886bdfaefcfd",
+  "actual_route": "Existing read-only GitHub Actions runner using unchanged approved collector; original generic laptop-classification string is retained literally",
+  "recovery_run_id": 42343933162,
+  "source_attempts": 1,
+  "source_response_bytes": 0,
+  "unattempted_jobs": 195,
+  "source_acquisition_passed": false,
+  "recovery_is_custody_only": true,
+  "production_writes": 0
+}

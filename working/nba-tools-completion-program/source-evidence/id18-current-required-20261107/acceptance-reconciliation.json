@@ -1,0 +1,615 @@
+{
+  "classification": "Continuation reconciliation using existing mappings and accepted deltas; not a new audit or complete46execution",
+  "original_K08_denominator": 46,
+  "original_Core1_denominator": 12,
+  "original_id_newline_sha256": "acc3d675811c80641aec64d60d76e90f7e6d8eb4dba66904fef5eff616cc1f96",
+  "preserved_evidence": [
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/owned-boolean-20261106/independent/k08-original-46.json",
+      "sha256": "11d5440000b298bf60a1bcdc818396f5bcbc7d04a4fce2bdbd17974d2873cceb"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/owned-boolean-20261106/independent/k08-bounded-mapping.json",
+      "sha256": "9ceb7293742e988f687f09a901e688f54a455ca45acf1878c2c1b82e69339e1f"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/owned-boolean-20261106/independent/core1-original-12.json",
+      "sha256": "55acd9a6229ef44fded6e6be5adf9f9de3eebe8aec1324cb24d52344f9575dfb"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/paired-missing-20261107/k08-affected-delta.json",
+      "sha256": "ed07c9632ea24330ff2eec50625df5c0734645fe2ea03d1a7832a5d3b9bb1ca9"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/id44-core-20261107/integration-applicability.json",
+      "sha256": "8bdbc922ebeaa7e80400d75e3a4d164397a7d16ac289374cc48d3865a41e8c05"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/core-live-current-20261107/README.md",
+      "sha256": "e1a084d598387b50ca76c7124ca6486d73ecf78ec6ebf2bc83a80b0615464327"
+    },
+    {
+      "path": "working/nba-tools-completion-program/acceptance-baseline-pr582.md",
+      "sha256": "433f49eb4467401184f15231e0d80520a9d8bef44eb81c5bb4b3988f9f916bfd"
+    }
+  ],
+  "k08_rows": [
+    {
+      "ordinal": 1,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis out-names0-False]",
+      "prior_mapping_row": 1,
+      "prior_family": "scalar_participation",
+      "retained_scope": "Implemented/current fixture controls; qualified historical Davis2023-24 and published LeBron2025-26 subsets, not exact literal current-season Davis answer.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 2,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Anthony Davis out-names1-False]",
+      "prior_mapping_row": 2,
+      "prior_family": "scalar_participation",
+      "retained_scope": "Implemented/current fixture controls; qualified historical Davis2023-24 and published LeBron2025-26 subsets, not exact literal current-season Davis answer.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 3,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis not playing-names2-False]",
+      "prior_mapping_row": 3,
+      "prior_family": "scalar_participation",
+      "retained_scope": "Implemented/current fixture controls; qualified historical Davis2023-24 and published LeBron2025-26 subsets, not exact literal current-season Davis answer.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 4,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis sitting this season-names3-False]",
+      "prior_mapping_row": 4,
+      "prior_family": "scalar_participation",
+      "retained_scope": "Implemented/current fixture controls; qualified historical Davis2023-24 and published LeBron2025-26 subsets, not exact literal current-season Davis answer.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 5,
+      "original_node_id": "tests/test_c1_missed_games.py::test_missed_games_are_team_games_without_him[how many games has LeBron missed this season-LAL-LeBron James]",
+      "prior_mapping_row": 5,
+      "prior_family": "missed_games",
+      "retained_scope": "Implemented, qualified complete LeBron2025-26 and filtered historical/full-season Poeltl subsets. Literal this-season freshness/current2026-27 remains separate.",
+      "current_delta": "PR596 selected full123cutoff source/current consumer facts retained unchanged;ID5/7own-teamPHILeBron2missed,ID8home1,ID16LukaLALwithout1-0/103PTS,ID35Reavescoveredempty. Do not retain stale literal fixtureLAL as LeBron2026-27team. Accepted variants/actualscope,not all exact original node executions/deployed acceptance.",
+      "state": "qualified_current_selected_development_scope",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 6,
+      "original_node_id": "tests/test_c1_missed_games.py::test_missed_games_are_team_games_without_him[how many games did Tatum miss in 2024-25-BOS-Jayson Tatum]",
+      "prior_mapping_row": 6,
+      "prior_family": "missed_tatum2024",
+      "retained_scope": "Implemented; exact requested2024-25 Tatum full82 cohort72played10DNP accepted in historical stage, unpublished.",
+      "current_delta": "Retain PR593 mapping and its actual source/language/deployment limits; no new execution claimed.",
+      "state": "retained_existing_evidence",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 7,
+      "original_node_id": "tests/test_c1_missed_games.py::test_missed_games_are_team_games_without_him[games LeBron missed-LAL-LeBron James]",
+      "prior_mapping_row": 7,
+      "prior_family": "missed_games",
+      "retained_scope": "Implemented, qualified complete LeBron2025-26 and filtered historical/full-season Poeltl subsets. Literal this-season freshness/current2026-27 remains separate.",
+      "current_delta": "PR596 selected full123cutoff source/current consumer facts retained unchanged;ID5/7own-teamPHILeBron2missed,ID8home1,ID16LukaLALwithout1-0/103PTS,ID35Reavescoveredempty. Do not retain stale literal fixtureLAL as LeBron2026-27team. Accepted variants/actualscope,not all exact original node executions/deployed acceptance.",
+      "state": "qualified_current_selected_development_scope",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 8,
+      "original_node_id": "tests/test_c1_missed_games.py::test_missed_games_are_team_games_without_him[how many home games did LeBron miss-LAL-LeBron James]",
+      "prior_mapping_row": 8,
+      "prior_family": "missed_games",
+      "retained_scope": "Implemented, qualified complete LeBron2025-26 and filtered historical/full-season Poeltl subsets. Literal this-season freshness/current2026-27 remains separate.",
+      "current_delta": "PR596 selected full123cutoff source/current consumer facts retained unchanged;ID5/7own-teamPHILeBron2missed,ID8home1,ID16LukaLALwithout1-0/103PTS,ID35Reavescoveredempty. Do not retain stale literal fixtureLAL as LeBron2026-27team. Accepted variants/actualscope,not all exact original node executions/deployed acceptance.",
+      "state": "qualified_current_selected_development_scope",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 9,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves both out-names5-False]",
+      "prior_mapping_row": 9,
+      "prior_family": "paired_participation",
+      "retained_scope": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+      "current_delta": "Apply unchanged PR594 affected-ID delta: generalized paired absence and historical qualified zero/nonempty controls. Exact current/cross-club membership remains DQ-006; not accepted from Reaves-positive alone.",
+      "state": "historical_verified_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 10,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves DNP-names6-False]",
+      "prior_mapping_row": 10,
+      "prior_family": "paired_participation",
+      "retained_scope": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+      "current_delta": "Apply unchanged PR594 affected-ID delta: generalized paired absence and historical qualified zero/nonempty controls. Exact current/cross-club membership remains DQ-006; not accepted from Reaves-positive alone.",
+      "state": "historical_verified_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 11,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves out-names7-False]",
+      "prior_mapping_row": 11,
+      "prior_family": "paired_participation",
+      "retained_scope": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+      "current_delta": "Apply unchanged PR594 affected-ID delta: generalized paired absence and historical qualified zero/nonempty controls. Exact current/cross-club membership remains DQ-006; not accepted from Reaves-positive alone.",
+      "state": "historical_verified_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 12,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves missing-names8-False]",
+      "prior_mapping_row": 12,
+      "prior_family": "paired_missing_unfinished",
+      "retained_scope": "Genuine desired behavior remains unfinished: shared pair missing wording explicitly refuses; unknown medical/status meaning must not be silently equated with whole-game DNP. Preserve positive obligation and clarify/implement the intended missing participation wording with proper source meaning.",
+      "current_delta": "Apply unchanged PR594 affected-ID delta: generalized paired absence and historical qualified zero/nonempty controls. Exact current/cross-club membership remains DQ-006; not accepted from Reaves-positive alone.",
+      "state": "historical_verified_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 13,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves not playing-names9-False]",
+      "prior_mapping_row": 13,
+      "prior_family": "paired_participation",
+      "retained_scope": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+      "current_delta": "Apply unchanged PR594 affected-ID delta: generalized paired absence and historical qualified zero/nonempty controls. Exact current/cross-club membership remains DQ-006; not accepted from Reaves-positive alone.",
+      "state": "historical_verified_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 14,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record without Davis and Reaves playing-names10-False]",
+      "prior_mapping_row": 14,
+      "prior_family": "paired_participation",
+      "retained_scope": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+      "current_delta": "Apply unchanged PR594 affected-ID delta: generalized paired absence and historical qualified zero/nonempty controls. Exact current/cross-club membership remains DQ-006; not accepted from Reaves-positive alone.",
+      "state": "historical_verified_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 15,
+      "original_node_id": "tests/test_c1_availability_words.py::test_player_stats_with_absence_words[LeBron James stats with Davis out-names0-False]",
+      "prior_mapping_row": 15,
+      "prior_family": "scalar_participation",
+      "retained_scope": "Implemented/current fixture controls; qualified historical Davis2023-24 and published LeBron2025-26 subsets, not exact literal current-season Davis answer.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 16,
+      "original_node_id": "tests/test_c1_player_clause_samples.py::test_sits_is_absence[Lakers record when Luka Doncic sits]",
+      "prior_mapping_row": 16,
+      "prior_family": "luka_sits",
+      "retained_scope": "Implemented whole-game DNP semantics; full2025-26 source-staged64played18DNP and team record10W8L accepted, unpublished.",
+      "current_delta": "PR596 selected full123cutoff source/current consumer facts retained unchanged;ID5/7own-teamPHILeBron2missed,ID8home1,ID16LukaLALwithout1-0/103PTS,ID35Reavescoveredempty. Do not retain stale literal fixtureLAL as LeBron2026-27team. Accepted variants/actualscope,not all exact original node executions/deployed acceptance.",
+      "state": "qualified_current_selected_development_scope",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 17,
+      "original_node_id": "tests/test_c1_availability_words.py::test_player_stats_with_absence_words[LeBron James stats with Anthony Davis out-names1-False]",
+      "prior_mapping_row": 17,
+      "prior_family": "scalar_participation",
+      "retained_scope": "Implemented/current fixture controls; qualified historical Davis2023-24 and published LeBron2025-26 subsets, not exact literal current-season Davis answer.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 18,
+      "original_node_id": "tests/test_c1_player_clause_samples.py::test_sits_is_absence[Lakers record when Luka Doncic rests]",
+      "prior_mapping_row": 18,
+      "prior_family": "reported_rest",
+      "retained_scope": "Old conflation is superseded: explicit officially reported Rest has implemented positive fixture capability, real Luka2025-26 qualified zeroRest versus18DNP; exact source-reported Rest consumer accepted in stage. No clinical rest inference or positive NBA Rest row claimed.",
+      "current_delta": "Original literal natural+three independent heldouts, allfive structured consumers,actualHTTP and desktop/mobile verified on canonical source-bound v2:fullLAL9,8played,1reported_otherDNP,0Rest,0unknown;qualifiedno_match,notno_data. Production/deployed current remains open.",
+      "state": "qualified_current_development_positive_empty",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 19,
+      "original_node_id": "tests/test_c1_availability_words.py::test_player_stats_with_absence_words[LeBron James stats with Davis out this season-names2-False]",
+      "prior_mapping_row": 19,
+      "prior_family": "scalar_participation",
+      "retained_scope": "Implemented/current fixture controls; qualified historical Davis2023-24 and published LeBron2025-26 subsets, not exact literal current-season Davis answer.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 20,
+      "original_node_id": "tests/test_c1_availability_words.py::test_player_stats_with_absence_words[LeBron James stats with Davis and Reaves out-names3-False]",
+      "prior_mapping_row": 20,
+      "prior_family": "paired_participation",
+      "retained_scope": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+      "current_delta": "Apply unchanged PR594 affected-ID delta: generalized paired absence and historical qualified zero/nonempty controls. Exact current/cross-club membership remains DQ-006; not accepted from Reaves-positive alone.",
+      "state": "historical_verified_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 21,
+      "original_node_id": "tests/test_c1_availability_words.py::test_player_stats_with_absence_words[LeBron James stats with Davis and Reaves not playing-names4-False]",
+      "prior_mapping_row": 21,
+      "prior_family": "paired_participation",
+      "retained_scope": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+      "current_delta": "Apply unchanged PR594 affected-ID delta: generalized paired absence and historical qualified zero/nonempty controls. Exact current/cross-club membership remains DQ-006; not accepted from Reaves-positive alone.",
+      "state": "historical_verified_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 22,
+      "original_node_id": "tests/test_c1_availability_words.py::test_a_teammate_pair_after_a_bound[LeBron James games with 20 points without Davis and Reaves-20-False]",
+      "prior_mapping_row": 22,
+      "prior_family": "paired_participation",
+      "retained_scope": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+      "current_delta": "Apply unchanged PR594 affected-ID delta: generalized paired absence and historical qualified zero/nonempty controls. Exact current/cross-club membership remains DQ-006; not accepted from Reaves-positive alone.",
+      "state": "historical_verified_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 23,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_an_opposing_player_out[Lakers record vs Celtics with Tatum out-opponents0]",
+      "prior_mapping_row": 23,
+      "prior_family": "opposing_participation",
+      "retained_scope": "Implemented qualified opponent association/absence and bound/summary paths on covered observations; tests and retained opponent-specific subset exist. Tatum2023-24 formerly8unknown is now82observed74played8DNP viaPR586, staged. Must not certify every original multi-opponent wording/grain, broad dated nonmembership, or deployment from those subsets.",
+      "current_delta": "PR596 independently complete LAL-vs-BOS/NYK parent is empty at123cutoff, with both opponents/actor preserved in selected consumer. This establishes applicability/valid empty parent, not independent execution of every original threshold/paraphrase or broader membership. Historical mapping retained; no all46/deployed claim.",
+      "state": "qualified_current_empty_parent_selected_consumer",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 24,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_an_opposing_player_out[Lakers record vs Celtics without Tatum-opponents1]",
+      "prior_mapping_row": 24,
+      "prior_family": "opposing_participation",
+      "retained_scope": "Implemented qualified opponent association/absence and bound/summary paths on covered observations; tests and retained opponent-specific subset exist. Tatum2023-24 formerly8unknown is now82observed74played8DNP viaPR586, staged. Must not certify every original multi-opponent wording/grain, broad dated nonmembership, or deployment from those subsets.",
+      "current_delta": "PR596 independently complete LAL-vs-BOS/NYK parent is empty at123cutoff, with both opponents/actor preserved in selected consumer. This establishes applicability/valid empty parent, not independent execution of every original threshold/paraphrase or broader membership. Historical mapping retained; no all46/deployed claim.",
+      "state": "qualified_current_empty_parent_selected_consumer",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 25,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_an_opposing_player_out[Lakers record vs Celtics when Tatum sits-opponents2]",
+      "prior_mapping_row": 25,
+      "prior_family": "opposing_participation",
+      "retained_scope": "Implemented qualified opponent association/absence and bound/summary paths on covered observations; tests and retained opponent-specific subset exist. Tatum2023-24 formerly8unknown is now82observed74played8DNP viaPR586, staged. Must not certify every original multi-opponent wording/grain, broad dated nonmembership, or deployment from those subsets.",
+      "current_delta": "PR596 independently complete LAL-vs-BOS/NYK parent is empty at123cutoff, with both opponents/actor preserved in selected consumer. This establishes applicability/valid empty parent, not independent execution of every original threshold/paraphrase or broader membership. Historical mapping retained; no all46/deployed claim.",
+      "state": "qualified_current_empty_parent_selected_consumer",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 26,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_an_opposing_player_out[Lakers record vs Celtics and Knicks without Tatum-opponents3]",
+      "prior_mapping_row": 26,
+      "prior_family": "opposing_participation",
+      "retained_scope": "Implemented qualified opponent association/absence and bound/summary paths on covered observations; tests and retained opponent-specific subset exist. Tatum2023-24 formerly8unknown is now82observed74played8DNP viaPR586, staged. Must not certify every original multi-opponent wording/grain, broad dated nonmembership, or deployment from those subsets.",
+      "current_delta": "PR596 independently complete LAL-vs-BOS/NYK parent is empty at123cutoff, with both opponents/actor preserved in selected consumer. This establishes applicability/valid empty parent, not independent execution of every original threshold/paraphrase or broader membership. Historical mapping retained; no all46/deployed claim.",
+      "state": "qualified_current_empty_parent_selected_consumer",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 27,
+      "original_node_id": "tests/test_c1_availability_words.py::test_absence_then_a_bound[LeBron James games with Davis out and 30 points]",
+      "prior_mapping_row": 27,
+      "prior_family": "player_bound_absence",
+      "retained_scope": "Implemented player list/stat-bound+qualified absence; controls read both clause orders; historical LeBron30PTSwithDavisout accepted. Exact current-season original not certified.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 28,
+      "original_node_id": "tests/test_c1_availability_words.py::test_absence_then_a_bound[LeBron James games with Davis out with 30 points]",
+      "prior_mapping_row": 28,
+      "prior_family": "player_bound_absence",
+      "retained_scope": "Implemented player list/stat-bound+qualified absence; controls read both clause orders; historical LeBron30PTSwithDavisout accepted. Exact current-season original not certified.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 29,
+      "original_node_id": "tests/test_c1_availability_words.py::test_absence_then_a_bound[LeBron James 30 point games with Davis out]",
+      "prior_mapping_row": 29,
+      "prior_family": "player_bound_absence",
+      "retained_scope": "Implemented player list/stat-bound+qualified absence; controls read both clause orders; historical LeBron30PTSwithDavisout accepted. Exact current-season original not certified.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 30,
+      "original_node_id": "tests/test_c1_availability_words.py::test_game_summary_with_an_opposing_player_out[Lakers 120 point games vs Celtics with Tatum out-120]",
+      "prior_mapping_row": 30,
+      "prior_family": "opposing_participation",
+      "retained_scope": "Implemented qualified opponent association/absence and bound/summary paths on covered observations; tests and retained opponent-specific subset exist. Tatum2023-24 formerly8unknown is now82observed74played8DNP viaPR586, staged. Must not certify every original multi-opponent wording/grain, broad dated nonmembership, or deployment from those subsets.",
+      "current_delta": "PR596 independently complete LAL-vs-BOS/NYK parent is empty at123cutoff, with both opponents/actor preserved in selected consumer. This establishes applicability/valid empty parent, not independent execution of every original threshold/paraphrase or broader membership. Historical mapping retained; no all46/deployed claim.",
+      "state": "qualified_current_empty_parent_selected_consumer",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 31,
+      "original_node_id": "tests/test_c1_availability_words.py::test_game_summary_with_an_opposing_player_out[Lakers 120 point games vs Celtics without Tatum-120]",
+      "prior_mapping_row": 31,
+      "prior_family": "opposing_participation",
+      "retained_scope": "Implemented qualified opponent association/absence and bound/summary paths on covered observations; tests and retained opponent-specific subset exist. Tatum2023-24 formerly8unknown is now82observed74played8DNP viaPR586, staged. Must not certify every original multi-opponent wording/grain, broad dated nonmembership, or deployment from those subsets.",
+      "current_delta": "PR596 independently complete LAL-vs-BOS/NYK parent is empty at123cutoff, with both opponents/actor preserved in selected consumer. This establishes applicability/valid empty parent, not independent execution of every original threshold/paraphrase or broader membership. Historical mapping retained; no all46/deployed claim.",
+      "state": "qualified_current_empty_parent_selected_consumer",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 32,
+      "original_node_id": "tests/test_c1_availability_words.py::test_game_summary_with_an_opposing_player_out[Lakers points per game vs Celtics without Tatum-None]",
+      "prior_mapping_row": 32,
+      "prior_family": "opposing_participation",
+      "retained_scope": "Implemented qualified opponent association/absence and bound/summary paths on covered observations; tests and retained opponent-specific subset exist. Tatum2023-24 formerly8unknown is now82observed74played8DNP viaPR586, staged. Must not certify every original multi-opponent wording/grain, broad dated nonmembership, or deployment from those subsets.",
+      "current_delta": "PR596 independently complete LAL-vs-BOS/NYK parent is empty at123cutoff, with both opponents/actor preserved in selected consumer. This establishes applicability/valid empty parent, not independent execution of every original threshold/paraphrase or broader membership. Historical mapping retained; no all46/deployed claim.",
+      "state": "qualified_current_empty_parent_selected_consumer",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 33,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_team_record_with_a_one_word_teammate[Lakers record without Davis-Anthony Davis-False]",
+      "prior_mapping_row": 33,
+      "prior_family": "scalar_participation",
+      "retained_scope": "Implemented/current fixture controls; qualified historical Davis2023-24 and published LeBron2025-26 subsets, not exact literal current-season Davis answer.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 34,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_team_record_with_a_one_word_teammate[Lakers record when Davis sits-Anthony Davis-False]",
+      "prior_mapping_row": 34,
+      "prior_family": "scalar_participation",
+      "retained_scope": "Implemented/current fixture controls; qualified historical Davis2023-24 and published LeBron2025-26 subsets, not exact literal current-season Davis answer.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 35,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_team_record_with_a_one_word_teammate[Lakers record without Reaves-Austin Reaves-False]",
+      "prior_mapping_row": 35,
+      "prior_family": "reaves_scalar",
+      "retained_scope": "Implemented; full2025-26 Reaves51played31DNP source stage accepted; without record17W14L. Historical2023-24 known zero accepted. Both unpublished source cohorts.",
+      "current_delta": "PR596 selected full123cutoff source/current consumer facts retained unchanged;ID5/7own-teamPHILeBron2missed,ID8home1,ID16LukaLALwithout1-0/103PTS,ID35Reavescoveredempty. Do not retain stale literal fixtureLAL as LeBron2026-27team. Accepted variants/actualscope,not all exact original node executions/deployed acceptance.",
+      "state": "qualified_current_selected_development_scope",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 36,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_player_games_with_or_without_a_teammate[LeBron James stats without Davis-Anthony Davis-False]",
+      "prior_mapping_row": 36,
+      "prior_family": "scalar_participation",
+      "retained_scope": "Implemented/current fixture controls; qualified historical Davis2023-24 and published LeBron2025-26 subsets, not exact literal current-season Davis answer.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 37,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_player_games_with_or_without_a_teammate[LeBron stats when Davis sits-Anthony Davis-False]",
+      "prior_mapping_row": 37,
+      "prior_family": "scalar_participation",
+      "retained_scope": "Implemented/current fixture controls; qualified historical Davis2023-24 and published LeBron2025-26 subsets, not exact literal current-season Davis answer.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 38,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_player_games_with_or_without_a_teammate[LeBron James stats without Davis this season-Anthony Davis-False]",
+      "prior_mapping_row": 38,
+      "prior_family": "scalar_participation",
+      "retained_scope": "Implemented/current fixture controls; qualified historical Davis2023-24 and published LeBron2025-26 subsets, not exact literal current-season Davis answer.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 39,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_player_game_list_with_a_teammate",
+      "prior_mapping_row": 39,
+      "prior_family": "player_bound_absence",
+      "retained_scope": "Implemented player list/stat-bound+qualified absence; controls read both clause orders; historical LeBron30PTSwithDavisout accepted. Exact current-season original not certified.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 40,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_team_record_with_scope_after_the_name",
+      "prior_mapping_row": 40,
+      "prior_family": "scalar_participation",
+      "retained_scope": "Implemented/current fixture controls; qualified historical Davis2023-24 and published LeBron2025-26 subsets, not exact literal current-season Davis answer.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 41,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_an_opponent_sitting",
+      "prior_mapping_row": 41,
+      "prior_family": "opposing_participation",
+      "retained_scope": "Implemented qualified opponent association/absence and bound/summary paths on covered observations; tests and retained opponent-specific subset exist. Tatum2023-24 formerly8unknown is now82observed74played8DNP viaPR586, staged. Must not certify every original multi-opponent wording/grain, broad dated nonmembership, or deployment from those subsets.",
+      "current_delta": "PR596 independently complete LAL-vs-BOS/NYK parent is empty at123cutoff, with both opponents/actor preserved in selected consumer. This establishes applicability/valid empty parent, not independent execution of every original threshold/paraphrase or broader membership. Historical mapping retained; no all46/deployed claim.",
+      "state": "qualified_current_empty_parent_selected_consumer",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 42,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_team_record_with_two_teammates[Lakers record without Davis and Reaves-False]",
+      "prior_mapping_row": 42,
+      "prior_family": "paired_participation",
+      "retained_scope": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+      "current_delta": "Apply unchanged PR594 affected-ID delta: generalized paired absence and historical qualified zero/nonempty controls. Exact current/cross-club membership remains DQ-006; not accepted from Reaves-positive alone.",
+      "state": "historical_verified_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 43,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_player_games_with_two_teammates[LeBron stats without Davis and Reaves-False]",
+      "prior_mapping_row": 43,
+      "prior_family": "paired_participation",
+      "retained_scope": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+      "current_delta": "Apply unchanged PR594 affected-ID delta: generalized paired absence and historical qualified zero/nonempty controls. Exact current/cross-club membership remains DQ-006; not accepted from Reaves-positive alone.",
+      "state": "historical_verified_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 44,
+      "original_node_id": "tests/test_c2_franchise_identity.py::test_with_and_without_a_player_keep_his_earlier_franchise_games",
+      "prior_mapping_row": 44,
+      "prior_family": "franchise_identity",
+      "retained_scope": "Fixture behavior preserves earlier franchiseID through participation filters. Mere companion real-data subtraction of missing statrows does not establish qualified DurantDNP/source coverage; no exact full-population accepted Durant source receipt identified in bounded retained package inspection.",
+      "current_delta": "PR595 full82 Seattle/Durant source/N/L accepted:80played+2explicitDNP,without1-1/198PTS,with19-61/7801PTS; unpublished. Preserve original multi-era fixture and historical evidence; D open.",
+      "state": "historical_verified_unpublished",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 45,
+      "original_node_id": "tests/test_record_queries.py::TestBuildTeamRecordResult::test_record_without_player_filters_sample",
+      "prior_mapping_row": 45,
+      "prior_family": "scalar_participation",
+      "retained_scope": "Implemented/current fixture controls; qualified historical Davis2023-24 and published LeBron2025-26 subsets, not exact literal current-season Davis answer.",
+      "current_delta": "Retain PR593 historical/fixture scope. Exact current Davis/LeBron-owned or paired game-day membership requires DQ-006; no WAS appearance/roster snapshot/nonappearance becomes LAL DNP/nonmembership.",
+      "state": "historical_fixture_evidence_current_membership_open",
+      "deployed_current_accepted": false
+    },
+    {
+      "ordinal": 46,
+      "original_node_id": "tests/test_record_queries.py::TestBuildTeamRecordResult::test_record_without_player_on_other_team_returns_no_match",
+      "prior_mapping_row": 46,
+      "prior_family": "wrong_team_empty",
+      "retained_scope": "Controlled structured safety/identity control retained; original nodeID expects no-match for another-team subject. This is containment, not positive all-team coverage or evidence of medical absence.",
+      "current_delta": "Retain PR593 mapping and its actual source/language/deployment limits; no new execution claimed.",
+      "state": "retained_existing_evidence",
+      "deployed_current_accepted": false
+    }
+  ],
+  "core1_rows": [
+    {
+      "id": "K01",
+      "binding_path": "working/nba-tools-completion-program/k01-binding.md",
+      "binding_sha256": "891ceacf9d078ea743253b9077a6a3cf7a9347bb0c0fdacebbf9496c77af5ef9",
+      "required_scope": "Correct player/team identity and covered scope: aliases/accent spelling, one same-name collision, one renamed player, historical franchise, partial-career label",
+      "current_evidence": "Retain current README twelve-row acceptance view, original binding and PR595 finite numerical/functional+PR596 precisely bound historical live evidence where applicable. Served-current/P3 remains open.",
+      "full_current_acceptance": false
+    },
+    {
+      "id": "K02",
+      "binding_path": "working/nba-tools-completion-program/k02-binding.md",
+      "binding_sha256": "415c160553faa7377b7b1e0e8c3e8697ec767f0e4d132314d9b7dcf9832d1a3e",
+      "required_scope": "Player summary/team record: explicit season, explicit date range + opponent, last-N window versus qualifying last-N with one threshold",
+      "current_evidence": "Retain current README twelve-row acceptance view, original binding and PR595 finite numerical/functional+PR596 precisely bound historical live evidence where applicable. Served-current/P3 remains open.",
+      "full_current_acceptance": false
+    },
+    {
+      "id": "K03",
+      "binding_path": "working/nba-tools-completion-program/k03-binding.md",
+      "binding_sha256": "b4a51a7c58a2f042a8bbc1d30050fea4b06a82ea82bab8f33142d7510cf0dc2b",
+      "required_scope": "Find/count: two AND thresholds including exact zero, strict versus inclusive bound, grouped OR, games versus distinct-player count, qualified zero result",
+      "current_evidence": "Retain current README twelve-row acceptance view, original binding and PR595 finite numerical/functional+PR596 precisely bound historical live evidence where applicable. Served-current/P3 remains open.",
+      "full_current_acceptance": false
+    },
+    {
+      "id": "K04",
+      "binding_path": "working/nba-tools-completion-program/k04-binding.md",
+      "binding_sha256": "8270a1e23851f27b9cdb76adb823137440ef5a3c1b57249640d89e378b88fa35",
+      "required_scope": "Ranking: totals versus per-game, ratio-of-totals shooting with declared attempts floor, top-N versus last-N, one event-count ranking and tie policy",
+      "current_evidence": "Retain current README twelve-row acceptance view, original binding and PR595 finite numerical/functional+PR596 precisely bound historical live evidence where applicable. Served-current/P3 remains open.",
+      "full_current_acceptance": false
+    },
+    {
+      "id": "K05",
+      "binding_path": "working/nba-tools-completion-program/k05-binding.md",
+      "binding_sha256": "b7f2e1541d11e0caae722c29034bdc73eb27fc3077e4e3cc09ae9d970ec8120d",
+      "required_scope": "Cross-subject conditions: own-player/team versus opponent stat in one request, plus home/road; another entity and threshold",
+      "current_evidence": "Retain current README twelve-row acceptance view, original binding and PR595 finite numerical/functional+PR596 precisely bound historical live evidence where applicable. Served-current/P3 remains open.",
+      "full_current_acceptance": false
+    },
+    {
+      "id": "K06",
+      "binding_path": "working/nba-tools-completion-program/k06-binding.md",
+      "binding_sha256": "3feca0f2914f81d2b332626e75bed61e4d50fb917347b75def0c90bb2ef8f698",
+      "required_scope": "Comparisons: two players with same named sample/basis; two teams' independent samples versus explicit head-to-head meetings; opponent filter retained",
+      "current_evidence": "Retain current README twelve-row acceptance view, original binding and PR595 finite numerical/functional+PR596 precisely bound historical live evidence where applicable. Served-current/P3 remains open.",
+      "full_current_acceptance": false
+    },
+    {
+      "id": "K07",
+      "binding_path": "working/nba-tools-completion-program/k07-binding.md",
+      "binding_sha256": "f806f301254f57eb62edec20bc92dfdcc5db9e08328aeeced32d6c04c4f13c64",
+      "required_scope": "Splits: filter before home/away split; team and player named-season splits with non-adjacent seasons; opponent + threshold or participation retained",
+      "current_evidence": "Retain current README twelve-row acceptance view, original binding and PR595 finite numerical/functional+PR596 precisely bound historical live evidence where applicable. Served-current/P3 remains open.",
+      "full_current_acceptance": false
+    },
+    {
+      "id": "K08",
+      "binding_path": "working/nba-tools-completion-program/acceptance-baseline-pr582.md",
+      "binding_sha256": "433f49eb4467401184f15231e0d80520a9d8bef44eb81c5bb4b3988f9f916bfd",
+      "required_scope": "Participation: one and two qualified teammates played/did-not-play; add one stat bound; show membership/coverage distinction and separate injury-status safety controls",
+      "current_evidence": "All46 rows reconciled above;ID18 adds source-bound current positive-empty N/L/HTTP/localD only. DQ-006/current unqualified scopes and integrated46/deployed acceptance remain open.",
+      "full_current_acceptance": false
+    },
+    {
+      "id": "K09",
+      "binding_path": "working/nba-tools-completion-program/k09-binding.md",
+      "binding_sha256": "b5e029383bc9aa967bc671caef542ac832cd2089c0645b4bfa950910ba43c112",
+      "required_scope": "Sequences: team winning streak and player threshold-appearance streak; distinct runs; best versus last N; continuity",
+      "current_evidence": "Retain current README twelve-row acceptance view, original binding and PR595 finite numerical/functional+PR596 precisely bound historical live evidence where applicable. Served-current/P3 remains open.",
+      "full_current_acceptance": false
+    },
+    {
+      "id": "K10",
+      "binding_path": "working/nba-tools-completion-program/k10-binding.md",
+      "binding_sha256": "299662cb18898d52b63b6caee0ea73c9aa6f5efef2282410cc465a093a4572a5",
+      "required_scope": "Playoff/history: game versus series record versus appearances; round/situation; franchise/title definition and span",
+      "current_evidence": "Retain current README twelve-row acceptance view, original binding and PR595 finite numerical/functional+PR596 precisely bound historical live evidence where applicable. Served-current/P3 remains open.",
+      "full_current_acceptance": false
+    },
+    {
+      "id": "K11",
+      "binding_path": "working/nba-tools-completion-program/k11-binding.md",
+      "binding_sha256": "af47a75b1dbbe993f67613d788ce1a4ae9953146804b5646b33e31ceab1e30fd",
+      "required_scope": "Population/ownership: league/team players, rookie/position, opponent ownership, historical/missing roster scope",
+      "current_evidence": "Retain current README twelve-row acceptance view, original binding and PR595 finite numerical/functional+PR596 precisely bound historical live evidence where applicable. Served-current/P3 remains open.",
+      "full_current_acceptance": false
+    },
+    {
+      "id": "K12",
+      "binding_path": "working/nba-tools-completion-program/k12-binding.md",
+      "binding_sha256": "99e0bfef700c8a27c2590b8e76e488558ead53d95ed3683e3075fbbc1444bc42",
+      "required_scope": "Answer delivery: subject/sample/basis labels, count/list/split/comparison, zero vs no-data, snapshot freshness and representative cold/warm behavior",
+      "current_evidence": "Retain original12functional+actualhistoricaldesktop/mobile from PR595/596. Add only four local provisionalID18/sits captures. Complete current served-generation/readiness/freshness/desktop/mobile/representativeperformance remain open; cold chasing parked.",
+      "full_current_acceptance": false
+    }
+  ],
+  "reuse_applicability": "ID18 changes only optional reason loader/development binding and reason-only offlinePDFimport. General calculations/parser/other default consumers/build/frontend/dependency files unchanged fromPR596. Public reason loading retains production manifest/source/import checks; fixture/source regression checks cover affected paths. PR595historicalnumerical and PR596actual44livecaptures retain original code/data/date scopes, never relabeled as execution on this candidate or current data. Source-lane data changes require a separate affected delta.",
+  "all46_accepted": false,
+  "all12_current_accepted": false,
+  "complete_validated_publication_candidate_ready": false,
+  "owner_action": null,
+  "current_source_family_delta": {
+    "candidate": "82d158f440dcdbe9bdd24f713fc65972a973a62f",
+    "source_roles_added": 368,
+    "advanced_player_keys": 452,
+    "team_windows_required": 745,
+    "team_period_keys_required": 1490,
+    "missing_team_period_keys": 196,
+    "missing_standard_player_period_keys": 2208,
+    "new_ot_player_keys": "unknown pending independently qualified original source-listed population",
+    "prior_2249_player_count": "conservative planning crossjoin, preserved historically, not the existing OTrow contract",
+    "rate_unknowns": 484,
+    "source_capture": "one timeout;zero bytes;195unattempted;no retry",
+    "all_snapshot_acceptance": false
+  }
+}

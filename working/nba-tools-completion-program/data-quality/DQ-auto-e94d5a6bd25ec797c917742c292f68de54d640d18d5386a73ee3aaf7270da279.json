@@ -42,7 +42,11 @@
     "state": "failed"
   },
   "owner_role": "agent_1_application_acquisition",
-  "resolution": null,
+  "resolution": {
+    "scope": "Historical failed report retained; source-qualifiedOTcoverage successor preserves the missing source requirement",
+    "successor": "DQ-auto-3f8b2f8fe51af9fa22be8c76af20c0a48fb369107778660fb34703f070141db2",
+    "reason": "Now1490requiredteamkeys =745source-qualifiedwindows, with196missingnewkeys; old1476/1480expectations omitted some source-knownOTmetadata"
+  },
   "schema_version": 1,
   "scope": {
     "coverage": {
@@ -275,6 +279,6 @@
   },
   "snapshot": "current123-field-qualified-development-v1",
   "source_sha256": "1bbcd94d3fb05ed44addae2b7f683bba60f863ed4a91ee99f5ba02a137317335",
-  "status": "open",
+  "status": "superseded",
   "continuation_note": "Bounded current123 collection gaps, not the old484 method dependencies. Agent2 remains stopped. No publication."
 }

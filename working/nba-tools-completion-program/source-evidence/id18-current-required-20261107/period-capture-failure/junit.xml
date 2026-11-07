@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="31.210" timestamp="2026-11-07T05:34:23.108883+00:00" hostname="runnervmwuk1x"><testcase classname="tests.cloud_current123_new16_periods_real_data" name="test_capture_only_actual_new16_required_period_sources" time="30.743"><failure message="AssertionError: failure_return_output_do_not_retry&#10;assert False">def test_capture_only_actual_new16_required_period_sources():
+        request = prepare_request()
+        with data_generation_context() as generation:
+            assert generation == request["base_generation"]
+            raw = data_path("data/metadata/generation_manifest.json").read_bytes()
+            assert hashlib.sha256(raw).hexdigest() == request["base_manifest_sha256"]
+        output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "current123-new16-periods"
+        report = collect(output, request)
+        assert report["production_writes"] == 0 and report["canonical_period_accepted"] is False
+&gt;       assert report["transport_finished"], report.get("stop_reason")
+E       AssertionError: failure_return_output_do_not_retry
+E       assert False
+
+tests/cloud_current123_new16_periods_real_data.py:72: AssertionError</failure></testcase></testsuite></testsuites>

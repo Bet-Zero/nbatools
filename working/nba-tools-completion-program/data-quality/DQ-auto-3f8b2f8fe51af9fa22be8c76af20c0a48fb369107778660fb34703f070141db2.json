@@ -11,7 +11,7 @@
   "expected": "existing dataset contract",
   "fingerprint": "3f8b2f8fe51af9fa22be8c76af20c0a48fb369107778660fb34703f070141db2",
   "id": "DQ-auto-3f8b2f8fe51af9fa22be8c76af20c0a48fb369107778660fb34703f070141db2",
-  "impact": "dependent fields/consumers and data acceptance remain unqualified",
+  "impact": "Missing new windows prevent complete123-game quarter/half/OT coverage. OTplayer population requires source-listed original keys; no full-game-player crossjoin or inventedzero. Old484rate unknowns and DQ-006membership are separate.",
   "independent_review": null,
   "kind": "data_quality_work_item",
   "last_attempt": {
@@ -22,7 +22,7 @@
     },
     "snapshot": "current123-required-source-development-v3"
   },
-  "next_evidence": "Diagnose exact recorded scope against retained source",
+  "next_evidence": "Actual new16 Traditional+Advanced period originals via the existing collector from a working source route; no unchanged repeat of the diagnosed Actions timeout.",
   "observations": [
     {
       "evidence": {
@@ -39,7 +39,7 @@
     ],
     "state": "failed"
   },
-  "owner_role": "agent_2_data_quality",
+  "owner_role": "agent_1_application_acquisition",
   "resolution": null,
   "schema_version": 1,
   "scope": {
@@ -267,5 +267,14 @@
   },
   "snapshot": "current123-required-source-development-v3",
   "source_sha256": "1bbcd94d3fb05ed44addae2b7f683bba60f863ed4a91ee99f5ba02a137317335",
-  "status": "open"
+  "status": "blocked_evidence",
+  "last_source_attempt": {
+    "run_id": 42343199090,
+    "request_candidate": "578dd16d6ff4137abd13ea69d2276438506ad03b",
+    "observed": "One173Q1TraditionalReadTimeout30seconds;zeroresponsebytes/noHTTP/nooriginal;195requests unattempted",
+    "evidence": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107/period-capture-failure/original-artifact.zip",
+    "recovery_run_id": 42343933162,
+    "retry_trigger": "Changed source availability or a working existing approved acquisition route, not elapsed time alone"
+  },
+  "continuation_note": "Agent1 owns bounded acquisition/intake; Agent2 remains stopped. Required failures stay open; no partial snapshot accepted."
 }

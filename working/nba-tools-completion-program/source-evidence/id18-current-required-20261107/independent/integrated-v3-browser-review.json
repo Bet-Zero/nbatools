@@ -1,0 +1,94 @@
+{
+  "reviewer": "/root/id18_checker",
+  "backend_model": "unavailable",
+  "reviewed_runtime_candidate": "82d158f440dcdbe9bdd24f713fc65972a973a62f",
+  "classification": "Independent retained actual local rendering review, not independent browser acquisition or deployed acceptance",
+  "archive_sha256": "8bb46f20e3de1435a2e05fab9f7571427ffedca54561cfd8daa244477102d6ce",
+  "receipt_sha256": "f5f989b53760056112bff878aee07aa6a49da6d7312577d01570901124f83881",
+  "snapshot_manifest_sha256": "5fb3326f512037c69c815a06cb73ab41a9a8187bf5dcdc36cd114f2da7eb6a4c",
+  "reviewed_captures": [
+    {
+      "id": "rest",
+      "viewport": "desktop",
+      "query": "Lakers record when Luka Doncic rests",
+      "capturedAt": "2026-11-07T05:44:59.880Z",
+      "http": 200,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "screenshot": "desktop-rest.png",
+      "screenshotSha256": "e51050f37993b33d291fc294c8aa2e89425444f772ffb76c63e7929e0f9222c8"
+    },
+    {
+      "id": "starter",
+      "viewport": "desktop",
+      "query": "Austin Reaves stats as a starter this season",
+      "capturedAt": "2026-11-07T05:46:46.209Z",
+      "http": 200,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "screenshot": "desktop-starter.png",
+      "screenshotSha256": "23bfccd46eea850999341180144fc7d2473af4d6b4889405d93d32113b92da85"
+    },
+    {
+      "id": "rest",
+      "viewport": "mobile",
+      "query": "Lakers record when Luka Doncic rests",
+      "capturedAt": "2026-11-07T05:46:47.364Z",
+      "http": 200,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "screenshot": "mobile-rest.png",
+      "screenshotSha256": "9bdc27970aefd47896a75296796072f8e0b90a498eecc96e36f6dfad21c2caaa"
+    },
+    {
+      "id": "starter",
+      "viewport": "mobile",
+      "query": "Austin Reaves stats as a starter this season",
+      "capturedAt": "2026-11-07T05:46:47.850Z",
+      "http": 200,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "screenshot": "mobile-starter.png",
+      "screenshotSha256": "d587a794772bada562b36ea17b0a6891a382e4b658a15b5e835128ce2efc9cac"
+    }
+  ],
+  "visual_review": "All4 actual screenshots inspected; bothRest views visibly retain exactReportedRest label, qualifiedempty meaning, complete9parent0Rest/1other/0unknown clinical-distinction note in Details,correctsnapshot andPROVISIONAL. Bothstarter views retainAustinReaves identity,starterrole,2026-27,9games/23.3PPG and7-2record; the mobiletable uses containedscroll. Nohorizontal documentoverflow. Longdevelopmenthashes are clippedwithin existingwarningcontainer, but do not hide scope labels or the complete reason note.",
+  "driver_limits": "One original desktopRest capture reused unchanged plus remaining3 after casing-only driverassertion correction; failedasset setup and initialdriver expectations remain separately retained, no runtime/NBA source change.",
+  "conclusion": "approved local displayed-meaning and data-quality scope",
+  "production_accepted": false,
+  "independent_displayed_starter_stat_oracle": {
+    "original_source": "core-live-current-20261107/current-originals.zip!playergamelogs-current.json",
+    "exact_player": 1630559,
+    "games": 9,
+    "wins": 7,
+    "losses": 2,
+    "source_sum": {
+      "PTS": 210,
+      "REB": 29,
+      "AST": 45
+    },
+    "points_average_exact": "70/3",
+    "rebounds_average_exact": "29/9",
+    "assists_average_exact": "5",
+    "source_key_ids": [
+      "0022600005",
+      "0022600023",
+      "0022600102",
+      "0022600112",
+      "0022600131",
+      "0022600143",
+      "0022600157",
+      "0022600172",
+      "0022600185"
+    ],
+    "role_population_qualification": "All9exactkeys independently qualify as starters against preserved oldrole8+new185Traditionalrole"
+  }
+}

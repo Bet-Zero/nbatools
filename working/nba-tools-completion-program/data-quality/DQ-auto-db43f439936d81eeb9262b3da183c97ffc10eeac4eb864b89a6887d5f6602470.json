@@ -14,7 +14,11 @@
   "fingerprint": "db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
   "id": "DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
   "impact": "dependent fields/consumers and data acceptance remain unqualified",
-  "independent_review": null,
+  "independent_review": {
+    "reviewer": "/root/id18_checker",
+    "source_revision": "578dd16d6ff4137abd13ea69d2276438506ad03b",
+    "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107/independent/current-family-review-578dd16d.md"
+  },
   "kind": "data_quality_work_item",
   "last_attempt": {
     "evidence": {
@@ -24,7 +28,7 @@
     },
     "snapshot": "current123-field-qualified-development-v1"
   },
-  "next_evidence": "Bounded qualified new16 source rows; see current structural report and independently qualified new16-window-denominator.json (includes2OT).",
+  "next_evidence": "Resolved missing-key source scope. Remaining whole-snapshot numerical/freshness/deployed acceptance stays separate.",
   "observations": [
     {
       "evidence": {
@@ -42,7 +46,13 @@
     "state": "failed"
   },
   "owner_role": "agent_1_application_acquisition",
-  "resolution": null,
+  "resolution": {
+    "scope": "Original missing-key coverage requirement only; no blanket season-rate or whole-snapshot qualification",
+    "version": "current123-required-source-development-v3",
+    "manifest_sha256": "5fb3326f512037c69c815a06cb73ab41a9a8187bf5dcdc36cd114f2da7eb6a4c",
+    "evidence": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107/independent/current-family-review-578dd16d.md",
+    "result": "368newroles/all2781keys with trusted complete source roles"
+  },
   "schema_version": 1,
   "scope": {
     "coverage": {
@@ -432,6 +442,6 @@
   },
   "snapshot": "current123-field-qualified-development-v1",
   "source_sha256": "f3d59f02843e412ddb04e344c1fc759c24e57a99d9216e1caf42e658521de3cf",
-  "status": "open",
+  "status": "resolved",
   "continuation_note": "Bounded current123 collection gaps, not the old484 method dependencies. Agent2 remains stopped. No publication."
 }

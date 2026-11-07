@@ -1,0 +1,75 @@
+{
+  "reviewer": "/root/id18_checker",
+  "backend_model": "unavailable",
+  "artifact_sha256": "f56d9c78c3df5c0c81c6d89e06ab99e147dfaa883b7f21a65ce5886bdfaefcfd",
+  "artifact_bytes": 16637,
+  "original_capture_run": 42343199090,
+  "recovery_run": 42343933162,
+  "classification": "Independent retained failure custody review; no retry, no captured period bodies, no source qualification",
+  "original_required_summary": {
+    "candidate_sha": "f6b576c3f2d44bf03de17d81bbb1d0af77301a3c",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_current123_new16_periods_real_data.py::test_capture_only_actual_new16_required_period_sources"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 0,
+    "skipped": 0,
+    "failed": 1,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 1,
+    "conclusion": "failure",
+    "problems": [
+      "pytest did not succeed (exit=1)",
+      "Every selected required test must execute and pass",
+      "Required tests contain skips, failures, errors, or expected failures"
+    ]
+  },
+  "attempt": {
+    "job": {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600173",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600173_q1.json"
+    },
+    "endpoint": "boxscoretraditionalv3",
+    "url": "https://stats.nba.com/stats/boxscoretraditionalv3",
+    "parameters": {
+      "GameID": "0022600173",
+      "StartPeriod": 1,
+      "EndPeriod": 1,
+      "RangeType": 1,
+      "StartRange": 0,
+      "EndRange": 28800
+    },
+    "started_at": "2026-11-07T05:34:24.160197+00:00",
+    "attempts": 1,
+    "timeout_seconds": 30,
+    "http_status": null,
+    "response_complete": false,
+    "transport_complete": false,
+    "error_type": "ReadTimeout",
+    "finished_at": "2026-11-07T05:34:54.237221+00:00",
+    "response_bytes": 0,
+    "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_file": null
+  },
+  "unattempted_jobs": 195,
+  "all_unattempted_equal_original_request_suffix": true,
+  "identical_loose_and_nested_failure_ledgers": true,
+  "nested_original_source_bodies": 0,
+  "production_writes": 0,
+  "recovery_does_not_change_original_failure": true,
+  "blocking_effect": "All98newperiodwindows remain unqualified;196newteamrows/2208standardplayerkeys and sourceunknown179/186OTparticipantkeys remain open. Firstattempt173Q1Traditional readtimeout yielded no body. Other195jobs were not attempted, not individually diagnosed failures. No unchanged retry is justified by successful artifact transfer.",
+  "conclusion": "failed capture preserved exactly; bounded recovery of custody valid; no false source or release pass"
+}

@@ -1,0 +1,6 @@
+{
+  "setup": "New isolated checkout had no bundled assets at server startup; initial static JS/CSS requests404. Reused identical accepted frontend assets and restarted the local server; no frontend code changed.",
+  "verifier": "Driver expected capitalized Starter; actual role label is literal starter. Corrected case-only expectation, preserved source keys/count9/PTS210, reused completed desktopRest capture and completed remaining3.",
+  "no_production_query_batch": true,
+  "completed_actual_captures": 4
+}

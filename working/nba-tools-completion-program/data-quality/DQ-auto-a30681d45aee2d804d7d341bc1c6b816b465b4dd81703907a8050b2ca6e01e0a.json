@@ -1,7 +1,7 @@
 {
   "check": "coverage missing 2208 requested keys",
   "claim": null,
-  "continuation_note": "Bounded current123 collection gaps, not the old484 method dependencies. Agent2 remains stopped. No publication.",
+  "continuation_note": "Agent1 owns bounded acquisition/intake; Agent2 remains stopped. Required failures stay open; no partial snapshot accepted.",
   "created_at": "2026-11-07T04:03:50.345098+00:00",
   "dataset": "player_game_period_stats",
   "evidence": {
@@ -14,7 +14,7 @@
   "expected": "existing dataset contract",
   "fingerprint": "a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
   "id": "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
-  "impact": "dependent fields/consumers and data acceptance remain unqualified",
+  "impact": "Missing new windows prevent complete123-game quarter/half/OT coverage. OTplayer population requires source-listed original keys; no full-game-player crossjoin or inventedzero. Old484rate unknowns and DQ-006membership are separate.",
   "independent_review": null,
   "kind": "data_quality_work_item",
   "last_attempt": {
@@ -25,7 +25,7 @@
     },
     "snapshot": "current123-required-source-development-v3"
   },
-  "next_evidence": "Bounded qualified new16 source rows; see current structural report and independently qualified new16-window-denominator.json (includes2OT).",
+  "next_evidence": "Actual new16 Traditional+Advanced period originals via the existing collector from a working source route; no unchanged repeat of the diagnosed Actions timeout.",
   "observations": [
     {
       "evidence": {
@@ -2360,5 +2360,13 @@
   },
   "snapshot": "current123-field-qualified-development-v1",
   "source_sha256": "2ce3d80c75102b3d48f6975f67c6da92cbef4f38bd406566d78bf5217e34644d",
-  "status": "open"
+  "status": "blocked_evidence",
+  "last_source_attempt": {
+    "run_id": 42343199090,
+    "request_candidate": "578dd16d6ff4137abd13ea69d2276438506ad03b",
+    "observed": "One173Q1TraditionalReadTimeout30seconds;zeroresponsebytes/noHTTP/nooriginal;195requests unattempted",
+    "evidence": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107/period-capture-failure/original-artifact.zip",
+    "recovery_run_id": 42343933162,
+    "retry_trigger": "Changed source availability or a working existing approved acquisition route, not elapsed time alone"
+  }
 }

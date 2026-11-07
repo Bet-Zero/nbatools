@@ -36,7 +36,7 @@ freshness, readiness, Core-1 or publication acceptance.
 `required-period-coverage.json` preserves a contract distinction: teamOTwindows are
 source-proven; whole-playerOTcrossjoins are a conservative acquisition lattice,
 not evidence that each player playedOT. The accepted old fiveOTwindows contain
-only actual OTplayers (e.g.110has12OTrows versus21whole-game players). Do not invent
+only source-listed OTplayers, including explicit source-listed zero-clock rows (e.g.110has12OTrows versus21whole-game players). Do not invent
 zero rows or invalidate33old non-OT appearances by forcing a new all-playerOTgrid.
 Direct newOTsources must establish their actual player population.
 
@@ -50,5 +50,4 @@ windows. It uses the established one-attempt,30sec,2MB/job,1secpace collector wi
 1050sec elapsed bound and retains originals/failures/unattempted jobs. New cloud
 capture test authenticates the unchanged production base before any source read;
 no new pipeline, route or credential is introduced. Independent review must precede
-its approved existing read-only Actions request. No capture has yet been executed
-by this lane. SDK/request/no-network check1passes.
+its approved existing read-only Actions request. The subsequent reviewed root execution42343199090 stopped at the first30-second ReadTimeout:zeroresponsebytes,195unattempted jobs. Exact failure custody is retained in ../period-capture-failure; no unchanged retry occurred. SDK/request/no-network check1passes. Root v3 integration and required consumer validation are recorded in the parent receipt.
