@@ -1,0 +1,21 @@
+Environment setup stopped safely. Return readiness-capture/collection.zip.
+Existing capture preserved. Return readiness-capture/collection.zip.
+{
+  "verdict": "APPROVED",
+  "package_sha256": "b197537a510deea6731a8b89ed516bfce423e55761ae682b22015ec713bcf5f4",
+  "helper_sha256": "cf17dd49004c0bb69cb03fe78edd1cd12c0a41ad6b06f19a0d586b9a1b246ab8",
+  "actual_offline196_sdk": {
+    "python": "3.12.14",
+    "nba_api": "1.11.4"
+  },
+  "collector_and_windows": "byte-identical toPR600",
+  "mac_shell": "actual sh executed with spacedpath+retainedlocalvenv; helper once",
+  "failures": "actual embeddedhelper produces hashvalid portable zeroattempt196unattempted receipt; existingbytes preserved and no retry",
+  "fallback": "prep-time provenance explicit",
+  "nba_requests_executed": 0,
+  "new_period_windows": 0,
+  "production_writes": 0,
+  "native_macos": "unavailable; Linuxshell/runtime checks only",
+  "checker": "/root/mac_environment_checker",
+  "backend_model": "unavailable"
+}

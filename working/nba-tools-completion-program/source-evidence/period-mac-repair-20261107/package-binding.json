@@ -1,0 +1,11 @@
+{
+  "request_sha256": "19cc7759dd2dec7676888538b574e3dd316d6b58712b2b30d42c9b92911a9a52",
+  "original_bundle_sha256": "5156e94b425ded08573ca8138d53d4a9cfb35e2aa856d3a902c654b4bb5b3e44",
+  "collector_sha256": "97bb73b6473fb532b249fa1daaa7f9089541d5b39b5d555bfac4248f9dce83e9",
+  "environment_helper_sha256": "cf17dd49004c0bb69cb03fe78edd1cd12c0a41ad6b06f19a0d586b9a1b246ab8",
+  "owner_bundle_sha256": "b197537a510deea6731a8b89ed516bfce423e55761ae682b22015ec713bcf5f4",
+  "endpoint_jobs": 196,
+  "nba_requests_executed": 0,
+  "new_period_windows": 0,
+  "production_writes": 0
+}
