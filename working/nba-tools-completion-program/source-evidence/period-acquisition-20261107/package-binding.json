@@ -1,0 +1,22 @@
+{
+  "request_sha256": "19cc7759dd2dec7676888538b574e3dd316d6b58712b2b30d42c9b92911a9a52",
+  "package_sha256": "97bb73b6473fb532b249fa1daaa7f9089541d5b39b5d555bfac4248f9dce83e9",
+  "owner_bundle_sha256": "5156e94b425ded08573ca8138d53d4a9cfb35e2aa856d3a902c654b4bb5b3e44",
+  "base_main": "226f62b5360b621bc52ce59df3239eda065f87ef",
+  "request_reference": "working/nba-tools-completion-program/collection-requests/current123-new16-periods-20261107.json",
+  "request_file_sha256": "e06682b8da8eb4b4b5c1a627566b617ae9e0e4fffa70d69f675c4b6f71868268",
+  "collector_sha256": "d3bff8df0f3f02de2ddc90356b4d3202a332ac7d27f0bc36baa63ef8d5c85ff3",
+  "bundle_file": "NBA-Tools-Current123-Period-Capture.zip",
+  "bundle_bytes": 10504,
+  "endpoint_jobs": 196,
+  "period_windows": 98,
+  "source_team_windows_required": 745,
+  "raw_requests": 196,
+  "retries_per_request": 0,
+  "production_writes": 0,
+  "source_requests_executed_here": 0,
+  "package_sdk_preflight_jobs": 196,
+  "period_data_gap_closed": false,
+  "qualified_new_period_windows": 0,
+  "owner_action": "Extract in a new folder; run the existing Mac or Windows launcher once; return readiness-capture/collection.zip even after failure. Keep its folder until receipt is confirmed."
+}
