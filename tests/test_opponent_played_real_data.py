@@ -7,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from nbatools.data_source import data_path
+from nbatools.data_source import data_generation_context, data_path
 from nbatools.query_service import execute_natural_query, execute_structured_query
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.query]
@@ -16,13 +16,36 @@ ORACLE = json.loads(
 )
 
 
+def _assert_original_source_or_qualified_extension(path, original_digest):
+    raw = data_path(path).read_bytes()
+    actual = hashlib.sha256(raw).hexdigest()
+    if actual == original_digest:
+        return
+    # The published LeBron package extended the whole availability file. Bind
+    # only that exact independently reviewed generation; original same-game
+    # observations, parent population, source-body hashes and expectations below
+    # remain unchanged. No arbitrary matching source or omitted rows are allowed.
+    assert path == "raw/player_game_availability/2025-26_regular_season.csv"
+    assert original_digest == "7e21e4931a4062e7cbb4abc10eeba051bf8429e7418112852662808ddfefc902"
+    assert actual == "3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33"
+    with data_generation_context() as generation:
+        assert generation == "availability-lebron-season-v1-20261031"
+        manifest_raw = data_path("metadata/generation_manifest.json").read_bytes()
+        assert (
+            hashlib.sha256(manifest_raw).hexdigest()
+            == "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3"
+        )
+        (entry,) = [e for e in json.loads(manifest_raw)["files"] if e["path"] == path]
+        assert entry["sha256"] == actual and entry["size_bytes"] == len(raw)
+
+
 @pytest.mark.parametrize("case", ORACLE["primary_cases"])
 @pytest.mark.parametrize("consumer", ["natural", "when_plays", "structured"])
 def test_opponent_played_has_qualified_same_game_membership(case, consumer):
     season = case["query"].split()[-1]
     for path, digest in ORACLE["sources"].items():
         if season in path:
-            assert hashlib.sha256(data_path(path).read_bytes()).hexdigest() == digest
+            _assert_original_source_or_qualified_extension(path, digest)
     report = pd.read_csv(data_path(f"raw/player_game_availability/{season}_regular_season.csv"))
     players = pd.read_csv(data_path(f"raw/player_game_stats/{season}_regular_season.csv"))
     teams = pd.read_csv(data_path(f"raw/team_game_stats/{season}_regular_season.csv"))
