@@ -46,6 +46,10 @@ def test_frozen_source_plan_and_full_offline_probe(package):
     assert len(PLAN["jobs"]) == 196
     assert setup.probe(sys.executable, package / "run_capture.py")["nba_api"]
     assert subprocess.run(["sh", "-n", str(package / "Run Capture.command")]).returncode == 0
+    assert (
+        "/opt/homebrew/opt/python@3.11/bin/python3.11"
+        in (package / "Run Capture.command").read_text()
+    )
     with zipfile.ZipFile(ORIGINAL) as archive:
         assert (package / "Run Capture.bat").read_bytes() == archive.read("Run Capture.bat")
 
@@ -129,6 +133,7 @@ def test_private_setup_bounded_and_no_global_install(package, monkeypatch, failu
         if "pip" in arguments:
             assert arguments[0] == str(package / ".nba-tools-env/bin/python")
             assert "--isolated" in arguments and "--only-binary=:all:" in arguments
+            assert "--no-cache-dir" in arguments
             assert arguments[arguments.index("--retries") + 1] == "0"
             assert arguments[-1] == "nba_api==1.11.4"
             assert "https://pypi.org/simple" in arguments

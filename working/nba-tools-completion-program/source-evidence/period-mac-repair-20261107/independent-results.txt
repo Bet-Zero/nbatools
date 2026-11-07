@@ -2,8 +2,8 @@ Environment setup stopped safely. Return readiness-capture/collection.zip.
 Existing capture preserved. Return readiness-capture/collection.zip.
 {
   "verdict": "APPROVED",
-  "package_sha256": "b197537a510deea6731a8b89ed516bfce423e55761ae682b22015ec713bcf5f4",
-  "helper_sha256": "cf17dd49004c0bb69cb03fe78edd1cd12c0a41ad6b06f19a0d586b9a1b246ab8",
+  "package_sha256": "b6f4d4f156608008bd04b0573f13c1b8223b3bf75ddc2cc5dbad013e9f859e40",
+  "helper_sha256": "d7ec68c28d6f0537b3a76c366c037f5596dc1e0cac7e8ef13e6876b20f35a65d",
   "actual_offline196_sdk": {
     "python": "3.12.14",
     "nba_api": "1.11.4"

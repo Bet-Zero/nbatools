@@ -131,6 +131,7 @@ def prepare(root, diagnostics):
             "https://pypi.org/simple",
             "--disable-pip-version-check",
             "--no-input",
+            "--no-cache-dir",
             "--only-binary=:all:",
             "--retries",
             "0",

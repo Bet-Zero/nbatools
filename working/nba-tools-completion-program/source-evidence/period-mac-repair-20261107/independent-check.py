@@ -1,9 +1,9 @@
 import hashlib, json, os, pathlib, runpy, subprocess, zipfile
 from unittest.mock import patch
 root=pathlib.Path('/workspace/nbatools')
-scratch=root/'work/mac-independent/review/final'; scratch.mkdir(exist_ok=True)
+scratch=root/'work/mac-independent/review/final-opt'; scratch.mkdir(exist_ok=True)
 package=root/'working/nba-tools-completion-program/source-evidence/period-mac-repair-20261107/NBA-Tools-Current123-Period-Capture-Mac-Fixed.zip'
-assert hashlib.sha256(package.read_bytes()).hexdigest()=='b197537a510deea6731a8b89ed516bfce423e55761ae682b22015ec713bcf5f4'
+assert hashlib.sha256(package.read_bytes()).hexdigest()=='b6f4d4f156608008bd04b0573f13c1b8223b3bf75ddc2cc5dbad013e9f859e40'
 original=root/'working/nba-tools-completion-program/source-evidence/period-acquisition-20261107/NBA-Tools-Current123-Period-Capture.zip'
 location=scratch/'Actual extracted Mac with spaces'; location.mkdir(exist_ok=True)
 with zipfile.ZipFile(package) as z,zipfile.ZipFile(original) as old:
@@ -11,9 +11,16 @@ with zipfile.ZipFile(package) as z,zipfile.ZipFile(original) as old:
     for name in ('run_capture.py','Run Capture.bat'): assert z.read(name)==old.read(name)
     assert z.getinfo('Run Capture.command').external_attr>>16==0o100755
     z.extractall(location)
+mac_text=(location/'Run Capture.command').read_text()
+for minor in (11,12,13):
+    for prefix in ('/opt/homebrew','/usr/local'):
+        assert f'{prefix}/opt/python@3.{minor}/bin/python3.{minor}' in mac_text
+assert mac_text.index('/opt/homebrew/opt/python@3.11') < mac_text.index('python3.12')
 ns=runpy.run_path(str(location/'prepare_environment.py'),run_name='offline_independent_review')
 plan=json.loads((root/'working/nba-tools-completion-program/collection-requests/current123-new16-periods-20261107.json').read_bytes())
 assert ns['REQUEST']==plan and len(plan['jobs'])==196
+assert '"--no-cache-dir"' in (location/'prepare_environment.py').read_text()
+assert hashlib.sha256((location/'prepare_environment.py').read_bytes()).hexdigest()=='d7ec68c28d6f0537b3a76c366c037f5596dc1e0cac7e8ef13e6876b20f35a65d'
 assert hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(',',':')).encode()).hexdigest()=='19cc7759dd2dec7676888538b574e3dd316d6b58712b2b30d42c9b92911a9a52'
 # Re-run full real offline endpoint admission from the frozen helper, no NBA network.
 details=ns['probe'](str(root/'.venv/bin/python'),location/'run_capture.py')

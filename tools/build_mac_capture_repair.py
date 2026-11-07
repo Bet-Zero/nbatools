@@ -20,10 +20,16 @@ if [ -n "${VIRTUAL_ENV:-}" ]; then set -- "$VIRTUAL_ENV/bin/python"; fi
 for runtime in "$@" .nba-tools-env/bin/python .venv/bin/python venv/bin/python \
     ../.venv/bin/python ../venv/bin/python python3.11 \
     /opt/homebrew/bin/python3.11 /usr/local/bin/python3.11 \
+    /opt/homebrew/opt/python@3.11/bin/python3.11 \
+    /usr/local/opt/python@3.11/bin/python3.11 \
     /Library/Frameworks/Python.framework/Versions/3.11/bin/python3 \
     python3.12 /opt/homebrew/bin/python3.12 /usr/local/bin/python3.12 \
+    /opt/homebrew/opt/python@3.12/bin/python3.12 \
+    /usr/local/opt/python@3.12/bin/python3.12 \
     /Library/Frameworks/Python.framework/Versions/3.12/bin/python3 \
     python3.13 /opt/homebrew/bin/python3.13 /usr/local/bin/python3.13 \
+    /opt/homebrew/opt/python@3.13/bin/python3.13 \
+    /usr/local/opt/python@3.13/bin/python3.13 \
     /Library/Frameworks/Python.framework/Versions/3.13/bin/python3 python3 python; do
     case "$runtime" in
         python*)
