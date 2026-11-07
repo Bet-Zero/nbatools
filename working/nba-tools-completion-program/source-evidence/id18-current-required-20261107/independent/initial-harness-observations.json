@@ -1,0 +1,10 @@
+{
+  "reviewer": "/root/id18_checker",
+  "candidate": "5063040176b7335626cdda48d0b3d181b71abd5b",
+  "initial_execution": "failed checker assertion before full consumer loop",
+  "assertion": "Python build_query_ui_snapshot for no_match contains literal officially reported Rest",
+  "observed": "API notes and applied filter contain correct complete9-game Rest0/other1/unknown0 labels. The existing Python snapshot emits only generic no-result status plus provisional block for empty sections; actual React NoResultDisplay separately receives full notes and details.",
+  "resolution": "Keep all API/source/coverage expectations unchanged; assert the actual Python snapshot contract and request targeted real React desktop/mobile inspection. No runtime fix or changed numerical expectation.",
+  "earlier_execution": "A prior preflight HEAD pin assertion rejected c5c9b037 because the author had added the announced wrapper-only50630401 descendant; no application query was executed before that identity rejection. Updated candidate to the author-frozen50630401 after checking its sole-file wrapper delta.",
+  "subsequent_harness_correction": "The count route correctly uses canonical accented Luka Dončić while record routes preserve normalized Luka Doncic. A literal spelling-only checker assertion rejected the correct canonical identity. Replaced only the spelling assertion with independent Unicode accent normalization, retaining exact player identity, source keys, Rest semantics and numerical expectations."
+}

@@ -1,0 +1,3122 @@
+{
+  "reviewer": "/root/id18_checker",
+  "backend_model": "unavailable",
+  "candidate_sha": "5063040176b7335626cdda48d0b3d181b71abd5b",
+  "source_oracle_sha256": "99606e19dcac707915c3d29b2fd70982724062c4a5b2660a8fce7f698405251a",
+  "snapshot_manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+  "snapshot_archive_sha256": "ac33da770c20a7a66506234aaff246a79a31478a8cc897ddae3f157a62145c13",
+  "production_writes": 0,
+  "source_requests": 0,
+  "natural": [
+    {
+      "query": "Lakers record when Luka Doncic rests",
+      "payload": {
+        "ok": false,
+        "query": "Lakers record when Luka Doncic rests",
+        "route": "team_record",
+        "result_status": "no_result",
+        "result_reason": "no_match",
+        "current_through": null,
+        "confidence": 0.9,
+        "intent": "summary",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+          "No games matched the specified filters",
+          "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "summary",
+          "result_status": "no_result",
+          "result_reason": "no_match",
+          "metadata": {
+            "query_text": "Lakers record when Luka Doncic rests",
+            "route": "team_record",
+            "query_class": "summary",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": null,
+            "end_date": null,
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": null,
+            "team": "LAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": "Luka Doncic",
+            "without_player_reason": "reported_rest",
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": null,
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": null,
+            "ascending": null,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": null,
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Without player",
+                "value": "Luka Doncic",
+                "kind": "player"
+              },
+              {
+                "label": "Reported absence reason",
+                "value": "officially reported Rest",
+                "kind": "reported_reason"
+              }
+            ],
+            "team_context": {
+              "team_abbr": "LAL"
+            },
+            "confidence": 0.9,
+            "intent": "summary",
+            "notes": [
+              "No games matched the specified filters",
+              "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+            ],
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-id18-reason-development-v2",
+              "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+              "scope": "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107",
+                "sha256": "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+                "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
+                "DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
+                "DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/initial-validation.json",
+                  "sha256": "54a76ed7abb3286d954a1989bf60de39c94df581c4fe4287fb3d2c13c573fe8b",
+                  "state": "failed"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+            "No games matched the specified filters",
+            "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+          ],
+          "caveats": [],
+          "sections": {}
+        }
+      },
+      "visible_output": {
+        "query": "Lakers record when Luka Doncic rests",
+        "status": {
+          "ok": false,
+          "route": "team_record",
+          "result_status": "no_result",
+          "result_reason": "no_match"
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "No answer returned.",
+            "source": "status"
+          },
+          "blocks": [
+            {
+              "type": "message",
+              "title": "PROVISIONAL development data",
+              "lines": [
+                "current123-id18-reason-development-v2",
+                "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+                "NBA accuracy is not certified.",
+                "Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ]
+            },
+            {
+              "type": "message",
+              "title": "No result",
+              "lines": [
+                "No answer rows returned; reason=no_match."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "query": "Lakers record this season when Luka Doncic is resting",
+      "payload": {
+        "ok": false,
+        "query": "Lakers record this season when Luka Doncic is resting",
+        "route": "team_record",
+        "result_status": "no_result",
+        "result_reason": "no_match",
+        "current_through": null,
+        "confidence": 0.9,
+        "intent": "summary",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+          "No games matched the specified filters",
+          "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "summary",
+          "result_status": "no_result",
+          "result_reason": "no_match",
+          "metadata": {
+            "query_text": "Lakers record this season when Luka Doncic is resting",
+            "route": "team_record",
+            "query_class": "summary",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": null,
+            "end_date": null,
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": null,
+            "team": "LAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": "Luka Doncic",
+            "without_player_reason": "reported_rest",
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": null,
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": null,
+            "ascending": null,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": null,
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Without player",
+                "value": "Luka Doncic",
+                "kind": "player"
+              },
+              {
+                "label": "Reported absence reason",
+                "value": "officially reported Rest",
+                "kind": "reported_reason"
+              }
+            ],
+            "team_context": {
+              "team_abbr": "LAL"
+            },
+            "confidence": 0.9,
+            "intent": "summary",
+            "notes": [
+              "No games matched the specified filters",
+              "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+            ],
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-id18-reason-development-v2",
+              "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+              "scope": "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107",
+                "sha256": "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+                "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
+                "DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
+                "DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/initial-validation.json",
+                  "sha256": "54a76ed7abb3286d954a1989bf60de39c94df581c4fe4287fb3d2c13c573fe8b",
+                  "state": "failed"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+            "No games matched the specified filters",
+            "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+          ],
+          "caveats": [],
+          "sections": {}
+        }
+      },
+      "visible_output": {
+        "query": "Lakers record this season when Luka Doncic is resting",
+        "status": {
+          "ok": false,
+          "route": "team_record",
+          "result_status": "no_result",
+          "result_reason": "no_match"
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "No answer returned.",
+            "source": "status"
+          },
+          "blocks": [
+            {
+              "type": "message",
+              "title": "PROVISIONAL development data",
+              "lines": [
+                "current123-id18-reason-development-v2",
+                "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+                "NBA accuracy is not certified.",
+                "Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ]
+            },
+            {
+              "type": "message",
+              "title": "No result",
+              "lines": [
+                "No answer rows returned; reason=no_match."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "query": "Lakers record when Luka Doncic rested in 2026-27",
+      "payload": {
+        "ok": false,
+        "query": "Lakers record when Luka Doncic rested in 2026-27",
+        "route": "team_record",
+        "result_status": "no_result",
+        "result_reason": "no_match",
+        "current_through": null,
+        "confidence": 0.9,
+        "intent": "summary",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+          "No games matched the specified filters",
+          "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "summary",
+          "result_status": "no_result",
+          "result_reason": "no_match",
+          "metadata": {
+            "query_text": "Lakers record when Luka Doncic rested in 2026-27",
+            "route": "team_record",
+            "query_class": "summary",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": null,
+            "end_date": null,
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": null,
+            "team": "LAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": "Luka Doncic",
+            "without_player_reason": "reported_rest",
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": null,
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": null,
+            "ascending": null,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": null,
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Without player",
+                "value": "Luka Doncic",
+                "kind": "player"
+              },
+              {
+                "label": "Reported absence reason",
+                "value": "officially reported Rest",
+                "kind": "reported_reason"
+              }
+            ],
+            "team_context": {
+              "team_abbr": "LAL"
+            },
+            "confidence": 0.9,
+            "intent": "summary",
+            "notes": [
+              "No games matched the specified filters",
+              "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+            ],
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-id18-reason-development-v2",
+              "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+              "scope": "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107",
+                "sha256": "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+                "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
+                "DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
+                "DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/initial-validation.json",
+                  "sha256": "54a76ed7abb3286d954a1989bf60de39c94df581c4fe4287fb3d2c13c573fe8b",
+                  "state": "failed"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+            "No games matched the specified filters",
+            "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+          ],
+          "caveats": [],
+          "sections": {}
+        }
+      },
+      "visible_output": {
+        "query": "Lakers record when Luka Doncic rested in 2026-27",
+        "status": {
+          "ok": false,
+          "route": "team_record",
+          "result_status": "no_result",
+          "result_reason": "no_match"
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "No answer returned.",
+            "source": "status"
+          },
+          "blocks": [
+            {
+              "type": "message",
+              "title": "PROVISIONAL development data",
+              "lines": [
+                "current123-id18-reason-development-v2",
+                "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+                "NBA accuracy is not certified.",
+                "Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ]
+            },
+            {
+              "type": "message",
+              "title": "No result",
+              "lines": [
+                "No answer rows returned; reason=no_match."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "query": "How many games has Luka Doncic rested this season?",
+      "payload": {
+        "ok": true,
+        "query": "How many games has Luka Doncic rested this season?",
+        "route": "game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.9,
+        "intent": "finder",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+          "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many games has Luka Doncic rested this season?",
+            "route": "game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": null,
+            "end_date": null,
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": null,
+            "team": "LAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": "Luka Don\u010di\u0107",
+            "without_player_reason": "reported_rest",
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": null,
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "game_date",
+            "ascending": null,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": null,
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "notes": [
+              "reported_rest_games: LAL games Luka Don\u010di\u0107 was officially reported resting",
+              "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+            ],
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Without player",
+                "value": "Luka Don\u010di\u0107",
+                "kind": "player"
+              },
+              {
+                "label": "Reported absence reason",
+                "value": "officially reported Rest",
+                "kind": "reported_reason"
+              }
+            ],
+            "team_context": {
+              "team_abbr": "LAL"
+            },
+            "confidence": 0.9,
+            "intent": "finder",
+            "primary_count": 0,
+            "count_phrase": "Luka Don\u010di\u0107 had 0 LAL games with officially reported Rest this season.",
+            "answer_phrase": "Luka Don\u010di\u0107 had 0 LAL games with officially reported Rest this season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-id18-reason-development-v2",
+              "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+              "scope": "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107",
+                "sha256": "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+                "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
+                "DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
+                "DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/initial-validation.json",
+                  "sha256": "54a76ed7abb3286d954a1989bf60de39c94df581c4fe4287fb3d2c13c573fe8b",
+                  "state": "failed"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+            "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 0
+              }
+            ]
+          }
+        }
+      },
+      "visible_output": {
+        "query": "How many games has Luka Doncic rested this season?",
+        "status": {
+          "ok": true,
+          "route": "game_finder",
+          "result_status": "ok",
+          "result_reason": null
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "Luka Don\u010di\u0107 had 0 LAL games with officially reported Rest this season.",
+            "source": "ResultHero"
+          },
+          "blocks": [
+            {
+              "type": "message",
+              "title": "PROVISIONAL development data",
+              "lines": [
+                "current123-id18-reason-development-v2",
+                "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+                "NBA accuracy is not certified.",
+                "Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "structured": [
+    {
+      "route": "team_record",
+      "kwargs": {
+        "team": "LAL",
+        "season": "2026-27",
+        "without_player": "Luka Doncic",
+        "without_player_reason": "reported_rest"
+      },
+      "payload": {
+        "ok": false,
+        "query": "structured:team_record",
+        "route": "team_record",
+        "result_status": "no_result",
+        "result_reason": "no_match",
+        "current_through": null,
+        "confidence": null,
+        "intent": null,
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+          "No games matched the specified filters",
+          "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "summary",
+          "result_status": "no_result",
+          "result_reason": "no_match",
+          "metadata": {
+            "route": "team_record",
+            "query_class": "summary",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "season_type": null,
+            "start_date": null,
+            "end_date": null,
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": null,
+            "team": "LAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": "Luka Doncic",
+            "without_player_reason": "reported_rest",
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": null,
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "stat": null,
+            "min_value": null,
+            "max_value": null,
+            "conditions": null,
+            "condition_expression": null,
+            "sort_by": null,
+            "ascending": null,
+            "ranked_intent": false,
+            "split_type": null,
+            "season_list": null,
+            "clutch": null,
+            "back_to_back": null,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": null,
+            "nationally_televised": null,
+            "role": null,
+            "quarter": null,
+            "half": null,
+            "position_filter": null,
+            "head_to_head_used": false,
+            "applied_filters": [
+              {
+                "label": "Without player",
+                "value": "Luka Doncic",
+                "kind": "player"
+              },
+              {
+                "label": "Reported absence reason",
+                "value": "officially reported Rest",
+                "kind": "reported_reason"
+              }
+            ],
+            "team_context": {
+              "team_abbr": "LAL"
+            },
+            "notes": [
+              "No games matched the specified filters",
+              "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+            ],
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-id18-reason-development-v2",
+              "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+              "scope": "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107",
+                "sha256": "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+                "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
+                "DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
+                "DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/initial-validation.json",
+                  "sha256": "54a76ed7abb3286d954a1989bf60de39c94df581c4fe4287fb3d2c13c573fe8b",
+                  "state": "failed"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+            "No games matched the specified filters",
+            "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+          ],
+          "caveats": [],
+          "sections": {}
+        }
+      },
+      "visible_output": {
+        "query": "structured:team_record",
+        "status": {
+          "ok": false,
+          "route": "team_record",
+          "result_status": "no_result",
+          "result_reason": "no_match"
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "No answer returned.",
+            "source": "status"
+          },
+          "blocks": [
+            {
+              "type": "message",
+              "title": "PROVISIONAL development data",
+              "lines": [
+                "current123-id18-reason-development-v2",
+                "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+                "NBA accuracy is not certified.",
+                "Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ]
+            },
+            {
+              "type": "message",
+              "title": "No result",
+              "lines": [
+                "No answer rows returned; reason=no_match."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "route": "game_summary",
+      "kwargs": {
+        "team": "LAL",
+        "season": "2026-27",
+        "without_player": "Luka Doncic",
+        "without_player_reason": "reported_rest"
+      },
+      "payload": {
+        "ok": false,
+        "query": "structured:game_summary",
+        "route": "game_summary",
+        "result_status": "no_result",
+        "result_reason": "no_match",
+        "current_through": null,
+        "confidence": null,
+        "intent": null,
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+          "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "summary",
+          "result_status": "no_result",
+          "result_reason": "no_match",
+          "metadata": {
+            "route": "game_summary",
+            "query_class": "summary",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "season_type": null,
+            "start_date": null,
+            "end_date": null,
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": null,
+            "team": "LAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": "Luka Doncic",
+            "without_player_reason": "reported_rest",
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": null,
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "stat": null,
+            "min_value": null,
+            "max_value": null,
+            "conditions": null,
+            "condition_expression": null,
+            "sort_by": null,
+            "ascending": null,
+            "ranked_intent": false,
+            "split_type": null,
+            "season_list": null,
+            "clutch": null,
+            "back_to_back": null,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": null,
+            "nationally_televised": null,
+            "role": null,
+            "quarter": null,
+            "half": null,
+            "position_filter": null,
+            "head_to_head_used": false,
+            "applied_filters": [
+              {
+                "label": "Without player",
+                "value": "Luka Doncic",
+                "kind": "player"
+              },
+              {
+                "label": "Reported absence reason",
+                "value": "officially reported Rest",
+                "kind": "reported_reason"
+              }
+            ],
+            "team_context": {
+              "team_abbr": "LAL"
+            },
+            "notes": [
+              "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+            ],
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-id18-reason-development-v2",
+              "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+              "scope": "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107",
+                "sha256": "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+                "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
+                "DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
+                "DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/initial-validation.json",
+                  "sha256": "54a76ed7abb3286d954a1989bf60de39c94df581c4fe4287fb3d2c13c573fe8b",
+                  "state": "failed"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+            "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+          ],
+          "caveats": [],
+          "sections": {}
+        }
+      },
+      "visible_output": {
+        "query": "structured:game_summary",
+        "status": {
+          "ok": false,
+          "route": "game_summary",
+          "result_status": "no_result",
+          "result_reason": "no_match"
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "No answer returned.",
+            "source": "status"
+          },
+          "blocks": [
+            {
+              "type": "message",
+              "title": "PROVISIONAL development data",
+              "lines": [
+                "current123-id18-reason-development-v2",
+                "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+                "NBA accuracy is not certified.",
+                "Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ]
+            },
+            {
+              "type": "message",
+              "title": "No result",
+              "lines": [
+                "No answer rows returned; reason=no_match."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "route": "game_finder",
+      "kwargs": {
+        "team": "LAL",
+        "season": "2026-27",
+        "without_player": "Luka Doncic",
+        "without_player_reason": "reported_rest"
+      },
+      "payload": {
+        "ok": false,
+        "query": "structured:game_finder",
+        "route": "game_finder",
+        "result_status": "no_result",
+        "result_reason": "no_match",
+        "current_through": null,
+        "confidence": null,
+        "intent": null,
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+          "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "finder",
+          "result_status": "no_result",
+          "result_reason": "no_match",
+          "metadata": {
+            "route": "game_finder",
+            "query_class": "finder",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "season_type": null,
+            "start_date": null,
+            "end_date": null,
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": null,
+            "team": "LAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": "Luka Doncic",
+            "without_player_reason": "reported_rest",
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": null,
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "stat": null,
+            "min_value": null,
+            "max_value": null,
+            "conditions": null,
+            "condition_expression": null,
+            "sort_by": null,
+            "ascending": null,
+            "ranked_intent": false,
+            "split_type": null,
+            "season_list": null,
+            "clutch": null,
+            "back_to_back": null,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": null,
+            "nationally_televised": null,
+            "role": null,
+            "quarter": null,
+            "half": null,
+            "position_filter": null,
+            "head_to_head_used": false,
+            "applied_filters": [
+              {
+                "label": "Without player",
+                "value": "Luka Doncic",
+                "kind": "player"
+              },
+              {
+                "label": "Reported absence reason",
+                "value": "officially reported Rest",
+                "kind": "reported_reason"
+              }
+            ],
+            "team_context": {
+              "team_abbr": "LAL"
+            },
+            "notes": [
+              "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+            ],
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-id18-reason-development-v2",
+              "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+              "scope": "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107",
+                "sha256": "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+                "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
+                "DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
+                "DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/initial-validation.json",
+                  "sha256": "54a76ed7abb3286d954a1989bf60de39c94df581c4fe4287fb3d2c13c573fe8b",
+                  "state": "failed"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+            "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+          ],
+          "caveats": [],
+          "sections": {}
+        }
+      },
+      "visible_output": {
+        "query": "structured:game_finder",
+        "status": {
+          "ok": false,
+          "route": "game_finder",
+          "result_status": "no_result",
+          "result_reason": "no_match"
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "No answer returned.",
+            "source": "status"
+          },
+          "blocks": [
+            {
+              "type": "message",
+              "title": "PROVISIONAL development data",
+              "lines": [
+                "current123-id18-reason-development-v2",
+                "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+                "NBA accuracy is not certified.",
+                "Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ]
+            },
+            {
+              "type": "message",
+              "title": "No result",
+              "lines": [
+                "No answer rows returned; reason=no_match."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "route": "player_game_summary",
+      "kwargs": {
+        "team": "LAL",
+        "season": "2026-27",
+        "without_player": "Luka Doncic",
+        "without_player_reason": "reported_rest",
+        "player": "Austin Reaves"
+      },
+      "payload": {
+        "ok": false,
+        "query": "structured:player_game_summary",
+        "route": "player_game_summary",
+        "result_status": "no_result",
+        "result_reason": "no_match",
+        "current_through": null,
+        "confidence": null,
+        "intent": null,
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+          "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "summary",
+          "result_status": "no_result",
+          "result_reason": "no_match",
+          "metadata": {
+            "route": "player_game_summary",
+            "query_class": "summary",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "season_type": null,
+            "start_date": null,
+            "end_date": null,
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "Austin Reaves",
+            "team": "LAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": "Luka Doncic",
+            "without_player_reason": "reported_rest",
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": null,
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "stat": null,
+            "min_value": null,
+            "max_value": null,
+            "conditions": null,
+            "condition_expression": null,
+            "sort_by": null,
+            "ascending": null,
+            "ranked_intent": false,
+            "split_type": null,
+            "season_list": null,
+            "clutch": null,
+            "back_to_back": null,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": null,
+            "nationally_televised": null,
+            "role": null,
+            "quarter": null,
+            "half": null,
+            "position_filter": null,
+            "head_to_head_used": false,
+            "applied_filters": [
+              {
+                "label": "Without player",
+                "value": "Luka Doncic",
+                "kind": "player"
+              },
+              {
+                "label": "Reported absence reason",
+                "value": "officially reported Rest",
+                "kind": "reported_reason"
+              }
+            ],
+            "player_context": {
+              "player_id": 1630559,
+              "player_name": "Austin Reaves"
+            },
+            "team_context": {
+              "team_abbr": "LAL"
+            },
+            "notes": [
+              "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+            ],
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-id18-reason-development-v2",
+              "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+              "scope": "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107",
+                "sha256": "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+                "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
+                "DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
+                "DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/initial-validation.json",
+                  "sha256": "54a76ed7abb3286d954a1989bf60de39c94df581c4fe4287fb3d2c13c573fe8b",
+                  "state": "failed"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+            "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+          ],
+          "caveats": [],
+          "sections": {}
+        }
+      },
+      "visible_output": {
+        "query": "structured:player_game_summary",
+        "status": {
+          "ok": false,
+          "route": "player_game_summary",
+          "result_status": "no_result",
+          "result_reason": "no_match"
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "No answer returned.",
+            "source": "status"
+          },
+          "blocks": [
+            {
+              "type": "message",
+              "title": "PROVISIONAL development data",
+              "lines": [
+                "current123-id18-reason-development-v2",
+                "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+                "NBA accuracy is not certified.",
+                "Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ]
+            },
+            {
+              "type": "message",
+              "title": "No result",
+              "lines": [
+                "No answer rows returned; reason=no_match."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "route": "player_game_finder",
+      "kwargs": {
+        "team": "LAL",
+        "season": "2026-27",
+        "without_player": "Luka Doncic",
+        "without_player_reason": "reported_rest",
+        "player": "Austin Reaves"
+      },
+      "payload": {
+        "ok": false,
+        "query": "structured:player_game_finder",
+        "route": "player_game_finder",
+        "result_status": "no_result",
+        "result_reason": "no_match",
+        "current_through": null,
+        "confidence": null,
+        "intent": null,
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+          "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "finder",
+          "result_status": "no_result",
+          "result_reason": "no_match",
+          "metadata": {
+            "route": "player_game_finder",
+            "query_class": "finder",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "season_type": null,
+            "start_date": null,
+            "end_date": null,
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "Austin Reaves",
+            "team": "LAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": "Luka Doncic",
+            "without_player_reason": "reported_rest",
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": null,
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "stat": null,
+            "min_value": null,
+            "max_value": null,
+            "conditions": null,
+            "condition_expression": null,
+            "sort_by": null,
+            "ascending": null,
+            "ranked_intent": false,
+            "split_type": null,
+            "season_list": null,
+            "clutch": null,
+            "back_to_back": null,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": null,
+            "nationally_televised": null,
+            "role": null,
+            "quarter": null,
+            "half": null,
+            "position_filter": null,
+            "head_to_head_used": false,
+            "applied_filters": [
+              {
+                "label": "Without player",
+                "value": "Luka Doncic",
+                "kind": "player"
+              },
+              {
+                "label": "Reported absence reason",
+                "value": "officially reported Rest",
+                "kind": "reported_reason"
+              }
+            ],
+            "player_context": {
+              "player_id": 1630559,
+              "player_name": "Austin Reaves"
+            },
+            "team_context": {
+              "team_abbr": "LAL"
+            },
+            "notes": [
+              "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+            ],
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-id18-reason-development-v2",
+              "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+              "scope": "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107",
+                "sha256": "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+                "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
+                "DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
+                "DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/initial-validation.json",
+                  "sha256": "54a76ed7abb3286d954a1989bf60de39c94df581c4fe4287fb3d2c13c573fe8b",
+                  "state": "failed"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+            "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+          ],
+          "caveats": [],
+          "sections": {}
+        }
+      },
+      "visible_output": {
+        "query": "structured:player_game_finder",
+        "status": {
+          "ok": false,
+          "route": "player_game_finder",
+          "result_status": "no_result",
+          "result_reason": "no_match"
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "No answer returned.",
+            "source": "status"
+          },
+          "blocks": [
+            {
+              "type": "message",
+              "title": "PROVISIONAL development data",
+              "lines": [
+                "current123-id18-reason-development-v2",
+                "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+                "NBA accuracy is not certified.",
+                "Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ]
+            },
+            {
+              "type": "message",
+              "title": "No result",
+              "lines": [
+                "No answer rows returned; reason=no_match."
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "http": [
+    {
+      "query": "Lakers record when Luka Doncic rests",
+      "payload": {
+        "ok": false,
+        "query": "Lakers record when Luka Doncic rests",
+        "route": "team_record",
+        "result_status": "no_result",
+        "result_reason": "no_match",
+        "current_through": null,
+        "confidence": 0.9,
+        "intent": "summary",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+          "No games matched the specified filters",
+          "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "summary",
+          "result_status": "no_result",
+          "result_reason": "no_match",
+          "metadata": {
+            "query_text": "Lakers record when Luka Doncic rests",
+            "route": "team_record",
+            "query_class": "summary",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": null,
+            "end_date": null,
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": null,
+            "team": "LAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": "Luka Doncic",
+            "without_player_reason": "reported_rest",
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": null,
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": null,
+            "ascending": null,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": null,
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Without player",
+                "value": "Luka Doncic",
+                "kind": "player"
+              },
+              {
+                "label": "Reported absence reason",
+                "value": "officially reported Rest",
+                "kind": "reported_reason"
+              }
+            ],
+            "team_context": {
+              "team_abbr": "LAL"
+            },
+            "confidence": 0.9,
+            "intent": "summary",
+            "notes": [
+              "No games matched the specified filters",
+              "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+            ],
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-id18-reason-development-v2",
+              "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+              "scope": "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107",
+                "sha256": "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+                "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
+                "DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
+                "DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/initial-validation.json",
+                  "sha256": "54a76ed7abb3286d954a1989bf60de39c94df581c4fe4287fb3d2c13c573fe8b",
+                  "state": "failed"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+            "No games matched the specified filters",
+            "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+          ],
+          "caveats": [],
+          "sections": {}
+        }
+      },
+      "visible_output": {
+        "query": "Lakers record when Luka Doncic rests",
+        "status": {
+          "ok": false,
+          "route": "team_record",
+          "result_status": "no_result",
+          "result_reason": "no_match"
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "No answer returned.",
+            "source": "status"
+          },
+          "blocks": [
+            {
+              "type": "message",
+              "title": "PROVISIONAL development data",
+              "lines": [
+                "current123-id18-reason-development-v2",
+                "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+                "NBA accuracy is not certified.",
+                "Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ]
+            },
+            {
+              "type": "message",
+              "title": "No result",
+              "lines": [
+                "No answer rows returned; reason=no_match."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "query": "Lakers record this season when Luka Doncic is resting",
+      "payload": {
+        "ok": false,
+        "query": "Lakers record this season when Luka Doncic is resting",
+        "route": "team_record",
+        "result_status": "no_result",
+        "result_reason": "no_match",
+        "current_through": null,
+        "confidence": 0.9,
+        "intent": "summary",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+          "No games matched the specified filters",
+          "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "summary",
+          "result_status": "no_result",
+          "result_reason": "no_match",
+          "metadata": {
+            "query_text": "Lakers record this season when Luka Doncic is resting",
+            "route": "team_record",
+            "query_class": "summary",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": null,
+            "end_date": null,
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": null,
+            "team": "LAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": "Luka Doncic",
+            "without_player_reason": "reported_rest",
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": null,
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": null,
+            "ascending": null,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": null,
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Without player",
+                "value": "Luka Doncic",
+                "kind": "player"
+              },
+              {
+                "label": "Reported absence reason",
+                "value": "officially reported Rest",
+                "kind": "reported_reason"
+              }
+            ],
+            "team_context": {
+              "team_abbr": "LAL"
+            },
+            "confidence": 0.9,
+            "intent": "summary",
+            "notes": [
+              "No games matched the specified filters",
+              "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+            ],
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-id18-reason-development-v2",
+              "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+              "scope": "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107",
+                "sha256": "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+                "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
+                "DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
+                "DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/initial-validation.json",
+                  "sha256": "54a76ed7abb3286d954a1989bf60de39c94df581c4fe4287fb3d2c13c573fe8b",
+                  "state": "failed"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+            "No games matched the specified filters",
+            "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+          ],
+          "caveats": [],
+          "sections": {}
+        }
+      },
+      "visible_output": {
+        "query": "Lakers record this season when Luka Doncic is resting",
+        "status": {
+          "ok": false,
+          "route": "team_record",
+          "result_status": "no_result",
+          "result_reason": "no_match"
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "No answer returned.",
+            "source": "status"
+          },
+          "blocks": [
+            {
+              "type": "message",
+              "title": "PROVISIONAL development data",
+              "lines": [
+                "current123-id18-reason-development-v2",
+                "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+                "NBA accuracy is not certified.",
+                "Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ]
+            },
+            {
+              "type": "message",
+              "title": "No result",
+              "lines": [
+                "No answer rows returned; reason=no_match."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "query": "Lakers record when Luka Doncic rested in 2026-27",
+      "payload": {
+        "ok": false,
+        "query": "Lakers record when Luka Doncic rested in 2026-27",
+        "route": "team_record",
+        "result_status": "no_result",
+        "result_reason": "no_match",
+        "current_through": null,
+        "confidence": 0.9,
+        "intent": "summary",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+          "No games matched the specified filters",
+          "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "summary",
+          "result_status": "no_result",
+          "result_reason": "no_match",
+          "metadata": {
+            "query_text": "Lakers record when Luka Doncic rested in 2026-27",
+            "route": "team_record",
+            "query_class": "summary",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": null,
+            "end_date": null,
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": null,
+            "team": "LAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": "Luka Doncic",
+            "without_player_reason": "reported_rest",
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": null,
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": null,
+            "ascending": null,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": null,
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Without player",
+                "value": "Luka Doncic",
+                "kind": "player"
+              },
+              {
+                "label": "Reported absence reason",
+                "value": "officially reported Rest",
+                "kind": "reported_reason"
+              }
+            ],
+            "team_context": {
+              "team_abbr": "LAL"
+            },
+            "confidence": 0.9,
+            "intent": "summary",
+            "notes": [
+              "No games matched the specified filters",
+              "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+            ],
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-id18-reason-development-v2",
+              "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+              "scope": "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107",
+                "sha256": "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+                "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
+                "DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
+                "DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/initial-validation.json",
+                  "sha256": "54a76ed7abb3286d954a1989bf60de39c94df581c4fe4287fb3d2c13c573fe8b",
+                  "state": "failed"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+            "No games matched the specified filters",
+            "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+          ],
+          "caveats": [],
+          "sections": {}
+        }
+      },
+      "visible_output": {
+        "query": "Lakers record when Luka Doncic rested in 2026-27",
+        "status": {
+          "ok": false,
+          "route": "team_record",
+          "result_status": "no_result",
+          "result_reason": "no_match"
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "No answer returned.",
+            "source": "status"
+          },
+          "blocks": [
+            {
+              "type": "message",
+              "title": "PROVISIONAL development data",
+              "lines": [
+                "current123-id18-reason-development-v2",
+                "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+                "NBA accuracy is not certified.",
+                "Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ]
+            },
+            {
+              "type": "message",
+              "title": "No result",
+              "lines": [
+                "No answer rows returned; reason=no_match."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "query": "How many games has Luka Doncic rested this season?",
+      "payload": {
+        "ok": true,
+        "query": "How many games has Luka Doncic rested this season?",
+        "route": "game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.9,
+        "intent": "finder",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+          "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many games has Luka Doncic rested this season?",
+            "route": "game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": null,
+            "end_date": null,
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": null,
+            "team": "LAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": "Luka Don\u010di\u0107",
+            "without_player_reason": "reported_rest",
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": null,
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "game_date",
+            "ascending": null,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": null,
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "notes": [
+              "reported_rest_games: LAL games Luka Don\u010di\u0107 was officially reported resting",
+              "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+            ],
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Without player",
+                "value": "Luka Don\u010di\u0107",
+                "kind": "player"
+              },
+              {
+                "label": "Reported absence reason",
+                "value": "officially reported Rest",
+                "kind": "reported_reason"
+              }
+            ],
+            "team_context": {
+              "team_abbr": "LAL"
+            },
+            "confidence": 0.9,
+            "intent": "finder",
+            "primary_count": 0,
+            "count_phrase": "Luka Don\u010di\u0107 had 0 LAL games with officially reported Rest this season.",
+            "answer_phrase": "Luka Don\u010di\u0107 had 0 LAL games with officially reported Rest this season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-id18-reason-development-v2",
+              "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+              "scope": "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107",
+                "sha256": "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+                "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
+                "DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
+                "DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/initial-validation.json",
+                  "sha256": "54a76ed7abb3286d954a1989bf60de39c94df581c4fe4287fb3d2c13c573fe8b",
+                  "state": "failed"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279.",
+            "Officially reported Rest: 0 Rest, 1 reported other, 0 unknown among 1 qualified nonparticipations in 9 selected games. Reported reasons do not establish clinical or healthy status."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 0
+              }
+            ]
+          }
+        }
+      },
+      "visible_output": {
+        "query": "How many games has Luka Doncic rested this season?",
+        "status": {
+          "ok": true,
+          "route": "game_finder",
+          "result_status": "ok",
+          "result_reason": null
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "Luka Don\u010di\u0107 had 0 LAL games with officially reported Rest this season.",
+            "source": "ResultHero"
+          },
+          "blocks": [
+            {
+              "type": "message",
+              "title": "PROVISIONAL development data",
+              "lines": [
+                "current123-id18-reason-development-v2",
+                "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+                "NBA accuracy is not certified.",
+                "Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "controls": {
+    "without": {
+      "query": "Lakers record when Luka Doncic sits this season",
+      "payload": {
+        "ok": true,
+        "query": "Lakers record when Luka Doncic sits this season",
+        "route": "team_record",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.9,
+        "intent": "summary",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279."
+        ],
+        "caveats": [
+          "record filtered to games without Luka Doncic"
+        ],
+        "result": {
+          "query_class": "summary",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "Lakers record when Luka Doncic sits this season",
+            "route": "team_record",
+            "query_class": "summary",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": null,
+            "end_date": null,
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": null,
+            "team": "LAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": "Luka Doncic",
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": null,
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": null,
+            "ascending": null,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": null,
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Without player",
+                "value": "Luka Doncic",
+                "kind": "player"
+              }
+            ],
+            "team_context": {
+              "team_abbr": "LAL"
+            },
+            "confidence": 0.9,
+            "intent": "summary",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-id18-reason-development-v2",
+              "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+              "scope": "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107",
+                "sha256": "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+                "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
+                "DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
+                "DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/initial-validation.json",
+                  "sha256": "54a76ed7abb3286d954a1989bf60de39c94df581c4fe4287fb3d2c13c573fe8b",
+                  "state": "failed"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279."
+          ],
+          "caveats": [
+            "record filtered to games without Luka Doncic"
+          ],
+          "sections": {
+            "summary": [
+              {
+                "team_name": "Los Angeles Lakers",
+                "season_start": "2026-27",
+                "season_end": "2026-27",
+                "season_type": "Regular Season",
+                "games": 1,
+                "wins": 1,
+                "losses": 0,
+                "win_pct": 1.0,
+                "pts_avg": 103.0,
+                "reb_avg": 48.0,
+                "ast_avg": 16.0,
+                "fg3m_avg": 9.0,
+                "stl_avg": 15.0,
+                "blk_avg": 5.0,
+                "tov_avg": 19.0,
+                "plus_minus_avg": 16.0,
+                "efg_pct_avg": 0.5,
+                "ts_pct_avg": 0.551
+              }
+            ],
+            "by_season": [
+              {
+                "season": "2026-27",
+                "games": 1,
+                "wins": 1,
+                "losses": 0,
+                "pts_avg": 103.0,
+                "reb_avg": 48.0,
+                "ast_avg": 16.0,
+                "fg3m_avg": 9.0,
+                "tov_avg": 19.0,
+                "plus_minus_avg": 16.0,
+                "efg_pct_avg": 0.5,
+                "ts_pct_avg": 0.551,
+                "win_pct": 1.0
+              }
+            ],
+            "game_log": [
+              {
+                "game_date": "2026-10-28",
+                "game_id": 22600143,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "team_id": 1610612747,
+                "team_abbr": "LAL",
+                "team_name": "Los Angeles Lakers",
+                "opponent_team_id": 1610612746,
+                "opponent_team_abbr": "LAC",
+                "opponent_team_name": "LA Clippers",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "W",
+                "pts": 103,
+                "reb": 48,
+                "ast": 16,
+                "fgm": 35,
+                "fga": 79,
+                "fg3m": 9,
+                "fg3a": 31,
+                "ftm": 24,
+                "fta": 33,
+                "oreb": 17,
+                "dreb": 31,
+                "stl": 15,
+                "blk": 5,
+                "tov": 19,
+                "plus_minus": 16,
+                "fg_pct": 0.443,
+                "fg3_pct": 0.29,
+                "ft_pct": 0.727,
+                "efg_pct": 0.5,
+                "ts_pct": 0.5506843455945253,
+                "opponent_pts": 87
+              }
+            ]
+          }
+        }
+      }
+    },
+    "with": {
+      "query": "Lakers record with Luka Doncic playing this season",
+      "payload": {
+        "ok": true,
+        "query": "Lakers record with Luka Doncic playing this season",
+        "route": "team_record",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.9,
+        "intent": "summary",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279."
+        ],
+        "caveats": [
+          "record filtered to games with Luka Don\u010di\u0107"
+        ],
+        "result": {
+          "query_class": "summary",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "Lakers record with Luka Doncic playing this season",
+            "route": "team_record",
+            "query_class": "summary",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": null,
+            "end_date": null,
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": null,
+            "team": "LAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": "Luka Don\u010di\u0107",
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": null,
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": null,
+            "ascending": null,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": null,
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "With player",
+                "value": "Luka Don\u010di\u0107",
+                "kind": "player"
+              }
+            ],
+            "team_context": {
+              "team_abbr": "LAL"
+            },
+            "confidence": 0.9,
+            "intent": "summary",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-id18-reason-development-v2",
+              "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+              "scope": "123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/id18-current-required-20261107",
+                "sha256": "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+                "DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a",
+                "DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470",
+                "DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/initial-validation.json",
+                  "sha256": "54a76ed7abb3286d954a1989bf60de39c94df581c4fe4287fb3d2c13c573fe8b",
+                  "state": "failed"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-id18-reason-development-v2; 123duegames at2026-11-07T03:46:21.725918Z; targeted participation/record facts independently qualified; whole-snapshot numerical/current freshness/production acceptance incomplete; full9LAL Luka reported Rest0, other1, unknown0; canonical source companion replayed. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38, DQ-auto-a30681d45aee2d804d7d341bc1c6b816b465b4dd81703907a8050b2ca6e01e0a, DQ-auto-db43f439936d81eeb9262b3da183c97ffc10eeac4eb864b89a6887d5f6602470, DQ-auto-e94d5a6bd25ec797c917742c292f68de54d640d18d5386a73ee3aaf7270da279."
+          ],
+          "caveats": [
+            "record filtered to games with Luka Don\u010di\u0107"
+          ],
+          "sections": {
+            "summary": [
+              {
+                "team_name": "Los Angeles Lakers",
+                "season_start": "2026-27",
+                "season_end": "2026-27",
+                "season_type": "Regular Season",
+                "games": 8,
+                "wins": 6,
+                "losses": 2,
+                "win_pct": 0.75,
+                "pts_avg": 124.125,
+                "reb_avg": 38.875,
+                "ast_avg": 25.875,
+                "fg3m_avg": 15.25,
+                "stl_avg": 9.625,
+                "blk_avg": 7.375,
+                "tov_avg": 16.625,
+                "plus_minus_avg": 6.875,
+                "efg_pct_avg": 0.614,
+                "ts_pct_avg": 0.657
+              }
+            ],
+            "by_season": [
+              {
+                "season": "2026-27",
+                "games": 8,
+                "wins": 6,
+                "losses": 2,
+                "pts_avg": 124.125,
+                "reb_avg": 38.875,
+                "ast_avg": 25.875,
+                "fg3m_avg": 15.25,
+                "tov_avg": 16.625,
+                "plus_minus_avg": 6.875,
+                "efg_pct_avg": 0.614,
+                "ts_pct_avg": 0.657,
+                "win_pct": 0.75
+              }
+            ],
+            "game_log": [
+              {
+                "game_date": "2026-10-21",
+                "game_id": 22600005,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "team_id": 1610612747,
+                "team_abbr": "LAL",
+                "team_name": "Los Angeles Lakers",
+                "opponent_team_id": 1610612744,
+                "opponent_team_abbr": "GSW",
+                "opponent_team_name": "Golden State Warriors",
+                "is_home": 1,
+                "is_away": 0,
+                "wl": "W",
+                "pts": 127,
+                "reb": 43,
+                "ast": 28,
+                "fgm": 46,
+                "fga": 81,
+                "fg3m": 11,
+                "fg3a": 28,
+                "ftm": 24,
+                "fta": 27,
+                "oreb": 10,
+                "dreb": 33,
+                "stl": 11,
+                "blk": 5,
+                "tov": 18,
+                "plus_minus": 22,
+                "fg_pct": 0.568,
+                "fg3_pct": 0.393,
+                "ft_pct": 0.889,
+                "efg_pct": 0.6358024691358025,
+                "ts_pct": 0.6836778639104221,
+                "opponent_pts": 105
+              },
+              {
+                "game_date": "2026-10-23",
+                "game_id": 22600102,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "team_id": 1610612747,
+                "team_abbr": "LAL",
+                "team_name": "Los Angeles Lakers",
+                "opponent_team_id": 1610612746,
+                "opponent_team_abbr": "LAC",
+                "opponent_team_name": "LA Clippers",
+                "is_home": 1,
+                "is_away": 0,
+                "wl": "W",
+                "pts": 125,
+                "reb": 37,
+                "ast": 29,
+                "fgm": 46,
+                "fga": 79,
+                "fg3m": 14,
+                "fg3a": 32,
+                "ftm": 19,
+                "fta": 25,
+                "oreb": 8,
+                "dreb": 29,
+                "stl": 13,
+                "blk": 9,
+                "tov": 21,
+                "plus_minus": 8,
+                "fg_pct": 0.582,
+                "fg3_pct": 0.438,
+                "ft_pct": 0.76,
+                "efg_pct": 0.6708860759493671,
+                "ts_pct": 0.6944444444444444,
+                "opponent_pts": 117
+              },
+              {
+                "game_date": "2026-10-25",
+                "game_id": 22600112,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "team_id": 1610612747,
+                "team_abbr": "LAL",
+                "team_name": "Los Angeles Lakers",
+                "opponent_team_id": 1610612762,
+                "opponent_team_abbr": "UTA",
+                "opponent_team_name": "Utah Jazz",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "W",
+                "pts": 132,
+                "reb": 31,
+                "ast": 19,
+                "fgm": 40,
+                "fga": 82,
+                "fg3m": 20,
+                "fg3a": 47,
+                "ftm": 32,
+                "fta": 38,
+                "oreb": 5,
+                "dreb": 26,
+                "stl": 9,
+                "blk": 6,
+                "tov": 10,
+                "plus_minus": 9,
+                "fg_pct": 0.488,
+                "fg3_pct": 0.426,
+                "ft_pct": 0.842,
+                "efg_pct": 0.6097560975609756,
+                "ts_pct": 0.6685575364667747,
+                "opponent_pts": 123
+              },
+              {
+                "game_date": "2026-10-27",
+                "game_id": 22600131,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "team_id": 1610612747,
+                "team_abbr": "LAL",
+                "team_name": "Los Angeles Lakers",
+                "opponent_team_id": 1610612757,
+                "opponent_team_abbr": "POR",
+                "opponent_team_name": "Portland Trail Blazers",
+                "is_home": 1,
+                "is_away": 0,
+                "wl": "L",
+                "pts": 129,
+                "reb": 31,
+                "ast": 28,
+                "fgm": 45,
+                "fga": 80,
+                "fg3m": 17,
+                "fg3a": 43,
+                "ftm": 22,
+                "fta": 30,
+                "oreb": 6,
+                "dreb": 25,
+                "stl": 6,
+                "blk": 4,
+                "tov": 15,
+                "plus_minus": -7,
+                "fg_pct": 0.563,
+                "fg3_pct": 0.395,
+                "ft_pct": 0.733,
+                "efg_pct": 0.66875,
+                "ts_pct": 0.6920600858369098,
+                "opponent_pts": 136
+              },
+              {
+                "game_date": "2026-10-30",
+                "game_id": 22600023,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "team_id": 1610612747,
+                "team_abbr": "LAL",
+                "team_name": "Los Angeles Lakers",
+                "opponent_team_id": 1610612744,
+                "opponent_team_abbr": "GSW",
+                "opponent_team_name": "Golden State Warriors",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "pts": 95,
+                "reb": 45,
+                "ast": 18,
+                "fgm": 33,
+                "fga": 82,
+                "fg3m": 11,
+                "fg3a": 39,
+                "ftm": 18,
+                "fta": 24,
+                "oreb": 16,
+                "dreb": 29,
+                "stl": 8,
+                "blk": 11,
+                "tov": 20,
+                "plus_minus": -17,
+                "fg_pct": 0.402,
+                "fg3_pct": 0.282,
+                "ft_pct": 0.75,
+                "efg_pct": 0.4695121951219512,
+                "ts_pct": 0.5131806395851339,
+                "opponent_pts": 112
+              },
+              {
+                "game_date": "2026-11-01",
+                "game_id": 22600157,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "team_id": 1610612747,
+                "team_abbr": "LAL",
+                "team_name": "Los Angeles Lakers",
+                "opponent_team_id": 1610612761,
+                "opponent_team_abbr": "TOR",
+                "opponent_team_name": "Toronto Raptors",
+                "is_home": 1,
+                "is_away": 0,
+                "wl": "W",
+                "pts": 131,
+                "reb": 45,
+                "ast": 26,
+                "fgm": 43,
+                "fga": 80,
+                "fg3m": 18,
+                "fg3a": 37,
+                "ftm": 27,
+                "fta": 32,
+                "oreb": 9,
+                "dreb": 36,
+                "stl": 11,
+                "blk": 7,
+                "tov": 22,
+                "plus_minus": 6,
+                "fg_pct": 0.538,
+                "fg3_pct": 0.486,
+                "ft_pct": 0.844,
+                "efg_pct": 0.65,
+                "ts_pct": 0.6962159863945578,
+                "opponent_pts": 125
+              },
+              {
+                "game_date": "2026-11-02",
+                "game_id": 22600172,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "team_id": 1610612747,
+                "team_abbr": "LAL",
+                "team_name": "Los Angeles Lakers",
+                "opponent_team_id": 1610612748,
+                "opponent_team_abbr": "MIA",
+                "opponent_team_name": "Miami Heat",
+                "is_home": 1,
+                "is_away": 0,
+                "wl": "W",
+                "pts": 138,
+                "reb": 41,
+                "ast": 39,
+                "fgm": 51,
+                "fga": 89,
+                "fg3m": 19,
+                "fg3a": 43,
+                "ftm": 17,
+                "fta": 24,
+                "oreb": 10,
+                "dreb": 31,
+                "stl": 8,
+                "blk": 4,
+                "tov": 16,
+                "plus_minus": 21,
+                "fg_pct": 0.573,
+                "fg3_pct": 0.442,
+                "ft_pct": 0.708,
+                "efg_pct": 0.6797752808988764,
+                "ts_pct": 0.6930494174367215,
+                "opponent_pts": 117
+              },
+              {
+                "game_date": "2026-11-04",
+                "game_id": 22600185,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "team_id": 1610612747,
+                "team_abbr": "LAL",
+                "team_name": "Los Angeles Lakers",
+                "opponent_team_id": 1610612758,
+                "opponent_team_abbr": "SAC",
+                "opponent_team_name": "Sacramento Kings",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "W",
+                "pts": 116,
+                "reb": 38,
+                "ast": 20,
+                "fgm": 35,
+                "fga": 78,
+                "fg3m": 12,
+                "fg3a": 38,
+                "ftm": 34,
+                "fta": 38,
+                "oreb": 10,
+                "dreb": 28,
+                "stl": 11,
+                "blk": 13,
+                "tov": 11,
+                "plus_minus": 13,
+                "fg_pct": 0.449,
+                "fg3_pct": 0.316,
+                "ft_pct": 0.895,
+                "efg_pct": 0.5256410256410257,
+                "ts_pct": 0.6123310810810811,
+                "opponent_pts": 103
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "guards": {
+    "old_version_reader_pinned_across_new_reader": "passed",
+    "production_selection_rejected": "passed",
+    "source": "no_data_rejected_not_qualified_empty",
+    "import": "no_data_rejected_not_qualified_empty",
+    "reason_missing": "no_data_rejected_not_qualified_empty",
+    "selected_bare_and_malformed_entries_and_whole_game_remain_strict": "passed"
+  },
+  "unchanged_old_files": [
+    "data/metadata/initial-validation.json",
+    "data/raw/team_season_advanced/2026-27_regular_season.csv",
+    "data/raw/team_game_period_stats/2026-27_regular_season.csv",
+    "data/raw/schedule/2026-27_regular_season.csv",
+    "data/raw/rosters/2026-27.csv",
+    "data/raw/team_game_stats/2026-27_regular_season.csv",
+    "data/raw/player_game_stats/2026-27_regular_season.csv",
+    "data/raw/player_game_availability/2026-27_regular_season.csv",
+    "data/raw/player_game_starter_roles/2026-27_regular_season.csv",
+    "data/raw/player_season_advanced/2026-27_regular_season.csv",
+    "data/raw/games/2026-27_regular_season.csv",
+    "data/raw/standings_snapshots/2026-27_regular_season.csv",
+    "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+    "data/processed/schedule_context_features/2026-27_regular_season.csv",
+    "data/processed/team_game_features/2026-27_regular_season.csv",
+    "data/processed/league_season_stats/2026-27_regular_season.csv",
+    "data/processed/player_game_features/2026-27_regular_season.csv",
+    "data/processed/game_features/2026-27_regular_season.csv"
+  ],
+  "original_reason_and_structured_replay": "passed",
+  "complete_parent_coverage": {
+    "basis": "officially reported Rest",
+    "complete": true,
+    "requested_games": 9,
+    "qualified_nonparticipations": 1,
+    "reported_rest": 0,
+    "reported_other": 1,
+    "unknown": 0
+  },
+  "checks": {
+    "natural": 4,
+    "structured": 5,
+    "http_over_tcp": 4,
+    "binary_controls": 2,
+    "corruption_controls": 3,
+    "full_parent_games": 9,
+    "old_file_bytes_preserved": 18,
+    "source_replay": "passed"
+  },
+  "conclusion": "passed"
+}

@@ -1,0 +1,14 @@
+{
+  "run_id": 42342725665,
+  "reviewed_sha": "5063040176b7335626cdda48d0b3d181b71abd5b",
+  "request_sha": "e1dee03d1f5322475e18cda890ba3b6440c9d97b",
+  "job_id": 128313938301,
+  "summary_custody": "Exact JSON emitted by unchanged required harness, retrieved independently through authenticated GitHub connector job logs; no reconstruction of test verdicts.",
+  "artifact_id": 13562172328,
+  "artifact_size_bytes": 1353,
+  "artifact_sha256": "1f7851eaf1219b0e16e1b668fbad969b4b8ba3b3c06ec8eb4158c4b1159b6139",
+  "artifact_url": "https://github.com/Bet-Zero/nbatools/actions/runs/42342725665/artifacts/13562172328",
+  "artifact_archive_retained_locally": false,
+  "source_reacquisition": 0,
+  "production_writes": 0
+}

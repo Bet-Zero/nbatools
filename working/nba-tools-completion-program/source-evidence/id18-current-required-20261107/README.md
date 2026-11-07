@@ -27,7 +27,7 @@ not no_data or an invented0–0record/PPG. All five affected structured consumer
 natural/HTTP, labels, generic-sits1–0/103PTS distinction, source/lineage corruption,
 old-version reader pinning and production rejection are covered by focused tests.
 Initial focused run89passed; subsequent new/whole-game/development/structured
-checks120passed. Independent candidate review and exact required CI remain pending.
+checks120passed. Independent checker `/root/id18_checker` approves50630401: four natural (original+three heldouts), five structured, four actual TCP HTTP, source/lineage/old-version/production guards all pass. Actual four React desktop/mobile captures are independently reviewed. Required read-only run42342725665 passed1selected/executed,0skips/failures/errors/xfails; [exact emitted summary](hosted/summary.json) and [request/artifact custody](hosted/receipt.json) are retained. Normal final-head CI remains required.
 Original failed new test expected a changed packet digest; exact recovery proved
 all binary bytes unchanged and the assertion was strengthened to exact equality.
 
@@ -37,3 +37,5 @@ old484rate unknowns have separate consumer effects. Current-snapshot qualificati
 will use the complete745-window denominator and preserve107-game successes/originals.
 A complete validated publication candidate is not ready. No production/pointer,
 protection, credentials, permissions, spending or automatic-refresh action occurred.
+
+The archive period family was diagnosed from a new representative original as partial, not complete window data. A separate isolated Agent1 source lane is qualifying the16game roles/catalog/Advanced/standings deltas and preparing the existing finite collector request for98actualperiodwindows. This is not Agent2 or a new pipeline. The existing contract zero-completes only standard quarter/half windows; OT rows require actual source participants. The earlier2249player key planning lattice is under focused independent reconciliation against that preserved contract;745team windows and every standard player key remain required. NoOTrow is fabricated.

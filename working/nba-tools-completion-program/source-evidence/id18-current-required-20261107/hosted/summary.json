@@ -1,0 +1,19 @@
+{
+  "candidate_sha": "e1dee03d1f5322475e18cda890ba3b6440c9d97b",
+  "generation": "availability-lebron-season-v1-20261031",
+  "scope": "targeted",
+  "required_selection": [
+    "tests/cloud_current_id18_real_data.py::test_current_id18_qualified_empty_all_consumers_and_source_preservation"
+  ],
+  "required_test_limit": 100,
+  "selected": 1,
+  "executed": 1,
+  "passed": 1,
+  "skipped": 0,
+  "failed": 0,
+  "errors": 0,
+  "xfailed": 0,
+  "pytest_exit": 0,
+  "conclusion": "success",
+  "problems": []
+}
