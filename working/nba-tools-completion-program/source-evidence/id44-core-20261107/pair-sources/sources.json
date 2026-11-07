@@ -1,0 +1,34 @@
+{
+  "repository": "sportsdataverse/hoopR-nba-stats-raw",
+  "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+  "files": {
+    "boxscoretraditionalv3_0020700456.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2008/0020700456.json",
+      "git_blob_sha": "372438314acb41cfe0b47695b21dad9b58fe9698",
+      "sha256": "a0758e59021a52492f5f04eebcc3c50659b8a17d8317eddae600ff99f33bca28",
+      "size_bytes": 18336,
+      "retrieved_at": "2026-11-07T03:02:17.428539+00:00"
+    },
+    "boxscoresummaryv2_0020700456.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2008/0020700456.json",
+      "git_blob_sha": "377fc2d732e1467d56dcd52fee28b149139574d2",
+      "sha256": "a1064d801ced6959f2943b5ec1f18fb023851ad4b3dadd836e13759366f9d12b",
+      "size_bytes": 3529,
+      "retrieved_at": "2026-11-07T03:02:17.741181+00:00"
+    },
+    "boxscoretraditionalv3_0020700788.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2008/0020700788.json",
+      "git_blob_sha": "fd5ba1a7b60726c92b2e890a868cbcf8bb1a9c45",
+      "sha256": "8a209d18c4e88ef0b1128dce36329880ae1e71b93202af6d784c6f2af5f18bef",
+      "size_bytes": 18334,
+      "retrieved_at": "2026-11-07T03:02:18.085207+00:00"
+    },
+    "boxscoresummaryv2_0020700788.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2008/0020700788.json",
+      "git_blob_sha": "ce24b1d35733a166f0f617ffa24539c483d2763c",
+      "sha256": "ca31cbbc49d8a1ae849255bab2edccd07dd9796e988a7aed639302bcf54cc3e1",
+      "size_bytes": 3433,
+      "retrieved_at": "2026-11-07T03:02:18.393119+00:00"
+    }
+  }
+}

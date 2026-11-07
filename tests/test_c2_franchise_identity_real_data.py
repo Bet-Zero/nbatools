@@ -7,6 +7,10 @@ code under test.
 
 from __future__ import annotations
 
+import hashlib
+import json
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
@@ -81,22 +85,77 @@ def test_grizzlies_vs_thunder_meetings_in_2000_01_are_vancouver_vs_seattle():
     assert summary["wins"] == int((meetings["wl"] == "W").sum())
 
 
-def test_thunder_record_without_durant_in_2007_08_is_seattle_games_he_missed():
+# Independently frozen from retained NBA logs and two explicit game-day sources.
+# The full82 population is retained; missing appearance rows never imply DNP.
+ID44_EVIDENCE = Path(__file__).resolve().parents[1] / (
+    "working/nba-tools-completion-program/source-evidence/id44-core-20261107"
+)
+
+
+def qualified_durant_population():
+    raw = (ID44_EVIDENCE / "independent/source-qualified-oracle.json").read_bytes()
+    assert (
+        hashlib.sha256(raw).hexdigest()
+        == "b67e76636d17184d310297da120d2409f03eb21260aae05606a0195651be626c"
+    )
+    oracle = json.loads(raw)
     team = _team_games("2007-08")
-    team = team[pd.to_numeric(team["team_id"]) == OKC]
+    team = team[pd.to_numeric(team["team_id"]) == OKC].copy()
+    assert len(team) == team.game_id.nunique() == 82
+    assert set(team.team_abbr) == {"SEA"}
+    assert set(team.team_name) == {"Seattle SuperSonics"}
+    actual = {int(r.game_id): (str(r.game_date)[:10], r.wl, int(r.pts)) for r in team.itertuples()}
+    assert actual == {
+        int(r["game_id"]): (r["game_date"], r["wl"], r["pts"]) for r in oracle["population"]
+    }
     players = data_read_csv(
         "raw/player_game_stats/2007-08_regular_season.csv", dtype={"game_id": str}
     )
-    played = set(players[pd.to_numeric(players["player_id"]) == 201142]["game_id"])
-    missed = team[~team["game_id"].isin(played)]
-    assert 0 < len(missed) < len(team)
+    played = players[pd.to_numeric(players.player_id).eq(201142)]
+    assert len(played) == played.game_id.nunique() == 80
+    assert pd.to_numeric(played.minutes).gt(0).all()
+    assert set(pd.to_numeric(played.team_id)) == {OKC}
+    assert set(played.team_abbr) == {"SEA"}
+    assert {int(x) for x in played.game_id} == {
+        int(x) for x in oracle["expected"]["with"]["game_ids"]
+    }
+    assert all(str(r.game_date)[:10] == actual[int(r.game_id)][0] for r in played.itertuples())
+    return oracle
 
-    summary = _query("Thunder record without Kevin Durant in 2007-08").result.to_dict()["sections"][
-        "summary"
-    ][0]
-    assert (summary["wins"], summary["losses"]) == (
-        int((missed["wl"] == "W").sum()),
-        int((missed["wl"] == "L").sum()),
+
+def assert_durant_record(result, expected, *, franchise=True):
+    assert result.result_status == "ok", (result.result_reason, result.metadata)
+    payload = result.result.to_dict()
+    summary = payload["sections"]["summary"][0]
+    assert (summary["games"], summary["wins"], summary["losses"]) == (
+        len(expected["game_ids"]),
+        expected["wins"],
+        expected["losses"],
+    )
+    assert summary["team_name"] == "Seattle SuperSonics"
+    assert summary["pts_avg"] == pytest.approx(
+        expected["points"] / len(expected["game_ids"]), abs=0.001
+    )
+    selected = [int(r["game_id"]) for r in payload["sections"]["game_log"]]
+    assert len(selected) == len(set(selected)) == len(expected["game_ids"])
+    assert set(selected) == {int(x) for x in expected["game_ids"]}
+    if franchise:
+        assert any("Seattle SuperSonics" in c for c in result.result.caveats)
+
+
+def test_thunder_record_without_durant_in_2007_08_is_seattle_games_he_missed():
+    oracle = qualified_durant_population()
+    # Explicit Traditional DND and Summary inactive rows establish same-game
+    # Seattle association; expected absences are not the complement of a log.
+    assert_durant_record(
+        _query("Thunder record without Kevin Durant in 2007-08"), oracle["expected"]["without"]
+    )
+
+
+def test_thunder_record_with_durant_in_2007_08_keeps_his_seattle_games():
+    oracle = qualified_durant_population()
+    assert_durant_record(
+        _query("Thunder record with Kevin Durant in 2007-08"), oracle["expected"]["with"]
     )
 
 

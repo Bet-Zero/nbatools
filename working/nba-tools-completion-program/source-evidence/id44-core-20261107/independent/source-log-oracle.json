@@ -1,0 +1,971 @@
+{
+  "classification": "independent archived log oracle; unresolved games are unknown, not DNP",
+  "source_receipts": [
+    {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/leaguegamelog/2008/regular-season.json",
+      "git_blob_sha": "592764e2ce2f4ede6b2c45f99ce7e69751e4ae61",
+      "sha256": "a51902b46937a6b4c84cdf3e44db1dff53e87fc7c898cca98ac8f2bc90c78313",
+      "bytes": 459535,
+      "captured_at": "2026-11-07T03:01:33.767135+00:00"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/leaguegamelog/2008/regular-season_p.json",
+      "git_blob_sha": "ad56b6a481444816e2e10c98e145ed2221083d94",
+      "sha256": "c0dd4f80bdd8e437e5aa3cc677b8bd547bc3db694d39b470cd45e6bedb392c20",
+      "bytes": 4983337,
+      "captured_at": "2026-11-07T03:01:34.963161+00:00"
+    }
+  ],
+  "season": "2007-08",
+  "season_type": "Regular Season",
+  "team_id": 1610612760,
+  "player_id": 201142,
+  "qualified_log_population": {
+    "games": 82,
+    "wins": 20,
+    "losses": 62,
+    "points": 7999
+  },
+  "played": {
+    "games": 80,
+    "game_ids": [
+      "0020700011",
+      "0020700014",
+      "0020700036",
+      "0020700051",
+      "0020700061",
+      "0020700078",
+      "0020700091",
+      "0020700097",
+      "0020700109",
+      "0020700123",
+      "0020700132",
+      "0020700146",
+      "0020700181",
+      "0020700195",
+      "0020700210",
+      "0020700220",
+      "0020700234",
+      "0020700248",
+      "0020700272",
+      "0020700286",
+      "0020700299",
+      "0020700311",
+      "0020700319",
+      "0020700334",
+      "0020700349",
+      "0020700377",
+      "0020700390",
+      "0020700407",
+      "0020700421",
+      "0020700442",
+      "0020700471",
+      "0020700491",
+      "0020700503",
+      "0020700512",
+      "0020700533",
+      "0020700553",
+      "0020700569",
+      "0020700578",
+      "0020700591",
+      "0020700600",
+      "0020700620",
+      "0020700637",
+      "0020700651",
+      "0020700663",
+      "0020700677",
+      "0020700695",
+      "0020700706",
+      "0020700721",
+      "0020700734",
+      "0020700776",
+      "0020700802",
+      "0020700815",
+      "0020700830",
+      "0020700844",
+      "0020700853",
+      "0020700869",
+      "0020700882",
+      "0020700891",
+      "0020700902",
+      "0020700913",
+      "0020700934",
+      "0020700947",
+      "0020700954",
+      "0020700975",
+      "0020700989",
+      "0020701014",
+      "0020701027",
+      "0020701037",
+      "0020701050",
+      "0020701068",
+      "0020701083",
+      "0020701097",
+      "0020701121",
+      "0020701136",
+      "0020701151",
+      "0020701160",
+      "0020701171",
+      "0020701185",
+      "0020701202",
+      "0020701230"
+    ],
+    "wins": 19,
+    "losses": 61,
+    "team_points": 7801
+  },
+  "population": [
+    {
+      "game_id": "0020700011",
+      "game_date": "2007-10-31",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ DEN",
+      "wl": "L",
+      "pts": 103,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700014",
+      "game_date": "2007-11-01",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. PHX",
+      "wl": "L",
+      "pts": 99,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700036",
+      "game_date": "2007-11-04",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ LAC",
+      "wl": "L",
+      "pts": 101,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700051",
+      "game_date": "2007-11-06",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ SAC",
+      "wl": "L",
+      "pts": 98,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700061",
+      "game_date": "2007-11-07",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. MEM",
+      "wl": "L",
+      "pts": 98,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700078",
+      "game_date": "2007-11-09",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. UTA",
+      "wl": "L",
+      "pts": 101,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700091",
+      "game_date": "2007-11-11",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. DET",
+      "wl": "L",
+      "pts": 103,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700097",
+      "game_date": "2007-11-13",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ ORL",
+      "wl": "L",
+      "pts": 76,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700109",
+      "game_date": "2007-11-14",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ MIA",
+      "wl": "W",
+      "pts": 104,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700123",
+      "game_date": "2007-11-16",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ ATL",
+      "wl": "W",
+      "pts": 126,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700132",
+      "game_date": "2007-11-17",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ CHA",
+      "wl": "L",
+      "pts": 84,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700146",
+      "game_date": "2007-11-19",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ MEM",
+      "wl": "L",
+      "pts": 108,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700181",
+      "game_date": "2007-11-23",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. NJN",
+      "wl": "L",
+      "pts": 93,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700195",
+      "game_date": "2007-11-25",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. SAS",
+      "wl": "L",
+      "pts": 101,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700210",
+      "game_date": "2007-11-27",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ LAL",
+      "wl": "L",
+      "pts": 99,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700220",
+      "game_date": "2007-11-28",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. ORL",
+      "wl": "L",
+      "pts": 94,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700234",
+      "game_date": "2007-11-30",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. IND",
+      "wl": "W",
+      "pts": 95,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700248",
+      "game_date": "2007-12-02",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. GSW",
+      "wl": "L",
+      "pts": 96,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700272",
+      "game_date": "2007-12-05",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. LAC",
+      "wl": "W",
+      "pts": 95,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700286",
+      "game_date": "2007-12-07",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. MIL",
+      "wl": "W",
+      "pts": 104,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700299",
+      "game_date": "2007-12-09",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ NOH",
+      "wl": "L",
+      "pts": 88,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700311",
+      "game_date": "2007-12-11",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ CHI",
+      "wl": "L",
+      "pts": 96,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700319",
+      "game_date": "2007-12-12",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ NYK",
+      "wl": "W",
+      "pts": 117,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700334",
+      "game_date": "2007-12-14",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ MIN",
+      "wl": "W",
+      "pts": 99,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700349",
+      "game_date": "2007-12-15",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ UTA",
+      "wl": "L",
+      "pts": 75,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700377",
+      "game_date": "2007-12-19",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. NOH",
+      "wl": "L",
+      "pts": 93,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700390",
+      "game_date": "2007-12-21",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. TOR",
+      "wl": "W",
+      "pts": 123,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700407",
+      "game_date": "2007-12-25",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ POR",
+      "wl": "L",
+      "pts": 79,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700421",
+      "game_date": "2007-12-27",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. BOS",
+      "wl": "L",
+      "pts": 96,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700442",
+      "game_date": "2007-12-29",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. MIN",
+      "wl": "W",
+      "pts": 109,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700456",
+      "game_date": "2007-12-31",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. PHI",
+      "wl": "L",
+      "pts": 90,
+      "state": "unknown"
+    },
+    {
+      "game_id": "0020700471",
+      "game_date": "2008-01-03",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ PHX",
+      "wl": "L",
+      "pts": 96,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700491",
+      "game_date": "2008-01-06",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ WAS",
+      "wl": "L",
+      "pts": 86,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700503",
+      "game_date": "2008-01-08",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ CLE",
+      "wl": "L",
+      "pts": 79,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700512",
+      "game_date": "2008-01-09",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ NJN",
+      "wl": "L",
+      "pts": 88,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700533",
+      "game_date": "2008-01-11",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. DAL",
+      "wl": "L",
+      "pts": 70,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700553",
+      "game_date": "2008-01-14",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. LAL",
+      "wl": "L",
+      "pts": 121,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700569",
+      "game_date": "2008-01-16",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ NOH",
+      "wl": "L",
+      "pts": 92,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700578",
+      "game_date": "2008-01-18",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ MEM",
+      "wl": "L",
+      "pts": 100,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700591",
+      "game_date": "2008-01-19",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ DAL",
+      "wl": "L",
+      "pts": 96,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700600",
+      "game_date": "2008-01-21",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ HOU",
+      "wl": "L",
+      "pts": 89,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700620",
+      "game_date": "2008-01-23",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. HOU",
+      "wl": "L",
+      "pts": 107,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700637",
+      "game_date": "2008-01-25",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. ATL",
+      "wl": "L",
+      "pts": 90,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700651",
+      "game_date": "2008-01-27",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. SAC",
+      "wl": "L",
+      "pts": 101,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700663",
+      "game_date": "2008-01-29",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. SAS",
+      "wl": "W",
+      "pts": 88,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700677",
+      "game_date": "2008-01-31",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. CLE",
+      "wl": "W",
+      "pts": 101,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700695",
+      "game_date": "2008-02-02",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. NYK",
+      "wl": "W",
+      "pts": 86,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700706",
+      "game_date": "2008-02-04",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. CHI",
+      "wl": "L",
+      "pts": 108,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700721",
+      "game_date": "2008-02-06",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ SAC",
+      "wl": "W",
+      "pts": 105,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700734",
+      "game_date": "2008-02-08",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ PHX",
+      "wl": "L",
+      "pts": 99,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700776",
+      "game_date": "2008-02-13",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. UTA",
+      "wl": "L",
+      "pts": 93,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700788",
+      "game_date": "2008-02-19",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. MEM",
+      "wl": "W",
+      "pts": 108,
+      "state": "unknown"
+    },
+    {
+      "game_id": "0020700802",
+      "game_date": "2008-02-21",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ POR",
+      "wl": "L",
+      "pts": 88,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700815",
+      "game_date": "2008-02-22",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. POR",
+      "wl": "W",
+      "pts": 99,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700830",
+      "game_date": "2008-02-24",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. LAL",
+      "wl": "L",
+      "pts": 91,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700844",
+      "game_date": "2008-02-26",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ GSW",
+      "wl": "L",
+      "pts": 99,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700853",
+      "game_date": "2008-02-27",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. DEN",
+      "wl": "L",
+      "pts": 96,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700869",
+      "game_date": "2008-02-29",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. MIA",
+      "wl": "L",
+      "pts": 93,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700882",
+      "game_date": "2008-03-02",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ MIN",
+      "wl": "W",
+      "pts": 111,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700891",
+      "game_date": "2008-03-04",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ DET",
+      "wl": "L",
+      "pts": 97,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700902",
+      "game_date": "2008-03-05",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ MIL",
+      "wl": "L",
+      "pts": 106,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700913",
+      "game_date": "2008-03-07",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ PHI",
+      "wl": "L",
+      "pts": 83,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700934",
+      "game_date": "2008-03-09",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ TOR",
+      "wl": "L",
+      "pts": 106,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700947",
+      "game_date": "2008-03-11",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ IND",
+      "wl": "L",
+      "pts": 107,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700954",
+      "game_date": "2008-03-12",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ BOS",
+      "wl": "L",
+      "pts": 82,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700975",
+      "game_date": "2008-03-14",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. MIN",
+      "wl": "L",
+      "pts": 116,
+      "state": "played"
+    },
+    {
+      "game_id": "0020700989",
+      "game_date": "2008-03-16",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ DEN",
+      "wl": "L",
+      "pts": 116,
+      "state": "played"
+    },
+    {
+      "game_id": "0020701014",
+      "game_date": "2008-03-19",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. PHX",
+      "wl": "L",
+      "pts": 98,
+      "state": "played"
+    },
+    {
+      "game_id": "0020701027",
+      "game_date": "2008-03-21",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ LAL",
+      "wl": "L",
+      "pts": 105,
+      "state": "played"
+    },
+    {
+      "game_id": "0020701037",
+      "game_date": "2008-03-22",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ UTA",
+      "wl": "L",
+      "pts": 101,
+      "state": "played"
+    },
+    {
+      "game_id": "0020701050",
+      "game_date": "2008-03-24",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. POR",
+      "wl": "W",
+      "pts": 97,
+      "state": "played"
+    },
+    {
+      "game_id": "0020701068",
+      "game_date": "2008-03-26",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. WAS",
+      "wl": "L",
+      "pts": 99,
+      "state": "played"
+    },
+    {
+      "game_id": "0020701083",
+      "game_date": "2008-03-28",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. CHA",
+      "wl": "L",
+      "pts": 93,
+      "state": "played"
+    },
+    {
+      "game_id": "0020701097",
+      "game_date": "2008-03-30",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. SAC",
+      "wl": "L",
+      "pts": 107,
+      "state": "played"
+    },
+    {
+      "game_id": "0020701121",
+      "game_date": "2008-04-02",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. LAC",
+      "wl": "L",
+      "pts": 84,
+      "state": "played"
+    },
+    {
+      "game_id": "0020701136",
+      "game_date": "2008-04-04",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. HOU",
+      "wl": "L",
+      "pts": 66,
+      "state": "played"
+    },
+    {
+      "game_id": "0020701151",
+      "game_date": "2008-04-06",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. DEN",
+      "wl": "W",
+      "pts": 151,
+      "state": "played"
+    },
+    {
+      "game_id": "0020701160",
+      "game_date": "2008-04-08",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ DAL",
+      "wl": "L",
+      "pts": 83,
+      "state": "played"
+    },
+    {
+      "game_id": "0020701171",
+      "game_date": "2008-04-09",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ HOU",
+      "wl": "L",
+      "pts": 80,
+      "state": "played"
+    },
+    {
+      "game_id": "0020701185",
+      "game_date": "2008-04-11",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ SAS",
+      "wl": "L",
+      "pts": 74,
+      "state": "played"
+    },
+    {
+      "game_id": "0020701202",
+      "game_date": "2008-04-13",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA vs. DAL",
+      "wl": "W",
+      "pts": 99,
+      "state": "played"
+    },
+    {
+      "game_id": "0020701230",
+      "game_date": "2008-04-16",
+      "team_id": 1610612760,
+      "team_abbr": "SEA",
+      "matchup": "SEA @ GSW",
+      "wl": "W",
+      "pts": 126,
+      "state": "played"
+    }
+  ],
+  "unresolved_game_ids": [
+    "0020700456",
+    "0020700788"
+  ],
+  "smallest_remaining_source_plan": [
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0020700456",
+      "git_blob_sha": "372438314acb41cfe0b47695b21dad9b58fe9698",
+      "bytes": 18336
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0020700788",
+      "git_blob_sha": "fd5ba1a7b60726c92b2e890a868cbcf8bb1a9c45",
+      "bytes": 18334
+    },
+    {
+      "endpoint": "boxscoresummaryv2",
+      "game_id": "0020700456",
+      "git_blob_sha": "377fc2d732e1467d56dcd52fee28b149139574d2",
+      "bytes": 3529
+    },
+    {
+      "endpoint": "boxscoresummaryv2",
+      "game_id": "0020700788",
+      "git_blob_sha": "ce24b1d35733a166f0f617ffa24539c483d2763c",
+      "bytes": 3433
+    }
+  ],
+  "remaining_required": "Original explicit same-game nonparticipation and Seattle association for each unresolved game; compare exact population and source facts with pinned canonical games/schedule/team/player before acceptance.",
+  "absence_result": null
+}
