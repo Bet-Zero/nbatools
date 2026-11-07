@@ -1,0 +1,7 @@
+{
+  "archive": "current123-required-v3.zip",
+  "archive_sha256": "0a6c36dc51f903bfbde8f5110a5faeabbdff2296364b693679989d5e698f98e5",
+  "manifest_sha256": "e8fef6807e547984ebbf9e886a096611b446129ba4547cd9e147427a112928d9",
+  "version": "current123-required-source-development-v3",
+  "publishable": false
+}

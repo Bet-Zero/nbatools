@@ -72,3 +72,57 @@ def test_capture_only_actual_new16_required_period_sources():
     assert report["transport_finished"], report.get("stop_reason")
     assert len(report["attempts"]) == 196 and not report["unattempted_jobs"]
     assert all(r["transport_complete"] for r in report["attempts"])
+
+
+def test_recover_retained_failed_capture_without_source_retry():
+    """Recover one immutable artifact through the existing read-only runner.
+
+    Cloud-local egress cannot reach GitHub's artifact CDN. This bounded custody
+    replay transfers the already existing public-source failure package; no NBA
+    reader, collection retry or new credential is involved. Not a completeness test.
+    """
+    import base64
+    import io
+    from zipfile import ZipFile
+
+    import requests
+
+    artifact = 13562477912
+    expected = "f56d9c78c3df5c0c81c6d89e06ab99e147dfaa883b7f21a65ce5886bdfaefcfd"
+    url = f"https://api.github.com/repos/Bet-Zero/nbatools/actions/artifacts/{artifact}/zip"
+    # requests strips Authorization on a cross-host artifact redirect.
+    with requests.get(
+        url, headers={"Authorization": "Bearer " + os.environ["GH_TOKEN"]}, timeout=30, stream=True
+    ) as response:
+        response.raise_for_status()
+        raw = bytearray()
+        for chunk in response.iter_content(8192):
+            raw.extend(chunk)
+            assert len(raw) <= 100_000
+    raw = bytes(raw)
+    assert len(raw) == 16637 and hashlib.sha256(raw).hexdigest() == expected
+    with ZipFile(io.BytesIO(raw)) as z:
+        assert z.testzip() is None
+        names = z.namelist()
+        assert all(not Path(n).is_absolute() and ".." not in Path(n).parts for n in names)
+        assert all(
+            n in {"summary.json", "junit.xml"}
+            or n.startswith("acquired_data/current123-new16-periods/")
+            for n in names
+        )
+        summary = json.loads(z.read("summary.json"))
+        assert (
+            summary["selected"],
+            summary["executed"],
+            summary["passed"],
+            summary["failed"],
+            summary["skipped"],
+        ) == (1, 1, 0, 1, 0)
+        assert summary["candidate_sha"] == "f6b576c3f2d44bf03de17d81bbb1d0af77301a3c"
+    output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "retained-period-failure"
+    output.mkdir(parents=True, exist_ok=False)
+    (output / "original-artifact.zip").write_bytes(raw)
+    # Exact bounded, non-secret public-source/request/JUnit bytes are retained in
+    # the existing job log so this temporary artifact is not the sole handoff.
+    print("RETAINED_PERIOD_ARTIFACT_BASE64=" + base64.b64encode(raw).decode())
+    print("RETAINED_PERIOD_ARTIFACT_SHA256=" + expected)
