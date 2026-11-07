@@ -1,0 +1,65 @@
+{
+  "reviewer": "/root/id18_checker",
+  "backend_model": "unavailable",
+  "candidate_sha": "5063040176b7335626cdda48d0b3d181b71abd5b",
+  "classification": "Independent retained actual local rendering review, not independent browser acquisition or deployed acceptance",
+  "browser_receipt_sha256": "535a9dcc1b6e881ee69ab6f86274c287d625605be19ec1f76c93b1d281070011",
+  "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+  "reviewed_captures": [
+    {
+      "id": "rest",
+      "viewport": "desktop",
+      "query": "Lakers record when Luka Doncic rests",
+      "capturedAt": "2026-11-07T05:25:33.433Z",
+      "http": 200,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "screenshot": "desktop-rest.png",
+      "screenshotSha256": "3f86c5e8949f7470885603434d7be15173006c937d4b47f9bb74fb45e42cae8e"
+    },
+    {
+      "id": "luka",
+      "viewport": "desktop",
+      "query": "Lakers record when Luka Doncic sits",
+      "capturedAt": "2026-11-07T05:25:33.909Z",
+      "http": 200,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "screenshot": "desktop-luka.png",
+      "screenshotSha256": "329d9ff53000f364946aec18e61bb12aa1e4bf7e83256aea7c9788798aba8609"
+    },
+    {
+      "id": "rest",
+      "viewport": "mobile",
+      "query": "Lakers record when Luka Doncic rests",
+      "capturedAt": "2026-11-07T05:25:35.096Z",
+      "http": 200,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "screenshot": "mobile-rest.png",
+      "screenshotSha256": "000475c8ff771c9d94d02124a164158747fc172d1245abf105c7da69a3cb980b"
+    },
+    {
+      "id": "luka",
+      "viewport": "mobile",
+      "query": "Lakers record when Luka Doncic sits",
+      "capturedAt": "2026-11-07T05:25:35.514Z",
+      "http": 200,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "screenshot": "mobile-luka.png",
+      "screenshotSha256": "729ab1196eb43f65b4b0f148dbb0b4f6f1d92f211f8dfc26fc9d2cd749a88dc6"
+    }
+  ],
+  "visual_inspection": "All four actual screenshots inspected. Desktop/mobile Rest shows no matching rows, explicit player/season/reported-Rest labels, provisional warning and full zero/other/unknown population note in opened details. Sits control shows1-0 in1game and103PPG desktop; mobile summary/record remains usable with contained table scroll. No document horizontal overflow. Provisional debug identifiers are lengthy in the unchanged mobile warning, but do not hide the Rest meaning or population note.",
+  "conclusion": "approved",
+  "production_accepted": false
+}

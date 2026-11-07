@@ -18,6 +18,7 @@ from nbatools.data_source import (
     data_source_cache_key,
 )
 from nbatools.dataframe_cache import FRAME_CACHE
+from nbatools.development_data import selected_snapshot
 
 DIRECTORY = "raw/player_game_absence_reasons/"
 SOURCES = "raw/player_game_absence_reason_sources/"
@@ -131,13 +132,14 @@ def load_observations(seasons, season_type):
         frames = []
         with data_generation_context() as generation:
             manifest = None
+            snapshot = selected_snapshot()
             for season in seasons:
                 suffix = f"{season}_{season_type.lower().replace(' ', '_')}.csv"
                 relative = DIRECTORY + suffix
                 ledger_path = relative.removesuffix(".csv") + ".imports.json"
                 if not data_exists("data/" + relative) and not data_exists("data/" + ledger_path):
                     continue
-                if manifest is None:
+                if snapshot is None and manifest is None:
                     manifest = json.loads(
                         data_path("data/metadata/generation_manifest.json").read_bytes()
                     )
@@ -147,10 +149,23 @@ def load_observations(seasons, season_type):
                     if len(entries) != len(manifest["files"]):
                         raise ValueError("Duplicate reported-reason manifest paths")
 
-                def verified(path):
-                    if path not in entries:
+                def source_entry(path):
+                    if snapshot is None:
+                        return entries[path]
+                    # The explicit local selector already authenticates the entire
+                    # provisional inventory. Do not invent a production generation
+                    # manifest or relax any original/identity lineage requirements.
+                    relative = "data/" + path
+                    if relative not in snapshot.files:
                         raise ValueError("Unmanifested reported-reason dependency")
-                    item = entries[path]
+                    raw = data_path(relative).read_bytes()
+                    return dict(path=path, sha256=snapshot.files[relative], size_bytes=len(raw))
+
+                def verified(path):
+                    try:
+                        item = source_entry(path)
+                    except KeyError:
+                        raise ValueError("Unmanifested reported-reason dependency")
                     raw = data_path("data/" + path).read_bytes()
                     if (
                         len(raw) != item["size_bytes"]
@@ -165,7 +180,7 @@ def load_observations(seasons, season_type):
                     io.BytesIO(verified(relative)), dtype=str, keep_default_na=False
                 )
                 ledger = json.loads(verified(ledger_path))
-                validate_rows(frame, ledger, source_entry=entries.__getitem__)
+                validate_rows(frame, ledger, source_entry=source_entry)
                 if not (frame.season.eq(season) & frame.season_type.eq(season_type)).all():
                     raise ValueError("Reported-reason season/type mismatch")
                 # Bind each reason to the existing qualified DNP and its unchanged import digest.

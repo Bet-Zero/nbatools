@@ -872,6 +872,15 @@ Empty, bare INACTIVE/DNP, unfamiliar annotations and ambiguous Rest wording rema
 unknown. Source authenticity alone never establishes a reason code. Opaque legacy
 availability comments never become reason evidence.
 
+An explicitly selected, hash-pinned local development snapshot can carry the same
+reason table, import ledger and original source/receipt files. Its own authenticated
+inventory supplies their file bindings; it does not fabricate a production generation
+manifest. All source and exact-game DNP lineage checks still apply. Public/production
+entrypoints cannot select this provisional data. For a reason-only PDF observation,
+bare unrelated inactive names supply no evidence and may be ignored; the selected
+target still requires an explicit reason and unique identity. Whole-game PDF imports
+retain their strict complete-list parsing.
+
 The offline `pipeline.reported_absence_reasons.stage_observation` producer binds
 each fact to an existing qualified same-game DNP and original official gamebook
 PDF or its participation-qualified Traditional JSON. A separate same-stem

@@ -1,0 +1,137 @@
+{
+  "classification": "Independent source-only expectations frozen before candidate review; accepted original source qualification reused without reacquisition",
+  "reviewer": "/root/id18_checker",
+  "reviewer_backend_model": "unavailable",
+  "base_revision": "fc53dda20fc8965cda87f8d33997f81d4f73f270",
+  "source_bindings": {
+    "leaguegamefinder-current.json": "d11965d4961a895cb4cb7113e04938937c004d5f7f7a233f49686e38953c87dd",
+    "playergamelogs-current.json": "0b928b3bf8a01e3e518096a09144b863c7ca63ef5832cff77418a3861df5879e",
+    "retained-pairs/sources/boxscoresummaryv3_0022600143.json": "a9065cbb6ceaf0e28772c1278fc23e4392d655aa1bf6761ca586d6cbc4fd0cbd"
+  },
+  "original_pdf_sha256": "a25390c83fed00c67f277ecba279fcdf28efb1637d2dbb134000dd0c317d7982",
+  "source_qualification_reused": "working/nba-tools-completion-program/source-evidence/core-live-current-20261107/independent/luka143-source-qualification.md",
+  "season": "2026-27",
+  "cutoff": "2026-11-07T03:46:21.725918Z",
+  "parent_game_ids": [
+    "0022600005",
+    "0022600023",
+    "0022600102",
+    "0022600112",
+    "0022600131",
+    "0022600143",
+    "0022600157",
+    "0022600172",
+    "0022600185"
+  ],
+  "played_game_ids": [
+    "0022600005",
+    "0022600023",
+    "0022600102",
+    "0022600112",
+    "0022600131",
+    "0022600157",
+    "0022600172",
+    "0022600185"
+  ],
+  "qualified_dnp_game_ids": [
+    "0022600143"
+  ],
+  "reason_literal": "Injury/Illness - Other; Back Tightness",
+  "reason_state": "reported_other",
+  "rest_game_ids": [],
+  "coverage": {
+    "basis": "officially reported Rest",
+    "complete": true,
+    "requested_games": 9,
+    "qualified_nonparticipations": 1,
+    "reported_rest": 0,
+    "reported_other": 1,
+    "unknown": 0
+  },
+  "expected_original_id18": {
+    "query": "Lakers record when Luka Doncic rests",
+    "result_status": "no_result",
+    "result_reason": "no_match",
+    "sections": {},
+    "meaning": "Qualified empty source-reported Rest sample; no invented 0-0 record or average"
+  },
+  "heldout_queries": [
+    "Lakers record this season when Luka Doncic is resting",
+    "Lakers record when Luka Doncic rested in 2026-27",
+    "How many games has Luka Doncic rested this season?"
+  ],
+  "heldout_count_expectation": 0,
+  "affected_routes": [
+    "team_record",
+    "game_summary",
+    "game_finder",
+    "player_game_summary",
+    "player_game_finder"
+  ],
+  "control_expectations": {
+    "without": {
+      "game_ids": [
+        "0022600143"
+      ],
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "points_sum": 103
+    },
+    "with": {
+      "game_ids": [
+        "0022600005",
+        "0022600023",
+        "0022600102",
+        "0022600112",
+        "0022600131",
+        "0022600157",
+        "0022600172",
+        "0022600185"
+      ],
+      "games": 8,
+      "wins": 6,
+      "losses": 2,
+      "points_sum": 993
+    }
+  },
+  "required_scope": {
+    "raw_families": 11,
+    "processed_families": 5,
+    "new_game_ids": [
+      "0022600173",
+      "0022600174",
+      "0022600175",
+      "0022600176",
+      "0022600177",
+      "0022600178",
+      "0022600179",
+      "0022600180",
+      "0022600181",
+      "0022600182",
+      "0022600183",
+      "0022600184",
+      "0022600185",
+      "0022600186",
+      "0022600187",
+      "0022600188"
+    ],
+    "new_roles": 368,
+    "new_team_period_keys": 196,
+    "new_player_period_keys": 2249,
+    "old_windows": 647,
+    "new_windows": 98,
+    "total_windows": 745,
+    "new_ot_game_ids": [
+      "0022600179",
+      "0022600186"
+    ]
+  },
+  "acceptance_limits": [
+    "No production publication, pointer, credentials, protections, spending or automatic refresh changes",
+    "Provisional snapshot remains provisional despite field-qualified ID18 result",
+    "Generic DNP, medical cause and source-reported Rest remain distinct",
+    "DQ-006 cross-club membership and old 484 rate unknowns do not become zeros or new requirements for this independent ID18 source population",
+    "Complete snapshot/current freshness/full deployed acceptance remain open"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "classification": "author harness failure, not application failure",
+  "cause": "The driver searched for a button named Details; existing React renders a native summary element.",
+  "original_missing_expected_text": "0 Rest, 1 reported other, 0 unknown",
+  "original_payload_reason": "no_match",
+  "repair": "Click existing summary Details and verify original source note; no runtime or expected value changed",
+  "initial_receipt": {
+    "classification": "local provisional rendering, not deployed/current-season publication acceptance",
+    "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+    "browser": "154.0.8037.57",
+    "receipts": []
+  }
+}

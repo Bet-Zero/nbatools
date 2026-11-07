@@ -1,0 +1,13 @@
+{
+  "archive": "current123-id18-v2.zip",
+  "archive_sha256": "ac33da770c20a7a66506234aaff246a79a31478a8cc897ddae3f157a62145c13",
+  "manifest_sha256": "a92bc5734836bb1d86c865d2f9cbe4dd51c364aaf79504c8d730823430068a78",
+  "publishable": false,
+  "version": "current123-id18-reason-development-v2",
+  "browser_archive": {
+    "path": "id18-browser.zip",
+    "sha256": "c35527a74ec2a9cda1b1a555a79f7cabe96acc990dc332009bf2d20fcc1687b2",
+    "captures": 4,
+    "classification": "actual loopback local desktop/mobile, not production deployed"
+  }
+}
