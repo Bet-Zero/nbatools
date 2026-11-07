@@ -275,6 +275,7 @@ def _verify(item, delivery, sources, frozen, seq_sources, history_sources, lebro
         assert family == "ownership" and outcome.result_status == "ok"
         meta, sections = outcome.metadata, body["result"]["sections"]
         assert meta["team"] == case["team"] and meta["season"] == case["season"]
+        assert meta["team_context"]["team_id"] == 1610612747
         row = sections["summary"][0]
         for field in ("games", "wins", "losses"):
             assert row[field] == case[field]
