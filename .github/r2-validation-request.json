@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "17e219e00dc74f994d64fc90ca6bb4ab35be5e31",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/test_multi_opponent_real_data.py",
+    "tests/test_opponent_played_real_data.py"
+  ],
+  "raw_qa_cases": []
+}
