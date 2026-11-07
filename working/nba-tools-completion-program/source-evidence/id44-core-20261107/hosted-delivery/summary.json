@@ -1,0 +1,19 @@
+{
+  "candidate_sha": "2c154180ffa88f5207b6b9ac31e59e7d48f74f57",
+  "generation": "availability-lebron-season-v1-20261031",
+  "scope": "targeted",
+  "required_selection": [
+    "tests/test_k12_delivery_real_data.py"
+  ],
+  "required_test_limit": 100,
+  "selected": 12,
+  "executed": 12,
+  "passed": 12,
+  "skipped": 0,
+  "failed": 0,
+  "errors": 0,
+  "xfailed": 0,
+  "pytest_exit": 0,
+  "conclusion": "success",
+  "problems": []
+}

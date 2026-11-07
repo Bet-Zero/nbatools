@@ -1,0 +1,29 @@
+{
+  "run_id": 42332963189,
+  "run_url": "https://github.com/Bet-Zero/nbatools/actions/runs/42332963189",
+  "request_sha": "2c154180ffa88f5207b6b9ac31e59e7d48f74f57",
+  "workflow": ".github/workflows/r2-real-data-validation.yml",
+  "event": "push",
+  "artifact": {
+    "id": 13557894322,
+    "node_id": "MDg6QXJ0aWZhY3QxMzU1Nzg5NDMyMg==",
+    "name": "required-numerical-42332963189",
+    "size_in_bytes": 820,
+    "url": "https://api.github.com/repos/Bet-Zero/nbatools/actions/artifacts/13557894322",
+    "archive_download_url": "https://api.github.com/repos/Bet-Zero/nbatools/actions/artifacts/13557894322/zip",
+    "expired": false,
+    "digest": "sha256:924c935ae1749306bd350c4fe874ccdf0ebc525ce0237317b816dc076393654e",
+    "created_at": "2026-11-07T03:17:19Z",
+    "updated_at": "2026-11-07T03:17:19Z",
+    "expires_at": "2026-11-14T03:17:19Z",
+    "workflow_run": {
+      "id": 42332963189,
+      "repository_id": 1206758648,
+      "head_repository_id": 1206758648,
+      "head_branch": "r2-validation/id44-delivery-2f0ba1be",
+      "head_sha": "2c154180ffa88f5207b6b9ac31e59e7d48f74f57"
+    }
+  },
+  "archive_bytes": 820,
+  "archive_sha256": "924c935ae1749306bd350c4fe874ccdf0ebc525ce0237317b816dc076393654e"
+}

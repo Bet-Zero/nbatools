@@ -1,0 +1,76 @@
+{
+  "candidate": "2f0ba1be2292f693b1d68e452a5c72e0ca0e2c89",
+  "base": "a0fb2211a6707d647325129f1262308545001241",
+  "runtime_changed": false,
+  "original_k08_count": 46,
+  "original_category_count": 12,
+  "original_id_newline_sha256": "acc3d675811c80641aec64d60d76e90f7e6d8eb4dba66904fef5eff616cc1f96",
+  "preserved_inputs": [
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/owned-boolean-20261106/independent/k08-original-46.json",
+      "sha256": "11d5440000b298bf60a1bcdc818396f5bcbc7d04a4fce2bdbd17974d2873cceb"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/owned-boolean-20261106/independent/k08-bounded-mapping.json",
+      "sha256": "9ceb7293742e988f687f09a901e688f54a455ca45acf1878c2c1b82e69339e1f"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/paired-missing-20261107/k08-affected-delta.json",
+      "sha256": "ed07c9632ea24330ff2eec50625df5c0734645fe2ea03d1a7832a5d3b9bb1ca9"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/owned-boolean-20261106/independent/core1-original-12.json",
+      "sha256": "55acd9a6229ef44fded6e6be5adf9f9de3eebe8aec1324cb24d52344f9575dfb"
+    },
+    {
+      "path": "working/nba-tools-completion-program/acceptance-baseline-pr582.md",
+      "sha256": "433f49eb4467401184f15231e0d80520a9d8bef44eb81c5bb4b3988f9f916bfd"
+    }
+  ],
+  "id44": {
+    "original_node_id": "tests/test_c2_franchise_identity.py::test_with_and_without_a_player_keep_his_earlier_franchise_games",
+    "I": "Unchanged existing general franchise/participation behavior; original multi-era controlled positive retained",
+    "N": "Accepted canonical pinned-base full82 stage:80played/2explicitDNP/zero unknown, exact selected keys/record/points and positive with behavior; unpublished overlay",
+    "L": "Four independently frozen unfamiliar queries passed on the authenticated source-qualified full82 stage; actual local desktop/mobile rendering checked separately",
+    "D": "No new deployed acceptance; overlay remains unpublished"
+  },
+  "reuse": {
+    "K03_K05": "PR593 original33 numerical/QA proofs retain stated scope; independent applicability review confirms pair-only PR594 parsing cannot change these no-pair requests",
+    "K07_S4": "PR594 numerical12 plus composed1 and actual stagedQA/rendered scopes retain unchanged source/runtime applicability; full served/deployed proof remains open",
+    "K09_source8": "Unchanged accepted raw source controls retained separately from new12case query execution",
+    "K08_other_ids": "PR593 mapping plus PR594 affected delta preserved; no46pass claim, current/default literal samples still need qualified current data",
+    "K12_cold": "Parked; new12selection is functional source/delivery only"
+  },
+  "required_groups": [
+    {
+      "scope": "finite K01/K02/K04/K06/K09/K10/K11 plus full ID44 stage",
+      "expected_count": 93,
+      "request_sha": "73332f4d19f0128ea7aa310d219524701da0cfe7",
+      "run_id": 42332910004,
+      "status": "93 selected/executed/passed; zero required skips/failures/errors/xfails"
+    },
+    {
+      "scope": "original K12 functional delivery, no cold work",
+      "expected_count": 12,
+      "request_sha": "2c154180ffa88f5207b6b9ac31e59e7d48f74f57",
+      "run_id": 42332963189,
+      "status": "12 selected/executed/passed; zero required skips/failures/errors/xfails"
+    }
+  ],
+  "all46_accepted": false,
+  "full_core1_accepted": false,
+  "current_season_accepted": false,
+  "deployed_accepted": false,
+  "candidate_ci": {
+    "run_id": 42332843710,
+    "conclusion": "success",
+    "blocking_jobs": "passed; test-full intentionally unselected on application PR",
+    "development_security": "existing informational advisory remains failed, not hidden or converted to blocking success"
+  },
+  "remaining_dependencies": {
+    "current_default_original_K08": "Qualified2026-27 complete requested game populations with actual same-game/directed membership, explicit nonparticipation and adequate coverage; historicalfixedseason substitutions cannot close them",
+    "other_scope": "Original multi-opponent ID26 applicability is not blanket-certified from a single-opponent historical subset; preserve every requested opponent/game and establish relevant association/nonmembership or unknown explicitly",
+    "publication_deployment": "Fresh authenticatedschedule/due-game/24hour checks, unresolved current source facts, complete11raw/5processed snapshot validation, separately approved production publication, served-generation P3/API/rendered acceptance",
+    "parked": "K12cold; DQ-005; Agent2 stopped"
+  }
+}

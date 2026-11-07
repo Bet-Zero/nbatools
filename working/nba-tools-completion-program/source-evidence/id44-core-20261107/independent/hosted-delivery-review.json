@@ -1,0 +1,21 @@
+{
+  "reviewer": "/root/id44_checker",
+  "reviewed_sha": "2f0ba1be2292f693b1d68e452a5c72e0ca0e2c89",
+  "request_sha": "2c154180ffa88f5207b6b9ac31e59e7d48f74f57",
+  "run_id": 42332963189,
+  "artifact_id": 13557894322,
+  "artifact_sha256": "924c935ae1749306bd350c4fe874ccdf0ebc525ce0237317b816dc076393654e",
+  "selected": 12,
+  "executed": 12,
+  "passed": 12,
+  "skipped": 0,
+  "failed": 0,
+  "errors": 0,
+  "xfailed": 0,
+  "junit_group_counts": {
+    "tests.test_k12_delivery_real_data": 12
+  },
+  "functional_delivery_acceptance": "passed",
+  "cold_start_operations": 0,
+  "limits": "Original K12 functional scope only; N1 is missing2026-27 safety control, not currentseason acceptance. No timing/cold/deployment or fresh rendering acceptance."
+}

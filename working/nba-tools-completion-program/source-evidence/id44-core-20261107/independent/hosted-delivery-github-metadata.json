@@ -1,0 +1,269 @@
+{
+  "artifacts": {
+    "artifacts": [
+      {
+        "id": 13557894322,
+        "name": "required-numerical-42332963189",
+        "size_in_bytes": 820,
+        "url": "https://api.github.com/repos/Bet-Zero/nbatools/actions/artifacts/13557894322",
+        "archive_download_url": "https://api.github.com/repos/Bet-Zero/nbatools/actions/artifacts/13557894322/zip",
+        "expired": false,
+        "created_at": "2026-11-07T03:17:19Z",
+        "expires_at": "2026-11-14T03:17:19Z",
+        "updated_at": "2026-11-07T03:17:19Z",
+        "digest": "sha256:924c935ae1749306bd350c4fe874ccdf0ebc525ce0237317b816dc076393654e",
+        "workflow_run": {
+          "id": 42332963189,
+          "repository_id": 1206758648,
+          "head_repository_id": 1206758648,
+          "head_branch": "r2-validation/id44-delivery-2f0ba1be",
+          "head_sha": "2c154180ffa88f5207b6b9ac31e59e7d48f74f57"
+        }
+      }
+    ]
+  },
+  "jobs": {
+    "jobs": [
+      {
+        "id": 128284040578,
+        "name": "Resolve and validate request without data credentials",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 42332963189,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Check out the resolver from this workflow revision",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Check out the exact push or requested manual revision",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run actions/setup-python@v7",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Validate request before installation or credential access",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Post Run actions/setup-python@v7",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Post Check out the exact push or requested manual revision",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Check out the resolver from this workflow revision",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          }
+        ]
+      },
+      {
+        "id": 128284108921,
+        "name": "Verify read-only access and pin one generation",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 42332963189,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Check out the resolved candidate",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Set up Python",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Install project",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Verify read-only data access and pin one immutable generation",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Post Set up Python",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Check out the resolved candidate",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          }
+        ]
+      },
+      {
+        "id": 128284247825,
+        "name": "Required numerical tests marked needs_data",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 42332963189,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v7",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v7",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run pip install -e \".[dev,api]\"",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Required needs_data tests against the pinned candidate and generation",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Upload required numerical evidence",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Post Run actions/setup-python@v7",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          },
+          {
+            "name": "Post Run actions/checkout@v7",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13
+          }
+        ]
+      },
+      {
+        "id": 128284249246,
+        "name": "Raw QA corpus against real R2 data",
+        "status": "completed",
+        "conclusion": "skipped",
+        "run_id": 42332963189,
+        "logs_url": null,
+        "steps": null
+      },
+      {
+        "id": 128284249702,
+        "name": "Filter execution sweep against real R2 data",
+        "status": "completed",
+        "conclusion": "skipped",
+        "run_id": 42332963189,
+        "logs_url": null,
+        "steps": null
+      },
+      {
+        "id": 128284501759,
+        "name": "Preserve manual cloud backup independently of R2",
+        "status": "completed",
+        "conclusion": "skipped",
+        "run_id": 42332963189,
+        "logs_url": null,
+        "steps": null
+      },
+      {
+        "id": 128284502281,
+        "name": "Preserve separate-runner restore result with the permanent backup",
+        "status": "completed",
+        "conclusion": "skipped",
+        "run_id": 42332963189,
+        "logs_url": null,
+        "steps": null
+      },
+      {
+        "id": 128284502434,
+        "name": "Restore durable release on a separate secret-free runner",
+        "status": "completed",
+        "conclusion": "skipped",
+        "run_id": 42332963189,
+        "logs_url": null,
+        "steps": null
+      },
+      {
+        "id": 128284502443,
+        "name": "Preserve read-only data inventory for cloud agents",
+        "status": "completed",
+        "conclusion": "skipped",
+        "run_id": 42332963189,
+        "logs_url": null,
+        "steps": null
+      }
+    ]
+  }
+}
