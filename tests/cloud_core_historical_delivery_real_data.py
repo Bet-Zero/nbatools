@@ -20,6 +20,7 @@ from nbatools.data_source import data_generation_context, data_path
 from tests.cloud_reported_rest_deployed_real_data import _assert_count
 from tests.test_deployed_k12_delivery_browser import _assert_rendered
 from tests.test_k05_subject_ownership_real_data import CASES as K05
+from tests.test_k05_subject_ownership_real_data import _qualified_sample as _ownership_sample
 from tests.test_k09_sequences_real_data import _assert_case as _assert_sequence
 from tests.test_k09_sequences_real_data import _qualified_sources as _sequence_sources
 from tests.test_k10_history_real_data import _assert_case as _assert_history
@@ -63,6 +64,7 @@ def _readiness(http, body):
 
 def _cases():
     oracle, sources = _qualified_sources()
+    _ownership_sample(K05[0])  # Independent raw identity/means; public summary omits game_log.
     delivery = {key.lower(): case for key, case in _bindings(oracle).items()}
     cases = [
         dict(id=key, query=case["query"], text=[], forbidden=["NaN", "undefined", "Infinity"])
@@ -278,8 +280,6 @@ def _verify(item, delivery, sources, frozen, seq_sources, history_sources, lebro
             assert row[field] == case[field]
         for stat, value in case["means"].items():
             assert row[stat + "_avg"] == pytest.approx(value, abs=0.001)
-        keys = sorted([[int(r[k]) for k in case["key_columns"]] for r in sections["game_log"]])
-        assert keys == case["keys"] and len(keys) == len({tuple(k) for k in keys})
         assert {"label": "Location", "value": "Home", "kind": "location"} in meta["applied_filters"]
         assert f"The Los Angeles Lakers are {case['wins']}-{case['losses']}" in item["heroText"]
         assert "2023-24" in item["heroText"]
@@ -362,6 +362,7 @@ def _run(tmp_path, *, retained=False):
         current_season_accepted=False,
         operational_readiness_accepted=False,
         nba_source_requests=0,
+        k05_sample_keys_scope="qualified independent raw cohort; public summary does not expose game_log",
         production_writes=0,
         consumer_acceptance="pending",
         capture_started_at=datetime.now(UTC).isoformat(),
