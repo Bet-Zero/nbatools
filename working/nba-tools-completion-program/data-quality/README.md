@@ -27,14 +27,30 @@ can overlap; use the authoritative key ledger for totals. All three are currentl
 | [DQ-004](DQ-004.json) | Resolved: authenticated owner3article originals, finite membership chain and all eligible game IDs independently qualified | Agent1 [PR590](https://github.com/Bet-Zero/nbatools/pull/590): full-season historical staged acceptance81eligible/72played/9explicitDNP,unknown0; hosted5/5required and4stagedRawQAcases passed. Feb9date-onlyunknown preserved. No production publication or repeated download. |
 | [DQ-005](DQ-005.json) | Native independent scorer bodies for both complete team vectors;4JSON originals now retained | Agent2 [PR588](https://github.com/Bet-Zero/nbatools/pull/588), evidence-only closeout; blocked_evidence/stopped and nonblocking for app development. No correction or app defect established; canonical margins already derive scores. |
 
-Current123 intake (Agent1; Agent2 remains stopped): [DQ-006](DQ-006.json)
-retains exact cross-club membership facts still missing. The four stable
-`DQ-auto-*` entries from current123 initial validation retain roles, player/team
-period and Advanced-player coverage failures. Their literal initial report has a
-regulation-only new-game denominator; [source-qualified release scope](../source-evidence/core-live-current-20261107/new16-window-denominator.json)
-requires196new team/2249player period keys including2OT. They do not duplicate or
-replace DQ-001–003's484 old rate values. The one143 official Rest-source fallback
-succeeded; its source qualification and unimported companion remain separate.
+Current123 intake remains owned by Agent1; Agent2 stays stopped. [DQ-006](DQ-006.json)
+retains exact cross-club membership facts. PR598 closes ID18's canonical reported-Rest
+companion with a full nine-game qualified empty answer. PR599's source-qualified v3
+closes the368role and4Advanced-player missing-key requirements with independent
+source/affected-input checks; original failure records and versions are preserved.
+The role/Advanced resolutions do not certify all season rates or a complete release.
+
+Current period failures remain open:196new team keys and2208standard player keys,
+plus the new OT source-listed player population still unknown. The required total
+is745windows/1490team keys. Earlier2249player planning keys included41whole-game
+players in OT; [independent contract reconciliation](../source-evidence/id18-current-required-20261107/independent/ot-coverage-contract-reconciliation.md)
+proves that the unchanged contract requires actual source-listed OT rows (including
+explicit source zero-clock rows), not invented zeros for every whole-game player.
+The196-body existing collector stopped at its first173Q1Traditional30-second
+ReadTimeout withzero response bytes;195requests were unattempted. Exact originals,
+attempt/unattempted ledger and failed1/0pass summary are retained in the existing
+[evidence package](../source-evidence/id18-current-required-20261107/period-capture-failure/).
+A separate custody recovery passed; source acquisition did not. Do not retry that
+route unchanged. A newly working approved source route is the next trigger.
+
+These source-family gaps do not duplicate DQ-001–003's484old rate values, establish
+cross-club membership, or authorize publication. Old regulation-only team reports
+are superseded by the source-known OT coverage record; their original failed
+observations remain unchanged.
 
 **Do not reopen resolved0142,0138,0009AST or0160timing** merely because an older
 handoff says blocked. PR582 accepts the relevant scorer facts and independent
@@ -49,8 +65,8 @@ Agent1 writes/deduplicates an entry when initial validation fails. Use stable ID
 exact immutable keys/manifests, source/data version, failure reason and downstream
 impact. A field's unverified status propagates to calculations depending on it;
 unrelated fields/data/app work continue. Group shared causes; do not create one
-PR or worker per value. Initial intake automation is the next Agent1 task, not
-already implemented by these seed files.
+PR or worker per value. The existing `tools.development_snapshot` intake deduplicates these records; no new
+tracker or worker is introduced.
 
 Agent2 records a claim (actual session/branch, timestamp and scope) in its work-item
 branch/PR before investigation. One worker owns a group. Agent1 does not edit a

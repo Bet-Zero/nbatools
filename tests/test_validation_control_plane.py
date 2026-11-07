@@ -274,6 +274,48 @@ def test_one_missing_requested_window_fails_raw_validation(tmp_path):
         validate_raw_coverage(frames)
 
 
+def test_source_known_team_overtime_is_required_without_invented_player_rows(tmp_path):
+    _fixture(tmp_path)
+    suffix = "2099-00_regular_season.csv"
+    path = tmp_path / "raw/games" / suffix
+    games = pd.read_csv(path)
+    games["overtime_periods"] = [1, 0]
+    games.to_csv(path, index=False)
+    before = _build(tmp_path)
+    team = _record(before, "team_game_period_stats")
+    assert team["validation"]["errors"] == ["coverage missing 1 requested keys"]
+    assert team["coverage"]["missing_windows"] == ["overtime:ot"]
+    assert _record(before, "player_game_period_stats")["validation"]["state"] == "passed"
+    path = tmp_path / "raw/team_game_period_stats" / suffix
+    frame = pd.read_csv(path)
+    pd.concat(
+        [
+            frame,
+            pd.DataFrame(
+                [dict(game_id=1, team_id=10, period_family="overtime", period_value="ot")]
+            ),
+        ],
+        ignore_index=True,
+    ).to_csv(path, index=False)
+    after = _build(tmp_path)
+    assert _record(after, "team_game_period_stats")["validation"]["state"] == "passed"
+    players = pd.read_csv(tmp_path / "raw/player_game_period_stats" / suffix)
+    assert len(players) == 12 and not players.period_family.eq("overtime").any()
+
+
+@pytest.mark.parametrize("count", [-1, 1.5, "unqualified", True, False])
+def test_invalid_provided_overtime_count_cannot_bypass_coverage(tmp_path, count):
+    _fixture(tmp_path)
+    path = tmp_path / "raw/games/2099-00_regular_season.csv"
+    games = pd.read_csv(path)
+    games["overtime_periods"] = [count, None]
+    games.to_csv(path, index=False)
+    result = _build(tmp_path)
+    assert (
+        "invalid source overtime-period count" in _record(result, "games")["validation"]["errors"]
+    )
+
+
 def test_one_untrusted_required_role_row_fails_raw_validation(tmp_path):
     _fixture(tmp_path)
     frames = {

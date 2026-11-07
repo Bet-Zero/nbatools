@@ -1,0 +1,12 @@
+{
+  "run_id": 42343933162,
+  "reviewed_sha": "3bc3dbc806df8a55819ae862191f987a28efac7e",
+  "request_sha": "4d281d78ccb2bc6ae3378b5dd3f8b875b5b2f984",
+  "artifact_id": 13562559109,
+  "artifact_sha256": "0969b29d2f4a109576865f88621c2678ed46a18aedb71d426e89e78fcd49225a",
+  "artifact_size_bytes": 11180,
+  "job_id": 128317603769,
+  "summary_custody": "Exact JSON emitted by unchanged required harness, retrieved through authenticated connector job logs",
+  "production_writes": 0,
+  "NBA_source_requests": 0
+}

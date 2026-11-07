@@ -1,0 +1,12 @@
+{
+  "classification": "Fresh clock replay of retained authenticated official schedule; no new body request or production readiness claim",
+  "checked_at": "2026-11-07T05:49:07.027513+00:00",
+  "lag_hours": 24,
+  "due_games": 123,
+  "prior_due_games": 123,
+  "new_due_game_ids": [],
+  "same_qualified_due_population": true,
+  "base_checked_at": "2026-11-07T03:46:21.725918+00:00",
+  "readiness": "not accepted; development snapshot remains provisional and required periods/rates/membership/source gates open",
+  "source_generation_independence": "not established by a clock replay"
+}

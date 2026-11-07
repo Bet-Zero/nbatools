@@ -1,0 +1,4786 @@
+{
+  "classification": "unvalidated_laptop_source_capture_not_publication",
+  "source": "NBA Stats",
+  "captured_at": "2026-11-07T05:34:24.091411+00:00",
+  "parameters": "exact fixed per-job parameters in request and attempts",
+  "request": {
+    "schema_version": 1,
+    "status": "collection_requirement_not_publication_approval",
+    "base_generation": "availability-lebron-season-v1-20261031",
+    "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+    "season": "2026-27",
+    "season_type": "Regular Season",
+    "fixed_cutoff": "2026-11-05",
+    "cutoff_checked_at": "2026-11-07T03:46:21.725918Z",
+    "scope": "Only16newgames173-188 complete98quarter-half-OT windows; original107successes never recollected; new input reception only, no statistical acceptance/publication",
+    "denominator_reference": "working/nba-tools-completion-program/source-evidence/core-live-current-20261107/new16-window-denominator.json",
+    "denominator_sha256": "6b6eda072eb20e86d7bc9462db310269e2e5406d3ded8d3eb9b45da3b301a05b",
+    "source_period_windows": 745,
+    "new_period_windows": 98,
+    "game_ids": [
+      "0022600173",
+      "0022600174",
+      "0022600175",
+      "0022600176",
+      "0022600177",
+      "0022600178",
+      "0022600179",
+      "0022600180",
+      "0022600181",
+      "0022600182",
+      "0022600183",
+      "0022600184",
+      "0022600185",
+      "0022600186",
+      "0022600187",
+      "0022600188"
+    ],
+    "maximum_requests": 196,
+    "attempts_per_job": 1,
+    "timeout_seconds": 30,
+    "response_limit_bytes": 2000000,
+    "minimum_interval_seconds": 1,
+    "maximum_elapsed_seconds": 1050,
+    "jobs": [
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600173",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600173_q1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600173",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600173_q1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600173",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600173_q2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600173",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600173_q2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600173",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600173_q3.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600173",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600173_q3.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600173",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600173_q4.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600173",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600173_q4.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600173",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600173_h1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600173",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600173_h1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600173",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600173_h2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600173",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600173_h2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600174",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600174_q1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600174",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600174_q1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600174",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600174_q2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600174",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600174_q2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600174",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600174_q3.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600174",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600174_q3.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600174",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600174_q4.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600174",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600174_q4.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600174",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600174_h1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600174",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600174_h1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600174",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600174_h2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600174",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600174_h2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600175",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600175_q1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600175",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600175_q1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600175",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600175_q2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600175",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600175_q2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600175",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600175_q3.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600175",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600175_q3.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600175",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600175_q4.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600175",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600175_q4.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600175",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600175_h1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600175",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600175_h1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600175",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600175_h2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600175",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600175_h2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600176",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600176_q1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600176",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600176_q1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600176",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600176_q2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600176",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600176_q2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600176",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600176_q3.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600176",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600176_q3.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600176",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600176_q4.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600176",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600176_q4.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600176",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600176_h1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600176",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600176_h1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600176",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600176_h2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600176",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600176_h2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600177",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600177_q1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600177",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600177_q1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600177",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600177_q2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600177",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600177_q2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600177",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600177_q3.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600177",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600177_q3.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600177",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600177_q4.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600177",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600177_q4.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600177",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600177_h1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600177",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600177_h1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600177",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600177_h2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600177",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600177_h2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600178",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600178_q1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600178",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600178_q1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600178",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600178_q2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600178",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600178_q2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600178",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600178_q3.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600178",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600178_q3.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600178",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600178_q4.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600178",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600178_q4.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600178",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600178_h1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600178",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600178_h1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600178",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600178_h2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600178",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600178_h2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600179",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600179_q1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600179",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600179_q1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600179",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600179_q2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600179",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600179_q2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600179",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600179_q3.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600179",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600179_q3.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600179",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600179_q4.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600179",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600179_q4.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600179",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600179_h1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600179",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600179_h1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600179",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600179_h2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600179",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600179_h2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600179",
+          "StartPeriod": 5,
+          "EndPeriod": 14,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600179_ot.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600179",
+          "StartPeriod": 5,
+          "EndPeriod": 14,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600179_ot.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600180",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600180_q1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600180",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600180_q1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600180",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600180_q2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600180",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600180_q2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600180",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600180_q3.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600180",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600180_q3.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600180",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600180_q4.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600180",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600180_q4.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600180",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600180_h1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600180",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600180_h1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600180",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600180_h2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600180",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600180_h2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600181",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600181_q1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600181",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600181_q1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600181",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600181_q2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600181",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600181_q2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600181",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600181_q3.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600181",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600181_q3.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600181",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600181_q4.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600181",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600181_q4.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600181",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600181_h1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600181",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600181_h1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600181",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600181_h2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600181",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600181_h2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600182",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600182_q1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600182",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600182_q1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600182",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600182_q2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600182",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600182_q2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600182",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600182_q3.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600182",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600182_q3.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600182",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600182_q4.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600182",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600182_q4.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600182",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600182_h1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600182",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600182_h1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600182",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600182_h2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600182",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600182_h2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600183",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600183_q1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600183",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600183_q1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600183",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600183_q2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600183",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600183_q2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600183",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600183_q3.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600183",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600183_q3.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600183",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600183_q4.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600183",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600183_q4.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600183",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600183_h1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600183",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600183_h1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600183",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600183_h2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600183",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600183_h2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600184",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600184_q1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600184",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600184_q1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600184",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600184_q2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600184",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600184_q2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600184",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600184_q3.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600184",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600184_q3.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600184",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600184_q4.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600184",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600184_q4.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600184",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600184_h1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600184",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600184_h1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600184",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600184_h2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600184",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600184_h2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600185",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600185_q1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600185",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600185_q1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600185",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600185_q2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600185",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600185_q2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600185",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600185_q3.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600185",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600185_q3.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600185",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600185_q4.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600185",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600185_q4.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600185",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600185_h1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600185",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600185_h1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600185",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600185_h2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600185",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600185_h2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600186",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600186_q1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600186",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600186_q1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600186",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600186_q2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600186",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600186_q2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600186",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600186_q3.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600186",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600186_q3.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600186",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600186_q4.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600186",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600186_q4.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600186",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600186_h1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600186",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600186_h1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600186",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600186_h2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600186",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600186_h2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600186",
+          "StartPeriod": 5,
+          "EndPeriod": 14,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600186_ot.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600186",
+          "StartPeriod": 5,
+          "EndPeriod": 14,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600186_ot.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600187",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600187_q1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600187",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600187_q1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600187",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600187_q2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600187",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600187_q2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600187",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600187_q3.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600187",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600187_q3.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600187",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600187_q4.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600187",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600187_q4.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600187",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600187_h1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600187",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600187_h1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600187",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600187_h2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600187",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600187_h2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600188",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600188_q1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600188",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600188_q1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600188",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600188_q2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600188",
+          "StartPeriod": 2,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600188_q2.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600188",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600188_q3.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600188",
+          "StartPeriod": 3,
+          "EndPeriod": 3,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600188_q3.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600188",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600188_q4.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600188",
+          "StartPeriod": 4,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600188_q4.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600188",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600188_h1.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600188",
+          "StartPeriod": 1,
+          "EndPeriod": 2,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600188_h1.json"
+      },
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600188",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600188_h2.json"
+      },
+      {
+        "endpoint": "boxscoreadvancedv3",
+        "parameters": {
+          "GameID": "0022600188",
+          "StartPeriod": 3,
+          "EndPeriod": 4,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoreadvancedv3_0022600188_h2.json"
+      }
+    ]
+  },
+  "request_sha256": "19cc7759dd2dec7676888538b574e3dd316d6b58712b2b30d42c9b92911a9a52",
+  "nba_api_version": "1.12.0",
+  "attempts": [
+    {
+      "job": {
+        "endpoint": "boxscoretraditionalv3",
+        "parameters": {
+          "GameID": "0022600173",
+          "StartPeriod": 1,
+          "EndPeriod": 1,
+          "RangeType": 1,
+          "StartRange": 0,
+          "EndRange": 28800
+        },
+        "source_file": "sources/boxscoretraditionalv3_0022600173_q1.json"
+      },
+      "endpoint": "boxscoretraditionalv3",
+      "url": "https://stats.nba.com/stats/boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600173",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "started_at": "2026-11-07T05:34:24.160197+00:00",
+      "attempts": 1,
+      "timeout_seconds": 30,
+      "http_status": null,
+      "response_complete": false,
+      "transport_complete": false,
+      "error_type": "ReadTimeout",
+      "finished_at": "2026-11-07T05:34:54.237221+00:00",
+      "response_bytes": 0,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_file": null
+    }
+  ],
+  "production_writes": 0,
+  "canonical_period_accepted": false,
+  "error_type": "ReadTimeout",
+  "stop_reason": "failure_return_output_do_not_retry",
+  "finished_at": "2026-11-07T05:34:54.240335+00:00",
+  "unattempted_jobs": [
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600173",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600173_q1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600173",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600173_q2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600173",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600173_q2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600173",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600173_q3.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600173",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600173_q3.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600173",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600173_q4.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600173",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600173_q4.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600173",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600173_h1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600173",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600173_h1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600173",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600173_h2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600173",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600173_h2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600174",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600174_q1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600174",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600174_q1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600174",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600174_q2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600174",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600174_q2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600174",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600174_q3.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600174",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600174_q3.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600174",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600174_q4.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600174",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600174_q4.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600174",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600174_h1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600174",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600174_h1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600174",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600174_h2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600174",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600174_h2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600175",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600175_q1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600175",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600175_q1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600175",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600175_q2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600175",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600175_q2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600175",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600175_q3.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600175",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600175_q3.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600175",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600175_q4.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600175",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600175_q4.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600175",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600175_h1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600175",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600175_h1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600175",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600175_h2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600175",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600175_h2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600176",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600176_q1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600176",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600176_q1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600176",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600176_q2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600176",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600176_q2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600176",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600176_q3.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600176",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600176_q3.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600176",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600176_q4.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600176",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600176_q4.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600176",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600176_h1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600176",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600176_h1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600176",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600176_h2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600176",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600176_h2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600177",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600177_q1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600177",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600177_q1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600177",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600177_q2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600177",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600177_q2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600177",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600177_q3.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600177",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600177_q3.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600177",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600177_q4.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600177",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600177_q4.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600177",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600177_h1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600177",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600177_h1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600177",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600177_h2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600177",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600177_h2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600178",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600178_q1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600178",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600178_q1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600178",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600178_q2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600178",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600178_q2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600178",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600178_q3.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600178",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600178_q3.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600178",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600178_q4.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600178",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600178_q4.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600178",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600178_h1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600178",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600178_h1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600178",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600178_h2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600178",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600178_h2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600179",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600179_q1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600179",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600179_q1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600179",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600179_q2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600179",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600179_q2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600179",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600179_q3.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600179",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600179_q3.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600179",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600179_q4.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600179",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600179_q4.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600179",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600179_h1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600179",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600179_h1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600179",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600179_h2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600179",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600179_h2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600179",
+        "StartPeriod": 5,
+        "EndPeriod": 14,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600179_ot.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600179",
+        "StartPeriod": 5,
+        "EndPeriod": 14,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600179_ot.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600180",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600180_q1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600180",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600180_q1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600180",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600180_q2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600180",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600180_q2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600180",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600180_q3.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600180",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600180_q3.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600180",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600180_q4.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600180",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600180_q4.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600180",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600180_h1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600180",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600180_h1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600180",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600180_h2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600180",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600180_h2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600181",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600181_q1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600181",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600181_q1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600181",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600181_q2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600181",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600181_q2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600181",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600181_q3.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600181",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600181_q3.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600181",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600181_q4.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600181",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600181_q4.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600181",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600181_h1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600181",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600181_h1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600181",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600181_h2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600181",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600181_h2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600182",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600182_q1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600182",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600182_q1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600182",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600182_q2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600182",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600182_q2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600182",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600182_q3.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600182",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600182_q3.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600182",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600182_q4.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600182",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600182_q4.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600182",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600182_h1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600182",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600182_h1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600182",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600182_h2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600182",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600182_h2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600183",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600183_q1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600183",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600183_q1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600183",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600183_q2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600183",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600183_q2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600183",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600183_q3.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600183",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600183_q3.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600183",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600183_q4.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600183",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600183_q4.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600183",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600183_h1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600183",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600183_h1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600183",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600183_h2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600183",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600183_h2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600184",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600184_q1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600184",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600184_q1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600184",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600184_q2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600184",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600184_q2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600184",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600184_q3.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600184",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600184_q3.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600184",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600184_q4.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600184",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600184_q4.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600184",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600184_h1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600184",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600184_h1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600184",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600184_h2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600184",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600184_h2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600185",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600185_q1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600185",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600185_q1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600185",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600185_q2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600185",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600185_q2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600185",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600185_q3.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600185",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600185_q3.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600185",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600185_q4.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600185",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600185_q4.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600185",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600185_h1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600185",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600185_h1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600185",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600185_h2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600185",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600185_h2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600186",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600186_q1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600186",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600186_q1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600186",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600186_q2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600186",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600186_q2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600186",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600186_q3.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600186",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600186_q3.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600186",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600186_q4.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600186",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600186_q4.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600186",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600186_h1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600186",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600186_h1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600186",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600186_h2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600186",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600186_h2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600186",
+        "StartPeriod": 5,
+        "EndPeriod": 14,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600186_ot.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600186",
+        "StartPeriod": 5,
+        "EndPeriod": 14,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600186_ot.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600187",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600187_q1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600187",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600187_q1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600187",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600187_q2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600187",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600187_q2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600187",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600187_q3.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600187",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600187_q3.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600187",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600187_q4.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600187",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600187_q4.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600187",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600187_h1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600187",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600187_h1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600187",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600187_h2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600187",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600187_h2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600188",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600188_q1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600188",
+        "StartPeriod": 1,
+        "EndPeriod": 1,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600188_q1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600188",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600188_q2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600188",
+        "StartPeriod": 2,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600188_q2.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600188",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600188_q3.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600188",
+        "StartPeriod": 3,
+        "EndPeriod": 3,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600188_q3.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600188",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600188_q4.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600188",
+        "StartPeriod": 4,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600188_q4.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600188",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600188_h1.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600188",
+        "StartPeriod": 1,
+        "EndPeriod": 2,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600188_h1.json"
+    },
+    {
+      "endpoint": "boxscoretraditionalv3",
+      "parameters": {
+        "GameID": "0022600188",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoretraditionalv3_0022600188_h2.json"
+    },
+    {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "GameID": "0022600188",
+        "StartPeriod": 3,
+        "EndPeriod": 4,
+        "RangeType": 1,
+        "StartRange": 0,
+        "EndRange": 28800
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600188_h2.json"
+    }
+  ],
+  "transport_finished": false
+}

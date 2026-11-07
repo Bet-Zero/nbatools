@@ -142,6 +142,10 @@ class DevelopmentSnapshot:
                 )
             elif family == "player_game_availability":
                 nonmetrics.update({"source_comment", "identity_source_sha256"})
+            elif family == "player_game_starter_roles":
+                # Successful trust checks deliberately have a blank text reason.
+                # Required role flags and trust indicators stay numeric inputs.
+                nonmetrics.add("role_validation_reason")
             numeric = numeric.drop(columns=list(nonmetrics & set(numeric.columns)))
             missing = numeric.isna()
             if family == "player_game_availability" and "source_minutes" in missing:

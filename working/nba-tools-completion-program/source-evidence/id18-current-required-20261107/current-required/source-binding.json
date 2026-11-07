@@ -1,0 +1,12 @@
+{
+  "archive": "required-source-originals.zip",
+  "archive_sha256": "8391bc2a139315f25605461f8bb6adaaaad65be76160af7db06c4758878a641f",
+  "source_bodies": 50,
+  "new_whole_traditional": 16,
+  "season_advanced": 2,
+  "standings": 1,
+  "rosters": 30,
+  "representative_archive_period": 1,
+  "old107body_requests": 0,
+  "production_writes": 0
+}

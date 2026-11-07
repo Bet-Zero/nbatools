@@ -1,0 +1,934 @@
+{
+  "classification": "Independent source-bound OT key contract reconciliation; no source reacquisition or new rate qualification",
+  "reviewer": "/root/id18_checker",
+  "backend_model": "unavailable",
+  "old_snapshot_sha256": "b43546c6e911b98b303a81bc23072d5ea08c2cd71a6175f48959c25886f8d8b2",
+  "canonical_period_csv_sha256": "2ce3d80c75102b3d48f6975f67c6da92cbef4f38bd406566d78bf5217e34644d",
+  "canonical_whole_csv_sha256": "bb057263fa3b53ff8b83e8b2992960e8b40e8143613fcf9b2d5afb5b4d865396",
+  "groups": [
+    {
+      "game_id": "0022600110",
+      "whole_player_keys": 21,
+      "source_qualified_ot_keys": 12,
+      "positive_clock_ot_keys": 12,
+      "literal_zero_clock_source_keys": [],
+      "unlisted_whole_game_keys": [
+        [
+          22600110,
+          1610612740,
+          1629673
+        ],
+        [
+          22600110,
+          1610612740,
+          1631097
+        ],
+        [
+          22600110,
+          1610612740,
+          1631255
+        ],
+        [
+          22600110,
+          1610612740,
+          1642847
+        ],
+        [
+          22600110,
+          1610612743,
+          201942
+        ],
+        [
+          22600110,
+          1610612743,
+          1626145
+        ],
+        [
+          22600110,
+          1610612743,
+          1628963
+        ],
+        [
+          22600110,
+          1610612743,
+          1641715
+        ],
+        [
+          22600110,
+          1610612743,
+          1643624
+        ]
+      ],
+      "expected_ot_keys": [
+        [
+          22600110,
+          1610612740,
+          201599
+        ],
+        [
+          22600110,
+          1610612740,
+          1627749
+        ],
+        [
+          22600110,
+          1610612740,
+          1629627
+        ],
+        [
+          22600110,
+          1610612740,
+          1630180
+        ],
+        [
+          22600110,
+          1610612740,
+          1630529
+        ],
+        [
+          22600110,
+          1610612740,
+          1630530
+        ],
+        [
+          22600110,
+          1610612740,
+          1642852
+        ],
+        [
+          22600110,
+          1610612743,
+          203932
+        ],
+        [
+          22600110,
+          1610612743,
+          203999
+        ],
+        [
+          22600110,
+          1610612743,
+          1627750
+        ],
+        [
+          22600110,
+          1610612743,
+          1631128
+        ],
+        [
+          22600110,
+          1610612743,
+          1642350
+        ]
+      ],
+      "source_bindings": [
+        {
+          "archive": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/partial-capture-20261103/collection.zip",
+          "archive_sha256": "03ee634189d3f245badbd0baadc60ddaeac4b9efd978c5d2bd62d02aa7d4ceb3",
+          "member": "sources/boxscoretraditionalv3_0022600110_ot.json",
+          "source_sha256": "ee0d66b1e44d2d95101c397017f5a79d274533caef585687b8f21b117c1c79b7",
+          "size_bytes": 9713,
+          "acquisition_sha256": "1432ac8fa2489369f7b14d628f0b2ed587de708fcd7544cf6854a9f751e13a46",
+          "parameters": {
+            "EndPeriod": 14,
+            "EndRange": 28800,
+            "GameID": "0022600110",
+            "RangeType": 1,
+            "StartPeriod": 5,
+            "StartRange": 0
+          },
+          "captured_at": "2026-11-02T06:02:35.394117+00:00"
+        },
+        {
+          "archive": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/partial-capture-20261103/collection.zip",
+          "archive_sha256": "03ee634189d3f245badbd0baadc60ddaeac4b9efd978c5d2bd62d02aa7d4ceb3",
+          "member": "sources/boxscoreadvancedv3_0022600110_ot.json",
+          "source_sha256": "59b05f7b67fa2019e6151108b573b7c7e48a2e6dee64cf36b44db1e19a12ee93",
+          "size_bytes": 10419,
+          "acquisition_sha256": "1432ac8fa2489369f7b14d628f0b2ed587de708fcd7544cf6854a9f751e13a46",
+          "parameters": {
+            "EndPeriod": 14,
+            "EndRange": 28800,
+            "GameID": "0022600110",
+            "RangeType": 1,
+            "StartPeriod": 5,
+            "StartRange": 0
+          },
+          "captured_at": "2026-11-02T06:02:37.032373+00:00"
+        }
+      ],
+      "clock_checks": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "team_id": 1610612743,
+          "source_player_rows": 5,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        },
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "team_id": 1610612740,
+          "source_player_rows": 7,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        },
+        {
+          "endpoint": "boxscoreadvancedv3",
+          "team_id": 1610612743,
+          "source_player_rows": 5,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        },
+        {
+          "endpoint": "boxscoreadvancedv3",
+          "team_id": 1610612740,
+          "source_player_rows": 7,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        }
+      ],
+      "canonical_exact_key_agreement": true
+    },
+    {
+      "game_id": "0022600120",
+      "whole_player_keys": 19,
+      "source_qualified_ot_keys": 13,
+      "positive_clock_ot_keys": 13,
+      "literal_zero_clock_source_keys": [],
+      "unlisted_whole_game_keys": [
+        [
+          22600120,
+          1610612739,
+          1626209
+        ],
+        [
+          22600120,
+          1610612739,
+          1642281
+        ],
+        [
+          22600120,
+          1610612739,
+          1643509
+        ],
+        [
+          22600120,
+          1610612750,
+          1626168
+        ],
+        [
+          22600120,
+          1610612750,
+          1630538
+        ],
+        [
+          22600120,
+          1610612750,
+          1642866
+        ]
+      ],
+      "expected_ot_keys": [
+        [
+          22600120,
+          1610612739,
+          201935
+        ],
+        [
+          22600120,
+          1610612739,
+          1628378
+        ],
+        [
+          22600120,
+          1610612739,
+          1628386
+        ],
+        [
+          22600120,
+          1610612739,
+          1630241
+        ],
+        [
+          22600120,
+          1610612739,
+          1630596
+        ],
+        [
+          22600120,
+          1610612739,
+          1631212
+        ],
+        [
+          22600120,
+          1610612750,
+          203497
+        ],
+        [
+          22600120,
+          1610612750,
+          1630162
+        ],
+        [
+          22600120,
+          1610612750,
+          1630163
+        ],
+        [
+          22600120,
+          1610612750,
+          1630183
+        ],
+        [
+          22600120,
+          1610612750,
+          1630228
+        ],
+        [
+          22600120,
+          1610612750,
+          1630245
+        ],
+        [
+          22600120,
+          1610612750,
+          1630545
+        ]
+      ],
+      "source_bindings": [
+        {
+          "archive": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/recovery-capture-20261104/collection.zip",
+          "archive_sha256": "7eb2f30f0afa7806fd2e7a7bca98c1a42c1b3d480134c226f577f99f1415bf17",
+          "member": "sources/boxscoretraditionalv3_0022600120_ot.json",
+          "source_sha256": "46a5ad4cb82392b3118936b250e04a88700e852b4f74a16c95daeb9410991d1e",
+          "size_bytes": 10314,
+          "acquisition_sha256": "4a02adb9ed2164d7bda189eb033e149a50f2b53ad57c00261ad4956a95124ac7",
+          "parameters": {
+            "EndPeriod": 14,
+            "EndRange": 28800,
+            "GameID": "0022600120",
+            "RangeType": 1,
+            "StartPeriod": 5,
+            "StartRange": 0
+          },
+          "captured_at": "2026-11-04T02:39:49.117706+00:00"
+        },
+        {
+          "archive": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/recovery-capture-20261104/collection.zip",
+          "archive_sha256": "7eb2f30f0afa7806fd2e7a7bca98c1a42c1b3d480134c226f577f99f1415bf17",
+          "member": "sources/boxscoreadvancedv3_0022600120_ot.json",
+          "source_sha256": "4980d20e01729d65b10dd66a678169efc003adbd182d800bc439d0939aaad62c",
+          "size_bytes": 11161,
+          "acquisition_sha256": "4a02adb9ed2164d7bda189eb033e149a50f2b53ad57c00261ad4956a95124ac7",
+          "parameters": {
+            "EndPeriod": 14,
+            "EndRange": 28800,
+            "GameID": "0022600120",
+            "RangeType": 1,
+            "StartPeriod": 5,
+            "StartRange": 0
+          },
+          "captured_at": "2026-11-04T02:39:50.646163+00:00"
+        }
+      ],
+      "clock_checks": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "team_id": 1610612739,
+          "source_player_rows": 6,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        },
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "team_id": 1610612750,
+          "source_player_rows": 7,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        },
+        {
+          "endpoint": "boxscoreadvancedv3",
+          "team_id": 1610612739,
+          "source_player_rows": 6,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        },
+        {
+          "endpoint": "boxscoreadvancedv3",
+          "team_id": 1610612750,
+          "source_player_rows": 7,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        }
+      ],
+      "canonical_exact_key_agreement": true
+    },
+    {
+      "game_id": "0022600141",
+      "whole_player_keys": 19,
+      "source_qualified_ot_keys": 12,
+      "positive_clock_ot_keys": 12,
+      "literal_zero_clock_source_keys": [],
+      "unlisted_whole_game_keys": [
+        [
+          22600141,
+          1610612759,
+          1628436
+        ],
+        [
+          22600141,
+          1610612759,
+          1629640
+        ],
+        [
+          22600141,
+          1610612759,
+          1630577
+        ],
+        [
+          22600141,
+          1610612759,
+          1642868
+        ],
+        [
+          22600141,
+          1610612762,
+          1628964
+        ],
+        [
+          22600141,
+          1610612762,
+          1629006
+        ],
+        [
+          22600141,
+          1610612762,
+          1643408
+        ]
+      ],
+      "expected_ot_keys": [
+        [
+          22600141,
+          1610612759,
+          1628368
+        ],
+        [
+          22600141,
+          1610612759,
+          1630170
+        ],
+        [
+          22600141,
+          1610612759,
+          1641705
+        ],
+        [
+          22600141,
+          1610612759,
+          1642264
+        ],
+        [
+          22600141,
+          1610612759,
+          1642844
+        ],
+        [
+          22600141,
+          1610612762,
+          1629004
+        ],
+        [
+          22600141,
+          1610612762,
+          1629637
+        ],
+        [
+          22600141,
+          1610612762,
+          1630182
+        ],
+        [
+          22600141,
+          1610612762,
+          1641718
+        ],
+        [
+          22600141,
+          1610612762,
+          1641729
+        ],
+        [
+          22600141,
+          1610612762,
+          1642268
+        ],
+        [
+          22600141,
+          1610612762,
+          1642846
+        ]
+      ],
+      "source_bindings": [
+        {
+          "archive": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/recovery-capture-20261104/collection.zip",
+          "archive_sha256": "7eb2f30f0afa7806fd2e7a7bca98c1a42c1b3d480134c226f577f99f1415bf17",
+          "member": "sources/boxscoretraditionalv3_0022600141_ot.json",
+          "source_sha256": "c3429e2aff2cceb2f33936b236277b98596630869861183a90c283c03b5f4a92",
+          "size_bytes": 9694,
+          "acquisition_sha256": "4a02adb9ed2164d7bda189eb033e149a50f2b53ad57c00261ad4956a95124ac7",
+          "parameters": {
+            "EndPeriod": 14,
+            "EndRange": 28800,
+            "GameID": "0022600141",
+            "RangeType": 1,
+            "StartPeriod": 5,
+            "StartRange": 0
+          },
+          "captured_at": "2026-11-04T02:47:06.464634+00:00"
+        },
+        {
+          "archive": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/recovery-capture-20261104/collection.zip",
+          "archive_sha256": "7eb2f30f0afa7806fd2e7a7bca98c1a42c1b3d480134c226f577f99f1415bf17",
+          "member": "sources/boxscoreadvancedv3_0022600141_ot.json",
+          "source_sha256": "64307d94196564d46ab06dca5802499019cc5311ee2d2fdf7b23a305527fe3af",
+          "size_bytes": 10370,
+          "acquisition_sha256": "4a02adb9ed2164d7bda189eb033e149a50f2b53ad57c00261ad4956a95124ac7",
+          "parameters": {
+            "EndPeriod": 14,
+            "EndRange": 28800,
+            "GameID": "0022600141",
+            "RangeType": 1,
+            "StartPeriod": 5,
+            "StartRange": 0
+          },
+          "captured_at": "2026-11-04T02:47:08.103854+00:00"
+        }
+      ],
+      "clock_checks": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "team_id": 1610612762,
+          "source_player_rows": 7,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        },
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "team_id": 1610612759,
+          "source_player_rows": 5,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        },
+        {
+          "endpoint": "boxscoreadvancedv3",
+          "team_id": 1610612762,
+          "source_player_rows": 7,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        },
+        {
+          "endpoint": "boxscoreadvancedv3",
+          "team_id": 1610612759,
+          "source_player_rows": 5,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        }
+      ],
+      "canonical_exact_key_agreement": true
+    },
+    {
+      "game_id": "0022600128",
+      "whole_player_keys": 22,
+      "source_qualified_ot_keys": 16,
+      "positive_clock_ot_keys": 16,
+      "literal_zero_clock_source_keys": [],
+      "unlisted_whole_game_keys": [
+        [
+          22600128,
+          1610612738,
+          1629674
+        ],
+        [
+          22600128,
+          1610612738,
+          1642864
+        ],
+        [
+          22600128,
+          1610612751,
+          1629021
+        ],
+        [
+          22600128,
+          1610612751,
+          1631169
+        ],
+        [
+          22600128,
+          1610612751,
+          1642849
+        ],
+        [
+          22600128,
+          1610612751,
+          1642856
+        ]
+      ],
+      "expected_ot_keys": [
+        [
+          22600128,
+          1610612738,
+          202331
+        ],
+        [
+          22600128,
+          1610612738,
+          1628369
+        ],
+        [
+          22600128,
+          1610612738,
+          1628401
+        ],
+        [
+          22600128,
+          1610612738,
+          1629011
+        ],
+        [
+          22600128,
+          1610612738,
+          1630202
+        ],
+        [
+          22600128,
+          1610612738,
+          1630568
+        ],
+        [
+          22600128,
+          1610612738,
+          1630573
+        ],
+        [
+          22600128,
+          1610612738,
+          1631248
+        ],
+        [
+          22600128,
+          1610612738,
+          1641775
+        ],
+        [
+          22600128,
+          1610612751,
+          203944
+        ],
+        [
+          22600128,
+          1610612751,
+          1629008
+        ],
+        [
+          22600128,
+          1610612751,
+          1630549
+        ],
+        [
+          22600128,
+          1610612751,
+          1631165
+        ],
+        [
+          22600128,
+          1610612751,
+          1641730
+        ],
+        [
+          22600128,
+          1610612751,
+          1643052
+        ],
+        [
+          22600128,
+          1610612751,
+          1643414
+        ]
+      ],
+      "source_bindings": [
+        {
+          "archive": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/incremental-return-20261104/collection.zip",
+          "archive_sha256": "d98ddb5f8b5f3ac7c288abed786b92c6ff3474b7fd97cdc0dead58b87c7736ab",
+          "member": "sources/boxscoretraditionalv3_0022600128_ot.json",
+          "source_sha256": "3ec6df72343e544e2ac180962c45b5b828ef11690bbc86c51777117f3761a55f",
+          "size_bytes": 11980,
+          "acquisition_sha256": "4a04ddcfdfe3f6627191b0dc6cb13ba33507748c72ec72cd5207237fb281854a",
+          "parameters": {
+            "GameID": "0022600128",
+            "StartPeriod": 5,
+            "EndPeriod": 14,
+            "RangeType": 1,
+            "StartRange": 0,
+            "EndRange": 28800
+          },
+          "captured_at": "2026-11-04T08:47:36.465810+00:00"
+        },
+        {
+          "archive": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/incremental-return-20261104/collection.zip",
+          "archive_sha256": "d98ddb5f8b5f3ac7c288abed786b92c6ff3474b7fd97cdc0dead58b87c7736ab",
+          "member": "sources/boxscoreadvancedv3_0022600128_ot.json",
+          "source_sha256": "85fb8023be91e5ac4135b3ececa43d988525e10d5397f9530fbb020ced4a7984",
+          "size_bytes": 13225,
+          "acquisition_sha256": "4a04ddcfdfe3f6627191b0dc6cb13ba33507748c72ec72cd5207237fb281854a",
+          "parameters": {
+            "GameID": "0022600128",
+            "StartPeriod": 5,
+            "EndPeriod": 14,
+            "RangeType": 1,
+            "StartRange": 0,
+            "EndRange": 28800
+          },
+          "captured_at": "2026-11-04T08:47:41.380308+00:00"
+        }
+      ],
+      "clock_checks": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "team_id": 1610612738,
+          "source_player_rows": 9,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        },
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "team_id": 1610612751,
+          "source_player_rows": 7,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        },
+        {
+          "endpoint": "boxscoreadvancedv3",
+          "team_id": 1610612738,
+          "source_player_rows": 9,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        },
+        {
+          "endpoint": "boxscoreadvancedv3",
+          "team_id": 1610612751,
+          "source_player_rows": 7,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        }
+      ],
+      "canonical_exact_key_agreement": true
+    },
+    {
+      "game_id": "0022600165",
+      "whole_player_keys": 21,
+      "source_qualified_ot_keys": 16,
+      "positive_clock_ot_keys": 15,
+      "literal_zero_clock_source_keys": [
+        [
+          22600165,
+          1610612740,
+          1642852
+        ]
+      ],
+      "unlisted_whole_game_keys": [
+        [
+          22600165,
+          1610612740,
+          1631097
+        ],
+        [
+          22600165,
+          1610612740,
+          1631121
+        ],
+        [
+          22600165,
+          1610612763,
+          203924
+        ],
+        [
+          22600165,
+          1610612763,
+          1641713
+        ],
+        [
+          22600165,
+          1610612763,
+          1642942
+        ]
+      ],
+      "expected_ot_keys": [
+        [
+          22600165,
+          1610612740,
+          1629627
+        ],
+        [
+          22600165,
+          1610612740,
+          1630180
+        ],
+        [
+          22600165,
+          1610612740,
+          1630529
+        ],
+        [
+          22600165,
+          1610612740,
+          1630530
+        ],
+        [
+          22600165,
+          1610612740,
+          1630570
+        ],
+        [
+          22600165,
+          1610612740,
+          1631255
+        ],
+        [
+          22600165,
+          1610612740,
+          1642847
+        ],
+        [
+          22600165,
+          1610612740,
+          1642852
+        ],
+        [
+          22600165,
+          1610612763,
+          1629660
+        ],
+        [
+          22600165,
+          1610612763,
+          1630191
+        ],
+        [
+          22600165,
+          1610612763,
+          1631200
+        ],
+        [
+          22600165,
+          1610612763,
+          1641744
+        ],
+        [
+          22600165,
+          1610612763,
+          1642285
+        ],
+        [
+          22600165,
+          1610612763,
+          1642377
+        ],
+        [
+          22600165,
+          1610612763,
+          1642907
+        ],
+        [
+          22600165,
+          1610612763,
+          1643409
+        ]
+      ],
+      "source_bindings": [
+        {
+          "archive": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/incremental-return-20261104/collection.zip",
+          "archive_sha256": "d98ddb5f8b5f3ac7c288abed786b92c6ff3474b7fd97cdc0dead58b87c7736ab",
+          "member": "sources/boxscoretraditionalv3_0022600165_ot.json",
+          "source_sha256": "b1a567fe01d934ef02170a79f4eedef9125d7dc5c1ad19b91d4a6b136b414c70",
+          "size_bytes": 11965,
+          "acquisition_sha256": "4a04ddcfdfe3f6627191b0dc6cb13ba33507748c72ec72cd5207237fb281854a",
+          "parameters": {
+            "GameID": "0022600165",
+            "StartPeriod": 5,
+            "EndPeriod": 14,
+            "RangeType": 1,
+            "StartRange": 0,
+            "EndRange": 28800
+          },
+          "captured_at": "2026-11-04T08:50:23.690756+00:00"
+        },
+        {
+          "archive": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/incremental-return-20261104/collection.zip",
+          "archive_sha256": "d98ddb5f8b5f3ac7c288abed786b92c6ff3474b7fd97cdc0dead58b87c7736ab",
+          "member": "sources/boxscoreadvancedv3_0022600165_ot.json",
+          "source_sha256": "4cc204121bbcde969dfde565c144a4acf11329e409b9d05abc9f545da4f63f06",
+          "size_bytes": 13182,
+          "acquisition_sha256": "4a04ddcfdfe3f6627191b0dc6cb13ba33507748c72ec72cd5207237fb281854a",
+          "parameters": {
+            "GameID": "0022600165",
+            "StartPeriod": 5,
+            "EndPeriod": 14,
+            "RangeType": 1,
+            "StartRange": 0,
+            "EndRange": 28800
+          },
+          "captured_at": "2026-11-04T08:50:25.324181+00:00"
+        }
+      ],
+      "clock_checks": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "team_id": 1610612763,
+          "source_player_rows": 8,
+          "player_clock_seconds": "1501",
+          "expected_team_clock_seconds": 1500
+        },
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "team_id": 1610612740,
+          "source_player_rows": 8,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        },
+        {
+          "endpoint": "boxscoreadvancedv3",
+          "team_id": 1610612763,
+          "source_player_rows": 8,
+          "player_clock_seconds": "1501",
+          "expected_team_clock_seconds": 1500
+        },
+        {
+          "endpoint": "boxscoreadvancedv3",
+          "team_id": 1610612740,
+          "source_player_rows": 8,
+          "player_clock_seconds": "1500",
+          "expected_team_clock_seconds": 1500
+        }
+      ],
+      "canonical_exact_key_agreement": true
+    }
+  ],
+  "total_source_qualified_ot_keys": 69,
+  "total_whole_game_players_in_old_ot_games": 102,
+  "unlisted_whole_game_ot_keys": 33,
+  "literal_zero_clock_source_keys": 1,
+  "all_retained_ot_keys_equal_source": true,
+  "new16_required_standard_player_keys": 2208,
+  "new16_ot_player_keys": "Unknown until actual source-bound179/186OTTraditional+Advanced windows qualify",
+  "prior2249": "Conservative planning lattice2208standard+41wholegameplayers in179/186; not a qualified sparseOTrowdenominator",
+  "new16_required_team_period_keys": 196,
+  "total_required_windows": 745,
+  "production_writes": 0,
+  "source_requests": 0,
+  "conclusion": "Preserve all six standard-window key requirements and all sevenOTgame/window obligations. Qualify OTplayer key denominator from original bound sources including explicit0clock rows; never infer omitted OTrows as zero or derive expectedkeys from the target CSV alone.",
+  "current_consumer_coverage_helper_observations": {
+    "team_all107games": null,
+    "players_only5OTgames": "player_game_period_stats coverage incomplete; requested_keys=102; covered_keys=69; window=overtime:ot; missing_keys_total=33; missing_keys=[game_id=22600110, team_id=1610612740, player_id=1629673; game_id=22600110, team_id=1610612740, player_id=1631097; game_id=22600110, team_id=1610612740, player_id=1631255; game_id=22600110, team_id=1610612740, player_id=1642847; game_id=22600110, team_id=1610612743, player_id=1626145; game_id=22600110, team_id=1610612743, player_id=1628963; game_id=22600110, team_id=1610612743, player_id=1641715; game_id=22600110, team_id=1610612743, player_id=1643624; game_id=22600110, team_id=1610612743, player_id=201942; game_id=22600120, team_id=1610612739, player_id=1626209; game_id=22600120, team_id=1610612739, player_id=1642281; game_id=22600120, team_id=1610612739, player_id=1643509; game_id=22600120, team_id=1610612750, player_id=1626168; game_id=22600120, team_id=1610612750, player_id=1630538; game_id=22600120, team_id=1610612750, player_id=1642866; game_id=22600128, team_id=1610612738, player_id=1629674; game_id=22600128, team_id=1610612738, player_id=1642864; game_id=22600128, team_id=1610612751, player_id=1629021; game_id=22600128, team_id=1610612751, player_id=1631169; game_id=22600128, team_id=1610612751, player_id=1642849; game_id=22600128, team_id=1610612751, player_id=1642856; game_id=22600141, team_id=1610612759, player_id=1628436; game_id=22600141, team_id=1610612759, player_id=1629640; game_id=22600141, team_id=1610612759, player_id=1630577; game_id=22600141, team_id=1610612759, player_id=1642868; ... (+8 more)]",
+    "player_exact_sourceOTsubset": null
+  }
+}

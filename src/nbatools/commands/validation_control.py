@@ -535,6 +535,26 @@ def apply_cross_dataset_coverage(
     expected_team_windows = {
         (*key, family, value) for key in team_keys for family, value in STANDARD_PERIOD_WINDOWS
     }
+    if available("games") and "overtime_periods" in frames["games"]:
+        catalog = frames["games"]
+        counts = pd.to_numeric(catalog.overtime_periods, errors="coerce")
+        provided = catalog.overtime_periods.notna() & catalog.overtime_periods.astype(
+            str
+        ).str.strip().ne("")
+        booleans = catalog.overtime_periods.astype(str).str.lower().isin(["true", "false"])
+        invalid = provided & (booleans | counts.isna() | counts.lt(0) | counts.mod(1).ne(0))
+        if invalid.any():
+            _fail(records["games"], "invalid source overtime-period count")
+        known_ot_games = _keys(
+            catalog.loc[counts.gt(0) & ~invalid],
+            ("game_id",),
+        )
+        expected_team_windows.update(
+            (*key, "overtime", "ot") for key in team_keys if (key[0],) in known_ot_games
+        )
+        # Player OT rows are source-listed participants, not a crossjoin of
+        # whole-game appearances. Their complete population requires qualified
+        # original window sources; the standard-window lattice below is unchanged.
     if available("team_game_period_stats"):
         columns = ("game_id", "team_id", "period_family", "period_value")
         observed = _keys(frames["team_game_period_stats"], columns)
