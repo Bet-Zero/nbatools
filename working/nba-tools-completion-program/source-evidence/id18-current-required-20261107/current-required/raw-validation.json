@@ -1,0 +1,5 @@
+{
+  "returncode": 1,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"/workspace/nbatools/work/current-required-source/src/nbatools/commands/pipeline/validate_raw.py\", line 714, in run\n    validate_raw_coverage(raw_frames)\n  File \"/workspace/nbatools/work/current-required-source/src/nbatools/commands/validation_control.py\", line 879, in validate_raw_coverage\n    raise ValueError(\"Cross-dataset coverage validation failed: \" + \"; \".join(errors))\nValueError: Cross-dataset coverage validation failed: player_game_period_stats: coverage missing 2208 requested keys; team_game_period_stats: coverage missing 192 requested keys\n"
+}

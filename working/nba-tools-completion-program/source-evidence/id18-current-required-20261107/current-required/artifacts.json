@@ -1,0 +1,42 @@
+{
+  "README.md": {
+    "sha256": "f41a5cdd6c4a940177e9995507c437cfbb8ca2b1e7ebecb105e942568aca4a98",
+    "size_bytes": 3667
+  },
+  "acquire_new_sources.py": {
+    "sha256": "80b78538ec1e494560adecb0196b36eb7b9e13b8749c45df3bd99109979330f5",
+    "size_bytes": 2700
+  },
+  "initial-validation.json": {
+    "sha256": "447169bdab1b51f874e584455755866ec18f27424cfb2e9730e8fa20f0ad4179",
+    "size_bytes": 295452
+  },
+  "normalized-required-stage.zip": {
+    "sha256": "64c1495942feea27b0f6a95260f6e31bd5c8a1a995442531794e9d60f8d64143",
+    "size_bytes": 779917
+  },
+  "qualification.json": {
+    "sha256": "be85196ea842d07449bb83244bc624cc60dda1f29ba1b2db5fe68e07a5e02554",
+    "size_bytes": 204654
+  },
+  "raw-validation.json": {
+    "sha256": "f8ffad788b5b3a863b52ccf278ff65f338a130ceaaee6945208445bf7e430745",
+    "size_bytes": 709
+  },
+  "required-period-coverage.json": {
+    "sha256": "73804e8b5919e37e553a5d3d6651440ed2e326e9b139e03eef125cf84da0328b",
+    "size_bytes": 216383
+  },
+  "required-source-originals.zip": {
+    "sha256": "8391bc2a139315f25605461f8bb6adaaaad65be76160af7db06c4758878a641f",
+    "size_bytes": 209888
+  },
+  "source-binding.json": {
+    "sha256": "7c9890f8979212e4142b11e9b06a68093dff25df03987ac5b97b5f047241704b",
+    "size_bytes": 342
+  },
+  "stage_new_sources.py": {
+    "sha256": "6ab1453919c8eb79f9a24cd796bb1b003a53e3954225c3c76b29c3f881ae86bb",
+    "size_bytes": 11449
+  }
+}
