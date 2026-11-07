@@ -1,0 +1,46 @@
+{
+  "source_file_sha256": "8ed0d586447f1062e2a0033228c3c3ba197ad1192a48053642074c0b68a4982d",
+  "dataset_zip_sha256": "a0ab6f64958018b3ca9b535ed6ef2ae316f01c55c40d27edd21677ff79ad9175",
+  "manifest_sha256": "93b2b8f87809727e6fa72a2b3cbfae3e893e5d122bc025aee3ee19bd8254097d",
+  "cases": [
+    {
+      "query": "Lakers second quarter record on 2026-11-04",
+      "exact_caveat": "record computed from quarter 2 scores",
+      "natural_structured_HTTP": "passed",
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "points": 33
+    },
+    {
+      "query": "Lakers first half record on 2026-11-04",
+      "exact_caveat": "record computed from first half scores",
+      "natural_structured_HTTP": "passed",
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "points": 61
+    },
+    {
+      "query": "Pelicans overtime record on 2026-11-04",
+      "exact_caveat": "record computed from overtime scores",
+      "natural_structured_HTTP": "passed",
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "points": 16
+    },
+    {
+      "query": "Clippers overtime record on 2026-11-04",
+      "exact_caveat": "record computed from overtime scores",
+      "natural_structured_HTTP": "passed",
+      "games": 1,
+      "wins": 0,
+      "losses": 1,
+      "points": 9
+    }
+  ],
+  "nba_requests": 0,
+  "production_writes": 0,
+  "numeric_and_selection_delta": "none; exact independently qualified expected values retained"
+}

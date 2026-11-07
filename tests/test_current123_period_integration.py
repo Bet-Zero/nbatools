@@ -172,6 +172,14 @@ def test_qualified_period_record_natural_structured_http_and_labels(
         assert quality["manifest_sha256"] == digest and quality["state"] == "provisional"
         assert quality["numerical_acceptance"] is quality["production_accepted"] is False
         assert "PROVISIONAL" in " ".join(body["notes"])
+        expected_caveat = {
+            "LAL": "record computed from quarter 2 scores"
+            if "quarter" in window
+            else "record computed from first half scores",
+            "NOP": "record computed from overtime scores",
+            "LAC": "record computed from overtime scores",
+        }[team]
+        assert expected_caveat in body["caveats"]
         assert body["result"]["metadata"][next(iter(window))] == next(iter(window.values()))
     row = structured.result.to_dict()["sections"]["summary"][0]
     assert (row["wins"], row["losses"], row["pts_avg"]) == (wins, losses, points)

@@ -68,3 +68,60 @@ def test_capture_only_new_game184_rebound_scorer_book(monkeypatch):
         and receipt["canonical_writes"] == receipt["production_writes"] == 0
     )
     assert receipt["authoritative_correction_qualified"] is False
+
+
+@pytest.mark.needs_data
+@pytest.mark.engine
+def test_transfer_retained_game184_book_without_source_retry(capfd):
+    """Existing bounded artifact-to-log custody route; makes zero NBA requests."""
+    import base64
+
+    import requests
+
+    expected = "1a788f1f13a9a929d68e654c9a2e937f4e478377a8f22cfb0932f2e3c7a6cccc"
+    url = "https://api.github.com/repos/Bet-Zero/nbatools/actions/artifacts/13573082492/zip"
+    with requests.get(
+        url, headers={"Authorization": "Bearer " + os.environ["GH_TOKEN"]}, timeout=30, stream=True
+    ) as response:
+        response.raise_for_status()
+        data = bytearray()
+        for chunk in response.iter_content(8192):
+            data.extend(chunk)
+            assert len(data) <= 300_000
+    raw = bytes(data)
+    assert len(raw) == 167836 and hashlib.sha256(raw).hexdigest() == expected
+    with ZipFile(io.BytesIO(raw)) as z:
+        assert len(z.namelist()) <= 100
+        assert sum(e.file_size for e in z.infolist()) <= 3_000_000
+        assert all(not Path(n).is_absolute() and ".." not in Path(n).parts for n in z.namelist())
+        assert all(
+            n in {"summary.json", "junit.xml"}
+            or n.startswith(
+                (
+                    "acquired_data/current123-game184-book/",
+                    "acquired_data/current123-period-integration/",
+                )
+            )
+            for n in z.namelist()
+        )
+        assert z.testzip() is None
+        summary = json.loads(z.read("summary.json"))
+        assert (
+            summary["selected"],
+            summary["executed"],
+            summary["passed"],
+            summary["failed"],
+            summary["skipped"],
+        ) == (2, 2, 2, 0, 0)
+        assert summary["candidate_sha"] == "6411b6b1dbd094bb270c9f7731d3f914f545a045"
+    output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "retained-current123-game184-book"
+    output.mkdir(parents=True, exist_ok=False)
+    (output / "original-artifact.zip").write_bytes(raw)
+    encoded = base64.b64encode(raw).decode()
+    with capfd.disabled():
+        for index, offset in enumerate(range(0, len(encoded), 16000)):
+            print(
+                f"CURRENT184_ARTIFACT_CHUNK_{index:03d}=" + encoded[offset : offset + 16000],
+                flush=True,
+            )
+        print("CURRENT184_ARTIFACT_SHA256=" + expected, flush=True)
