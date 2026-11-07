@@ -1,0 +1,24 @@
+{
+  "candidate_sha": "9786c51d72fb3f303dc62039268bde27c72a4e47",
+  "generation": "availability-lebron-season-v1-20261031",
+  "scope": "targeted",
+  "required_selection": [
+    "tests/cloud_composed_participation_stage_real_data.py",
+    "tests/test_k07_split_real_data.py"
+  ],
+  "required_test_limit": 100,
+  "selected": 13,
+  "executed": 13,
+  "passed": 12,
+  "skipped": 0,
+  "failed": 1,
+  "errors": 0,
+  "xfailed": 0,
+  "pytest_exit": 1,
+  "conclusion": "failure",
+  "problems": [
+    "pytest did not succeed (exit=1)",
+    "Every selected required test must execute and pass",
+    "Required tests contain skips, failures, errors, or expected failures"
+  ]
+}

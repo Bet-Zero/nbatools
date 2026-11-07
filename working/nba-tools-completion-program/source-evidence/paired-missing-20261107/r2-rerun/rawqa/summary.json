@@ -1,0 +1,146 @@
+{
+  "run_id": "composed-core",
+  "started_at": "2026-11-07T02:24:41.956549+00:00",
+  "completed_at": "2026-11-07T02:24:45.272109+00:00",
+  "corpus_path": "qa/raw_query_answer_corpus.yaml",
+  "slice_names": [],
+  "case_count": 8,
+  "result_status_counts": {
+    "no_result": 1,
+    "ok": 7
+  },
+  "category_counts": {
+    "participation_season_split": 4,
+    "qualified_pair_participation": 4
+  },
+  "route_counts": {
+    "game_finder": 1,
+    "player_game_finder": 1,
+    "player_split_summary": 2,
+    "team_record": 2,
+    "team_split_summary": 2
+  },
+  "manual_review_status_counts": {
+    "unreviewed": 8
+  },
+  "manual_review_tag_counts": {},
+  "answer_text_policy_counts": {
+    "<unspecified>": 7,
+    "no_answer_text_expected": 1
+  },
+  "answer_text_status_counts": {
+    "backend_answer_text_present": 1,
+    "missing_backend_answer_text": 5,
+    "no_answer_text_expected": 1,
+    "not_required": 1
+  },
+  "suspicious_flag_case_count": 5,
+  "suspicious_flag_case_ids": [
+    "k08_pair_missing_nonempty",
+    "k08_s4_team_with",
+    "k08_s4_team_without",
+    "k08_s4_player_with",
+    "k08_s4_player_without"
+  ],
+  "suspicious_flag_counts": {
+    "missing_backend_answer_text": 5
+  },
+  "informational_flag_case_count": 0,
+  "informational_flag_case_ids": [],
+  "informational_flag_counts": {},
+  "verified_outlier_case_count": 0,
+  "verified_outlier_case_ids": [],
+  "verified_outlier_counts": {},
+  "suggested_review_tag_counts": {
+    "backend_answer_text_required": 5
+  },
+  "expectation_case_counts": {
+    "pass": 8
+  },
+  "expectation_check_counts": {
+    "pass": 50
+  },
+  "failed_case_ids": [],
+  "slowest_cases": [
+    {
+      "id": "k08_pair_missing_nonempty",
+      "query": "Celtics record with Tatum and Brown missing in 2025-26",
+      "duration_seconds": 1.129643,
+      "result_status": "ok",
+      "route": "team_record"
+    },
+    {
+      "id": "k08_pair_missing_zero",
+      "query": "Lakers record with Davis and Reaves missing in 2023-24",
+      "duration_seconds": 0.54884,
+      "result_status": "no_result",
+      "route": "team_record"
+    },
+    {
+      "id": "k08_pair_missing_zero_count",
+      "query": "How many Lakers games with Davis and Reaves missing in 2023-24?",
+      "duration_seconds": 0.406032,
+      "result_status": "ok",
+      "route": "game_finder"
+    },
+    {
+      "id": "k08_s4_player_with",
+      "query": "Jaylen Brown stats vs Lakers with Jayson Tatum in 2023-24 and 2025-26",
+      "duration_seconds": 0.357389,
+      "result_status": "ok",
+      "route": "player_split_summary"
+    },
+    {
+      "id": "k08_s4_player_without",
+      "query": "Jaylen Brown stats vs Lakers without Jayson Tatum in 2023-24 and 2025-26",
+      "duration_seconds": 0.264934,
+      "result_status": "ok",
+      "route": "player_split_summary"
+    },
+    {
+      "id": "k08_s4_team_with",
+      "query": "Celtics record vs Lakers with Jayson Tatum in 2023-24 and 2025-26",
+      "duration_seconds": 0.24495,
+      "result_status": "ok",
+      "route": "team_split_summary"
+    },
+    {
+      "id": "k08_pair_missing_player_bound",
+      "query": "Austin Reaves games with 20 points with LeBron James and Anthony Davis missing against Boston in 2023-24",
+      "duration_seconds": 0.191595,
+      "result_status": "ok",
+      "route": "player_game_finder"
+    },
+    {
+      "id": "k08_s4_team_without",
+      "query": "Celtics record vs Lakers without Jayson Tatum in 2023-24 and 2025-26",
+      "duration_seconds": 0.172056,
+      "result_status": "ok",
+      "route": "team_split_summary"
+    }
+  ],
+  "output_file_paths": {
+    "report_jsonl": "outputs/required_data_validation/acquired_data/composed-participation-stage/rawqa/composed-core/report.jsonl",
+    "report_md": "outputs/required_data_validation/acquired_data/composed-participation-stage/rawqa/composed-core/report.md",
+    "summary_json": "outputs/required_data_validation/acquired_data/composed-participation-stage/rawqa/composed-core/summary.json",
+    "product_review_md": "outputs/required_data_validation/acquired_data/composed-participation-stage/rawqa/composed-core/product_review.md",
+    "product_review_json": "outputs/required_data_validation/acquired_data/composed-participation-stage/rawqa/composed-core/product_review.json"
+  },
+  "scope": "custom_selection",
+  "source_commit": "c88dab46e82b1d462bf2dec56f7fd9d9f1e2914a",
+  "source_tree_clean": true,
+  "data_generation": "legacy",
+  "corpus_sha256": "253041d1582fc55eb63f0ebde2eb86e93b9e9a1ecbc9cf9ded24c862c0833d23",
+  "case_ids": [
+    "k08_pair_missing_nonempty",
+    "k08_pair_missing_zero",
+    "k08_s4_team_with",
+    "k08_s4_team_without",
+    "k08_s4_player_with",
+    "k08_s4_player_without",
+    "k08_pair_missing_zero_count",
+    "k08_pair_missing_player_bound"
+  ],
+  "selected_cases_sha256": "fd539c9736b210740f580fe8e8d04813d1153338e96d50de54db91d6aead724c",
+  "output_sha256": "100470adb9197788ba2638e3ce8063ec06b99d45b1715aa692494f26d5964a9d"
+}

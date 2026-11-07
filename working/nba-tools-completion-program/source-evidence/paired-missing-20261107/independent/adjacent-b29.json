@@ -1,0 +1,71 @@
+[
+  {
+    "query": "Celtics record with Tatum and Brown missing and at least 111 points and Missing Player playing in 2025-26",
+    "status": "no_result",
+    "reason": "filter_not_supported",
+    "without": "Jayson Tatum and Jaylen Brown",
+    "summary": null,
+    "unsupported": [
+      "multi_player_availability"
+    ]
+  },
+  {
+    "query": "Celtics record with Tatum and Brown missing and at least 111 points and LeBron James in 2025-26",
+    "status": "ok",
+    "reason": null,
+    "without": "Jayson Tatum and Jaylen Brown",
+    "summary": [
+      {
+        "team_name": "Boston Celtics",
+        "season_start": "2025-26",
+        "season_end": "2025-26",
+        "season_type": "Regular Season",
+        "games": 5,
+        "wins": 5,
+        "losses": 0,
+        "win_pct": 1.0,
+        "pts_avg": 119.4,
+        "reb_avg": 49.6,
+        "ast_avg": 26.4,
+        "fg3m_avg": 17.6,
+        "stl_avg": 8.8,
+        "blk_avg": 5.8,
+        "tov_avg": 11.0,
+        "plus_minus_avg": 21.2,
+        "efg_pct_avg": 0.558,
+        "ts_pct_avg": 0.591
+      }
+    ],
+    "unsupported": []
+  },
+  {
+    "query": "Celtics record with and at least 111 points in 2025-26",
+    "status": "no_result",
+    "reason": "filter_not_supported",
+    "without": null,
+    "summary": null,
+    "unsupported": [
+      "unresolved_player_availability"
+    ]
+  },
+  {
+    "query": "Celtics record with Tatum and Brown out and at least 111 points in 2025-26",
+    "status": "no_result",
+    "reason": "filter_not_supported",
+    "without": "Jayson Tatum and Jaylen Brown",
+    "summary": null,
+    "unsupported": [
+      "multi_player_availability"
+    ]
+  },
+  {
+    "query": "Celtics record with Tatum and Brown not playing and at least 111 points in 2025-26",
+    "status": "no_result",
+    "reason": "filter_not_supported",
+    "without": "Jayson Tatum and Jaylen Brown",
+    "summary": null,
+    "unsupported": [
+      "multi_player_availability"
+    ]
+  }
+]

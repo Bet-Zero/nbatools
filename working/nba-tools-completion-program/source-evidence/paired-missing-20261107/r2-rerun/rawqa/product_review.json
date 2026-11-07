@@ -1,0 +1,2663 @@
+{
+  "run_id": "composed-core",
+  "scope": "custom_selection",
+  "corpus_path": "qa/raw_query_answer_corpus.yaml",
+  "case_count": 8,
+  "source_commit": "c88dab46e82b1d462bf2dec56f7fd9d9f1e2914a",
+  "source_tree_clean": true,
+  "corpus_sha256": "253041d1582fc55eb63f0ebde2eb86e93b9e9a1ecbc9cf9ded24c862c0833d23",
+  "case_ids": [
+    "k08_pair_missing_nonempty",
+    "k08_pair_missing_zero",
+    "k08_s4_team_with",
+    "k08_s4_team_without",
+    "k08_s4_player_with",
+    "k08_s4_player_without",
+    "k08_pair_missing_zero_count",
+    "k08_pair_missing_player_bound"
+  ],
+  "selected_cases_sha256": "fd539c9736b210740f580fe8e8d04813d1153338e96d50de54db91d6aead724c",
+  "output_sha256": "100470adb9197788ba2638e3ce8063ec06b99d45b1715aa692494f26d5964a9d",
+  "data_generation": "legacy",
+  "machine_regression": "pass",
+  "coverage_declaration": "missing_variants",
+  "review_declaration": "human_review_pending",
+  "review_closure": {
+    "state": "human_review_pending",
+    "notes": "The prior 127-case June 8 closure predated the current corpus and was not commit, content, output, generation, or reviewer bound. A new complete closure requires an exact retained review artifact and human certification."
+  },
+  "closure_integrity": {
+    "state": "not_declared",
+    "errors": []
+  },
+  "family_registry_surface": "public_query_acceptance",
+  "family_summary": [
+    {
+      "id": "player_stats_this_season",
+      "label": "Player stats this season",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do player-season fragments, sentences, and aliases stay on the player summary route?",
+        "Do unresolved player names fail cleanly without a broad summary?"
+      ]
+    },
+    {
+      "id": "team_records",
+      "label": "Team records",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do single-team record phrasings preserve location, season, opponent, conference, and division qualifiers?",
+        "Do matchup and no-subject division leaderboard siblings route intentionally while mixed conference-plus-division and playoff division siblings avoid broad fallback?"
+      ]
+    },
+    {
+      "id": "team_record_availability",
+      "label": "Team record with or without player",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do presence and absence wording stay on the team-record route?",
+        "Does compound or unresolved availability fail cleanly without a broad record?"
+      ]
+    },
+    {
+      "id": "player_summaries_recent_form",
+      "label": "Player summaries and recent form",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do recent-form and last-N phrases preserve player summary scope?",
+        "Do comparison siblings and unresolved player names avoid broad fallback?"
+      ]
+    },
+    {
+      "id": "leaderboards",
+      "label": "Leaderboards",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do stat aliases and filters remain attached to the requested leaderboard?",
+        "Do top-single-game and unsupported-stat siblings avoid default-points fallback?"
+      ]
+    },
+    {
+      "id": "top_single_game_performances",
+      "label": "Top single-game performances",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do single-game phrases remain distinct from per-game season leaderboards?",
+        "Do stat typos fail cleanly without falling back to scoring games?"
+      ]
+    },
+    {
+      "id": "count_queries",
+      "label": "Count queries",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do count fragments retain the requested player, event, and window?",
+        "Do unsupported broad-count and typo forms avoid unrelated answers?"
+      ]
+    },
+    {
+      "id": "game_finders",
+      "label": "Game finders",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do finder fragments and sentences retain all threshold and context filters?",
+        "Do empty samples and unresolved players avoid broad finder results?"
+      ]
+    },
+    {
+      "id": "splits",
+      "label": "Splits",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do player and team split qualifiers route to the intended split result?",
+        "Do unsupported role combinations and unresolved players fail cleanly?"
+      ]
+    },
+    {
+      "id": "streaks",
+      "label": "Streaks",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do longest/current streak phrases preserve thresholds and player scope?",
+        "Do subjective trend and typo forms avoid broad streak or finder fallback?"
+      ]
+    },
+    {
+      "id": "rolling_stretches",
+      "label": "Rolling stretches",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do rolling-window phrases preserve player, metric, and window size?",
+        "Do unsupported team and unresolved-player forms fail cleanly?"
+      ]
+    },
+    {
+      "id": "comparisons",
+      "label": "Comparisons",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do objective comparison phrases remain separate from subjective winner questions?",
+        "Do team, player, and matchup comparison siblings route intentionally?"
+      ]
+    },
+    {
+      "id": "playoff_history",
+      "label": "Playoff history",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do history, matchup, appearance, and round phrases preserve playoff scope?",
+        "Do opponent-quality siblings and unresolved teams avoid broad playoff fallback?"
+      ]
+    },
+    {
+      "id": "date_window_filters",
+      "label": "Date and window filters",
+      "public_surface": true,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do exact dates, month windows, relative windows, and date anchors stay attached?",
+        "Do malformed or unsupported anchors avoid full-scope fallback?"
+      ]
+    },
+    {
+      "id": "unsupported_subjective_narrative",
+      "label": "Unsupported subjective and narrative questions",
+      "public_surface": false,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do subjective and narrative questions decline cleanly?",
+        "Does wording variation avoid accidental leaderboard or summary fallback?"
+      ]
+    },
+    {
+      "id": "typo_partial_entity_behavior",
+      "label": "Typo and partial-entity guardrails",
+      "public_surface": false,
+      "case_count": 0,
+      "machine_pass_count": 0,
+      "machine_fail_count": 0,
+      "machine_status": "not_run",
+      "required_variants": [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial"
+      ],
+      "covered_variants": [],
+      "missing_variants": [
+        "short",
+        "typo_partial"
+      ],
+      "coverage_review": "missing_variants",
+      "human_review": "pending",
+      "human_review_source": "case_manual_review",
+      "representative_count": 0,
+      "public_accepted": false,
+      "coverage_questions": [
+        "Do unresolved entities fail clearly instead of widening query scope?",
+        "Which typo and partial-name forms should remain unsupported by product decision?"
+      ]
+    }
+  ],
+  "variant_checklist": [
+    {
+      "family": "player_stats_this_season",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_stats_this_season",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_stats_this_season",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_stats_this_season",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_stats_this_season",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_stats_this_season",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_stats_this_season",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_records",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_records",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_records",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_records",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_records",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_records",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_records",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_record_availability",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_record_availability",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_record_availability",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_record_availability",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_record_availability",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_record_availability",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "team_record_availability",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_summaries_recent_form",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_summaries_recent_form",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_summaries_recent_form",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_summaries_recent_form",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_summaries_recent_form",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_summaries_recent_form",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "player_summaries_recent_form",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "leaderboards",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "leaderboards",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "leaderboards",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "leaderboards",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "leaderboards",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "leaderboards",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "leaderboards",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "top_single_game_performances",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "top_single_game_performances",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "top_single_game_performances",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "top_single_game_performances",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "top_single_game_performances",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "top_single_game_performances",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "top_single_game_performances",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "count_queries",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "count_queries",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "count_queries",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "count_queries",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "count_queries",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "count_queries",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "count_queries",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "game_finders",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "game_finders",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "game_finders",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "game_finders",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "game_finders",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "game_finders",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "game_finders",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "splits",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "splits",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "splits",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "splits",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "splits",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "splits",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "splits",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "streaks",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "streaks",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "streaks",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "streaks",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "streaks",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "streaks",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "streaks",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "rolling_stretches",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "rolling_stretches",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "rolling_stretches",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "rolling_stretches",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "rolling_stretches",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "rolling_stretches",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "rolling_stretches",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "comparisons",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "comparisons",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "comparisons",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "comparisons",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "comparisons",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "comparisons",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "comparisons",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "playoff_history",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "playoff_history",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "playoff_history",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "playoff_history",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "playoff_history",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "playoff_history",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "playoff_history",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "date_window_filters",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "date_window_filters",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "date_window_filters",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "date_window_filters",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "date_window_filters",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "date_window_filters",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "date_window_filters",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "unsupported_subjective_narrative",
+      "variant": "canonical",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "unsupported_subjective_narrative",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "unsupported_subjective_narrative",
+      "variant": "sentence",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "unsupported_subjective_narrative",
+      "variant": "synonym",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "unsupported_subjective_narrative",
+      "variant": "inverse_sibling",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "unsupported_subjective_narrative",
+      "variant": "nearby_unsupported",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "unsupported_subjective_narrative",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "typo_partial_entity_behavior",
+      "variant": "canonical",
+      "state": "not_applicable",
+      "case_ids": [],
+      "reason": "Domain-specific typo guards belong to their owning feature families."
+    },
+    {
+      "family": "typo_partial_entity_behavior",
+      "variant": "short",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    },
+    {
+      "family": "typo_partial_entity_behavior",
+      "variant": "sentence",
+      "state": "not_applicable",
+      "case_ids": [],
+      "reason": "Domain-specific typo guards belong to their owning feature families."
+    },
+    {
+      "family": "typo_partial_entity_behavior",
+      "variant": "synonym",
+      "state": "not_applicable",
+      "case_ids": [],
+      "reason": "Domain-specific typo guards belong to their owning feature families."
+    },
+    {
+      "family": "typo_partial_entity_behavior",
+      "variant": "inverse_sibling",
+      "state": "not_applicable",
+      "case_ids": [],
+      "reason": "Domain-specific typo guards belong to their owning feature families."
+    },
+    {
+      "family": "typo_partial_entity_behavior",
+      "variant": "nearby_unsupported",
+      "state": "not_applicable",
+      "case_ids": [],
+      "reason": "Domain-specific typo guards belong to their owning feature families."
+    },
+    {
+      "family": "typo_partial_entity_behavior",
+      "variant": "typo_partial",
+      "state": "missing",
+      "case_ids": [],
+      "reason": ""
+    }
+  ],
+  "representative_rows": [],
+  "unsupported_no_broad_fallback_rows": [
+    {
+      "id": "k08_pair_missing_zero",
+      "query": "Lakers record with Davis and Reaves missing in 2023-24",
+      "family": null,
+      "concept": null,
+      "variant": null,
+      "review_role": null,
+      "sibling_of": null,
+      "expected_route": "team_record",
+      "expected_status": "no_result",
+      "expected_shape": null,
+      "route": "team_record",
+      "result_status": "no_result",
+      "shape_hint": "no_result",
+      "answer_text": null,
+      "answer_summary": "No answer rows returned; reason=no_match",
+      "applied_filters": [
+        {
+          "label": "Without player",
+          "value": "Anthony Davis and Austin Reaves",
+          "kind": "player"
+        }
+      ],
+      "section_summaries": {},
+      "query_output_snapshot": {
+        "query": "Lakers record with Davis and Reaves missing in 2023-24",
+        "status": {
+          "ok": false,
+          "route": "team_record",
+          "result_status": "no_result",
+          "result_reason": "no_match"
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "No answer returned.",
+            "source": "status"
+          },
+          "blocks": [
+            {
+              "type": "message",
+              "title": "No result",
+              "lines": [
+                "No answer rows returned; reason=no_match."
+              ]
+            }
+          ]
+        }
+      },
+      "expectation_status": "pass",
+      "manual_review": {
+        "status": "unreviewed",
+        "tags": [],
+        "notes": ""
+      },
+      "suspicious_flags": []
+    }
+  ],
+  "product_decisions": [],
+  "suspicious_rows": [
+    {
+      "id": "k08_pair_missing_nonempty",
+      "query": "Celtics record with Tatum and Brown missing in 2025-26",
+      "family": null,
+      "concept": null,
+      "variant": null,
+      "review_role": null,
+      "sibling_of": null,
+      "expected_route": "team_record",
+      "expected_status": "ok",
+      "expected_shape": null,
+      "route": "team_record",
+      "result_status": "ok",
+      "shape_hint": "team_record",
+      "answer_text": null,
+      "answer_summary": "Boston Celtics -- 7-1 over 8 games, 112.25 PPG, 51.125 RPG, 26.125 APG, Regular Season",
+      "applied_filters": [
+        {
+          "label": "Without player",
+          "value": "Jayson Tatum and Jaylen Brown",
+          "kind": "player"
+        }
+      ],
+      "section_summaries": {
+        "summary": {
+          "row_count": 1,
+          "columns": [
+            "team_name",
+            "season_start",
+            "season_end",
+            "season_type",
+            "games",
+            "wins",
+            "losses",
+            "win_pct",
+            "pts_avg",
+            "reb_avg",
+            "ast_avg",
+            "fg3m_avg",
+            "stl_avg",
+            "blk_avg",
+            "tov_avg",
+            "plus_minus_avg",
+            "efg_pct_avg",
+            "ts_pct_avg"
+          ],
+          "top_rows": [
+            {
+              "team_name": "Boston Celtics",
+              "season_start": "2025-26",
+              "season_end": "2025-26",
+              "season_type": "Regular Season",
+              "games": 8,
+              "wins": 7,
+              "losses": 1,
+              "win_pct": 0.875,
+              "pts_avg": 112.25,
+              "reb_avg": 51.125,
+              "ast_avg": 26.125,
+              "fg3m_avg": 16.25,
+              "stl_avg": 8.0,
+              "blk_avg": 5.375,
+              "tov_avg": 10.625,
+              "plus_minus_avg": 18.375,
+              "efg_pct_avg": 0.538,
+              "ts_pct_avg": 0.565
+            }
+          ],
+          "summary_row": {
+            "team_name": "Boston Celtics",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "games": 8,
+            "wins": 7,
+            "losses": 1,
+            "win_pct": 0.875,
+            "pts_avg": 112.25,
+            "reb_avg": 51.125,
+            "ast_avg": 26.125,
+            "fg3m_avg": 16.25,
+            "stl_avg": 8.0,
+            "blk_avg": 5.375,
+            "tov_avg": 10.625,
+            "plus_minus_avg": 18.375,
+            "efg_pct_avg": 0.538,
+            "ts_pct_avg": 0.565
+          }
+        },
+        "by_season": {
+          "row_count": 1,
+          "columns": [
+            "season",
+            "games",
+            "wins",
+            "losses",
+            "pts_avg",
+            "reb_avg",
+            "ast_avg",
+            "fg3m_avg",
+            "tov_avg",
+            "plus_minus_avg",
+            "efg_pct_avg",
+            "ts_pct_avg",
+            "win_pct"
+          ],
+          "top_rows": [
+            {
+              "season": "2025-26",
+              "games": 8,
+              "wins": 7,
+              "losses": 1,
+              "pts_avg": 112.25,
+              "reb_avg": 51.125,
+              "ast_avg": 26.125,
+              "fg3m_avg": 16.25,
+              "tov_avg": 10.625,
+              "plus_minus_avg": 18.375,
+              "efg_pct_avg": 0.538,
+              "ts_pct_avg": 0.565,
+              "win_pct": 0.875
+            }
+          ]
+        },
+        "game_log": {
+          "row_count": 8,
+          "columns": [
+            "game_date",
+            "game_id",
+            "season",
+            "season_type",
+            "team_id",
+            "team_abbr",
+            "team_name",
+            "opponent_team_id",
+            "opponent_team_abbr",
+            "opponent_team_name",
+            "is_home",
+            "is_away",
+            "wl",
+            "pts",
+            "reb",
+            "ast",
+            "fgm",
+            "fga",
+            "fg3m",
+            "fg3a",
+            "ftm",
+            "fta",
+            "oreb",
+            "dreb",
+            "stl",
+            "blk",
+            "tov",
+            "plus_minus",
+            "fg_pct",
+            "fg3_pct",
+            "ft_pct",
+            "efg_pct",
+            "ts_pct",
+            "opponent_pts"
+          ],
+          "top_rows": [
+            {
+              "game_date": "2025-12-04",
+              "game_id": 22500334,
+              "season": "2025-26",
+              "season_type": "Regular Season",
+              "team_id": 1610612738,
+              "team_abbr": "BOS",
+              "team_name": "Boston Celtics",
+              "opponent_team_id": 1610612764,
+              "opponent_team_abbr": "WAS",
+              "opponent_team_name": "Washington Wizards",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "W",
+              "pts": 146,
+              "reb": 46,
+              "ast": 35,
+              "fgm": 54,
+              "fga": 99,
+              "fg3m": 20,
+              "fg3a": 47,
+              "ftm": 18,
+              "fta": 21,
+              "oreb": 15,
+              "dreb": 31,
+              "stl": 14,
+              "blk": 8,
+              "tov": 9,
+              "plus_minus": 45,
+              "fg_pct": 0.545,
+              "fg3_pct": 0.426,
+              "ft_pct": 0.857,
+              "efg_pct": 0.6464646464646465,
+              "ts_pct": 0.6744271988174427,
+              "opponent_pts": 101
+            },
+            {
+              "game_date": "2025-12-20",
+              "game_id": 22500388,
+              "season": "2025-26",
+              "season_type": "Regular Season",
+              "team_id": 1610612738,
+              "team_abbr": "BOS",
+              "team_name": "Boston Celtics",
+              "opponent_team_id": 1610612761,
+              "opponent_team_abbr": "TOR",
+              "opponent_team_name": "Toronto Raptors",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "W",
+              "pts": 112,
+              "reb": 55,
+              "ast": 22,
+              "fgm": 44,
+              "fga": 95,
+              "fg3m": 12,
+              "fg3a": 39,
+              "ftm": 12,
+              "fta": 15,
+              "oreb": 17,
+              "dreb": 38,
+              "stl": 7,
+              "blk": 4,
+              "tov": 9,
+              "plus_minus": 16,
+              "fg_pct": 0.463,
+              "fg3_pct": 0.308,
+              "ft_pct": 0.8,
+              "efg_pct": 0.5263157894736842,
+              "ts_pct": 0.5511811023622047,
+              "opponent_pts": 96
+            },
+            {
+              "game_date": "2026-01-12",
+              "game_id": 22500559,
+              "season": "2025-26",
+              "season_type": "Regular Season",
+              "team_id": 1610612738,
+              "team_abbr": "BOS",
+              "team_name": "Boston Celtics",
+              "opponent_team_id": 1610612754,
+              "opponent_team_abbr": "IND",
+              "opponent_team_name": "Indiana Pacers",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "L",
+              "pts": 96,
+              "reb": 46,
+              "ast": 22,
+              "fgm": 40,
+              "fga": 88,
+              "fg3m": 9,
+              "fg3a": 35,
+              "ftm": 7,
+              "fta": 9,
+              "oreb": 10,
+              "dreb": 36,
+              "stl": 9,
+              "blk": 1,
+              "tov": 12,
+              "plus_minus": -2,
+              "fg_pct": 0.455,
+              "fg3_pct": 0.257,
+              "ft_pct": 0.778,
+              "efg_pct": 0.5056818181818182,
+              "ts_pct": 0.5219660722053067,
+              "opponent_pts": 98
+            }
+          ]
+        }
+      },
+      "query_output_snapshot": {
+        "query": "Celtics record with Tatum and Brown missing in 2025-26",
+        "status": {
+          "ok": true,
+          "route": "team_record",
+          "result_status": "ok",
+          "result_reason": null
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "The Boston Celtics are 7-1 in 2025-26 Regular Season, a 87.5% win rate.",
+            "source": "ResultHero"
+          },
+          "blocks": [
+            {
+              "type": "hero_card",
+              "title": "Team Record",
+              "lines": [
+                "Record: 7-1",
+                "Games: 8",
+                "Win %: 87.5%",
+                "PPG: 112.2",
+                "+/-: 18.4"
+              ],
+              "subject": "Boston Celtics",
+              "mode": "Team record",
+              "section_key": "summary",
+              "filters": [
+                "Without player: Jayson Tatum and Jaylen Brown"
+              ]
+            },
+            {
+              "type": "table",
+              "title": "Team record",
+              "table_type": "record_summary",
+              "column_schema": "team_record_summary_default",
+              "subject": "Boston Celtics",
+              "mode": "Team record",
+              "section_key": "summary",
+              "filters": [
+                "Without player: Jayson Tatum and Jaylen Brown"
+              ],
+              "row_count": 1,
+              "visible_columns": [
+                "Team",
+                "W-L",
+                "Games",
+                "Win %",
+                "PPG",
+                "+/-"
+              ],
+              "rows": [
+                [
+                  "Boston Celtics",
+                  "7-1",
+                  "8",
+                  "87.5%",
+                  "112.2",
+                  "18.4"
+                ]
+              ],
+              "collapsed": false,
+              "collapsed_label": null
+            },
+            {
+              "type": "detail_table",
+              "title": "Game Detail",
+              "table_type": "team_game_log",
+              "column_schema": "team_game_log_default",
+              "subject": "Boston Celtics",
+              "mode": "Team game log",
+              "section_key": "game_log",
+              "filters": [
+                "Without player: Jayson Tatum and Jaylen Brown"
+              ],
+              "row_count": 8,
+              "visible_columns": [
+                "#",
+                "Date",
+                "Team",
+                "",
+                "Opp",
+                "Score",
+                "W/L",
+                "PTS",
+                "Opp PTS",
+                "Margin",
+                "REB",
+                "AST",
+                "3PM",
+                "FG",
+                "3P",
+                "FT",
+                "TOV",
+                "STL",
+                "BLK",
+                "oreb",
+                "dreb"
+              ],
+              "rows": [
+                [
+                  "1",
+                  "Dec 4",
+                  "BOS",
+                  "",
+                  "WAS",
+                  "146-101",
+                  "W",
+                  "146",
+                  "101",
+                  "—",
+                  "46",
+                  "35",
+                  "20",
+                  "—",
+                  "—",
+                  "—",
+                  "9",
+                  "14",
+                  "8",
+                  "15",
+                  "31"
+                ],
+                [
+                  "2",
+                  "Dec 20",
+                  "BOS",
+                  "",
+                  "TOR",
+                  "112-96",
+                  "W",
+                  "112",
+                  "96",
+                  "—",
+                  "55",
+                  "22",
+                  "12",
+                  "—",
+                  "—",
+                  "—",
+                  "9",
+                  "7",
+                  "4",
+                  "17",
+                  "38"
+                ],
+                [
+                  "3",
+                  "Jan 12",
+                  "BOS",
+                  "",
+                  "IND",
+                  "96-98",
+                  "L",
+                  "96",
+                  "98",
+                  "—",
+                  "46",
+                  "22",
+                  "9",
+                  "—",
+                  "—",
+                  "—",
+                  "12",
+                  "9",
+                  "1",
+                  "10",
+                  "36"
+                ]
+              ],
+              "collapsed": true,
+              "collapsed_label": "Show game detail"
+            }
+          ]
+        }
+      },
+      "expectation_status": "pass",
+      "manual_review": {
+        "status": "unreviewed",
+        "tags": [],
+        "notes": ""
+      },
+      "suspicious_flags": [
+        {
+          "id": "missing_backend_answer_text",
+          "message": "P0/P1 summary-style result has no backend answer text.",
+          "details": {
+            "route": "team_record",
+            "query_class": "summary",
+            "answer_text_policy": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "k08_s4_team_with",
+      "query": "Celtics record vs Lakers with Jayson Tatum in 2023-24 and 2025-26",
+      "family": null,
+      "concept": null,
+      "variant": null,
+      "review_role": null,
+      "sibling_of": null,
+      "expected_route": "team_split_summary",
+      "expected_status": "ok",
+      "expected_shape": null,
+      "route": "team_split_summary",
+      "result_status": "ok",
+      "shape_hint": "entity_summary",
+      "answer_text": null,
+      "answer_summary": "Boston Celtics -- Regular Season",
+      "applied_filters": [
+        {
+          "label": "Opponent",
+          "value": "LAL",
+          "kind": "team"
+        },
+        {
+          "label": "With player",
+          "value": "Jayson Tatum",
+          "kind": "player"
+        },
+        {
+          "label": "Seasons",
+          "value": "2023-24, 2025-26",
+          "kind": "season"
+        }
+      ],
+      "section_summaries": {
+        "summary": {
+          "row_count": 1,
+          "columns": [
+            "team_name",
+            "season_start",
+            "season_end",
+            "season_type",
+            "split",
+            "games_total"
+          ],
+          "top_rows": [
+            {
+              "team_name": "Boston Celtics",
+              "season_start": "2023-24",
+              "season_end": "2023-24",
+              "season_type": "Regular Season",
+              "split": "season",
+              "games_total": 2
+            }
+          ],
+          "summary_row": {
+            "team_name": "Boston Celtics",
+            "season_start": "2023-24",
+            "season_end": "2023-24",
+            "season_type": "Regular Season",
+            "split": "season",
+            "games_total": 2
+          }
+        },
+        "split_comparison": {
+          "row_count": 1,
+          "columns": [
+            "bucket",
+            "games",
+            "wins",
+            "losses",
+            "win_pct",
+            "pts_avg",
+            "reb_avg",
+            "ast_avg",
+            "stl_avg",
+            "blk_avg",
+            "fg3m_avg",
+            "tov_avg",
+            "plus_minus_avg",
+            "efg_pct_avg",
+            "ts_pct_avg"
+          ],
+          "top_rows": [
+            {
+              "bucket": "2023-24",
+              "games": 2,
+              "wins": 1,
+              "losses": 1,
+              "win_pct": 0.5,
+              "pts_avg": 115.5,
+              "reb_avg": 49.0,
+              "ast_avg": 30.5,
+              "stl_avg": 6.0,
+              "blk_avg": 9.5,
+              "fg3m_avg": 14.5,
+              "tov_avg": 11.5,
+              "plus_minus_avg": 1.0,
+              "efg_pct_avg": 0.54,
+              "ts_pct_avg": 0.568
+            }
+          ]
+        }
+      },
+      "query_output_snapshot": {
+        "query": "Celtics record vs Lakers with Jayson Tatum in 2023-24 and 2025-26",
+        "status": {
+          "ok": true,
+          "route": "team_split_summary",
+          "result_status": "ok",
+          "result_reason": null
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "Boston Celtics",
+            "source": "snapshot_summary"
+          },
+          "blocks": [
+            {
+              "type": "table",
+              "title": "Split Comparison",
+              "table_type": "split_comparison",
+              "column_schema": "split_comparison_default",
+              "subject": null,
+              "mode": "team split",
+              "section_key": "split_comparison",
+              "filters": [],
+              "row_count": 1,
+              "visible_columns": [
+                "Games",
+                "Wins",
+                "Losses",
+                "Win Pct",
+                "Pts Avg",
+                "Reb Avg",
+                "Ast Avg",
+                "Bucket",
+                "Stl Avg",
+                "Blk Avg"
+              ],
+              "rows": [
+                [
+                  "2",
+                  "1",
+                  "1",
+                  "50.0%",
+                  "115.5",
+                  "49.0",
+                  "30.5",
+                  "2023-24",
+                  "6.0",
+                  "9.5"
+                ]
+              ],
+              "collapsed": false,
+              "collapsed_label": null
+            }
+          ]
+        }
+      },
+      "expectation_status": "pass",
+      "manual_review": {
+        "status": "unreviewed",
+        "tags": [],
+        "notes": ""
+      },
+      "suspicious_flags": [
+        {
+          "id": "missing_backend_answer_text",
+          "message": "P0/P1 summary-style result has no backend answer text.",
+          "details": {
+            "route": "team_split_summary",
+            "query_class": "split_summary",
+            "answer_text_policy": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "k08_s4_team_without",
+      "query": "Celtics record vs Lakers without Jayson Tatum in 2023-24 and 2025-26",
+      "family": null,
+      "concept": null,
+      "variant": null,
+      "review_role": null,
+      "sibling_of": null,
+      "expected_route": "team_split_summary",
+      "expected_status": "ok",
+      "expected_shape": null,
+      "route": "team_split_summary",
+      "result_status": "ok",
+      "shape_hint": "entity_summary",
+      "answer_text": null,
+      "answer_summary": "Boston Celtics -- Regular Season",
+      "applied_filters": [
+        {
+          "label": "Opponent",
+          "value": "LAL",
+          "kind": "team"
+        },
+        {
+          "label": "Without player",
+          "value": "Jayson Tatum",
+          "kind": "player"
+        },
+        {
+          "label": "Seasons",
+          "value": "2023-24, 2025-26",
+          "kind": "season"
+        }
+      ],
+      "section_summaries": {
+        "summary": {
+          "row_count": 1,
+          "columns": [
+            "team_name",
+            "season_start",
+            "season_end",
+            "season_type",
+            "split",
+            "games_total"
+          ],
+          "top_rows": [
+            {
+              "team_name": "Boston Celtics",
+              "season_start": "2025-26",
+              "season_end": "2025-26",
+              "season_type": "Regular Season",
+              "split": "season",
+              "games_total": 2
+            }
+          ],
+          "summary_row": {
+            "team_name": "Boston Celtics",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "split": "season",
+            "games_total": 2
+          }
+        },
+        "split_comparison": {
+          "row_count": 1,
+          "columns": [
+            "bucket",
+            "games",
+            "wins",
+            "losses",
+            "win_pct",
+            "pts_avg",
+            "reb_avg",
+            "ast_avg",
+            "stl_avg",
+            "blk_avg",
+            "fg3m_avg",
+            "tov_avg",
+            "plus_minus_avg",
+            "efg_pct_avg",
+            "ts_pct_avg"
+          ],
+          "top_rows": [
+            {
+              "bucket": "2025-26",
+              "games": 2,
+              "wins": 2,
+              "losses": 0,
+              "win_pct": 1.0,
+              "pts_avg": 118.5,
+              "reb_avg": 44.0,
+              "ast_avg": 30.0,
+              "stl_avg": 7.5,
+              "blk_avg": 5.0,
+              "fg3m_avg": 19.0,
+              "tov_avg": 14.0,
+              "plus_minus_avg": 21.5,
+              "efg_pct_avg": 0.629,
+              "ts_pct_avg": 0.653
+            }
+          ]
+        }
+      },
+      "query_output_snapshot": {
+        "query": "Celtics record vs Lakers without Jayson Tatum in 2023-24 and 2025-26",
+        "status": {
+          "ok": true,
+          "route": "team_split_summary",
+          "result_status": "ok",
+          "result_reason": null
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "Boston Celtics",
+            "source": "snapshot_summary"
+          },
+          "blocks": [
+            {
+              "type": "table",
+              "title": "Split Comparison",
+              "table_type": "split_comparison",
+              "column_schema": "split_comparison_default",
+              "subject": null,
+              "mode": "team split",
+              "section_key": "split_comparison",
+              "filters": [],
+              "row_count": 1,
+              "visible_columns": [
+                "Games",
+                "Wins",
+                "Losses",
+                "Win Pct",
+                "Pts Avg",
+                "Reb Avg",
+                "Ast Avg",
+                "Bucket",
+                "Stl Avg",
+                "Blk Avg"
+              ],
+              "rows": [
+                [
+                  "2",
+                  "2",
+                  "0",
+                  "100.0%",
+                  "118.5",
+                  "44.0",
+                  "30.0",
+                  "2025-26",
+                  "7.5",
+                  "5.0"
+                ]
+              ],
+              "collapsed": false,
+              "collapsed_label": null
+            }
+          ]
+        }
+      },
+      "expectation_status": "pass",
+      "manual_review": {
+        "status": "unreviewed",
+        "tags": [],
+        "notes": ""
+      },
+      "suspicious_flags": [
+        {
+          "id": "missing_backend_answer_text",
+          "message": "P0/P1 summary-style result has no backend answer text.",
+          "details": {
+            "route": "team_split_summary",
+            "query_class": "split_summary",
+            "answer_text_policy": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "k08_s4_player_with",
+      "query": "Jaylen Brown stats vs Lakers with Jayson Tatum in 2023-24 and 2025-26",
+      "family": null,
+      "concept": null,
+      "variant": null,
+      "review_role": null,
+      "sibling_of": null,
+      "expected_route": "player_split_summary",
+      "expected_status": "ok",
+      "expected_shape": null,
+      "route": "player_split_summary",
+      "result_status": "ok",
+      "shape_hint": "entity_summary",
+      "answer_text": null,
+      "answer_summary": "Jaylen Brown -- Regular Season",
+      "applied_filters": [
+        {
+          "label": "Opponent",
+          "value": "LAL",
+          "kind": "team"
+        },
+        {
+          "label": "With player",
+          "value": "Jayson Tatum",
+          "kind": "player"
+        },
+        {
+          "label": "Seasons",
+          "value": "2023-24, 2025-26",
+          "kind": "season"
+        }
+      ],
+      "section_summaries": {
+        "summary": {
+          "row_count": 1,
+          "columns": [
+            "player_name",
+            "season_start",
+            "season_end",
+            "season_type",
+            "split",
+            "games_total"
+          ],
+          "top_rows": [
+            {
+              "player_name": "Jaylen Brown",
+              "season_start": "2023-24",
+              "season_end": "2023-24",
+              "season_type": "Regular Season",
+              "split": "season",
+              "games_total": 2
+            }
+          ],
+          "summary_row": {
+            "player_name": "Jaylen Brown",
+            "season_start": "2023-24",
+            "season_end": "2023-24",
+            "season_type": "Regular Season",
+            "split": "season",
+            "games_total": 2
+          }
+        },
+        "split_comparison": {
+          "row_count": 1,
+          "columns": [
+            "bucket",
+            "games",
+            "wins",
+            "losses",
+            "win_pct",
+            "minutes_avg",
+            "pts_avg",
+            "reb_avg",
+            "ast_avg",
+            "stl_avg",
+            "blk_avg",
+            "fg3m_avg",
+            "plus_minus_avg",
+            "efg_pct_avg",
+            "ts_pct_avg",
+            "usg_pct_avg",
+            "ast_pct_avg",
+            "reb_pct_avg",
+            "tov_pct_avg"
+          ],
+          "top_rows": [
+            {
+              "bucket": "2023-24",
+              "games": 2,
+              "wins": 1,
+              "losses": 1,
+              "win_pct": 0.5,
+              "minutes_avg": 30.0,
+              "pts_avg": 13.5,
+              "reb_avg": 6.5,
+              "ast_avg": 4.5,
+              "stl_avg": 2.0,
+              "blk_avg": 0.0,
+              "fg3m_avg": 0.5,
+              "plus_minus_avg": -5.5,
+              "efg_pct_avg": 0.397,
+              "ts_pct_avg": 0.421,
+              "usg_pct_avg": 26.205,
+              "ast_pct_avg": 20.749,
+              "reb_pct_avg": 10.777,
+              "tov_pct_avg": 13.484
+            }
+          ]
+        }
+      },
+      "query_output_snapshot": {
+        "query": "Jaylen Brown stats vs Lakers with Jayson Tatum in 2023-24 and 2025-26",
+        "status": {
+          "ok": true,
+          "route": "player_split_summary",
+          "result_status": "ok",
+          "result_reason": null
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "Jaylen Brown",
+            "source": "snapshot_summary"
+          },
+          "blocks": [
+            {
+              "type": "table",
+              "title": "Split Comparison",
+              "table_type": "split_comparison",
+              "column_schema": "split_comparison_default",
+              "subject": null,
+              "mode": "player split",
+              "section_key": "split_comparison",
+              "filters": [],
+              "row_count": 1,
+              "visible_columns": [
+                "Games",
+                "Wins",
+                "Losses",
+                "Win Pct",
+                "Pts Avg",
+                "Reb Avg",
+                "Ast Avg",
+                "Bucket",
+                "Minutes Avg",
+                "Stl Avg"
+              ],
+              "rows": [
+                [
+                  "2",
+                  "1",
+                  "1",
+                  "50.0%",
+                  "13.5",
+                  "6.5",
+                  "4.5",
+                  "2023-24",
+                  "30.0",
+                  "2.0"
+                ]
+              ],
+              "collapsed": false,
+              "collapsed_label": null
+            }
+          ]
+        }
+      },
+      "expectation_status": "pass",
+      "manual_review": {
+        "status": "unreviewed",
+        "tags": [],
+        "notes": ""
+      },
+      "suspicious_flags": [
+        {
+          "id": "missing_backend_answer_text",
+          "message": "P0/P1 summary-style result has no backend answer text.",
+          "details": {
+            "route": "player_split_summary",
+            "query_class": "split_summary",
+            "answer_text_policy": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "k08_s4_player_without",
+      "query": "Jaylen Brown stats vs Lakers without Jayson Tatum in 2023-24 and 2025-26",
+      "family": null,
+      "concept": null,
+      "variant": null,
+      "review_role": null,
+      "sibling_of": null,
+      "expected_route": "player_split_summary",
+      "expected_status": "ok",
+      "expected_shape": null,
+      "route": "player_split_summary",
+      "result_status": "ok",
+      "shape_hint": "entity_summary",
+      "answer_text": null,
+      "answer_summary": "Jaylen Brown -- Regular Season",
+      "applied_filters": [
+        {
+          "label": "Opponent",
+          "value": "LAL",
+          "kind": "team"
+        },
+        {
+          "label": "Without player",
+          "value": "Jayson Tatum",
+          "kind": "player"
+        },
+        {
+          "label": "Seasons",
+          "value": "2023-24, 2025-26",
+          "kind": "season"
+        }
+      ],
+      "section_summaries": {
+        "summary": {
+          "row_count": 1,
+          "columns": [
+            "player_name",
+            "season_start",
+            "season_end",
+            "season_type",
+            "split",
+            "games_total"
+          ],
+          "top_rows": [
+            {
+              "player_name": "Jaylen Brown",
+              "season_start": "2025-26",
+              "season_end": "2025-26",
+              "season_type": "Regular Season",
+              "split": "season",
+              "games_total": 2
+            }
+          ],
+          "summary_row": {
+            "player_name": "Jaylen Brown",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "split": "season",
+            "games_total": 2
+          }
+        },
+        "split_comparison": {
+          "row_count": 1,
+          "columns": [
+            "bucket",
+            "games",
+            "wins",
+            "losses",
+            "win_pct",
+            "minutes_avg",
+            "pts_avg",
+            "reb_avg",
+            "ast_avg",
+            "stl_avg",
+            "blk_avg",
+            "fg3m_avg",
+            "plus_minus_avg",
+            "efg_pct_avg",
+            "ts_pct_avg",
+            "usg_pct_avg",
+            "ast_pct_avg",
+            "reb_pct_avg",
+            "tov_pct_avg"
+          ],
+          "top_rows": [
+            {
+              "bucket": "2025-26",
+              "games": 2,
+              "wins": 2,
+              "losses": 0,
+              "win_pct": 1.0,
+              "minutes_avg": 35.0,
+              "pts_avg": 31.0,
+              "reb_avg": 8.0,
+              "ast_avg": 7.5,
+              "stl_avg": 2.0,
+              "blk_avg": 0.0,
+              "fg3m_avg": 3.0,
+              "plus_minus_avg": 15.0,
+              "efg_pct_avg": 0.46,
+              "ts_pct_avg": 0.523,
+              "usg_pct_avg": 43.829,
+              "ast_pct_avg": 34.907,
+              "reb_pct_avg": 13.489,
+              "tov_pct_avg": 11.898
+            }
+          ]
+        }
+      },
+      "query_output_snapshot": {
+        "query": "Jaylen Brown stats vs Lakers without Jayson Tatum in 2023-24 and 2025-26",
+        "status": {
+          "ok": true,
+          "route": "player_split_summary",
+          "result_status": "ok",
+          "result_reason": null
+        },
+        "rendered_output": {
+          "answer": {
+            "text": "Jaylen Brown",
+            "source": "snapshot_summary"
+          },
+          "blocks": [
+            {
+              "type": "table",
+              "title": "Split Comparison",
+              "table_type": "split_comparison",
+              "column_schema": "split_comparison_default",
+              "subject": null,
+              "mode": "player split",
+              "section_key": "split_comparison",
+              "filters": [],
+              "row_count": 1,
+              "visible_columns": [
+                "Games",
+                "Wins",
+                "Losses",
+                "Win Pct",
+                "Pts Avg",
+                "Reb Avg",
+                "Ast Avg",
+                "Bucket",
+                "Minutes Avg",
+                "Stl Avg"
+              ],
+              "rows": [
+                [
+                  "2",
+                  "2",
+                  "0",
+                  "100.0%",
+                  "31.0",
+                  "8.0",
+                  "7.5",
+                  "2025-26",
+                  "35.0",
+                  "2.0"
+                ]
+              ],
+              "collapsed": false,
+              "collapsed_label": null
+            }
+          ]
+        }
+      },
+      "expectation_status": "pass",
+      "manual_review": {
+        "status": "unreviewed",
+        "tags": [],
+        "notes": ""
+      },
+      "suspicious_flags": [
+        {
+          "id": "missing_backend_answer_text",
+          "message": "P0/P1 summary-style result has no backend answer text.",
+          "details": {
+            "route": "player_split_summary",
+            "query_class": "split_summary",
+            "answer_text_policy": null
+          }
+        }
+      ]
+    }
+  ]
+}

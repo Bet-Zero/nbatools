@@ -1,0 +1,23 @@
+{
+  "Core_rows_retained": [
+    "K01",
+    "K02",
+    "K03",
+    "K04",
+    "K05",
+    "K06",
+    "K07",
+    "K08",
+    "K09",
+    "K10",
+    "K11",
+    "K12"
+  ],
+  "only_updated_rows": [
+    "K07",
+    "K08"
+  ],
+  "historical_baseline_sha256": "433f49eb4467401184f15231e0d80520a9d8bef44eb81c5bb4b3988f9f916bfd",
+  "original46_canonical_ids_sha256": "acc3d675811c80641aec64d60d76e90f7e6d8eb4dba66904fef5eff616cc1f96",
+  "source_runtime_preserved_in_finalization": true
+}

@@ -1,0 +1,19 @@
+{
+  "candidate_sha": "2e66a484d19ab5d4efc51516103722c3439f27e5",
+  "generation": "availability-lebron-season-v1-20261031",
+  "scope": "targeted",
+  "required_selection": [
+    "tests/cloud_composed_participation_stage_real_data.py"
+  ],
+  "required_test_limit": 100,
+  "selected": 1,
+  "executed": 1,
+  "passed": 1,
+  "skipped": 0,
+  "failed": 0,
+  "errors": 0,
+  "xfailed": 0,
+  "pytest_exit": 0,
+  "conclusion": "success",
+  "problems": []
+}

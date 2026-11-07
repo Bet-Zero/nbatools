@@ -1,0 +1,30 @@
+{
+  "classification": "Independent finiteS4team newintegration only; Brown2023 exactraw pendingactualR2; no reacquisition",
+  "revision": "6b203c3230a799a098721844b8bfbd80c0b3fb9e",
+  "checks": [
+    {
+      "S4_requested_coverage": "missing",
+      "passed": true,
+      "status": "no_result",
+      "reason": "unsupported"
+    },
+    {
+      "S4_requested_coverage": "unknown",
+      "passed": true,
+      "status": "no_result",
+      "reason": "unsupported"
+    }
+  ],
+  "failures": [
+    {
+      "query": "Celtics record vs Lakers with Jayson Tatum in 2023-24 and 2025-26",
+      "error": "AssertionError()"
+    },
+    {
+      "query": "Celtics record vs Lakers without Jayson Tatum in 2023-24 and 2025-26",
+      "error": "AssertionError()"
+    }
+  ],
+  "calls": 10,
+  "excluded_middle_season_file_present": false
+}

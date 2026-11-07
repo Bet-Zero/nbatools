@@ -1,0 +1,33 @@
+INFO:     Started server process [37926]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8031 (Press CTRL+C to quit)
+INFO:     127.0.0.1:45984 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45984 - "GET /assets/index-DKHMgHZ2.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45990 - "GET /assets/index-Bl6BAKFx.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46000 - "GET /assets/rolldown-runtime-BHe-jwch.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45990 - "GET /favicon.svg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:45984 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45984 - "GET /freshness HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45984 - "POST /query HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45984 - "POST /query HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45984 - "POST /query HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45984 - "POST /query HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55626 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55626 - "GET /assets/index-DKHMgHZ2.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55638 - "GET /assets/index-Bl6BAKFx.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55644 - "GET /assets/rolldown-runtime-BHe-jwch.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55626 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55626 - "GET /freshness HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55626 - "POST /query HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55626 - "POST /query HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55626 - "POST /query HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55626 - "POST /query HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35538 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35538 - "GET /assets/index-DKHMgHZ2.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35552 - "GET /assets/index-Bl6BAKFx.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35564 - "GET /assets/rolldown-runtime-BHe-jwch.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35538 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35538 - "GET /favicon.svg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:35538 - "GET /freshness HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35538 - "POST /query HTTP/1.1" 200 OK

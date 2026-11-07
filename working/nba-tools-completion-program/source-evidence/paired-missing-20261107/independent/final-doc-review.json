@@ -1,0 +1,21 @@
+{
+  "verdict": "APPROVED_CURRENT_RESUME_AND_AFFECTED_STATUS_CLOSEOUT_FINAL_CI_PENDING",
+  "reviewed_runtime_and_executable_inputs": "5418dce32a69477853c05ef6fec83490c0d9a0d5",
+  "actual_current_HEAD": "5418dce32a69477853c05ef6fec83490c0d9a0d5",
+  "README_sha256": "91f4806f16898330884c6aa8150bf7a0353346d1ba6be3e4cf59a97f9832c924",
+  "evidence_README_sha256": "fd8ce95dd6f6c4c64df13bd27100d1b2a39b4f979d64d13a5025792c0be3c46a",
+  "affected_delta_sha256": "ed07c9632ea24330ff2eec50625df5c0734645fe2ea03d1a7832a5d3b9bb1ca9",
+  "all12rows_preserved": true,
+  "unchanged_other10rows_exact_vs_PR593": true,
+  "canonical46_ids_unchanged": true,
+  "historical_baseline_byte_exact": true,
+  "only11affected_ids_current_delta": true,
+  "prior_mapping_nested_history_unchanged": true,
+  "current_ID12_status": "Shared implementation plus independently accepted finite historical N/L; default/current-season and deployedD unqualified. No all46 or Core1 closure.",
+  "current_K07_status": "Actual finite S4 source/NL/structuredHTTP/rendered-snapshot integration accepted; served-generation P3/deployedD remain open.",
+  "actual_runs_clear": "Initial13run remains12pass1fail; K07 numerical12/QA12 reuse plus final composed1/QA8 coverage explicitly across runs; old5policyflags preserved. No single13greenrun fabricated.",
+  "source_limits_preserved": "Actual source_root_validation passes, producer source_replay_validation_complete:false/fullslice:false remain literal; no source reacquisition, publication, pointer, gate or cost/access changes.",
+  "next_task": "Original44 earlier-franchise/Durant source/N qualification with original game-day association/DNP/franchise evidence. No subtraction-derived DNP, proposed total or parked K12 task accepted.",
+  "pending": "Final docs/evidence-only commit and exact-head required CI; no new numerical replay unless executable/input bytes change.",
+  "checker": "Separate Codex checker /root/poeltl_source_checker; exact backend model ID unavailable"
+}

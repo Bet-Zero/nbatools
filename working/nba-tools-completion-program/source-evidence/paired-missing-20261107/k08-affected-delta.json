@@ -1,0 +1,269 @@
+{
+  "prior_mapping": "working/nba-tools-completion-program/source-evidence/owned-boolean-20261106/independent/k08-bounded-mapping.json",
+  "prior_mapping_sha256": "9ceb7293742e988f687f09a901e688f54a455ca45acf1878c2c1b82e69339e1f",
+  "denominator": 46,
+  "canonical_ids_sha256": "acc3d675811c80641aec64d60d76e90f7e6d8eb4dba66904fef5eff616cc1f96",
+  "all46_accepted": false,
+  "unchanged_original_ids": "All other exact IDs retain PR593 mapping and its stated source/deployed limits; generic historical I text referring to unfinished12 is superseded only by current ID12 delta. No complete46 run claimed.",
+  "rows": [
+    {
+      "ordinal": 9,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves both out-names5-False]",
+      "prior_bounded_mapping": {
+        "ordinal": 9,
+        "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves both out-names5-False]",
+        "family": "paired_participation",
+        "current_bounded_verdict": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+        "source_inspected": "tests/test_c1_teammate_names.py; tests/test_qualified_absence_observations.py; src/nbatools/commands/_teammate_resolution.py",
+        "retained_acceptance": "k08-direct-dependencies/historical-stage-acceptance-review.json; k08-bos-remaining/stage-acceptance-review.json; k08-retained-publication/acceptance.json",
+        "I": "See family verdict; missing wording remains unfinished for12.",
+        "N": "Qualified real/staged subset or controlled fixture only as explicitly stated; not all46 accepted.",
+        "L": "Historical accepted language subsets/current fixture text; no fresh unfamiliar-wording execution in this document.",
+        "D": "Do not extrapolate existing limited published/deployed subset to this exact original ID; not independently revalidated in this task."
+      },
+      "current_task_delta": {
+        "I": "Existing two-player participation contract retained; current suffix/bound/unread-tail controls pass. No broader original/default/current-season behavior is inferred.",
+        "N": "Qualified finite historical pair-zero/nonempty and player-bound/opponent source scopes checked in the accepted composed stage; prior exact literal sample limitations remain.",
+        "L": "Shared existing paired wordings and independently frozen unfamiliar variants pass; actual historical natural/structured/HTTP and applicable local browser outputs verified. Not every original literal scope is certified.",
+        "D": "No new deployed acceptance; retain prior mapping limits and all original positive obligations.",
+        "applicability": "Existing pair meaning retained; current focused suffix/bound/tail checks and qualified pair controls strengthen shared applicability, without accepting literal default/current sample or deployed proof. Actual required composed-stage acceptance and independent review strengthen only these finite shared scopes."
+      }
+    },
+    {
+      "ordinal": 10,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves DNP-names6-False]",
+      "prior_bounded_mapping": {
+        "ordinal": 10,
+        "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves DNP-names6-False]",
+        "family": "paired_participation",
+        "current_bounded_verdict": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+        "source_inspected": "tests/test_c1_teammate_names.py; tests/test_qualified_absence_observations.py; src/nbatools/commands/_teammate_resolution.py",
+        "retained_acceptance": "k08-direct-dependencies/historical-stage-acceptance-review.json; k08-bos-remaining/stage-acceptance-review.json; k08-retained-publication/acceptance.json",
+        "I": "See family verdict; missing wording remains unfinished for12.",
+        "N": "Qualified real/staged subset or controlled fixture only as explicitly stated; not all46 accepted.",
+        "L": "Historical accepted language subsets/current fixture text; no fresh unfamiliar-wording execution in this document.",
+        "D": "Do not extrapolate existing limited published/deployed subset to this exact original ID; not independently revalidated in this task."
+      },
+      "current_task_delta": {
+        "I": "Existing two-player participation contract retained; current suffix/bound/unread-tail controls pass. No broader original/default/current-season behavior is inferred.",
+        "N": "Qualified finite historical pair-zero/nonempty and player-bound/opponent source scopes checked in the accepted composed stage; prior exact literal sample limitations remain.",
+        "L": "Shared existing paired wordings and independently frozen unfamiliar variants pass; actual historical natural/structured/HTTP and applicable local browser outputs verified. Not every original literal scope is certified.",
+        "D": "No new deployed acceptance; retain prior mapping limits and all original positive obligations.",
+        "applicability": "Existing pair meaning retained; current focused suffix/bound/tail checks and qualified pair controls strengthen shared applicability, without accepting literal default/current sample or deployed proof. Actual required composed-stage acceptance and independent review strengthen only these finite shared scopes."
+      }
+    },
+    {
+      "ordinal": 11,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves out-names7-False]",
+      "prior_bounded_mapping": {
+        "ordinal": 11,
+        "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves out-names7-False]",
+        "family": "paired_participation",
+        "current_bounded_verdict": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+        "source_inspected": "tests/test_c1_teammate_names.py; tests/test_qualified_absence_observations.py; src/nbatools/commands/_teammate_resolution.py",
+        "retained_acceptance": "k08-direct-dependencies/historical-stage-acceptance-review.json; k08-bos-remaining/stage-acceptance-review.json; k08-retained-publication/acceptance.json",
+        "I": "See family verdict; missing wording remains unfinished for12.",
+        "N": "Qualified real/staged subset or controlled fixture only as explicitly stated; not all46 accepted.",
+        "L": "Historical accepted language subsets/current fixture text; no fresh unfamiliar-wording execution in this document.",
+        "D": "Do not extrapolate existing limited published/deployed subset to this exact original ID; not independently revalidated in this task."
+      },
+      "current_task_delta": {
+        "I": "Existing two-player participation contract retained; current suffix/bound/unread-tail controls pass. No broader original/default/current-season behavior is inferred.",
+        "N": "Qualified finite historical pair-zero/nonempty and player-bound/opponent source scopes checked in the accepted composed stage; prior exact literal sample limitations remain.",
+        "L": "Shared existing paired wordings and independently frozen unfamiliar variants pass; actual historical natural/structured/HTTP and applicable local browser outputs verified. Not every original literal scope is certified.",
+        "D": "No new deployed acceptance; retain prior mapping limits and all original positive obligations.",
+        "applicability": "Existing pair meaning retained; current focused suffix/bound/tail checks and qualified pair controls strengthen shared applicability, without accepting literal default/current sample or deployed proof. Actual required composed-stage acceptance and independent review strengthen only these finite shared scopes."
+      }
+    },
+    {
+      "ordinal": 12,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves missing-names8-False]",
+      "prior_bounded_mapping": {
+        "ordinal": 12,
+        "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves missing-names8-False]",
+        "family": "paired_missing_unfinished",
+        "current_bounded_verdict": "Genuine desired behavior remains unfinished: shared pair missing wording explicitly refuses; unknown medical/status meaning must not be silently equated with whole-game DNP. Preserve positive obligation and clarify/implement the intended missing participation wording with proper source meaning.",
+        "source_inspected": "tests/test_c1_teammate_names.py::test_unread_availability_still_refuses",
+        "retained_acceptance": "No later retained acceptance located for this original positive.",
+        "I": "See family verdict; missing wording remains unfinished for12.",
+        "N": "Qualified real/staged subset or controlled fixture only as explicitly stated; not all46 accepted.",
+        "L": "Historical accepted language subsets/current fixture text; no fresh unfamiliar-wording execution in this document.",
+        "D": "Do not extrapolate existing limited published/deployed subset to this exact original ID; not independently revalidated in this task."
+      },
+      "current_task_delta": {
+        "family": "paired_participation",
+        "current_bounded_verdict": "Implemented and independently accepted for shared whole-game interpretation plus finite qualified historical N/L. Literal current/default-season and deployed D remain unqualified.",
+        "source_inspected": "tests/test_c1_teammate_names.py (current positive shared suffix/bound controls); tests/cloud_composed_participation_stage_real_data.py::verify_paired_missing; independent frozen oracle and heldouts for cdbf550c",
+        "retained_acceptance": "PR594 cdbf source/meaning approval; actual final composed stage42329357669 selected1/executed1/passed1; stagedRawQA8/50pass0suspicious; prior unchangedK07 numerical12/QA12/308 actualpass reused with byte equivalence; final exact-headCI separately required.",
+        "I": "Shared paired missing binds both actors and intended scope; existing participation coverage rules unchanged. No medical, role, spatial or on-court inference.",
+        "N": "Independent retained real rows: BOS2025 pair8games7W1L/898PTS; exact LAL2023 Davis/Reaves82game intersection zero; Reaves22300684 32/2/3 with LeBron/Davis explicit DNP. Exact keys, arithmetic and original complete coverage verified by actual required composed-stage run42329357669.",
+        "L": "Separate checker frozen16positive/9safety wordings; unfamiliar MIA controlled actors separate from qualified NBA proof; natural/structured/HTTP and actual local browser8cases; actual staged8QA/50checks pass0suspicious and all4S4 source/HTTP outputs accepted; desktop/mobile browser12cases are local qualified-scope evidence.",
+        "D": "No deployment/publication; current this-season data and served-generation/24h readiness remain separate."
+      }
+    },
+    {
+      "ordinal": 13,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves not playing-names9-False]",
+      "prior_bounded_mapping": {
+        "ordinal": 13,
+        "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves not playing-names9-False]",
+        "family": "paired_participation",
+        "current_bounded_verdict": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+        "source_inspected": "tests/test_c1_teammate_names.py; tests/test_qualified_absence_observations.py; src/nbatools/commands/_teammate_resolution.py",
+        "retained_acceptance": "k08-direct-dependencies/historical-stage-acceptance-review.json; k08-bos-remaining/stage-acceptance-review.json; k08-retained-publication/acceptance.json",
+        "I": "See family verdict; missing wording remains unfinished for12.",
+        "N": "Qualified real/staged subset or controlled fixture only as explicitly stated; not all46 accepted.",
+        "L": "Historical accepted language subsets/current fixture text; no fresh unfamiliar-wording execution in this document.",
+        "D": "Do not extrapolate existing limited published/deployed subset to this exact original ID; not independently revalidated in this task."
+      },
+      "current_task_delta": {
+        "I": "Existing two-player participation contract retained; current suffix/bound/unread-tail controls pass. No broader original/default/current-season behavior is inferred.",
+        "N": "Qualified finite historical pair-zero/nonempty and player-bound/opponent source scopes checked in the accepted composed stage; prior exact literal sample limitations remain.",
+        "L": "Shared existing paired wordings and independently frozen unfamiliar variants pass; actual historical natural/structured/HTTP and applicable local browser outputs verified. Not every original literal scope is certified.",
+        "D": "No new deployed acceptance; retain prior mapping limits and all original positive obligations.",
+        "applicability": "Existing pair meaning retained; current focused suffix/bound/tail checks and qualified pair controls strengthen shared applicability, without accepting literal default/current sample or deployed proof. Actual required composed-stage acceptance and independent review strengthen only these finite shared scopes."
+      }
+    },
+    {
+      "ordinal": 14,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record without Davis and Reaves playing-names10-False]",
+      "prior_bounded_mapping": {
+        "ordinal": 14,
+        "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record without Davis and Reaves playing-names10-False]",
+        "family": "paired_participation",
+        "current_bounded_verdict": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+        "source_inspected": "tests/test_c1_teammate_names.py; tests/test_qualified_absence_observations.py; src/nbatools/commands/_teammate_resolution.py",
+        "retained_acceptance": "k08-direct-dependencies/historical-stage-acceptance-review.json; k08-bos-remaining/stage-acceptance-review.json; k08-retained-publication/acceptance.json",
+        "I": "See family verdict; missing wording remains unfinished for12.",
+        "N": "Qualified real/staged subset or controlled fixture only as explicitly stated; not all46 accepted.",
+        "L": "Historical accepted language subsets/current fixture text; no fresh unfamiliar-wording execution in this document.",
+        "D": "Do not extrapolate existing limited published/deployed subset to this exact original ID; not independently revalidated in this task."
+      },
+      "current_task_delta": {
+        "I": "Existing two-player participation contract retained; current suffix/bound/unread-tail controls pass. No broader original/default/current-season behavior is inferred.",
+        "N": "Qualified finite historical pair-zero/nonempty and player-bound/opponent source scopes checked in the accepted composed stage; prior exact literal sample limitations remain.",
+        "L": "Shared existing paired wordings and independently frozen unfamiliar variants pass; actual historical natural/structured/HTTP and applicable local browser outputs verified. Not every original literal scope is certified.",
+        "D": "No new deployed acceptance; retain prior mapping limits and all original positive obligations.",
+        "applicability": "Existing pair meaning retained; current focused suffix/bound/tail checks and qualified pair controls strengthen shared applicability, without accepting literal default/current sample or deployed proof. Actual required composed-stage acceptance and independent review strengthen only these finite shared scopes."
+      }
+    },
+    {
+      "ordinal": 20,
+      "original_node_id": "tests/test_c1_availability_words.py::test_player_stats_with_absence_words[LeBron James stats with Davis and Reaves out-names3-False]",
+      "prior_bounded_mapping": {
+        "ordinal": 20,
+        "original_node_id": "tests/test_c1_availability_words.py::test_player_stats_with_absence_words[LeBron James stats with Davis and Reaves out-names3-False]",
+        "family": "paired_participation",
+        "current_bounded_verdict": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+        "source_inspected": "tests/test_c1_teammate_names.py; tests/test_qualified_absence_observations.py; src/nbatools/commands/_teammate_resolution.py",
+        "retained_acceptance": "k08-direct-dependencies/historical-stage-acceptance-review.json; k08-bos-remaining/stage-acceptance-review.json; k08-retained-publication/acceptance.json",
+        "I": "See family verdict; missing wording remains unfinished for12.",
+        "N": "Qualified real/staged subset or controlled fixture only as explicitly stated; not all46 accepted.",
+        "L": "Historical accepted language subsets/current fixture text; no fresh unfamiliar-wording execution in this document.",
+        "D": "Do not extrapolate existing limited published/deployed subset to this exact original ID; not independently revalidated in this task."
+      },
+      "current_task_delta": {
+        "I": "Existing two-player participation contract retained; current suffix/bound/unread-tail controls pass. No broader original/default/current-season behavior is inferred.",
+        "N": "Qualified finite historical pair-zero/nonempty and player-bound/opponent source scopes checked in the accepted composed stage; prior exact literal sample limitations remain.",
+        "L": "Shared existing paired wordings and independently frozen unfamiliar variants pass; actual historical natural/structured/HTTP and applicable local browser outputs verified. Not every original literal scope is certified.",
+        "D": "No new deployed acceptance; retain prior mapping limits and all original positive obligations.",
+        "applicability": "Existing pair meaning retained; current focused suffix/bound/tail checks and qualified pair controls strengthen shared applicability, without accepting literal default/current sample or deployed proof. Actual required composed-stage acceptance and independent review strengthen only these finite shared scopes."
+      }
+    },
+    {
+      "ordinal": 21,
+      "original_node_id": "tests/test_c1_availability_words.py::test_player_stats_with_absence_words[LeBron James stats with Davis and Reaves not playing-names4-False]",
+      "prior_bounded_mapping": {
+        "ordinal": 21,
+        "original_node_id": "tests/test_c1_availability_words.py::test_player_stats_with_absence_words[LeBron James stats with Davis and Reaves not playing-names4-False]",
+        "family": "paired_participation",
+        "current_bounded_verdict": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+        "source_inspected": "tests/test_c1_teammate_names.py; tests/test_qualified_absence_observations.py; src/nbatools/commands/_teammate_resolution.py",
+        "retained_acceptance": "k08-direct-dependencies/historical-stage-acceptance-review.json; k08-bos-remaining/stage-acceptance-review.json; k08-retained-publication/acceptance.json",
+        "I": "See family verdict; missing wording remains unfinished for12.",
+        "N": "Qualified real/staged subset or controlled fixture only as explicitly stated; not all46 accepted.",
+        "L": "Historical accepted language subsets/current fixture text; no fresh unfamiliar-wording execution in this document.",
+        "D": "Do not extrapolate existing limited published/deployed subset to this exact original ID; not independently revalidated in this task."
+      },
+      "current_task_delta": {
+        "I": "Existing two-player participation contract retained; current suffix/bound/unread-tail controls pass. No broader original/default/current-season behavior is inferred.",
+        "N": "Qualified finite historical pair-zero/nonempty and player-bound/opponent source scopes checked in the accepted composed stage; prior exact literal sample limitations remain.",
+        "L": "Shared existing paired wordings and independently frozen unfamiliar variants pass; actual historical natural/structured/HTTP and applicable local browser outputs verified. Not every original literal scope is certified.",
+        "D": "No new deployed acceptance; retain prior mapping limits and all original positive obligations.",
+        "applicability": "Existing pair meaning retained; current focused suffix/bound/tail checks and qualified pair controls strengthen shared applicability, without accepting literal default/current sample or deployed proof. Actual required composed-stage acceptance and independent review strengthen only these finite shared scopes."
+      }
+    },
+    {
+      "ordinal": 22,
+      "original_node_id": "tests/test_c1_availability_words.py::test_a_teammate_pair_after_a_bound[LeBron James games with 20 points without Davis and Reaves-20-False]",
+      "prior_bounded_mapping": {
+        "ordinal": 22,
+        "original_node_id": "tests/test_c1_availability_words.py::test_a_teammate_pair_after_a_bound[LeBron James games with 20 points without Davis and Reaves-20-False]",
+        "family": "paired_participation",
+        "current_bounded_verdict": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+        "source_inspected": "tests/test_c1_teammate_names.py; tests/test_qualified_absence_observations.py; src/nbatools/commands/_teammate_resolution.py",
+        "retained_acceptance": "k08-direct-dependencies/historical-stage-acceptance-review.json; k08-bos-remaining/stage-acceptance-review.json; k08-retained-publication/acceptance.json",
+        "I": "See family verdict; missing wording remains unfinished for12.",
+        "N": "Qualified real/staged subset or controlled fixture only as explicitly stated; not all46 accepted.",
+        "L": "Historical accepted language subsets/current fixture text; no fresh unfamiliar-wording execution in this document.",
+        "D": "Do not extrapolate existing limited published/deployed subset to this exact original ID; not independently revalidated in this task."
+      },
+      "current_task_delta": {
+        "I": "Existing two-player participation contract retained; current suffix/bound/unread-tail controls pass. No broader original/default/current-season behavior is inferred.",
+        "N": "Qualified finite historical pair-zero/nonempty and player-bound/opponent source scopes checked in the accepted composed stage; prior exact literal sample limitations remain.",
+        "L": "Shared existing paired wordings and independently frozen unfamiliar variants pass; actual historical natural/structured/HTTP and applicable local browser outputs verified. Not every original literal scope is certified.",
+        "D": "No new deployed acceptance; retain prior mapping limits and all original positive obligations.",
+        "applicability": "Existing pair meaning retained; current focused suffix/bound/tail checks and qualified pair controls strengthen shared applicability, without accepting literal default/current sample or deployed proof. Actual required composed-stage acceptance and independent review strengthen only these finite shared scopes."
+      }
+    },
+    {
+      "ordinal": 42,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_team_record_with_two_teammates[Lakers record without Davis and Reaves-False]",
+      "prior_bounded_mapping": {
+        "ordinal": 42,
+        "original_node_id": "tests/test_c1_teammate_names.py::test_team_record_with_two_teammates[Lakers record without Davis and Reaves-False]",
+        "family": "paired_participation",
+        "current_bounded_verdict": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+        "source_inspected": "tests/test_c1_teammate_names.py; tests/test_qualified_absence_observations.py; src/nbatools/commands/_teammate_resolution.py",
+        "retained_acceptance": "k08-direct-dependencies/historical-stage-acceptance-review.json; k08-bos-remaining/stage-acceptance-review.json; k08-retained-publication/acceptance.json",
+        "I": "See family verdict; missing wording remains unfinished for12.",
+        "N": "Qualified real/staged subset or controlled fixture only as explicitly stated; not all46 accepted.",
+        "L": "Historical accepted language subsets/current fixture text; no fresh unfamiliar-wording execution in this document.",
+        "D": "Do not extrapolate existing limited published/deployed subset to this exact original ID; not independently revalidated in this task."
+      },
+      "current_task_delta": {
+        "I": "Existing two-player participation contract retained; current suffix/bound/unread-tail controls pass. No broader original/default/current-season behavior is inferred.",
+        "N": "Qualified finite historical pair-zero/nonempty and player-bound/opponent source scopes checked in the accepted composed stage; prior exact literal sample limitations remain.",
+        "L": "Shared existing paired wordings and independently frozen unfamiliar variants pass; actual historical natural/structured/HTTP and applicable local browser outputs verified. Not every original literal scope is certified.",
+        "D": "No new deployed acceptance; retain prior mapping limits and all original positive obligations.",
+        "applicability": "Existing pair meaning retained; current focused suffix/bound/tail checks and qualified pair controls strengthen shared applicability, without accepting literal default/current sample or deployed proof. Actual required composed-stage acceptance and independent review strengthen only these finite shared scopes."
+      }
+    },
+    {
+      "ordinal": 43,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_player_games_with_two_teammates[LeBron stats without Davis and Reaves-False]",
+      "prior_bounded_mapping": {
+        "ordinal": 43,
+        "original_node_id": "tests/test_c1_teammate_names.py::test_player_games_with_two_teammates[LeBron stats without Davis and Reaves-False]",
+        "family": "paired_participation",
+        "current_bounded_verdict": "Implemented explicit pair ownership/bounds; controlled nonempty positives; historical2023-24 Davis/Reaves accepted zero (Reaves82played), plus distinct BOS/retained nonempty pair subsets. Exact original literal current-season cohort not certified. DNP token visible in shared pair parser; this inspection did not execute literal old nodeID.",
+        "source_inspected": "tests/test_c1_teammate_names.py; tests/test_qualified_absence_observations.py; src/nbatools/commands/_teammate_resolution.py",
+        "retained_acceptance": "k08-direct-dependencies/historical-stage-acceptance-review.json; k08-bos-remaining/stage-acceptance-review.json; k08-retained-publication/acceptance.json",
+        "I": "See family verdict; missing wording remains unfinished for12.",
+        "N": "Qualified real/staged subset or controlled fixture only as explicitly stated; not all46 accepted.",
+        "L": "Historical accepted language subsets/current fixture text; no fresh unfamiliar-wording execution in this document.",
+        "D": "Do not extrapolate existing limited published/deployed subset to this exact original ID; not independently revalidated in this task."
+      },
+      "current_task_delta": {
+        "I": "Existing two-player participation contract retained; current suffix/bound/unread-tail controls pass. No broader original/default/current-season behavior is inferred.",
+        "N": "Qualified finite historical pair-zero/nonempty and player-bound/opponent source scopes checked in the accepted composed stage; prior exact literal sample limitations remain.",
+        "L": "Shared existing paired wordings and independently frozen unfamiliar variants pass; actual historical natural/structured/HTTP and applicable local browser outputs verified. Not every original literal scope is certified.",
+        "D": "No new deployed acceptance; retain prior mapping limits and all original positive obligations.",
+        "applicability": "Existing pair meaning retained; current focused suffix/bound/tail checks and qualified pair controls strengthen shared applicability, without accepting literal default/current sample or deployed proof. Actual required composed-stage acceptance and independent review strengthen only these finite shared scopes."
+      }
+    }
+  ],
+  "application_candidate": "5418dce32a69477853c05ef6fec83490c0d9a0d5",
+  "original_mapping_unchanged": true,
+  "coverage_composition": "K07numerical12/RawQA12 from42328521294 plus reviewed corrected composed1/RawQA8 from42329357669. No single13-pass run invented."
+}

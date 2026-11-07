@@ -1,0 +1,33 @@
+{
+  "baseline": "477c7f13b81290ad1e291118d170e7300b630e0b",
+  "cases": [
+    {"query":"Celtics record with Jayson Tatum and Jaylen Brown missing in 2025-26","oracle":"bos_pair","data":"qualified","shape":"record"},
+    {"query":"With Brown and Tatum missing, Celtics record in 2025-26","oracle":"bos_pair","data":"qualified","shape":"record"},
+    {"query":"Celtics record with Tatum and Brown both missing in 2025-26","oracle":"bos_pair","data":"qualified","shape":"record"},
+    {"query":"Celtics home record with Jayson Tatum and Jaylen Brown missing in 2025-26","oracle":"bos_pair_home","data":"qualified","shape":"record"},
+    {"query":"Celtics record on the road with Tatum and Brown missing in 2025-26","oracle":"bos_pair_away","data":"qualified","shape":"record"},
+    {"query":"Celtics record with Tatum and Brown missing and at least 111 points in 2025-26","oracle":"bos_pair_pts111","data":"qualified","shape":"record"},
+    {"query":"Celtics record with Tatum and Brown missing from 2025-11-01 to 2026-02-28 in 2025-26","oracle":"bos_pair_nov_feb","data":"qualified","shape":"record"},
+    {"query":"Lakers record with Anthony Davis and Austin Reaves missing in 2023-24","oracle":"lal_pair_zero","data":"qualified","shape":"covered_no_match"},
+    {"query":"How many Lakers games with Davis and Reaves missing in 2023-24?","oracle":"lal_pair_zero","data":"qualified","shape":"count"},
+    {"query":"LeBron James stats with Davis and Reaves missing in 2023-24","oracle":"lal_pair_zero","data":"qualified","shape":"covered_no_match"},
+    {"query":"Celtics record without Tatum and with Brown in 2025-26","oracle":"bos_tatum_missing_brown_played","data":"qualified","shape":"record"},
+    {"query":"Celtics record without Brown and with Tatum in 2025-26","oracle":"bos_tatum_played_brown_missing","data":"qualified","shape":"record"},
+    {"query":"Heat record with Bam Adebayo and Tyler Herro missing in 2025-26","oracle":"controlled_mia_pair","data":"controlled","shape":"record"},
+    {"query":"Heat record with Herro and Adebayo both missing in 2025-26","oracle":"controlled_mia_pair","data":"controlled","shape":"record"},
+    {"query":"Heat home record with Bam and Tyler missing in 2025-26","oracle":"controlled_mia_home","data":"controlled","shape":"record"},
+    {"query":"Jimmy Butler stats with Bam Adebayo and Tyler Herro missing in 2025-26","oracle":"controlled_mia_player","data":"controlled","shape":"player_summary"}
+  ],
+  "containment": [
+    {"query":"Celtics record with Tatum and Brown injured in 2025-26","data":"qualified","classification":"medical_not_participation"},
+    {"query":"Celtics record with Tatum and Brown missing because of injuries in 2025-26","data":"qualified","classification":"unestablished_medical_cause"},
+    {"query":"Celtics record with Tatum and Brown missing from the court in 2025-26","data":"qualified","classification":"on_court_not_whole_game"},
+    {"query":"Celtics record with Tatum and Brown missing in the fourth quarter in 2025-26","data":"qualified","classification":"period_presence_not_whole_game"},
+    {"query":"Celtics record with Tatum or Brown missing in 2025-26","data":"qualified","classification":"unfinished_OR_participation_not_pairAND"},
+    {"query":"Celtics record with Tatum and Brown not missing in 2025-26","data":"qualified","classification":"negated_absence_unfinished_not_silently_bothDNP"},
+    {"query":"Celtics record with Tatum and Missing Player missing in 2025-26","data":"qualified","classification":"unknown_actor_no_total"},
+    {"query":"Celtics record with Tatum and Brown missing in 2026-27","data":"qualified","classification":"unavailable_explicit_season_no_total"},
+    {"query":"Heat record with Bam and Herro missing more than ten shots in 2025-26","data":"controlled","classification":"missed_stat_not_DNP"}
+  ],
+  "notes":"Controlled observations use explicit test-provider injection; never forged NBA provenance. Qualified fixed historical slices do not certify current relative season, production or all46. Previously exposed originalID12 wording is a regression, not a new unseen-language score."
+}

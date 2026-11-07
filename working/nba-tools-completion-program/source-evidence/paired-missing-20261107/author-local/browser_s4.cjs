@@ -1,0 +1,11 @@
+const {chromium}=require('playwright'); const fs=require('fs');
+(async()=>{const browser=await chromium.launch({headless:true,executablePath:'/usr/bin/chromium',args:['--no-sandbox']});const rows=[];
+for(const viewport of [{width:1365,height:900},{width:390,height:844}])for(const [relation,season,points]of [['with','2023-24',115.5],['without','2025-26',118.5]]){
+ const page=await browser.newPage({viewport});const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+ await page.goto('http://127.0.0.1:8032/'); const query=`Celtics record vs Lakers ${relation} Jayson Tatum in 2023-24 and 2025-26`;await page.locator('#nba-query-input').fill(query);
+ const rp=page.waitForResponse(r=>r.url().endsWith('/query')&&r.request().method()==='POST');await page.getByRole('button',{name:'Query',exact:true}).click();const res=await rp;const body=await res.json();
+ const result=body.result;const bucket=result.sections.split_comparison[0];if(res.status()!==200||result.result_status!=='ok'||bucket.bucket!==season||bucket.games!==2||bucket.pts_avg!==points)throw new Error(JSON.stringify({query,body}));
+ await page.waitForFunction(()=>document.body.innerText.includes('Seasons: 2023-24, 2025-26'));await page.waitForTimeout(350);
+ const display_text=await page.locator('body').innerText();if(!display_text.includes('Jayson Tatum')||!display_text.includes(String(points))||!display_text.includes('no games in '+(relation==='with'?'2025-26':'2023-24'))||errors.length)throw new Error(JSON.stringify({query,display_text,errors}));
+ const screenshot=`work/paired-missing/browser/s4-${relation}-${viewport.width}.png`;await page.screenshot({path:screenshot,fullPage:true});rows.push({query,viewport,http_status:res.status(),metadata:result.metadata,bucket,display_text,screenshot,page_errors:errors});await page.close();
+}await browser.close();fs.writeFileSync('work/paired-missing/browser/s4-receipt.json',JSON.stringify({runtime_source:'cdbf550ce4c0db7f55bc72bfbb80c157f807fca2',runtime_unchanged_in:'42f81e66dd07b2c51f291d77356cb29bd754663b',scope:'Qualified local S4 team sample only; player S4 full hosted acceptance separate; not deployed',cases:rows},null,2)+'\n');console.log(JSON.stringify({status:'pass',browser_cases:rows.length}));})().catch(e=>{console.error(e);process.exit(1)});

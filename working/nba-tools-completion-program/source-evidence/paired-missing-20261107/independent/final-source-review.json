@@ -1,0 +1,54 @@
+{
+  "reviewed_revision": "cdbf550ce4c0db7f55bc72bfbb80c157f807fca2",
+  "verdict": "APPROVED_BOUNDED_SOURCE_AND_CONSUMERS_FOR_REQUIRED13",
+  "reviewer": "Separate independent Codex checker session /root/poeltl_source_checker; exact backend model ID unavailable; no human/Claude/cross-model claim",
+  "oracle_sha256": "c90bee16e62aa026f66a70e7351fd13e869284aeba3a32bc3defe116f75fc471",
+  "frozen25_language_cases_sha256": "96f70b93939d2157e8c3a31d6a550c5e3cfc50a1dd35e85eb94cb99e0cbb44f8",
+  "actual_final_checks": {
+    "paired": {
+      "passed_groups": 33,
+      "calls": 52,
+      "failures": 0,
+      "receipt": "results-cdbf55/receipt.json",
+      "scope": "All16frozenpositives NL+HTTP withcompletekeys/PTSREB AST/WL/negativeactor metadata;9safety orunfinished containment;3structured+HTTP;5freshrootunknown/member/date damage."
+    },
+    "S4_team": {
+      "passed_groups": 4,
+      "calls": 10,
+      "failures": 0,
+      "receipt": "s4-results-cdbf55/receipt.json",
+      "scope": "Actualretained2seasonrawteam source positiveNL/directstructured/HTTP/structuredHTTP,exactbuckets/counts/WL/PTSREB ASTmeans,emptyunmatchedseason;2requestedunknown controls;excludedmiddle2024fileabsent."
+    },
+    "repaired_adjacent": {
+      "passed_groups": 11,
+      "calls": 12,
+      "failures": 0,
+      "receipt": "delta-cdbf55.json",
+      "scope": "All3missing/out/notplaying suffixes before111bound;extraLeBron/unknownactor/benchrefused;exactstructurednonadjacentSeasonslabels;strict422unknownfield/typeguards."
+    }
+  },
+  "source_review": "Sharedpairmissing suffix plus canonical threshold/span refinement and fullyreadtail guard; no phrase/player-specific exceptions. Existing requestedpair recognizes oldsuffixes forapplied_pair masking; no actor discarded. Splitwith/without are explicittypedkwargs forwarding to unchangedsample selection, preserving strictsignature-derivedAPIvalidation. Structuredsplit metadata/current_through respects explicitnonadjacentlist. NewS4helper extracts unchangedoldassertions andrunson sameauthenticatedcomposedroot; newselectedpath neverinvokes reportbackfill. Underlyingbase99paths,sourceorig/qualification/composition/validatorsunchanged andpreviousacceptance reused, not rederived.",
+  "resolved_findings": [
+    "6bvalidpair+111refusalrepairedgenerally",
+    "b29trailingactorafterbounddiscardrepaired",
+    "out/notplayingsourcevariantsretainedpositive",
+    "S4HTTP422fixedviaexplicittypedbuilderarguments(notarbitrarykwargs)",
+    "S4structuredcontinuousrangelabelfixedtoexplicitseasonlist"
+  ],
+  "QA_policy": "OnlyqualifiedemptyrecordNoResult case no_answer_text_expected; exactno_result/no_match andemptysections staymandatory;separatecount0requiresnormalpositivebackendtext. Thisdoesnotacceptsourceunknown aszero orweakenrequiredpositives.",
+  "bounded_reuse": "PR59333actualrequiredproofsretainoriginalrevision/data. Pairkeyword/bound-span/tail work is isolated fromtheirBoolean/equality/Poeltl computations; addedsplittypedkwargs preserve existingforwardedselection. Metadatachangesareconditionalonexplicitseason-splitlist; originalK07actual12mustexecuteonfinalcandidate. No newglobal sourceaudit,broad suite rerun orunchangedarithmetic qualification needed. Existing failing6b/b29executionartifactsremainliteral; notrelabeledgreen.",
+  "required_pending": {
+    "selector": "Existing extended composed-stage selector1 + original K07 numerical/wording selector12; bind exact module path and actual collection in request/artifact.",
+    "anticipated_tests": 13,
+    "required_zero_skips": true,
+    "staged_RawQA_cases": 8,
+    "base_K07_RawQA_cases": 12,
+    "all_actual_artifacts_independent_review_pending": true,
+    "final_exact_head_blocking_CI": true
+  },
+  "S4_limits": "Fourreportstates/sourcehashesknown;team2023+2025andBrown2025rawrowsrederived. Brown2023numeric reuse is explicitlyboundtos4-reused-receipt.json,notnewlocalrawderivation;actualpinnedbasecanonical/sourcehash/fullkeycomparisonrequired. LocalstructuredHTTPnewintegrationisnotdeployedD.",
+  "46_scope": "Alloriginal46IDs and12scopes retained; directID12newI/finiteN/L onlyafteractualrequiredacceptance, neighbors9-11/13-14/20-22/42-43 preservepositives. Literalcurrentsample/source/deployment stillunqualified, no all46/Core1closure.",
+  "next_recommendation": "Afteractualrequiredcheckpoint,specificremainingID44historicalfranchise/Durant source/N evidence andbounded46integration; requireoriginalexplicitDNP/association, neverstatrow-subtraction acceptance.",
+  "production_writes": 0,
+  "source_downloads": 0
+}

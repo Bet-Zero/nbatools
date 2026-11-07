@@ -1,0 +1,60 @@
+{
+  "initial_reviewed_revision": "6b203c3230a799a098721844b8bfbd80c0b3fb9e",
+  "successor_reviewed_revision": "b29aa469f80b829c49deec54d495e23956c84aa8",
+  "verdict": "CHANGES_REQUIRED",
+  "reviewer": "Separate Codex application checker /root/poeltl_source_checker; exact model ID unavailable",
+  "source_oracle_sha256": "c90bee16e62aa026f66a70e7351fd13e869284aeba3a32bc3defe116f75fc471",
+  "heldout_sha256": "96f70b93939d2157e8c3a31d6a550c5e3cfc50a1dd35e85eb94cb99e0cbb44f8",
+  "actual_executions": {
+    "initial": {
+      "groups_passed": 32,
+      "calls": 51,
+      "failed_groups": 1,
+      "receipt": "results-6b203c/receipt.json",
+      "failure": "Canonicalpairname span retained trailingAND beforestat111; legitimate5gamepositive refused."
+    },
+    "successor": {
+      "groups_passed": 33,
+      "calls": 52,
+      "failed_groups": 0,
+      "receipt": "results-b29aa4/receipt.json"
+    },
+    "S4team": {
+      "calls": 10,
+      "unknown_controls_passed": 2,
+      "positive_groups_failed": 2,
+      "receipt": "s4-results-6b203c/receipt.json",
+      "diagnosis": "NumericalNL/directstructuredandnaturalHTTPcorrect; structuredHTTP422inspectedsignature rejectswith/without participation exposedonlythrough**sample_filters.",
+      "exact_payload": "s4-diagnosis-6b203c.json"
+    }
+  },
+  "remaining_findings": [
+    {
+      "severity": "blocking",
+      "scope": "Fulltail ownership after recognized pair+statbound",
+      "proof": "Celticsrecord withTatumandBrownmissing andatleast111points andLeBronJames in2025-26 accepted5, silentlydropsactor. Explicitunknownactorplayingrefuses.",
+      "receipt": "adjacent-b29.json"
+    },
+    {
+      "severity": "blocking",
+      "scope": "S4structuredHTTP contract",
+      "proof": "Metadataalreadydeclareswith/without,but api_contracts._structured_route_contract introspectsbuild_resultsignature andskipsVAR_KEYWORD. Splitbuilders hideparticipation in**sample_filters. ActualHTTP422unsupportedfieldwith_player.",
+      "correction": "Initial metadataallowlist hypothesis inaccurate; exactreview/srcmodulepaths verified. Preserveunknown-fieldandtype validation."
+    },
+    {
+      "severity": "blocking_integration_label",
+      "scope": "Structuredexplicitnonadjacentseasons",
+      "proof": "Directstructured selects2023-24,2025-26 correctly butfilterslabelcontinuousSeasonrange2023-24\u20132025-26, implyingunrequested2024-25. NLSeasonslistcorrect.",
+      "receipt": "s4-diagnosis-6b203c.json"
+    },
+    {
+      "severity": "desired_positive_scope_gap",
+      "scope": "Otherpair suffixbeforeANDbound",
+      "proof": "BOSsourceout/notplaying+111refusemulti_player_availabilitydespitevalidwithoutpair. Do notclaimsharedallsourcevariantsacceptedfromLALfixtureonly.",
+      "receipt": "adjacent-b29.json"
+    }
+  ],
+  "QA_policy_review": "Onequalifiedemptyrecord case no_answer_text_expected appropriate while exactno_result/no_match/emptysectionsand separatecount0positive remain. This is not a waiveddesiredpositive/sourceunknown gate.",
+  "source_validator_review": "Hash-boundcomposedbase/overlay/source validator chain unchanged, oldS4assertions extracted unchangedandcalledon sameauthenticatedroot, nobackfill invocationinnewselectedpath. Actualrequired13R2 pendingapproval; no source, production or all46/Core acceptance yet.",
+  "baseline_46_guard": "Original46IDs/PR582baseline unchanged; affectedmappingfreeze retained."
+}
