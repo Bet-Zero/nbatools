@@ -1,0 +1,11 @@
+{
+  "private_venv_install": "passed",
+  "pypi_sdk_pin": "1.11.4",
+  "result": {
+    "python": "3.12.14",
+    "nba_api": "1.11.4"
+  },
+  "sdk_parameter_jobs": 196,
+  "nba_requests": 0,
+  "scope": "Linux real private venv install and generated package preflight; macOS shell tested separately"
+}

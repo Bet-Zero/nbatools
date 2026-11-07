@@ -22,7 +22,7 @@
     },
     "snapshot": "current123-required-source-development-v3"
   },
-  "next_evidence": "Return of the single reviewed exact196-job laptop package; then independently qualify actual new window sources and OTplayer keys. No unchanged Actions retry.",
+  "next_evidence": "Return of the repaired exact196-job Mac package; prior PackageNotFoundError made zero requests. Qualify actual source windows/OTplayers on return. No unchanged Actions retry.",
   "observations": [
     {
       "evidence": {
@@ -282,6 +282,14 @@
     "package_sha256": "5156e94b425ded08573ca8138d53d4a9cfb35e2aa856d3a902c654b4bb5b3e44",
     "reviewed_revision": "66e8ab4c41f308f566ba38059809c37ccfc80c24",
     "new_source_attempts": 0,
+    "qualified_new_period_windows": 0
+  },
+  "mac_environment_repair_handoff": {
+    "reference": "working/nba-tools-completion-program/source-evidence/period-mac-repair-20261107/README.md",
+    "package_sha256": "b6f4d4f156608008bd04b0573f13c1b8223b3bf75ddc2cc5dbad013e9f859e40",
+    "previous_capture_error": "PackageNotFoundError",
+    "nba_requests_attempted": 0,
+    "remaining_requests": 196,
     "qualified_new_period_windows": 0
   }
 }
