@@ -1,0 +1,24 @@
+{
+  "candidate_sha": "fe2384fe23fc7e2e0273a32e73bd8c14ffbdae4e",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "source_url": "https://statsdmz.nba.com/pdfs/20261028/20261028_LALLAC.pdf",
+  "game_id": "0022600143",
+  "started_at": "2026-11-07T04:34:10.523190+00:00",
+  "limits": {
+    "readers": 1,
+    "retries": 0,
+    "redirects": 0,
+    "seconds": 20,
+    "bytes": 1500000
+  },
+  "reader_invocations": 1,
+  "capture_complete": true,
+  "rest_qualified": false,
+  "production_writes": 0,
+  "failure": null,
+  "bytes_read": 52158,
+  "sha256_of_bytes_read": "a25390c83fed00c67f277ecba279fcdf28efb1637d2dbb134000dd0c317d7982",
+  "raw_file": "original.pdf",
+  "http": 200,
+  "finished_at": "2026-11-07T04:34:10.608218+00:00"
+}

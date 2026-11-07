@@ -1,0 +1,24 @@
+{
+  "candidate_sha": "acb6f8996d850e0de5447ab424dfb29aac01c935",
+  "generation": "availability-lebron-season-v1-20261031",
+  "scope": "targeted",
+  "required_selection": [
+    "tests/test_multi_opponent_real_data.py",
+    "tests/test_opponent_played_real_data.py"
+  ],
+  "required_test_limit": 100,
+  "selected": 12,
+  "executed": 12,
+  "passed": 9,
+  "skipped": 0,
+  "failed": 3,
+  "errors": 0,
+  "xfailed": 0,
+  "pytest_exit": 1,
+  "conclusion": "failure",
+  "problems": [
+    "pytest did not succeed (exit=1)",
+    "Every selected required test must execute and pass",
+    "Required tests contain skips, failures, errors, or expected failures"
+  ]
+}

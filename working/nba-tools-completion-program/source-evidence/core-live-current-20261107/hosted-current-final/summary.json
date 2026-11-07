@@ -1,0 +1,20 @@
+{
+  "candidate_sha": "3d1649d21f37b4d7acde1535c59e7051ec68c85a",
+  "generation": "availability-lebron-season-v1-20261031",
+  "scope": "targeted",
+  "required_selection": [
+    "tests/test_multi_opponent_real_data.py",
+    "tests/test_opponent_played_real_data.py"
+  ],
+  "required_test_limit": 100,
+  "selected": 12,
+  "executed": 12,
+  "passed": 12,
+  "skipped": 0,
+  "failed": 0,
+  "errors": 0,
+  "xfailed": 0,
+  "pytest_exit": 0,
+  "conclusion": "success",
+  "problems": []
+}

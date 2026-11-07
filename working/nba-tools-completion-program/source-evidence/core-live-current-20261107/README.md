@@ -1,7 +1,7 @@
 # Core-1 historical live acceptance and bounded current continuation
 
-PR596 advances deployed historical evidence; PR597 owns the separate current123
-application/source delta. All46 original K08 positives and12 category bindings
+PR596 integrates deployed historical evidence and the separately reviewed current123
+application/source delta from its PR597 lane. All46 original K08 positives and12 category bindings
 remain the denominator. PR593's mapping and PR594/595's affected/source receipts
 retain their original scopes. No production data or active pointer was changed.
 
@@ -54,13 +54,42 @@ performance, ID44's unpublished population and full Core-1 acceptance do not.
 The planned two extra unpublished diagnostics were not executed because the
 original driver stopped first; no deployment observation is invented for them.
 
-## Current continuation
+## Bounded current package and release handoff
 
-The independently frozen source-only oracle and `current-originals.zip` retain
-fresh schedule/log identity and the full123-game due population at
-2026-11-07T03:46:21.725918Z. They do not make the production generation current.
-PR597 carries the isolated loader/opponent wording repair, pinned provisional
-snapshot, canonical preservation, original current populations, exact missing
-source/coverage groups, source-derived OT denominator and release handoff.
-Agent2 remains stopped; DQ-005 and K12cold remain parked. Production publication,
-pointer changes, spending/access expansion and unattended refresh remain excluded.
+[Current qualification and smallest release dependency](current-release-handoff.md)
+records the complete source/population/app distinction. Fresh schedule/logs bind123due
+final2026–27 games at2026-11-07T03:46:21.725918Z. The provisional development
+snapshot preserves every old107core cell and adds16games. Two narrow app defects
+are repaired: blank optional metadata/explicitDNP clocks no longer block unrelated
+qualified record/count inputs, and either/or opponent wording retains both clubs.
+Source-qualified LeBron2/home1, LAL withoutLuka1–0, Reaves covered-empty and LAL
+BOS/NYK covered-empty pass independent natural/structured/HTTP and local rendering
+checks.111focused checks passed; all10desktop/mobile captures retainPROVISIONAL.
+
+The current123 source freeze remains independently reproducible from originals.
+One bounded143official report capture succeeded; independent qualification proves
+reported_other, giving sourceRestempty0 across the full9LAL games. Its new reason
+companion has not been imported: earlier v1 no_data remains unmet, not accepted0.
+Cross-club Davis/paired membership remains [DQ-006](../../data-quality/DQ-006.json).
+
+Reviewed integrated runtime/test candidate17e219e0; corrected sole-parent request
+3d1649d2, [42339331873](https://github.com/Bet-Zero/nbatools/actions/runs/42339331873)
+**12selected/executed/passed,0required skips/failures/errors/xfails**. Original
+42338805173 remains failed9pass/3stale whole-file availability pins; precise
+BASE307/328hash extension binding preserves original same-game source facts,
+complete parent and numerical zero. No source reacquisition or arbitrary hash
+allowlist. Receipts and both verdicts are retained in hosted-current directories.
+
+The smallest complete current slice still requires11raw/5processed families,
+745source-qualified quarter/half windows, missing368roles and196team/2249player
+period keys, four missing Advanced-player keys and applicable fresh season values.
+Old484unknown TOV%/USG% values remain unknown, with their field-specific impacts;
+new16unknowns are not silently counted as zero. Local readiness503/freshnessunknown
+and complete source/numerical/snapshot/24-hour freshness gates remain unmet.
+
+Next: import the qualified143reason into a new validatable source-bound companion
+and exercise its original consumer; then populate the bounded16-game release
+deltas against the745window denominator. DQ-001–003 attributable methodology/ruling
+facts remain required before complete publication. Agent2 stays stopped;
+DQ-005/K12cold stay parked. Publication/pointer changes, spending/access expansion
+and unattended refresh remain excluded. No owner action is required now.
