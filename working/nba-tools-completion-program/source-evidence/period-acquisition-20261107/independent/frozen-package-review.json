@@ -1,0 +1,16 @@
+{
+  "reviewer": "/root/period_source_checker",
+  "model": "not exposed by runtime",
+  "reviewed_revision": "66e8ab4c41f308f566ba38059809c37ccfc80c24",
+  "package_sha256": "5156e94b425ded08573ca8138d53d4a9cfb35e2aa856d3a902c654b4bb5b3e44",
+  "script_sha256": "97bb73b6473fb532b249fa1daaa7f9089541d5b39b5d555bfac4248f9dce83e9",
+  "source_requests": 0,
+  "offline_mock_calls": 198,
+  "checks": [
+    "exact package/source/raw+canonical request/collector hashes; 196 embedded jobs; safe four-member ZIP; Mac executable syntax; Windows CRLF; no installs",
+    "first valid JSON transport body and second partial timeout body remain byte-exact in loose files+portable ZIP; 194 exact unattempted jobs; rerun makes zero extra calls",
+    "elapsed stop preserves first response; tampering aborts before calls; safe continuation makes exactly 195 remaining calls; 196 total unique exact jobs; transport completion remains unqualified/unpublished"
+  ],
+  "decision": "approved",
+  "scope": "Exact 196-job acquisition/transfer package only. No new source bytes or period source qualification; 98 windows remain missing. Existing 123-game v3 and prior application acceptance preserved."
+}
