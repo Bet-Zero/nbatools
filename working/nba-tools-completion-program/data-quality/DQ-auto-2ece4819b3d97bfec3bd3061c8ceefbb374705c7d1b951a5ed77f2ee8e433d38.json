@@ -1,0 +1,72 @@
+{
+  "check": "coverage missing 4 requested keys",
+  "claim": null,
+  "created_at": "2026-11-07T04:03:50.346495+00:00",
+  "dataset": "player_season_advanced",
+  "evidence": {
+    "reference": "working/nba-tools-completion-program/source-evidence/core-live-current-20261107/independent/current-population-freeze.json",
+    "sha256": "ddeebb5e7b8a5ffd00890b1bc1de15699d26a50e0ba2ea9aa6559a8434bcb77a",
+    "source_sha256": "6d382d91e1ee6e5ee21e63ec22fcd74d6461692d885912d4e6e63b5014bab97d",
+    "report_reference": "working/nba-tools-completion-program/source-evidence/core-live-current-20261107/current123-provisional.zip!data/metadata/initial-validation.json",
+    "sha256_serialization": "SHA256 of json.dumps(report,sort_keys=True), distinct from pretty-print file hash"
+  },
+  "expected": "existing dataset contract",
+  "fingerprint": "2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+  "id": "DQ-auto-2ece4819b3d97bfec3bd3061c8ceefbb374705c7d1b951a5ed77f2ee8e433d38",
+  "impact": "dependent fields/consumers and data acceptance remain unqualified",
+  "independent_review": null,
+  "kind": "data_quality_work_item",
+  "last_attempt": {
+    "evidence": {
+      "reference": "working/nba-tools-completion-program/source-evidence/core-live-current-20261107/independent/current-population-freeze.json",
+      "sha256": "ddeebb5e7b8a5ffd00890b1bc1de15699d26a50e0ba2ea9aa6559a8434bcb77a",
+      "source_sha256": "6d382d91e1ee6e5ee21e63ec22fcd74d6461692d885912d4e6e63b5014bab97d"
+    },
+    "snapshot": "current123-field-qualified-development-v1"
+  },
+  "next_evidence": "Bounded qualified new16 source rows; see current structural report and independently qualified new16-window-denominator.json (includes2OT).",
+  "observations": [
+    {
+      "evidence": {
+        "reference": "working/nba-tools-completion-program/source-evidence/core-live-current-20261107/independent/current-population-freeze.json",
+        "sha256": "ddeebb5e7b8a5ffd00890b1bc1de15699d26a50e0ba2ea9aa6559a8434bcb77a",
+        "source_sha256": "6d382d91e1ee6e5ee21e63ec22fcd74d6461692d885912d4e6e63b5014bab97d"
+      },
+      "snapshot": "current123-field-qualified-development-v1"
+    }
+  ],
+  "observed": {
+    "errors": [
+      "coverage missing 4 requested keys"
+    ],
+    "state": "failed"
+  },
+  "owner_role": "agent_1_application_acquisition",
+  "resolution": null,
+  "schema_version": 1,
+  "scope": {
+    "coverage": {
+      "expected_keys": 452,
+      "missing_keys": [
+        "player_id=1630172",
+        "player_id=1642261",
+        "player_id=1642851",
+        "player_id=1642928"
+      ],
+      "missing_windows": [],
+      "observed_keys": 448,
+      "state": "failed",
+      "unexpected_keys": []
+    },
+    "key_columns": [
+      "player_id",
+      "as_of_date"
+    ],
+    "season": "2026-27",
+    "season_type": "Regular Season"
+  },
+  "snapshot": "current123-field-qualified-development-v1",
+  "source_sha256": "753fcb8af8e4b99e45ba075a133ac2732a159a0936bb48fd586bbd5fe469d6f3",
+  "status": "open",
+  "continuation_note": "Bounded current123 collection gaps, not the old484 method dependencies. Agent2 remains stopped. No publication."
+}

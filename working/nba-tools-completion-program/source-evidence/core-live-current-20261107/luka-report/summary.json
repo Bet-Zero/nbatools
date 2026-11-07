@@ -1,0 +1,19 @@
+{
+  "candidate_sha": "fe2384fe23fc7e2e0273a32e73bd8c14ffbdae4e",
+  "generation": "availability-lebron-season-v1-20261031",
+  "scope": "targeted",
+  "required_selection": [
+    "tests/cloud_current_luka_report_real_data.py::test_capture_one_original_luka_reported_rest_dependency"
+  ],
+  "required_test_limit": 100,
+  "selected": 1,
+  "executed": 1,
+  "passed": 1,
+  "skipped": 0,
+  "failed": 0,
+  "errors": 0,
+  "xfailed": 0,
+  "pytest_exit": 0,
+  "conclusion": "success",
+  "problems": []
+}

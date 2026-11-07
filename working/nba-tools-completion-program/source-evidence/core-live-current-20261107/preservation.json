@@ -1,0 +1,23 @@
+{
+  "games": {
+    "base_sha256": "c780ed652c25cdca043f262d19d8c8c68dd3ccea472ec7414f799d61d9265e31",
+    "rows_before": 107,
+    "rows_added": 16,
+    "all_prior_cells_preserved": true,
+    "new_sha256": "fb1cb99d3ec736b01458132e06b29f20d982bfad4f5519cd609079c20efd0c97"
+  },
+  "team_game_stats": {
+    "base_sha256": "246573db0bb534ac1eee0371c0e3a4c42584041052a9b5d67d7a00bf6a95dce7",
+    "rows_before": 214,
+    "rows_added": 32,
+    "all_prior_cells_preserved": true,
+    "new_sha256": "97acc3c2e2d3808f9938fdbc88983ab3b2baa0be744fe65dbe92b0cf41f723bb"
+  },
+  "player_game_stats": {
+    "base_sha256": "bb057263fa3b53ff8b83e8b2992960e8b40e8143613fcf9b2d5afb5b4d865396",
+    "rows_before": 2413,
+    "rows_added": 368,
+    "all_prior_cells_preserved": true,
+    "new_sha256": "334476753a8e3d34e260cdc230c67331a0dac892e8da1e26e1d9edb607bc070d"
+  }
+}

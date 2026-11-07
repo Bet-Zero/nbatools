@@ -1,0 +1,11 @@
+{
+  "run_id": 42338816470,
+  "artifact_id": 13561110329,
+  "artifact_sha256": "e298fa3211000ad63a96a26b74d2ed6cb54c1d937d31a461fba368d2b7e9ee41",
+  "reviewed_candidate": "da96e4de03c2f789f1423fd5b5c04ed92928a56a",
+  "request_sha": "fe2384fe23fc7e2e0273a32e73bd8c14ffbdae4e",
+  "classification": "one approved original-body capture; source qualification separate",
+  "readers": 1,
+  "retries": 0,
+  "production_writes": 0
+}

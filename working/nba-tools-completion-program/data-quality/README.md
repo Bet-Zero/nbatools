@@ -27,6 +27,15 @@ can overlap; use the authoritative key ledger for totals. All three are currentl
 | [DQ-004](DQ-004.json) | Resolved: authenticated owner3article originals, finite membership chain and all eligible game IDs independently qualified | Agent1 [PR590](https://github.com/Bet-Zero/nbatools/pull/590): full-season historical staged acceptance81eligible/72played/9explicitDNP,unknown0; hosted5/5required and4stagedRawQAcases passed. Feb9date-onlyunknown preserved. No production publication or repeated download. |
 | [DQ-005](DQ-005.json) | Native independent scorer bodies for both complete team vectors;4JSON originals now retained | Agent2 [PR588](https://github.com/Bet-Zero/nbatools/pull/588), evidence-only closeout; blocked_evidence/stopped and nonblocking for app development. No correction or app defect established; canonical margins already derive scores. |
 
+Current123 intake (Agent1; Agent2 remains stopped): [DQ-006](DQ-006.json)
+retains exact cross-club membership facts still missing. The four stable
+`DQ-auto-*` entries from current123 initial validation retain roles, player/team
+period and Advanced-player coverage failures. Their literal initial report has a
+regulation-only new-game denominator; [source-qualified release scope](../source-evidence/core-live-current-20261107/new16-window-denominator.json)
+requires196new team/2249player period keys including2OT. They do not duplicate or
+replace DQ-001–003's484 old rate values. The one143 official Rest-source fallback
+succeeded; its source qualification and unimported companion remain separate.
+
 **Do not reopen resolved0142,0138,0009AST or0160timing** merely because an older
 handoff says blocked. PR582 accepts the relevant scorer facts and independent
 numerical checks while honestly leaving independent upstream generation unproven.

@@ -1,0 +1,26 @@
+{
+  "classification": "Synthetic validator controls; no public or browser execution",
+  "candidate": "1bbb2e18",
+  "controls": [
+    {
+      "probe": "baseline",
+      "accepted": true
+    },
+    {
+      "probe": "wrong_visible_subject",
+      "accepted": false
+    },
+    {
+      "probe": "wrong_actor_polarity",
+      "accepted": false
+    },
+    {
+      "probe": "wrong_values",
+      "accepted": false
+    },
+    {
+      "probe": "wrong_query",
+      "accepted": false
+    }
+  ]
+}

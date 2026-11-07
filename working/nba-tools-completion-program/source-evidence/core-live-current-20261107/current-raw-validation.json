@@ -1,0 +1,18 @@
+{
+  "snapshot_manifest_sha256": "373e0b5c1e53f7e60dbfdb2c2799bf7b661f439fbd5e6662f9d6dcedadf5fe95",
+  "checks": [
+    {
+      "check": "whole_game_math_and_pair",
+      "state": "passed"
+    },
+    {
+      "check": "paired_identity_scores",
+      "state": "passed"
+    },
+    {
+      "check": "availability_schema_states",
+      "state": "passed"
+    }
+  ],
+  "scope": "raw whole-game math/reciprocal identity and availability contract; not full numerical/source/freshness acceptance"
+}

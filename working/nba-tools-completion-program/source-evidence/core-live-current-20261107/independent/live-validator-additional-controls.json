@@ -1,0 +1,51 @@
+{
+  "candidate_sha": "1bbb2e18382772cd4c94a0ee09f380f9659fcfef",
+  "classification": "Synthetic source-oracle based validator controls, not public/browser execution",
+  "checks": [
+    {
+      "family": "ownership",
+      "probe": "valid",
+      "accepted": true
+    },
+    {
+      "family": "ownership",
+      "probe": "wrong_hero",
+      "accepted": false
+    },
+    {
+      "family": "ownership",
+      "probe": "wrong_ppg",
+      "accepted": false
+    },
+    {
+      "family": "owned_team",
+      "probe": "valid",
+      "accepted": true
+    },
+    {
+      "family": "owned_team",
+      "probe": "wrong_grain",
+      "accepted": false
+    },
+    {
+      "family": "owned_team",
+      "probe": "wrong_owner",
+      "accepted": false
+    },
+    {
+      "family": "owned_opponent",
+      "probe": "valid",
+      "accepted": true
+    },
+    {
+      "family": "owned_opponent",
+      "probe": "wrong_grain",
+      "accepted": false
+    },
+    {
+      "family": "owned_opponent",
+      "probe": "wrong_owner",
+      "accepted": false
+    }
+  ]
+}

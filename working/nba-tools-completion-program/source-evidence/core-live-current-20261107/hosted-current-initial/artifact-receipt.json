@@ -1,0 +1,12 @@
+{
+  "run_id": 42338805173,
+  "artifact_id": 13560761429,
+  "artifact_sha256": "a851e5e2f536913eba50eced0f5cf699f0e6a3b80e667acb68ca8b2d6d8c049b",
+  "reviewed_candidate": "da96e4de03c2f789f1423fd5b5c04ed92928a56a",
+  "conclusion": "failure",
+  "selected": 12,
+  "passed": 9,
+  "failed": 3,
+  "cause": "three literal2025availability whole-file pins stale; original fact hashes and complete parent unchanged; exact-generation adapter reviewed17e219e0",
+  "retry_policy": "corrected coherent12 required group; no NBA source acquisition or numerical expectation changes"
+}

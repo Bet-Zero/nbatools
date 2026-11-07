@@ -1,0 +1,22 @@
+{
+  "current-originals.zip": {
+    "sha256": "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd",
+    "size_bytes": 635409
+  },
+  "current123-provisional.zip": {
+    "sha256": "eb60f64204a089d0d5a9083496aa44e172e3fe511b71d7980a0649e0e3778c17",
+    "size_bytes": 793724
+  },
+  "new16-summary-originals.zip": {
+    "sha256": "dbf426144fe30017bb0b96eac184897ce344938fa73c6670672c150474a5381b",
+    "size_bytes": 59865
+  },
+  "current-browser.zip": {
+    "sha256": "0ca5d0e6ccf73cf8f265029079723165ba415e15b9bade2165a6d194751e7db8",
+    "size_bytes": 2169178
+  },
+  "retained-pair-metadata.zip": {
+    "sha256": "743155d356094cc45cffe9256b48e21280e99eaca04d78d49428cffa9733f3ae",
+    "size_bytes": 34301
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "actual_captures": 44,
+  "frozen_case_pairs": [
+    {
+      "viewport": "desktop",
+      "id": "k12-s1",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "k12-r1",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "k12-b1",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "k12-c1",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "k12-l1",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "k12-x1",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "k12-m1",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "k12-z1",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "k12-e1",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "k12-n1",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "k12-h1",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "k12-r1-win-loss",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "live-k05",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "live-k09",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "live-k10",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "live-k08",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "live-s4-team-with",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "live-s4-team-without",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "live-s4-player-with",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "live-s4-player-without",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "live-owned-team",
+      "matched": true
+    },
+    {
+      "viewport": "desktop",
+      "id": "live-owned-opponent",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "k12-s1",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "k12-r1",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "k12-b1",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "k12-c1",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "k12-l1",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "k12-x1",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "k12-m1",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "k12-z1",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "k12-e1",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "k12-n1",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "k12-h1",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "k12-r1-win-loss",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "live-k05",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "live-k09",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "live-k10",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "live-k08",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "live-s4-team-with",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "live-s4-team-without",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "live-s4-player-with",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "live-s4-player-without",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "live-owned-team",
+      "matched": true
+    },
+    {
+      "viewport": "mobile",
+      "id": "live-owned-opponent",
+      "matched": true
+    }
+  ],
+  "original_run_failed": true,
+  "classification": "Independent retained actual capture review against existing qualified frozen oracles; K05/K12L1/K09/K10 source-body hash replay remains required on canonical runner",
+  "post_provider_same_deployment": true,
+  "full_core1_accepted": false,
+  "current_season_accepted": false
+}

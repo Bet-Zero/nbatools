@@ -1,0 +1,11 @@
+{
+  "run_id": 42338662976,
+  "artifact_id": 13560752140,
+  "artifact_sha256": "42c85064a16d1f81647d565ed02ea06835dc8620ac17c65cd983a98de52fabda",
+  "original_run": 42337545754,
+  "original_artifact_sha256": "a5c718c7498f24d787866ff4e3d53220363e00588a045607e92f5947ac2074a5",
+  "reviewed_candidate": "395c00e5aaaaa899e3699ac37c318875404db214",
+  "request_sha": "f8a41d52853c3b4b87070896b963e3a971efd069",
+  "nba_source_requests": 0,
+  "public_queries_in_replay": 0
+}

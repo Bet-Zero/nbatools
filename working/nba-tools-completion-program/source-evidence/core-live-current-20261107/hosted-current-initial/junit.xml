@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="12" time="14.610" timestamp="2026-11-07T04:32:36.307289+00:00" hostname="runnervmwuk1x"><testcase classname="tests.test_multi_opponent_real_data" name="test_multi_opponent_subject_rows_and_labels" time="10.280" /><testcase classname="tests.test_multi_opponent_real_data" name="test_comparison_opponent_union" time="1.398" /><testcase classname="tests.test_multi_opponent_real_data" name="test_head_to_head_opponent_intersection" time="0.047" /><testcase classname="tests.test_opponent_played_real_data" name="test_opponent_played_has_qualified_same_game_membership[natural-case0]" time="0.437" /><testcase classname="tests.test_opponent_played_real_data" name="test_opponent_played_has_qualified_same_game_membership[natural-case1]" time="0.166"><failure message="AssertionError: assert '3288075f27eb...8d897be7c0d33' == '7e21e4931a40...2808ddfefc902'&#10;  &#10;  - 7e21e4931a4062e7cbb4abc10eeba051bf8429e7418112852662808ddfefc902&#10;  + 3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33">case = {'query': 'Lakers record against Celtics with Jayson Tatum playing in 2025-26', 'player_id': 1628369, 'subject_id': 1610612747, 'predicate_side_id': 1610612738, ...}
+consumer = 'natural'
+
+    @pytest.mark.parametrize("case", ORACLE["primary_cases"])
+    @pytest.mark.parametrize("consumer", ["natural", "when_plays", "structured"])
+    def test_opponent_played_has_qualified_same_game_membership(case, consumer):
+        season = case["query"].split()[-1]
+        for path, digest in ORACLE["sources"].items():
+            if season in path:
+&gt;               assert hashlib.sha256(data_path(path).read_bytes()).hexdigest() == digest
+E               AssertionError: assert '3288075f27eb...8d897be7c0d33' == '7e21e4931a40...2808ddfefc902'
+E                 
+E                 - 7e21e4931a4062e7cbb4abc10eeba051bf8429e7418112852662808ddfefc902
+E                 + 3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33
+
+tests/test_opponent_played_real_data.py:25: AssertionError</failure></testcase><testcase classname="tests.test_opponent_played_real_data" name="test_opponent_played_has_qualified_same_game_membership[when_plays-case0]" time="0.137" /><testcase classname="tests.test_opponent_played_real_data" name="test_opponent_played_has_qualified_same_game_membership[when_plays-case1]" time="0.007"><failure message="AssertionError: assert '3288075f27eb...8d897be7c0d33' == '7e21e4931a40...2808ddfefc902'&#10;  &#10;  - 7e21e4931a4062e7cbb4abc10eeba051bf8429e7418112852662808ddfefc902&#10;  + 3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33">case = {'query': 'Lakers record against Celtics with Jayson Tatum playing in 2025-26', 'player_id': 1628369, 'subject_id': 1610612747, 'predicate_side_id': 1610612738, ...}
+consumer = 'when_plays'
+
+    @pytest.mark.parametrize("case", ORACLE["primary_cases"])
+    @pytest.mark.parametrize("consumer", ["natural", "when_plays", "structured"])
+    def test_opponent_played_has_qualified_same_game_membership(case, consumer):
+        season = case["query"].split()[-1]
+        for path, digest in ORACLE["sources"].items():
+            if season in path:
+&gt;               assert hashlib.sha256(data_path(path).read_bytes()).hexdigest() == digest
+E               AssertionError: assert '3288075f27eb...8d897be7c0d33' == '7e21e4931a40...2808ddfefc902'
+E                 
+E                 - 7e21e4931a4062e7cbb4abc10eeba051bf8429e7418112852662808ddfefc902
+E                 + 3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33
+
+tests/test_opponent_played_real_data.py:25: AssertionError</failure></testcase><testcase classname="tests.test_opponent_played_real_data" name="test_opponent_played_has_qualified_same_game_membership[structured-case0]" time="0.109" /><testcase classname="tests.test_opponent_played_real_data" name="test_opponent_played_has_qualified_same_game_membership[structured-case1]" time="0.007"><failure message="AssertionError: assert '3288075f27eb...8d897be7c0d33' == '7e21e4931a40...2808ddfefc902'&#10;  &#10;  - 7e21e4931a4062e7cbb4abc10eeba051bf8429e7418112852662808ddfefc902&#10;  + 3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33">case = {'query': 'Lakers record against Celtics with Jayson Tatum playing in 2025-26', 'player_id': 1628369, 'subject_id': 1610612747, 'predicate_side_id': 1610612738, ...}
+consumer = 'structured'
+
+    @pytest.mark.parametrize("case", ORACLE["primary_cases"])
+    @pytest.mark.parametrize("consumer", ["natural", "when_plays", "structured"])
+    def test_opponent_played_has_qualified_same_game_membership(case, consumer):
+        season = case["query"].split()[-1]
+        for path, digest in ORACLE["sources"].items():
+            if season in path:
+&gt;               assert hashlib.sha256(data_path(path).read_bytes()).hexdigest() == digest
+E               AssertionError: assert '3288075f27eb...8d897be7c0d33' == '7e21e4931a40...2808ddfefc902'
+E                 
+E                 - 7e21e4931a4062e7cbb4abc10eeba051bf8429e7418112852662808ddfefc902
+E                 + 3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33
+
+tests/test_opponent_played_real_data.py:25: AssertionError</failure></testcase><testcase classname="tests.test_opponent_played_real_data" name="test_additional_qualified_clause_returns_source_proven_conjunction_empty" time="0.468" /><testcase classname="tests.test_opponent_played_real_data" name="test_understood_road_setting_is_not_an_unresolved_second_player[with-2023-24-22300684-1-totals0]" time="0.088" /><testcase classname="tests.test_opponent_played_real_data" name="test_understood_road_setting_is_not_an_unresolved_second_player[without-2025-26-22500338-0-totals1]" time="0.362" /></testsuite></testsuites>

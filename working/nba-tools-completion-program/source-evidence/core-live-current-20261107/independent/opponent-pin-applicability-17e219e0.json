@@ -1,0 +1,24 @@
+{
+  "classification": "Unchanged accepted receipt applicability; no new acquisition/source-body requalification",
+  "reviewed_candidate": "17e219e00dc74f994d64fc90ca6bb4ab35be5e31",
+  "receipt_hashes": {
+    "tests/fixtures/opponent_played/source_oracle.json": "5a37f23e80b4799512cd336a81550260f2101e08895319cc58f356e33b3ed9d9",
+    "working/nba-tools-completion-program/source-evidence/paired-missing-20261107/r2-final/composed-acceptance.json": "c2bee07079cd90b508f83d930a7ed53fbc04a23ecc299a3eac93b0a495770880",
+    "working/nba-tools-completion-program/source-evidence/paired-missing-20261107/independent/oracle.json": "c90bee16e62aa026f66a70e7351fd13e869284aeba3a32bc3defe116f75fc471",
+    "working/nba-tools-completion-program/source-evidence/paired-missing-20261107/independent/stage-final-review.json": "8c9a086e05979604a62c0e1147a7abdf3581c4668506c4e4a1b8b4a35a8a5a88"
+  },
+  "complete_parent_game_ids": [
+    22500338,
+    22500823
+  ],
+  "original_DNP_source_sha256": [
+    "7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153",
+    "17fa1bc44b172df7afcf2154a64fb39c6d1f26986941a8bf03b82d0fd553f1ec"
+  ],
+  "facts_and_zero_expectations_unchanged": true,
+  "approved_qualified_extension": "availability-lebron-season-v1-20261031",
+  "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "literal_only_path": "raw/player_game_availability/2025-26_regular_season.csv",
+  "original_sha256": "7e21e4931a4062e7cbb4abc10eeba051bf8429e7418112852662808ddfefc902",
+  "qualified_extension_sha256": "3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33"
+}

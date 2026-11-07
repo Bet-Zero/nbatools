@@ -1,0 +1,9 @@
+{
+  "run_id": 42339331873,
+  "artifact_id": 13561540135,
+  "artifact_sha256": "9fd18327def200306c351b2a6d148b22f0d2e03b59663a94d9653e6564490f43",
+  "reviewed_candidate": "17e219e00dc74f994d64fc90ca6bb4ab35be5e31",
+  "request_sha": "3d1649d21f37b4d7acde1535c59e7051ec68c85a",
+  "scope": "12affected opponent/participation retaining checks, original frozen source facts and numerical expectations unchanged",
+  "nba_source_requests": 0
+}
