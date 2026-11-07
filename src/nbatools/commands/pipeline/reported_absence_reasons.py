@@ -108,7 +108,9 @@ def _observe(
         facts = []
         target_names = {report._name(observed.player_name), report._surname(observed.player_name)}
         selected_name = teams.loc[team_id, "team_name"]
-        for label, entries in report._inactives(lines, team_name=selected_name):
+        for label, entries in report._inactives(
+            lines, team_name=selected_name, reason_target_names=target_names
+        ):
             tid = team_id
             for name, reason in entries:
                 if report._name(name) not in target_names:

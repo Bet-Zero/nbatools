@@ -269,6 +269,18 @@ def test_selected_bare_inactive_cannot_be_promoted_to_other(staged, monkeypatch)
     assert not (staged[0] / reasons.DIRECTORY).exists()
 
 
+def test_unrelated_bare_inactive_does_not_hide_explicit_target_reason(staged, monkeypatch):
+    args = _pdf(staged, monkeypatch, reason="Injury/Illness - Other; Back Tightness")
+    text = producer.report._report_text(args["source_file"].read_bytes())
+    text = text.replace("Unrelated Unindexed (Personal)", "Unrelated Unindexed")
+    monkeypatch.setattr(producer.report, "_report_text", lambda _: text)
+    row = producer.stage_observation(**args)
+    assert row["reported_reason"] == "reported_other"
+    producer.validate_publication(staged[0])
+    with pytest.raises(ValueError, match="Unrecognized official inactive row"):
+        producer.report._inactives(text.splitlines(), team_name="A Team")
+
+
 @pytest.mark.parametrize(
     "literal",
     [

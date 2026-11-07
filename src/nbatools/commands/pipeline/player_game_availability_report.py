@@ -226,7 +226,9 @@ def _score(lines: list[str]) -> int:
     return scores[0]
 
 
-def _split_inactives(record: str) -> list[tuple[str, str]]:
+def _split_inactives(
+    record: str, *, reason_target_names: set[str] | None = None
+) -> list[tuple[str, str]]:
     if record.strip().upper() in {"NONE", "N/A"}:
         return []
     tokens, current, depth = [], "", 0
@@ -249,13 +251,25 @@ def _split_inactives(record: str) -> list[tuple[str, str]]:
     for entry in tokens:
         match = re.fullmatch(r"(.+?)\s+\((.*)\)", entry)
         if match is None:
+            # A reason companion qualifies one already identified nonparticipant.
+            # Bare unrelated inactive names do not supply any reason evidence.
+            # Whole-game import and a bare selected target remain strict.
+            if (
+                reason_target_names is not None
+                and re.fullmatch(r"[^\W\d_][^\d(),;]*", entry)
+                and _name(entry) not in reason_target_names
+            ):
+                continue
             raise ValueError(f"Unrecognized official inactive row: {entry}")
         result.append((match.group(1).strip(), "INACTIVE - " + match.group(2).strip()))
     return result
 
 
 def _inactives(
-    lines: list[str], *, team_name: str | None = None
+    lines: list[str],
+    *,
+    team_name: str | None = None,
+    reason_target_names: set[str] | None = None,
 ) -> list[tuple[str, list[tuple[str, str]]]]:
     groups = []
     for index, line in enumerate(lines):
@@ -278,7 +292,9 @@ def _inactives(
             ):
                 break
             joined.append(part)
-        groups.append((team, _split_inactives(" ".join(joined))))
+        groups.append(
+            (team, _split_inactives(" ".join(joined), reason_target_names=reason_target_names))
+        )
     if len(groups) != (1 if team_name is not None else 2):
         raise ValueError(
             "Final Box must contain unique selected inactive lists"
