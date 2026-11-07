@@ -3900,7 +3900,15 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
     end_season = kwargs.get("end_season")
     season_type = kwargs.get("season_type") or "Regular Season"
 
-    if season:
+    selected_seasons = (
+        kwargs.get("split_seasons")
+        if route in {"player_split_summary", "team_split_summary"}
+        and kwargs.get("split") == "season"
+        else None
+    )
+    if selected_seasons:
+        current_through = compute_current_through_for_seasons(selected_seasons, season_type)
+    elif season:
         current_through = compute_current_through_for_seasons([season], season_type)
     elif start_season and end_season:
         from nbatools.commands._seasons import int_to_season, season_to_int
@@ -3961,6 +3969,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         "ascending": kwargs.get("ascending"),
         "ranked_intent": kwargs.get("sort_by") == "stat",
         "split_type": kwargs.get("split"),
+        "season_list": selected_seasons,
         "clutch": kwargs.get("clutch"),
         "back_to_back": kwargs.get("back_to_back"),
         "series_situation": kwargs.get("series_situation"),
@@ -3976,7 +3985,13 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
     if current_through is not None:
         metadata["current_through"] = current_through
 
-    applied_filters = [] if unsupported_filters else _build_applied_filters(kwargs)
+    filter_source = {
+        **kwargs,
+        "route": route,
+        "split_type": kwargs.get("split"),
+        "season_list": selected_seasons,
+    }
+    applied_filters = [] if unsupported_filters else _build_applied_filters(filter_source)
     if applied_filters:
         metadata["applied_filters"] = applied_filters
     if isinstance(kwargs.get("opponent"), list):

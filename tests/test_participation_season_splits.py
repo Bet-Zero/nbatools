@@ -125,7 +125,7 @@ def test_participation_survives_named_season_split(
     from tests.participation_contract_helpers import assert_single_season_controls
 
     assert_single_season_controls(kind, relation, selected_season, expected, monkeypatch)
-    for result in results[:2]:
+    for result in results:
         badges = {row["label"]: row["value"] for row in result.metadata["applied_filters"]}
         assert badges[relation.capitalize() + " player"] == "Jayson Tatum"
         assert badges["Opponent"] == "LAL"

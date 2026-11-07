@@ -172,7 +172,7 @@ def verify_qualified_participation_splits(root, monkeypatch):
                     from tests.participation_contract_helpers import assert_single_season_controls
 
                     assert_single_season_controls(kind, relation, selected, expected, monkeypatch)
-                    for result in results[:2]:
+                    for result in results:
                         badges = {
                             row["label"]: row["value"] for row in result.metadata["applied_filters"]
                         }

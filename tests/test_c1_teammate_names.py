@@ -409,3 +409,12 @@ def test_pair_suffix_before_a_shared_stat_bound(sparse_root, suffix):
     assert result.result_status == "ok", result.metadata
     assert {r["game_id"] for r in result.to_dict()["sections"]["game_log"]} == set(expected.game_id)
     assert result.metadata["without_player"] == "Anthony Davis and Austin Reaves"
+
+
+@pytest.mark.parametrize("actor", ["LeBron James", "Unknown Person", "Tatum"])
+def test_pair_bound_cannot_hide_a_trailing_actor(sparse_root, actor):
+    result = execute_natural_query(
+        f"Lakers record with Davis and Reaves missing and at least 100 points and {actor}"
+    )
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"

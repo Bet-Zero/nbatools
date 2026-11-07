@@ -457,6 +457,8 @@ def availability_pair(
     """A qualified two-teammate condition and its complete source span."""
     from nbatools.commands._matchup_utils import (
         _joins_second_player,
+        _stat_count_phrase,
+        _tail_is_read_scope,
         detect_player,
         detect_unresolved_availability_player,
     )
@@ -492,6 +494,12 @@ def availability_pair(
         return None
     if _joins_second_player(text, m):
         return None
+    # Refining a name list before a bound must not hide any unread tail.
+    bound_join = re.match(r"\s+and\s+", text[m.end() :])
+    if bound_join:
+        bound = _stat_count_phrase(text, m.end() + bound_join.end())
+        if not bound or not _tail_is_read_scope(text, bound.end()):
+            return None
     if any(
         other is not m
         and (
