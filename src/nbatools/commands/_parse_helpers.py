@@ -1008,7 +1008,7 @@ _OPPONENT_COMMA = re.compile(
 )
 
 
-_LIST_VS = re.compile(r"\b(?:vs\.?|versus|against)\s+(?:the\s+)?")
+_LIST_VS = re.compile(r"\b(?:vs\.?|versus|against)\s+(?:either\s+)?(?:the\s+)?")
 _LIST_SEP = re.compile(r"\s*(?:,\s*(?:(?:and|or|&)\s+)?|\s(?:and|or|&)\s+|/)\s*(?:the\s+)?")
 _TEAM_AT: re.Pattern | None = None
 

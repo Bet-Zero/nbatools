@@ -1,0 +1,6 @@
+{
+  "archive": "current123-provisional.zip",
+  "manifest": "data/metadata/development_snapshot.json",
+  "manifest_sha256": "373e0b5c1e53f7e60dbfdb2c2799bf7b661f439fbd5e6662f9d6dcedadf5fe95",
+  "publishable": false
+}

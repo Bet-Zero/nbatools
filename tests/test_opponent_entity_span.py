@@ -46,3 +46,21 @@ def test_following_player_scoring_condition_survives():
     assert parsed["route_kwargs"]["opponent"] == "DEN"
     assert parsed["route_kwargs"]["stat"] == "pts"
     assert parsed["route_kwargs"]["min_value"] == 30
+
+
+@pytest.mark.parametrize("marker", ["against", "versus", "vs."])
+@pytest.mark.parametrize(
+    "opponents,expected",
+    [
+        ("Celtics or Knicks", ["BOS", "NYK"]),
+        ("the Nuggets or the Jazz", ["DEN", "UTA"]),
+    ],
+)
+def test_either_named_opponents_stay_one_sample_with_participation(marker, opponents, expected):
+    parsed = parse_query(f"Lakers record {marker} either {opponents} without Tatum in 2025-26")
+    assert parsed["route"] == "team_record"
+    options = parsed["route_kwargs"]
+    assert options["team"] == "LAL" and options["opponent"] == expected
+    assert options["without_player"] == "Jayson Tatum"
+    assert options["season"] == "2025-26"
+    assert not options.get("unsupported_filters")

@@ -1,0 +1,82 @@
+[
+  {
+    "path": "/freshness",
+    "http": 200,
+    "body": {
+      "status": "unknown",
+      "current_through": null,
+      "checked_at": "2026-11-07T04:19:25",
+      "seasons": [
+        {
+          "season": "2026-27",
+          "season_type": "Regular Season",
+          "status": "unknown",
+          "current_through": null,
+          "raw_complete": false,
+          "processed_complete": false,
+          "loaded_at": null,
+          "validation_state": "unknown",
+          "generation_id": null,
+          "validation_errors": []
+        }
+      ],
+      "last_refresh_ok": null,
+      "last_refresh_at": null,
+      "last_refresh_error": null
+    }
+  },
+  {
+    "path": "/readiness",
+    "http": 503,
+    "body": {
+      "ready": false,
+      "status": "not_ready",
+      "checked_at": "2026-11-07T04:19:25Z",
+      "season": "2026-27",
+      "season_state": "unknown",
+      "max_active_lag_hours": 24,
+      "active_generation": "development-373e0b5c1e53f7e60dbfdb2c2799bf7b661f439fbd5e6662f9d6dcedadf5fe95",
+      "immutable_generation": false,
+      "release_exception_owner": "John Matthew, project owner",
+      "slices": [
+        {
+          "season": "2026-27",
+          "season_type": "Regular Season",
+          "trusted": false,
+          "validation_state": "unknown",
+          "generation_id": null,
+          "current_through": null,
+          "expected_current_through": null,
+          "schedule_complete": false,
+          "postseason_complete": false,
+          "errors": [
+            "DevelopmentDataUnavailable: Provisional input has unknown numeric fields: ['home_team_id', 'away_team_id', 'team_a_id', 'team_b_id']"
+          ],
+          "missing_due_game_ids": null
+        }
+      ],
+      "blockers": [
+        {
+          "code": "immutable_generation_required",
+          "detail": "Runtime generation inspection failed: DevelopmentDataUnavailable: Provisional input has unknown numeric fields: ['home_team_id', 'away_team_id', 'team_a_id', 'team_b_id']"
+        },
+        {
+          "code": "regular_season_slice_untrusted",
+          "detail": "DevelopmentDataUnavailable: Provisional input has unknown numeric fields: ['home_team_id', 'away_team_id', 'team_a_id', 'team_b_id']"
+        },
+        {
+          "code": "season_state_unknown",
+          "detail": "Trusted schedule evidence cannot establish active, completed-postseason, or offseason state."
+        }
+      ],
+      "exception": {
+        "applied": false,
+        "owner": "John Matthew, project owner",
+        "reason": null,
+        "created_at": null,
+        "expires_at": null,
+        "error": null
+      }
+    }
+  }
+]

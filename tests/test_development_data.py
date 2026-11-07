@@ -388,3 +388,117 @@ def test_failed_known_data_comparison_flows_to_backlog_and_flagged_query(snapsho
         assert not quality["numerical_acceptance"] and not quality["production_accepted"]
     entry = json.loads((tmp_path / "backlog" / (item + ".json")).read_bytes())
     assert (entry["observed"], entry["expected"], entry["status"]) == (observed, expected, "open")
+
+
+def _small_guard_snapshot(tmp_path, family, rows):
+    """Controlled byte-pinned input for the loader guard, not NBA evidence."""
+    root = tmp_path / "guard"
+    relative = f"data/raw/{family}/2026-27_regular_season.csv"
+    target = root / relative
+    target.parent.mkdir(parents=True)
+    pd.DataFrame(rows).to_csv(target, index=False)
+    manifest = dict(
+        schema_version=1,
+        quality="provisional",
+        version="controlled-guard",
+        scope="controlled guard regression; not NBA evidence",
+        source_evidence={"reference": "controlled"},
+        validation_reports={"initial": "failed"},
+        exceptions=[],
+        files={relative: sha256(target.read_bytes())},
+    )
+    path = root / MANIFEST
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps(manifest))
+    return root, sha256(path.read_bytes()), relative, target.read_bytes()
+
+
+def test_optional_game_catalog_metadata_is_not_an_unknown_statistic(tmp_path):
+    row = dict(
+        game_id=22600143,
+        home_team_id=1610612746,
+        away_team_id=1610612747,
+        is_final=1,
+        game_date="2026-10-28",
+        season="2026-27",
+        season_type="Regular Season",
+    )
+    row.update(
+        dict.fromkeys(
+            (
+                "game_datetime",
+                "arena",
+                "city",
+                "attendance",
+                "overtime_periods",
+                "playoff_round",
+                "series_id",
+                "series_game_number",
+            )
+        )
+    )
+    root, digest, relative, raw = _small_guard_snapshot(tmp_path, "games", [row])
+    with development_snapshot(root, digest):
+        assert data_path(relative).read_bytes() == raw
+        assert pd.read_csv(data_path(relative)).overtime_periods.isna().all()
+
+
+@pytest.mark.parametrize(
+    "state,minutes,allowed",
+    [
+        ("did_not_play", None, True),
+        ("played", 12.5, True),
+        ("played", None, False),
+        ("unknown", None, False),
+    ],
+)
+def test_only_explicit_nonparticipation_can_have_no_played_clock(tmp_path, state, minutes, allowed):
+    from nbatools.development_data import DevelopmentDataUnavailable
+
+    rows = [
+        dict(
+            game_id=22600143,
+            team_id=1610612747,
+            player_id=1629029,
+            participation_state=state,
+            source_minutes=minutes,
+            source_comment=None,
+            identity_source_sha256=None,
+        )
+    ]
+    root, digest, relative, raw = _small_guard_snapshot(tmp_path, "player_game_availability", rows)
+    with development_snapshot(root, digest):
+        if allowed:
+            assert data_path(relative).read_bytes() == raw
+        else:
+            with pytest.raises(DevelopmentDataUnavailable, match="source_minutes"):
+                data_path(relative)
+
+
+@pytest.mark.parametrize(
+    "family,field",
+    [
+        ("games", "game_id"),
+        ("games", "home_team_id"),
+        ("team_game_stats", "pts"),
+        ("team_game_period_stats", "off_rating"),
+        ("player_game_availability", "player_id"),
+    ],
+)
+def test_catalog_exception_does_not_whitelist_metrics_or_required_identity(tmp_path, family, field):
+    from nbatools.development_data import DevelopmentDataUnavailable
+
+    row = dict(
+        game_id=22600143,
+        home_team_id=1610612746,
+        player_id=1629029,
+        pts=103,
+        off_rating=110,
+        participation_state="played",
+        source_minutes=12.5,
+    )
+    row[field] = None
+    root, digest, relative, _ = _small_guard_snapshot(tmp_path, family, [row])
+    with development_snapshot(root, digest):
+        with pytest.raises(DevelopmentDataUnavailable, match=field):
+            data_path(relative)
