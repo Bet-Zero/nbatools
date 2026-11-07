@@ -259,9 +259,11 @@ def test_teammate_after_a_bound_or_before_an_opponent(sparse_root, query, keep):
         # A second name who is not a teammate.
         "LeBron stats with Davis and Curry",
         "Lakers record with LeBron and Tatum",
-        # Medical/status and unspecified missingness are not participation.
+        # Medical causes are not whole-game participation observations.
         "Lakers record with Davis and Reaves injured",
-        "Lakers record with Davis and Reaves missing",
+        "Lakers record with Davis and Reaves missing due to injuries",
+        "Lakers record with Davis and Reaves missing the first quarter",
+        "Lakers record with Davis and Reaves missing from the bench",
         "LeBron James stats with Davis and Reaves injured",
     ],
 )
@@ -269,7 +271,9 @@ def test_unread_availability_still_refuses(sparse_root, query):
     assert execute_natural_query(query).result_status == "no_result"
 
 
-@pytest.mark.parametrize("suffix", ["both out", "out", "not playing"])
+@pytest.mark.parametrize(
+    "suffix", ["both out", "out", "not playing", "missing", "both missing", "were missing"]
+)
 @pytest.mark.parametrize("subject", ["Lakers record", "LeBron James stats"])
 def test_pair_absence_suffixes_apply_both_explicit_observations(sparse_root, suffix, subject):
     root, out = sparse_root

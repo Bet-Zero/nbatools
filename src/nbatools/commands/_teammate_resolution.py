@@ -164,8 +164,23 @@ _PAIR = re.compile(
 
 _PAIR_PARTICIPATION = re.compile(
     r"\s+(?:(?:are|were|is|was)\s+)?(?:both\s+)?"
-    r"(?P<state>out|not\s+playing|did\s+not\s+play|dnp|playing|played)$"
+    r"(?P<state>out|missing|not\s+playing|did\s+not\s+play|dnp|playing|played)$"
 )
+
+
+def _pair_participation_suffix(text: str, match: re.Match) -> re.Match | None:
+    """Keep a missing-from qualifier on the actors unless it is temporal scope."""
+    suffix = _PAIR_PARTICIPATION.search(match.group(2).strip())
+    if suffix and suffix.group("state") == "missing":
+        tail = text[match.end() :]
+        if re.match(r"\s+from\b", tail):
+            from nbatools.commands._matchup_utils import _MONTH, _SEASON
+
+            if not re.match(
+                rf"\s+from\s+(?:\d{{4}}-\d{{2}}-\d{{2}}|{_SEASON}|{_MONTH})(?![\w-])", tail
+            ):
+                return None
+    return suffix
 
 
 class AvailabilityClause(NamedTuple):
@@ -330,7 +345,7 @@ def requested_availability_pair(text: str) -> AvailabilityClause | None:
 
     for match in _PAIR.finditer(text):
         fragment = match.group(2).strip()
-        suffix = _PAIR_PARTICIPATION.search(fragment)
+        suffix = _pair_participation_suffix(text, match)
         absent = match.group(1) != "with"
         if suffix:
             absent = absent or suffix.group("state") not in ("playing", "played")
@@ -445,7 +460,7 @@ def availability_pair(
         return None
     fragment = m.group(2)
     mode = "with" if m.group(1) == "with" else "without"
-    suffix = _PAIR_PARTICIPATION.search(fragment)
+    suffix = _pair_participation_suffix(text, m)
     if suffix:
         state = suffix.group("state")
         suffix_mode = "with" if state in ("playing", "played") else "without"
