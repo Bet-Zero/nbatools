@@ -1,0 +1,37 @@
+[
+  {
+    "id": "live-s4-team-with",
+    "corruption": "wrong hero subject",
+    "rejected": true
+  },
+  {
+    "id": "live-s4-player-without",
+    "corruption": "wrong structured playerID",
+    "rejected": true
+  },
+  {
+    "id": "live-s4-team-with",
+    "corruption": "wrong rebound mean",
+    "rejected": true
+  },
+  {
+    "id": "live-k05",
+    "corruption": "wrong points mean",
+    "rejected": true
+  },
+  {
+    "id": "live-k08",
+    "corruption": "wrong visible club",
+    "rejected": true
+  },
+  {
+    "id": "live-owned-team",
+    "corruption": "wrong visible ownership",
+    "rejected": true
+  },
+  {
+    "id": "live-owned-opponent",
+    "corruption": "duplicate player vector",
+    "rejected": true
+  }
+]
