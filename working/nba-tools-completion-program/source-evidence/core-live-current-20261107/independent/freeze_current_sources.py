@@ -8,10 +8,24 @@ import re
 from collections import defaultdict
 from datetime import datetime, timedelta
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from zipfile import ZipFile
 
 ROOT = Path(__file__).resolve().parents[5]
-WORK = ROOT / "work/core-live-current"
+EVIDENCE = Path(__file__).resolve().parent.parent
+SOURCE_ARCHIVE_SHA256 = "411435a52ba299441e06cc0af50bfd4e31da7e853d0dc2cd03fe197e13a695dd"
+_source_temp = TemporaryDirectory(prefix="nbatools-independent-current-")
+WORK = Path(_source_temp.name)
+source_archive = EVIDENCE / "current-originals.zip"
+assert hashlib.sha256(source_archive.read_bytes()).hexdigest() == SOURCE_ARCHIVE_SHA256
+with ZipFile(source_archive) as originals:
+    assert len(originals.namelist()) == len(set(originals.namelist())) == 14
+    for member in originals.namelist():
+        path = Path(member)
+        assert not path.is_absolute() and ".." not in path.parts and "\\" not in member
+        target = WORK / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(originals.read(member))
 OLD = ROOT / "working/nba-tools-completion-program/source-evidence/rollover-2026-27"
 OUTPUT = Path(__file__).resolve().parent
 
