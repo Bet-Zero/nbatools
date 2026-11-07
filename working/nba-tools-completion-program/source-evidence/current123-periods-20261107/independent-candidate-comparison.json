@@ -1,0 +1,61 @@
+{
+  "candidate_zip_sha256": "a0ab6f64958018b3ca9b535ed6ef2ae316f01c55c40d27edd21677ff79ad9175",
+  "manifest_sha256": "93b2b8f87809727e6fa72a2b3cbfae3e893e5d122bc025aee3ee19bd8254097d",
+  "oracle_sha256": "59fd69280de504dc656611988f074b49eeecb35e1830d1cbbb0db07f9e1bec1a",
+  "numeric_cells_compared": 62448,
+  "numeric_differences": [],
+  "new_player_keys": 2236,
+  "new_team_keys": 196,
+  "total_player_rows": 16783,
+  "total_team_rows": 1490,
+  "old_period_prefix_bytes_preserved": true,
+  "unchanged_prior_nonperiod_files": 27,
+  "old_rate_unknowns_preserved": 484,
+  "new_source_basis_conflict_still_open": [
+    {
+      "code": "team_whole_additivity",
+      "detail": [
+        "0022600184",
+        1610612742,
+        "reboundsDefensive",
+        31,
+        32
+      ]
+    },
+    {
+      "code": "team_whole_additivity",
+      "detail": [
+        "0022600184",
+        1610612742,
+        "reboundsTotal",
+        49,
+        50
+      ]
+    },
+    {
+      "code": "player_whole_additivity",
+      "detail": [
+        "0022600184",
+        1610612742,
+        1629023,
+        "reboundsDefensive",
+        5,
+        6
+      ]
+    },
+    {
+      "code": "player_whole_additivity",
+      "detail": [
+        "0022600184",
+        1610612742,
+        1629023,
+        "reboundsTotal",
+        9,
+        10
+      ]
+    }
+  ],
+  "production_writes": 0,
+  "nba_requests_executed": 0,
+  "scope": "Candidate data matches independently raw-derived expectations; game184numericaltruth remains unresolved, no publication acceptance."
+}

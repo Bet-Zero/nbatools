@@ -1,0 +1,41 @@
+{
+  "status": "bounded_source_requirement_not_publication_approval",
+  "reason": "Newly returned196period sources reveal184Washington/DAL one defensive rebound disagreement with retained whole-game original; obtain one new scorer book, no repeated older investigation",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "limits": {
+    "sources": 1,
+    "attempts_per_source": 1,
+    "timeout_seconds": 20,
+    "max_body_bytes": 1500000,
+    "max_pages": 64,
+    "redirects": 0,
+    "retries": 0,
+    "metered_overage_usd": 0
+  },
+  "source": {
+    "game_id": "0022600184",
+    "url": "https://statsdmz.nba.com/pdfs/20261104/20261104_DALSAS_book.pdf",
+    "game_code": "20261104/DALSAS",
+    "date": "2026-11-04",
+    "teams": {
+      "away": {
+        "id": 1610612742,
+        "city": "Dallas",
+        "name": "Mavericks",
+        "points": 111
+      },
+      "home": {
+        "id": 1610612759,
+        "city": "San Antonio",
+        "name": "Spurs",
+        "points": 112
+      }
+    },
+    "identity_source": {
+      "bundle_path": "working/nba-tools-completion-program/source-evidence/core-live-current-20261107/new16-summary-originals.zip",
+      "bundle_sha256": "dbf426144fe30017bb0b96eac184897ce344938fa73c6670672c150474a5381b",
+      "member": "0022600184.json",
+      "sha256": "566cc92e6d96610aef9772218bc0f5bc5cb98bfd6ea6adb800579ae4a0007172"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "archive": "current123-period-v4.zip",
+  "archive_sha256": "a0ab6f64958018b3ca9b535ed6ef2ae316f01c55c40d27edd21677ff79ad9175",
+  "exceptions": [
+    "DQ-001",
+    "DQ-002",
+    "DQ-003",
+    "DQ-006",
+    "DQ-auto-4294464123002d61e11cd59f7cdebfd1690b172d28b608f26d934e725ecc6c7a"
+  ],
+  "manifest_sha256": "93b2b8f87809727e6fa72a2b3cbfae3e893e5d122bc025aee3ee19bd8254097d",
+  "parent_manifest_sha256": "5fb3326f512037c69c815a06cb73ab41a9a8187bf5dcdc36cd114f2da7eb6a4c",
+  "production_writes": 0,
+  "source_archive_sha256": "81eea4d32217e541cab13783a06031616abb192e56b7c7b37d10f1f460978faf"
+}
