@@ -1,0 +1,56 @@
+{
+  "reviewer": "/root/id44_checker",
+  "capture_revision": "ee2f5d89",
+  "applicable_candidate": "2f0ba1be2292f693b1d68e452a5c72e0ca0e2c89",
+  "classification": "actual local desktop/mobile on original-derived historical full82 population; canonical R2 match pending; not deployed acceptance",
+  "verified_payloads_and_hashes": 4,
+  "visually_inspected_screenshots": 4,
+  "findings": [],
+  "cases": [
+    {
+      "query": "Thunder record without Kevin Durant in 2007-08",
+      "viewport": {
+        "width": 1365,
+        "height": 900
+      },
+      "screenshot": "without-1365.png",
+      "sha256": "af7b1352b72f8c367bd60f8084812de68acd85abe2b0517af65c205d56340fb5",
+      "polarity": "without",
+      "expected_games": 2
+    },
+    {
+      "query": "Thunder record with Kevin Durant in 2007-08",
+      "viewport": {
+        "width": 1365,
+        "height": 900
+      },
+      "screenshot": "with-1365.png",
+      "sha256": "7584e81ca5b13d4a1ab056573e8ae0863ef9747d7a056a604ad3728be99dcc56",
+      "polarity": "with",
+      "expected_games": 80
+    },
+    {
+      "query": "Thunder record without Kevin Durant in 2007-08",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "without-390.png",
+      "sha256": "42b5dbfa8a268463e0f14033fe16116cabef5c08a4ec4c5feb297ef0331f5819",
+      "polarity": "without",
+      "expected_games": 2
+    },
+    {
+      "query": "Thunder record with Kevin Durant in 2007-08",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "with-390.png",
+      "sha256": "f21f7a00577b373ad570069a19857a07becbcc04e6c68d517b6b1378518e0b58",
+      "polarity": "with",
+      "expected_games": 80
+    }
+  ],
+  "limits": "Original-derived local full82 source population; canonicalR2 pending; not deployed or freshness acceptance. Application/UI bytes unchanged by candidate validation-only delta; no duplicate browser recapture required."
+}

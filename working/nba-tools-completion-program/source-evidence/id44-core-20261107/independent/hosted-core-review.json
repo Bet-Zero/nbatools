@@ -1,0 +1,93 @@
+{
+  "reviewer": "/root/id44_checker",
+  "reviewed_sha": "2f0ba1be2292f693b1d68e452a5c72e0ca0e2c89",
+  "request_sha": "73332f4d19f0128ea7aa310d219524701da0cfe7",
+  "run_id": 42332910004,
+  "artifact_id": 13557749269,
+  "artifact_sha256": "62b14839b994e62f44a37c26436995979aee458fd4a0128f919bc537cb454256",
+  "selected": 93,
+  "executed": 93,
+  "passed": 93,
+  "skipped": 0,
+  "failed": 0,
+  "errors": 0,
+  "xfailed": 0,
+  "junit_group_counts": {
+    "tests.test_k01_identity_real_data": 14,
+    "tests.test_k02_explicit_season_real_data": 3,
+    "tests.test_sample_order_contract_real_data": 6,
+    "tests.test_recent_window_meaning_real_data": 4,
+    "tests.test_k04_ranking_real_data": 20,
+    "tests.test_k06_comparison_real_data": 12,
+    "tests.test_k09_sequences_real_data": 12,
+    "tests.test_k10_history_real_data": 10,
+    "tests.test_k11_population_real_data": 11,
+    "tests.cloud_durant_franchise_stage_real_data": 1
+  },
+  "full82_source_and_consumer_acceptance": "passed",
+  "coverage": {
+    "played": 80,
+    "did_not_play": 2,
+    "same_game_other_side": 0,
+    "unknown": 0
+  },
+  "overlay_files": 8,
+  "availability_rows": 57,
+  "answers": [
+    {
+      "query": "How did the Thunder do in 2007-08 when Kevin Durant did not play?",
+      "command": null,
+      "polarity": "without",
+      "games": 2,
+      "wins": 1,
+      "losses": 1,
+      "points": 198
+    },
+    {
+      "query": "Thunder record in 2007-08 with Kevin Durant playing",
+      "command": null,
+      "polarity": "with",
+      "games": 80,
+      "wins": 19,
+      "losses": 61,
+      "points": 7801
+    },
+    {
+      "query": "Seattle SuperSonics record without Kevin Durant in 2007-08",
+      "command": null,
+      "polarity": "without",
+      "games": 2,
+      "wins": 1,
+      "losses": 1,
+      "points": 198
+    },
+    {
+      "query": "Seattle record with Kevin Durant in 2007-08",
+      "command": null,
+      "polarity": "with",
+      "games": 80,
+      "wins": 19,
+      "losses": 61,
+      "points": 7801
+    },
+    {
+      "query": null,
+      "command": "team_record",
+      "polarity": "with",
+      "games": 80,
+      "wins": 19,
+      "losses": 61,
+      "points": 7801
+    },
+    {
+      "query": null,
+      "command": "team_record",
+      "polarity": "without",
+      "games": 2,
+      "wins": 1,
+      "losses": 1,
+      "points": 198
+    }
+  ],
+  "limits": "Finite qualified historical stage. No publication,current/defaultseason,servedgeneration,deployed or fullCore1 acceptance. K03/K05 and K07/S4 unchanged prior scopes carried forward as approved, not new executions."
+}

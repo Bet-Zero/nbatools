@@ -1,0 +1,17 @@
+{
+  "runtime_base": "a0fb2211a6707d647325129f1262308545001241",
+  "runtime_changed": false,
+  "focused": {
+    "selected": 228,
+    "executed": 228,
+    "passed": 228,
+    "skipped": 0
+  },
+  "literal_old46_attempt": {
+    "executed": 0,
+    "pytest_exit_code": 4,
+    "reason": "Historical test_c1_availability_words.py no longer exists; retain original46 mapping, no false46pass"
+  },
+  "local_full_harness_preflight": "passed using original-derived local manifest, explicitly not canonical R2 acceptance",
+  "new_unfamiliar_words": "4 passed locally; canonical exact-candidate execution pending"
+}

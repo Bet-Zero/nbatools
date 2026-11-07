@@ -1,0 +1,33 @@
+{
+  "candidate_sha": "2f0ba1be2292f693b1d68e452a5c72e0ca0e2c89",
+  "classification": "independent original-derived local preflight; not canonicalR2 acceptance",
+  "consumer_acceptance": "passed",
+  "coverage": {
+    "played": 80,
+    "did_not_play": 2,
+    "same_game_other_side": 0,
+    "unknown": 0
+  },
+  "original_companion_polarities": 2,
+  "frozen_heldouts": 4,
+  "structured_polarities": 2,
+  "http_polarities": 2,
+  "corruption_controls": [
+    {
+      "probe": "unchanged",
+      "accepted": true
+    },
+    {
+      "probe": "duplicate_log",
+      "accepted": false
+    },
+    {
+      "probe": "wrong_record",
+      "accepted": false
+    },
+    {
+      "probe": "missing_log_key",
+      "accepted": false
+    }
+  ]
+}

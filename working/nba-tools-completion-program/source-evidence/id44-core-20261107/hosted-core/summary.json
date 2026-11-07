@@ -1,0 +1,28 @@
+{
+  "candidate_sha": "73332f4d19f0128ea7aa310d219524701da0cfe7",
+  "generation": "availability-lebron-season-v1-20261031",
+  "scope": "targeted",
+  "required_selection": [
+    "tests/test_k01_identity_real_data.py",
+    "tests/test_k02_explicit_season_real_data.py",
+    "tests/test_sample_order_contract_real_data.py",
+    "tests/test_recent_window_meaning_real_data.py",
+    "tests/test_k04_ranking_real_data.py",
+    "tests/test_k06_comparison_real_data.py",
+    "tests/test_k09_sequences_real_data.py",
+    "tests/test_k10_history_real_data.py",
+    "tests/test_k11_population_real_data.py",
+    "tests/cloud_durant_franchise_stage_real_data.py::test_durant_full_population_and_original_franchise_consumers"
+  ],
+  "required_test_limit": 100,
+  "selected": 93,
+  "executed": 93,
+  "passed": 93,
+  "skipped": 0,
+  "failed": 0,
+  "errors": 0,
+  "xfailed": 0,
+  "pytest_exit": 0,
+  "conclusion": "success",
+  "problems": []
+}

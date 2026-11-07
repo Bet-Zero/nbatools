@@ -1,0 +1,184 @@
+{
+  "append_only": {},
+  "archive_revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+  "base_file_hashes": {
+    "metadata/player_names.csv": "f7097aaefe54b986ea5036e3c9ca5ca4c05a58266aa6cd0e2b4710e4cfe5f1b2",
+    "raw/games/2007-08_regular_season.csv": "97e7f34f280cb44d60f292a4c648774d14b8446684df09d2871b52d6502e593f",
+    "raw/player_game_availability_sources/033411c6564dc5e715527d49c14a08b71fbae9ca2f8c268aec4a09d91016b54f.json": "033411c6564dc5e715527d49c14a08b71fbae9ca2f8c268aec4a09d91016b54f",
+    "raw/player_game_availability_sources/065bee6a25b0fc0ce2c778f4eb8a47c8090be79c651cd923b1f7f09499672c98.structured.json": "065bee6a25b0fc0ce2c778f4eb8a47c8090be79c651cd923b1f7f09499672c98",
+    "raw/player_game_availability_sources/07dedfb2a26ecb63021e71063af5e2fd8651855e3a2aee8bb5dd4b33c1a0ce06.json": "07dedfb2a26ecb63021e71063af5e2fd8651855e3a2aee8bb5dd4b33c1a0ce06",
+    "raw/player_game_availability_sources/0e91d4549d219571aa00de844b44ca76bf073406c4878f5d6e92f873fc5db38d.json": "0e91d4549d219571aa00de844b44ca76bf073406c4878f5d6e92f873fc5db38d",
+    "raw/player_game_availability_sources/14ccd87c712d581246b48cfb96f64ea0a2d0f5cea1b20ff13d42c5e9cff1ae42.structured.json": "14ccd87c712d581246b48cfb96f64ea0a2d0f5cea1b20ff13d42c5e9cff1ae42",
+    "raw/player_game_availability_sources/15dded8143b56e729b8e12d220c440999939bbf3098123f70a69d98350b2693b.structured.json": "15dded8143b56e729b8e12d220c440999939bbf3098123f70a69d98350b2693b",
+    "raw/player_game_availability_sources/17fa1bc44b172df7afcf2154a64fb39c6d1f26986941a8bf03b82d0fd553f1ec.pdf": "17fa1bc44b172df7afcf2154a64fb39c6d1f26986941a8bf03b82d0fd553f1ec",
+    "raw/player_game_availability_sources/1ad766c50741dd19f97a62c246724d92e5b1b6ca1eb418715b14a3be54c47a9a.structured.json": "1ad766c50741dd19f97a62c246724d92e5b1b6ca1eb418715b14a3be54c47a9a",
+    "raw/player_game_availability_sources/1f8c28313070597088d5dff2b7b8ebc1a38e603440fbc5d16cef8bac45e06c7c.json": "1f8c28313070597088d5dff2b7b8ebc1a38e603440fbc5d16cef8bac45e06c7c",
+    "raw/player_game_availability_sources/20231225_BOSLAL.json": "3006f627e553339827282634747a765867964317d2e73a79cd615f218d71a779",
+    "raw/player_game_availability_sources/20240201_LALBOS.json": "40434faea36b891f08a8cf11fe66c852fab35fc3892a6101ba4ebe77a31013c1",
+    "raw/player_game_availability_sources/20251021_GSWLAL.json": "abdff18f62b628aa701cc21baf4654b763908836f84749fec6de5bda331ff47b",
+    "raw/player_game_availability_sources/20251024_MINLAL.json": "4abc7b29e60e55b382d0c7e8a5025c68b50597a1bac209e2ef2f5c70c58aec06",
+    "raw/player_game_availability_sources/20251026_LALSAC.json": "098da56cb22b98b9592cdc0c4baa84242f11e918f9339cc70414256fbd112326",
+    "raw/player_game_availability_sources/20251027_PORLAL.json": "d20265335e07f76fa588e5602b84aa219936d4210b1f085aa88efa85cdb05d99",
+    "raw/player_game_availability_sources/20251205_LALBOS.json": "db4e5eff11dc8719ec539c0ca472e03eb5506bbbdb143197051a12d298dbb4d1",
+    "raw/player_game_availability_sources/20260222_BOSLAL.json": "eff3ce4c22e39bb2b6873657653885b5168f48eb84ffdc807c2f60145516f6ee",
+    "raw/player_game_availability_sources/22143871c5939f555845ce4bde26bf343392ca0890b10a3078e3fc711ec5c38a.json": "22143871c5939f555845ce4bde26bf343392ca0890b10a3078e3fc711ec5c38a",
+    "raw/player_game_availability_sources/231a7a6005ccd3e41ba1a7b6aa5e2cbda747935337c72714754ef08702901a4b.json": "231a7a6005ccd3e41ba1a7b6aa5e2cbda747935337c72714754ef08702901a4b",
+    "raw/player_game_availability_sources/24524dfdc4b07325e1ca5e496435747a40923abfc26711525be41a5e14d50281.structured.json": "24524dfdc4b07325e1ca5e496435747a40923abfc26711525be41a5e14d50281",
+    "raw/player_game_availability_sources/248646d02e390ba8a764ed53efe10a8ec5bc679bdc2a84a694c28a312dd4ba9b.json": "248646d02e390ba8a764ed53efe10a8ec5bc679bdc2a84a694c28a312dd4ba9b",
+    "raw/player_game_availability_sources/27432c40812ed9237928f45805c6ecddfa06c0abb16a66f5a13629c860b135e6.json": "27432c40812ed9237928f45805c6ecddfa06c0abb16a66f5a13629c860b135e6",
+    "raw/player_game_availability_sources/2c9eca7161342a4646fea7a6fad889ceda7f09a15cbee626c7a5f0ea7bc690a2.json": "2c9eca7161342a4646fea7a6fad889ceda7f09a15cbee626c7a5f0ea7bc690a2",
+    "raw/player_game_availability_sources/484cb742c3f9c4e35ecaca2a730568571c2acd722a4a09f918848ee97acd1a05.structured.json": "484cb742c3f9c4e35ecaca2a730568571c2acd722a4a09f918848ee97acd1a05",
+    "raw/player_game_availability_sources/49f3c13d794e4622748680952a9a951d6578082e43109a22b8752f3c94a3b637.structured.json": "49f3c13d794e4622748680952a9a951d6578082e43109a22b8752f3c94a3b637",
+    "raw/player_game_availability_sources/4d4285396acde394905a83fd53b09c3f3529988ebb9c91accd6d8adf26fcc09a.json": "4d4285396acde394905a83fd53b09c3f3529988ebb9c91accd6d8adf26fcc09a",
+    "raw/player_game_availability_sources/4dd48718f89a906b05385ebb81034e719f33c1470fffcbfb1a7e28582686eade.json": "4dd48718f89a906b05385ebb81034e719f33c1470fffcbfb1a7e28582686eade",
+    "raw/player_game_availability_sources/4e863c426f2e176dd20518cc8c7fb73614e4bd9a14b411189e02863b2f0be6d3.json": "4e863c426f2e176dd20518cc8c7fb73614e4bd9a14b411189e02863b2f0be6d3",
+    "raw/player_game_availability_sources/4f3d1961f46fe1d2c8fb91fdb23e4fbcd8691802c86b40d80e09ed3c522cbb06.pdf": "4f3d1961f46fe1d2c8fb91fdb23e4fbcd8691802c86b40d80e09ed3c522cbb06",
+    "raw/player_game_availability_sources/50cec003175260ed3a598de1a086a723b503aec9826bff8f6849fc989bd7d336.json": "50cec003175260ed3a598de1a086a723b503aec9826bff8f6849fc989bd7d336",
+    "raw/player_game_availability_sources/536e86614f39700522fd9ee57bf5c196146f65a871c60b85d5549e6cffb9d2ea.json": "536e86614f39700522fd9ee57bf5c196146f65a871c60b85d5549e6cffb9d2ea",
+    "raw/player_game_availability_sources/5944340c8398f8476ff5f5e1bdc96771bc72dff05a347a37cbf30e03cb6688b5.pdf": "5944340c8398f8476ff5f5e1bdc96771bc72dff05a347a37cbf30e03cb6688b5",
+    "raw/player_game_availability_sources/6265a13ae0f364f41640879410a596eb865a9ac7f2dace8a4fb4c30a002fa4d1.json": "6265a13ae0f364f41640879410a596eb865a9ac7f2dace8a4fb4c30a002fa4d1",
+    "raw/player_game_availability_sources/6617e5db215b37215f8fa5ede41459f8db574403e1bd420ef8945f42ec0267a6.structured.json": "6617e5db215b37215f8fa5ede41459f8db574403e1bd420ef8945f42ec0267a6",
+    "raw/player_game_availability_sources/6783f95505ca20d7074a13d838aacba3503ba8093a7147e371f4706aa043366d.json": "6783f95505ca20d7074a13d838aacba3503ba8093a7147e371f4706aa043366d",
+    "raw/player_game_availability_sources/70ae11f2800995a7a964edc10d1a95bc1f12560b65333823acee721e1c658556.structured.json": "70ae11f2800995a7a964edc10d1a95bc1f12560b65333823acee721e1c658556",
+    "raw/player_game_availability_sources/7af6d6b99ebaee139a55f77698f1f9b322f42dc5ea3977870788c3fe5341b284.structured.json": "7af6d6b99ebaee139a55f77698f1f9b322f42dc5ea3977870788c3fe5341b284",
+    "raw/player_game_availability_sources/7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153.pdf": "7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153",
+    "raw/player_game_availability_sources/845a5673d744698c414de7513244cfcf519146cb0e0c6add7512969615a1c873.json": "845a5673d744698c414de7513244cfcf519146cb0e0c6add7512969615a1c873",
+    "raw/player_game_availability_sources/8b066984bb5d177cff3c064c059b1265841cb04c33983c15366341db4528e04c.structured.json": "8b066984bb5d177cff3c064c059b1265841cb04c33983c15366341db4528e04c",
+    "raw/player_game_availability_sources/8ea1b68d7eaf490ce5b519bf83f444d7ae2f93b0f02c930884c1c5b096345842.json": "8ea1b68d7eaf490ce5b519bf83f444d7ae2f93b0f02c930884c1c5b096345842",
+    "raw/player_game_availability_sources/91205f2e28bf0f3b9537b4c07d7c1e20eb4fe3f8beba5907e176f08c1a5a3306.pdf": "91205f2e28bf0f3b9537b4c07d7c1e20eb4fe3f8beba5907e176f08c1a5a3306",
+    "raw/player_game_availability_sources/95bf8000ad6def3f80693562039efcecaeec30c3c8dfdbb8931e0b7d0971a441.structured.json": "95bf8000ad6def3f80693562039efcecaeec30c3c8dfdbb8931e0b7d0971a441",
+    "raw/player_game_availability_sources/963a18d8d96c84020da4f217af49079382e23b76a79bf9175f33ccf3bf5b4d95.json": "963a18d8d96c84020da4f217af49079382e23b76a79bf9175f33ccf3bf5b4d95",
+    "raw/player_game_availability_sources/98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4.pdf": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4",
+    "raw/player_game_availability_sources/9b6c8c06052278caeeee13f9d2bd0c7f89025392dfac77331e1972d6dbd22e5f.json": "9b6c8c06052278caeeee13f9d2bd0c7f89025392dfac77331e1972d6dbd22e5f",
+    "raw/player_game_availability_sources/9cfc818a3f68d226a9011c97ce89effeaffcdc0203535b591f0cdd3ee34b8aef.json": "9cfc818a3f68d226a9011c97ce89effeaffcdc0203535b591f0cdd3ee34b8aef",
+    "raw/player_game_availability_sources/a2075d21356fe64fdde5dc69521bbb34e589500aeeb29a639bb3f2b53590902c.json": "a2075d21356fe64fdde5dc69521bbb34e589500aeeb29a639bb3f2b53590902c",
+    "raw/player_game_availability_sources/a4d6ca2ce77c3c20672278e1b633f2aa56579d248b9b0f34eb92bff079098355.json": "a4d6ca2ce77c3c20672278e1b633f2aa56579d248b9b0f34eb92bff079098355",
+    "raw/player_game_availability_sources/b0a99c6af6867fed57aefcbf3e307a760184befabe6a7850187d6b01ee165f1d.json": "b0a99c6af6867fed57aefcbf3e307a760184befabe6a7850187d6b01ee165f1d",
+    "raw/player_game_availability_sources/b7dee482d517bfed0499e99cbd2cecb6ae7e0e33d8f1b48b2c099e90e898e743.json": "b7dee482d517bfed0499e99cbd2cecb6ae7e0e33d8f1b48b2c099e90e898e743",
+    "raw/player_game_availability_sources/b8191531e3ac61d758d70aa4050ef76046fd0ca0f5a902096b2cbcbdb0f0ef5e.json": "b8191531e3ac61d758d70aa4050ef76046fd0ca0f5a902096b2cbcbdb0f0ef5e",
+    "raw/player_game_availability_sources/b8946206b5efeab56ef5a16d987389e2bdbea8a4114a257be0ec60590f298f34.json": "b8946206b5efeab56ef5a16d987389e2bdbea8a4114a257be0ec60590f298f34",
+    "raw/player_game_availability_sources/b8d2b8e1c2a82185a45966367f768b9f92f88f679ff4e35e1e9e200cd4c977ca.json": "b8d2b8e1c2a82185a45966367f768b9f92f88f679ff4e35e1e9e200cd4c977ca",
+    "raw/player_game_availability_sources/bcff0694ab3f8d26577e9dd7c1f4329220e46e2b292bdc2821027875b5e98372.json": "bcff0694ab3f8d26577e9dd7c1f4329220e46e2b292bdc2821027875b5e98372",
+    "raw/player_game_availability_sources/bd18c8cf3b0dcd6d78e427447f79e2882a6bb2aeaca7e9a73a9110cebba25809.structured.json": "bd18c8cf3b0dcd6d78e427447f79e2882a6bb2aeaca7e9a73a9110cebba25809",
+    "raw/player_game_availability_sources/c03a5b3b01837b37e41950065a51838a20e5ea0b190deb72108866218f49e7c8.json": "c03a5b3b01837b37e41950065a51838a20e5ea0b190deb72108866218f49e7c8",
+    "raw/player_game_availability_sources/c15f0fc3780d9027ee1c33137cac5bb9a4530fad0d5efdd0e79fadff7b58504b.json": "c15f0fc3780d9027ee1c33137cac5bb9a4530fad0d5efdd0e79fadff7b58504b",
+    "raw/player_game_availability_sources/c16c8276c24ff114364d2efc060e2024ad2aaaa01729129226be27f65259a468.json": "c16c8276c24ff114364d2efc060e2024ad2aaaa01729129226be27f65259a468",
+    "raw/player_game_availability_sources/c2346772816e7e17d136c71753f9bc968237358fccd7e8931a616573a005f843.structured.json": "c2346772816e7e17d136c71753f9bc968237358fccd7e8931a616573a005f843",
+    "raw/player_game_availability_sources/c544460d12f0c9d9c3e10a4dea782ed3c9c6d73cce5d5a98ca7b4d5145685c76.structured.json": "c544460d12f0c9d9c3e10a4dea782ed3c9c6d73cce5d5a98ca7b4d5145685c76",
+    "raw/player_game_availability_sources/c7def23a5bad10f2f89813f114589b5463200bf479feb1751ea7131593e72d46.json": "c7def23a5bad10f2f89813f114589b5463200bf479feb1751ea7131593e72d46",
+    "raw/player_game_availability_sources/cb6a937e180e031509ba2af4c588c5bb9771e04250d913eb55bda33567f5fcaf.json": "cb6a937e180e031509ba2af4c588c5bb9771e04250d913eb55bda33567f5fcaf",
+    "raw/player_game_availability_sources/cd57829bee2dcf7604516eefdb62a46f2a268931a2d7127fda39a9b536140668.json": "cd57829bee2dcf7604516eefdb62a46f2a268931a2d7127fda39a9b536140668",
+    "raw/player_game_availability_sources/d06a9a2e2b8241ee6503a5801ed9bfaf0841695e563ad1b518aef3447eb76129.structured.json": "d06a9a2e2b8241ee6503a5801ed9bfaf0841695e563ad1b518aef3447eb76129",
+    "raw/player_game_availability_sources/d0c6be3f430ca030bc296e266fc882c94232db1b61606c9b5d38fa614287e1be.json": "d0c6be3f430ca030bc296e266fc882c94232db1b61606c9b5d38fa614287e1be",
+    "raw/player_game_availability_sources/d23a0c6c0cdf78ad1ef0b49a0d731608b0ddd8cc648ff46b3fe3760811dba6cf.pdf": "d23a0c6c0cdf78ad1ef0b49a0d731608b0ddd8cc648ff46b3fe3760811dba6cf",
+    "raw/player_game_availability_sources/d7e3a9004a6c54e1abf59daedfaca6e0e69bd994155591807b7ab35ded1d3981.structured.json": "d7e3a9004a6c54e1abf59daedfaca6e0e69bd994155591807b7ab35ded1d3981",
+    "raw/player_game_availability_sources/db48958116a23afda519f22ef6392ad289b2d8309ff51f708c15912dc3d03541.structured.json": "db48958116a23afda519f22ef6392ad289b2d8309ff51f708c15912dc3d03541",
+    "raw/player_game_availability_sources/dbb1042728428a37ab00e0bccb424c06ee664ec8ed1a5f5d59b6a19c3a033e1d.structured.json": "dbb1042728428a37ab00e0bccb424c06ee664ec8ed1a5f5d59b6a19c3a033e1d",
+    "raw/player_game_availability_sources/defbfeb225b751fdff7af9ba63be19ffd4095b577b75b4c2757f33554f3f32d2.json": "defbfeb225b751fdff7af9ba63be19ffd4095b577b75b4c2757f33554f3f32d2",
+    "raw/player_game_availability_sources/df16577fd60b149145a25bbe57e7c5dacb3410a08fea15b0ffc8249575de98ac.json": "df16577fd60b149145a25bbe57e7c5dacb3410a08fea15b0ffc8249575de98ac",
+    "raw/player_game_availability_sources/e60940c9cd8d14daf519ab8916d219f24bf4e41422d940a0cd2fc7c49fc9a266.json": "e60940c9cd8d14daf519ab8916d219f24bf4e41422d940a0cd2fc7c49fc9a266",
+    "raw/player_game_availability_sources/e7193d0fa5e22870bac695190f314670e13e6aee4e98eac65398fbb2b5a5cb04.structured.json": "e7193d0fa5e22870bac695190f314670e13e6aee4e98eac65398fbb2b5a5cb04",
+    "raw/player_game_availability_sources/e941a81eeac7f4a1189cb0e78dba68516989ea4026e51db9b69348928c06bb59.identity.json": "e941a81eeac7f4a1189cb0e78dba68516989ea4026e51db9b69348928c06bb59",
+    "raw/player_game_availability_sources/e941a81eeac7f4a1189cb0e78dba68516989ea4026e51db9b69348928c06bb59.receipt.json": "7a9ca50e1d195be87ad979b75211b0a19ca8aa2a3419fc7be6755d37a1816eea",
+    "raw/player_game_availability_sources/eb8df14d8c0ea6453250b9bd6f0c9372314d74768b816657711b5dc31bf329ca.json": "eb8df14d8c0ea6453250b9bd6f0c9372314d74768b816657711b5dc31bf329ca",
+    "raw/player_game_availability_sources/f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334.pdf": "f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334",
+    "raw/player_game_availability_sources/fceb92126f773aa44f30c4204dd035c390051ad18e85447a801430408714389a.profile.html": "fceb92126f773aa44f30c4204dd035c390051ad18e85447a801430408714389a",
+    "raw/player_game_availability_sources/fceb92126f773aa44f30c4204dd035c390051ad18e85447a801430408714389a.receipt.json": "3638d89a47c60e8886d0aaafd535465b94b595dff5976079f2fd463ea583db39",
+    "raw/player_game_stats/2006-07_regular_season.csv": "395740b9a2fa5d4b4eb4d6952b0c5dbc20b14f89a08faea66def7b3416e24f72",
+    "raw/player_game_stats/2007-08_regular_season.csv": "2f26ecdedf08b0d5d97c681a8a60e3f4614292e1018bac3db224e0d6dfe14a79",
+    "raw/rosters/2006-07.csv": "bacb311e01ada3dd6790d8858ade075460d9f8e7389e235ff8124ed62a6f9742",
+    "raw/rosters/2007-08.csv": "96d0a85405643a5e5cbf5bccf3c2b5fb0c6de687adabe330a6255dbee5b56262",
+    "raw/team_game_stats/2007-08_regular_season.csv": "64e96058bb2caac7447fa9e00cebeee29c5cd3530755cb3273353c7b6e772b13"
+  },
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "candidate_sha": "73332f4d19f0128ea7aa310d219524701da0cfe7",
+  "input_hashes": {
+    "boxscoresummaryv2_0020700456.json": "a1064d801ced6959f2943b5ec1f18fb023851ad4b3dadd836e13759366f9d12b",
+    "boxscoresummaryv2_0020700788.json": "ca31cbbc49d8a1ae849255bab2edccd07dd9796e988a7aed639302bcf54cc3e1",
+    "boxscoretraditionalv3_0020700456.json": "a0758e59021a52492f5f04eebcc3c50659b8a17d8317eddae600ff99f33bca28",
+    "boxscoretraditionalv3_0020700788.json": "8a209d18c4e88ef0b1128dce36329880ae1e71b93202af6d784c6f2af5f18bef",
+    "request": "171d4063129683c30b402896ffeea8df97339d4a6de09ea7e80c21061dd21e4e",
+    "sources.json": "df9ffe087ff5af7696dc910999d9172b05788aee01f7953f91962a1f0d4b6dc3"
+  },
+  "manifest_absent_creations": {
+    "raw/player_game_availability/2007-08_regular_season.csv": {
+      "added_game_ids": [
+        "0020700456",
+        "0020700788"
+      ],
+      "added_records": 57,
+      "base_presence": "manifest_absent"
+    },
+    "raw/player_game_availability/2007-08_regular_season.imports.json": {
+      "added_game_ids": [
+        "0020700456",
+        "0020700788"
+      ],
+      "added_records": 2,
+      "base_presence": "manifest_absent"
+    }
+  },
+  "overlay_files": [
+    {
+      "path": "raw/player_game_availability/2007-08_regular_season.csv",
+      "sha256": "aafc1464167b6ca9e1802ddc62fb9b75bc5a701b4dacca8bd6fd752ff7cc366d",
+      "size_bytes": 16111
+    },
+    {
+      "path": "raw/player_game_availability/2007-08_regular_season.imports.json",
+      "sha256": "28e15beef697b7b70e7314ffaa35b5070c90459adbf126c85e9201c3824c4ed0",
+      "size_bytes": 233
+    },
+    {
+      "path": "raw/player_game_availability_sources/5bd7809070a577ec101b3252aa34eb5cb15d6c0cd71e8008c39e726d20d64b0b.structured.json",
+      "sha256": "5bd7809070a577ec101b3252aa34eb5cb15d6c0cd71e8008c39e726d20d64b0b",
+      "size_bytes": 1117
+    },
+    {
+      "path": "raw/player_game_availability_sources/8a209d18c4e88ef0b1128dce36329880ae1e71b93202af6d784c6f2af5f18bef.json",
+      "sha256": "8a209d18c4e88ef0b1128dce36329880ae1e71b93202af6d784c6f2af5f18bef",
+      "size_bytes": 18334
+    },
+    {
+      "path": "raw/player_game_availability_sources/a0758e59021a52492f5f04eebcc3c50659b8a17d8317eddae600ff99f33bca28.json",
+      "sha256": "a0758e59021a52492f5f04eebcc3c50659b8a17d8317eddae600ff99f33bca28",
+      "size_bytes": 18336
+    },
+    {
+      "path": "raw/player_game_availability_sources/a1064d801ced6959f2943b5ec1f18fb023851ad4b3dadd836e13759366f9d12b.json",
+      "sha256": "a1064d801ced6959f2943b5ec1f18fb023851ad4b3dadd836e13759366f9d12b",
+      "size_bytes": 3529
+    },
+    {
+      "path": "raw/player_game_availability_sources/ca31cbbc49d8a1ae849255bab2edccd07dd9796e988a7aed639302bcf54cc3e1.json",
+      "sha256": "ca31cbbc49d8a1ae849255bab2edccd07dd9796e988a7aed639302bcf54cc3e1",
+      "size_bytes": 3433
+    },
+    {
+      "path": "raw/player_game_availability_sources/eed37d95ebd37061890849a2a27274e7739c4249ce49f07ba7b2d6d4eb3f7bd1.structured.json",
+      "sha256": "eed37d95ebd37061890849a2a27274e7739c4249ce49f07ba7b2d6d4eb3f7bd1",
+      "size_bytes": 1117
+    }
+  ],
+  "publication_state": "staged_only_no_writes",
+  "qualified_targets": [
+    {
+      "game_date": "2007-12-31",
+      "game_id": "0020700456",
+      "player_id": 201142,
+      "state": "did_not_play",
+      "team_id": 1610612760
+    },
+    {
+      "game_date": "2008-02-19",
+      "game_id": "0020700788",
+      "player_id": 201142,
+      "state": "did_not_play",
+      "team_id": 1610612760
+    }
+  ],
+  "requested_game_count": 2,
+  "requested_target_count": 2,
+  "source_kind": "retained_originals_only_no_acquisition"
+}
