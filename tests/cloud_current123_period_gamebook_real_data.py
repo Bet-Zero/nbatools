@@ -113,7 +113,7 @@ def test_transfer_retained_game184_book_without_source_retry(capfd):
             summary["failed"],
             summary["skipped"],
         ) == (2, 2, 2, 0, 0)
-        assert summary["candidate_sha"] == "6411b6b1dbd094bb270c9f7731d3f914f545a045"
+        assert summary["candidate_sha"] == "2c82a949825bf64905e1622f7638d6d48dbbc48b"
     output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "retained-current123-game184-book"
     output.mkdir(parents=True, exist_ok=False)
     (output / "original-artifact.zip").write_bytes(raw)
