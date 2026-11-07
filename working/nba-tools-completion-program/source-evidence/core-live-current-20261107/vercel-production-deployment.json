@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-11-07T03:47:34.594Z",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"result\": {\n    \"deployment\": {\n      \"id\": \"dpl_4nuGwYBav8vm6s3gfqFoGYdQgdeL\",\n      \"name\": \"nbatools\",\n      \"url\": \"nbatools-aoief5qtk-brents-projects-686e97fc.vercel.app\",\n      \"type\": \"LAMBDAS\",\n      \"state\": \"READY\",\n      \"createdAt\": 1794019416473,\n      \"creator\": {\n        \"uid\": \"ydrobn0qZJ75WBJdxK1sB5Bf\",\n        \"username\": \"bet-zero\"\n      },\n      \"project\": {\n        \"id\": \"prj_luTVKSLCFRQP3BYwk93XETz9WwCy\",\n        \"name\": \"nbatools\",\n        \"framework\": null\n      },\n      \"meta\": {\n        \"githubCommitRef\": \"main\",\n        \"githubCommitSha\": \"a0fb2211a6707d647325129f1262308545001241\",\n        \"githubCommitMessage\": \"Merge pull request #594 from Bet-Zero/codex/paired-missing-core-integration-20261107\\n\\nInterpret paired missing participation and advance Core-1 split integration\",\n        \"githubRepo\": \"nbatools\",\n        \"githubOrg\": \"Bet-Zero\"\n      },\n      \"alias\": [\n        \"nbatools.vercel.app\",\n        \"nbatools-brents-projects-686e97fc.vercel.app\",\n        \"nbatools-git-main-brents-projects-686e97fc.vercel.app\"\n      ],\n      \"target\": \"production\",\n      \"regions\": [\n        \"iad1\"\n      ],\n      \"buildingAt\": 1794019417714,\n      \"ready\": 1794019756489,\n      \"readyState\": \"READY\",\n      \"source\": \"git\",\n      \"aliasError\": null\n    }\n  }\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

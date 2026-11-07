@@ -1,0 +1,950 @@
+{
+  "classification": "Independent source-only current cutoff oracle; importer/canonical preservation/consumer qualification pending",
+  "revision": "e3aa21ccfbb58f37b403cf8160193c821cb7546d",
+  "checked_at": "2026-11-07T03:46:21.725918+00:00",
+  "source_document_time": "2026-11-06T08:00:09.09Z",
+  "source_receipts": {
+    "playergamelogs": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/e3aa21ccfbb58f37b403cf8160193c821cb7546d/nba_stats/json/playergamelogs/2027/regular-season_base_totals.json",
+      "bytes": 1197520,
+      "sha256": "0b928b3bf8a01e3e518096a09144b863c7ca63ef5832cff77418a3861df5879e",
+      "git_blob_sha": "1ab7adf059c992c408ff2c3e3c07b8c4041ced9c",
+      "retrieved_at": "2026-11-07T03:48:26.058937+00:00"
+    },
+    "leaguegamefinder": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/e3aa21ccfbb58f37b403cf8160193c821cb7546d/nba_stats/json/leaguegamefinder/2027/regular-season.json",
+      "bytes": 47892,
+      "sha256": "d11965d4961a895cb4cb7113e04938937c004d5f7f7a233f49686e38953c87dd",
+      "git_blob_sha": "328a191d74d57f834866a0cc7369bbe420f920fc",
+      "retrieved_at": "2026-11-07T03:48:26.328453+00:00"
+    }
+  },
+  "schedule_sha256": "455310c8842230b65e997e79f5a288a3a52c919cc6a4697cb368440d2be06628",
+  "exact_due_game_ids": [
+    "0022600001",
+    "0022600002",
+    "0022600003",
+    "0022600004",
+    "0022600005",
+    "0022600006",
+    "0022600007",
+    "0022600008",
+    "0022600009",
+    "0022600015",
+    "0022600016",
+    "0022600017",
+    "0022600018",
+    "0022600019",
+    "0022600020",
+    "0022600021",
+    "0022600022",
+    "0022600023",
+    "0022600024",
+    "0022600085",
+    "0022600086",
+    "0022600087",
+    "0022600088",
+    "0022600089",
+    "0022600090",
+    "0022600091",
+    "0022600092",
+    "0022600093",
+    "0022600094",
+    "0022600095",
+    "0022600096",
+    "0022600097",
+    "0022600098",
+    "0022600099",
+    "0022600100",
+    "0022600101",
+    "0022600102",
+    "0022600103",
+    "0022600104",
+    "0022600105",
+    "0022600106",
+    "0022600107",
+    "0022600108",
+    "0022600109",
+    "0022600110",
+    "0022600111",
+    "0022600112",
+    "0022600113",
+    "0022600114",
+    "0022600115",
+    "0022600116",
+    "0022600117",
+    "0022600118",
+    "0022600119",
+    "0022600120",
+    "0022600121",
+    "0022600122",
+    "0022600123",
+    "0022600124",
+    "0022600125",
+    "0022600126",
+    "0022600127",
+    "0022600128",
+    "0022600129",
+    "0022600130",
+    "0022600131",
+    "0022600132",
+    "0022600133",
+    "0022600134",
+    "0022600135",
+    "0022600136",
+    "0022600137",
+    "0022600138",
+    "0022600139",
+    "0022600140",
+    "0022600141",
+    "0022600142",
+    "0022600143",
+    "0022600144",
+    "0022600145",
+    "0022600146",
+    "0022600147",
+    "0022600148",
+    "0022600149",
+    "0022600150",
+    "0022600151",
+    "0022600152",
+    "0022600153",
+    "0022600154",
+    "0022600155",
+    "0022600156",
+    "0022600157",
+    "0022600158",
+    "0022600159",
+    "0022600160",
+    "0022600161",
+    "0022600162",
+    "0022600163",
+    "0022600164",
+    "0022600165",
+    "0022600166",
+    "0022600167",
+    "0022600168",
+    "0022600169",
+    "0022600170",
+    "0022600171",
+    "0022600172",
+    "0022600173",
+    "0022600174",
+    "0022600175",
+    "0022600176",
+    "0022600177",
+    "0022600178",
+    "0022600179",
+    "0022600180",
+    "0022600181",
+    "0022600182",
+    "0022600183",
+    "0022600184",
+    "0022600185",
+    "0022600186",
+    "0022600187",
+    "0022600188"
+  ],
+  "new_due_ids_beyond_retained107": [
+    "0022600173",
+    "0022600174",
+    "0022600175",
+    "0022600176",
+    "0022600177",
+    "0022600178",
+    "0022600179",
+    "0022600180",
+    "0022600181",
+    "0022600182",
+    "0022600183",
+    "0022600184",
+    "0022600185",
+    "0022600186",
+    "0022600187",
+    "0022600188"
+  ],
+  "source_pair_bindings": [
+    {
+      "reader_attempts": 1,
+      "kind": "traditional",
+      "path": "nba_stats/json/boxscoretraditionalv3/2027/0022600106.json",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/boxscoretraditionalv3/2027/0022600106.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/4359d7c6ad16dcce78b0368298f36c5376ebc6c4",
+      "git_blob_sha": "4359d7c6ad16dcce78b0368298f36c5376ebc6c4",
+      "retrieved_at": "2026-11-01T10:06:55.054Z",
+      "original_nba_capture_time": null,
+      "sha256": "410592ab8b8207e17183c7c2fd2734651f714ab94899d23b899ffbf5b474cb89",
+      "size_bytes": 25473,
+      "game_id": "0022600106",
+      "revision": "7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11"
+    },
+    {
+      "reader_attempts": 1,
+      "kind": "traditional",
+      "path": "nba_stats/json/boxscoretraditionalv3/2027/0022600143.json",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/boxscoretraditionalv3/2027/0022600143.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/8c8fe6b831ab3c5837f668c658c6ce1057e113a9",
+      "git_blob_sha": "8c8fe6b831ab3c5837f668c658c6ce1057e113a9",
+      "retrieved_at": "2026-11-01T10:06:57.658Z",
+      "original_nba_capture_time": null,
+      "sha256": "29c8aa6c9bd97f2c41319126beb74bb69ba9ed05177decdff15e8d35d47f9bb3",
+      "size_bytes": 19060,
+      "game_id": "0022600143",
+      "revision": "7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11"
+    },
+    {
+      "game_id": "0022600106",
+      "kind": "summary",
+      "revision": "75049d7c3ed9db26aa6f3b6f2956afc0c403acb2",
+      "location": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/partial-capture-20261103/summary-oracles.zip!0022600106.json",
+      "sha256": "086f8aa26e8957882799eaaba4e80ce673b6bb0ced7cc1427b364c636ef92522",
+      "git_blob_sha": "5f661b6bc7ec9e2f6701e6f470814dc6f0ebdf06"
+    },
+    {
+      "game_id": "0022600143",
+      "kind": "summary",
+      "revision": "a0d9c9539f0ffbb6a912fb9c25ac04ba7ce1d5bb",
+      "location": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/recovery-capture-20261104/supplementary-sources.zip!summaries/0022600143.json",
+      "sha256": "a9065cbb6ceaf0e28772c1278fc23e4392d655aa1bf6761ca586d6cbc4fd0cbd",
+      "git_blob_sha": "5b32287a4263949d36d4c1f8dec9f9ce2199a45d"
+    },
+    {
+      "game_id": "0022600148",
+      "kind": "summary",
+      "revision": "75049d7c3ed9db26aa6f3b6f2956afc0c403acb2",
+      "location": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/period-milestone/archive-refresh.zip!boxscoresummaryv3_0022600148.json",
+      "sha256": "aabee0d09190e6cfaa249327113bb8a0555e904b20e76b4b47337f08efe3e0be",
+      "git_blob_sha": "e37b542607d0dd8cc6cc9fd32d7ab7492344b158"
+    },
+    {
+      "game_id": "0022600148",
+      "kind": "traditional",
+      "revision": "75049d7c3ed9db26aa6f3b6f2956afc0c403acb2",
+      "location": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/period-milestone/archive-refresh.zip!boxscoretraditionalv3_0022600148.json",
+      "sha256": "1d7be275bc6deb436d9b4c8aaffa9b1e905e78ef0054d85cb1d73092c7a7f4a5",
+      "git_blob_sha": "99146899ca60653eb20212d71c63331fce4ba20e"
+    }
+  ],
+  "populations": {
+    "LeBron_PHI": {
+      "player_id": 2544,
+      "team_id": 1610612755,
+      "games": [
+        {
+          "game_id": "0022600002",
+          "game_date": "2026-10-20",
+          "team_id": 1610612755,
+          "team_abbr": "PHI",
+          "opponent": "NYK",
+          "is_home": false,
+          "wl": "W",
+          "pts": 106,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600006",
+          "game_date": "2026-10-22",
+          "team_id": 1610612755,
+          "team_abbr": "PHI",
+          "opponent": "CLE",
+          "is_home": true,
+          "wl": "W",
+          "pts": 114,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600018",
+          "game_date": "2026-10-30",
+          "team_id": 1610612755,
+          "team_abbr": "PHI",
+          "opponent": "NYK",
+          "is_home": true,
+          "wl": "W",
+          "pts": 98,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600106",
+          "game_date": "2026-10-24",
+          "team_id": 1610612755,
+          "team_abbr": "PHI",
+          "opponent": "MIL",
+          "is_home": true,
+          "wl": "W",
+          "pts": 127,
+          "state": "did_not_play",
+          "basis": "Traditional explicit Inactive - Injury/Illness under PHI"
+        },
+        {
+          "game_id": "0022600117",
+          "game_date": "2026-10-25",
+          "team_id": 1610612755,
+          "team_abbr": "PHI",
+          "opponent": "DET",
+          "is_home": true,
+          "wl": "L",
+          "pts": 93,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600135",
+          "game_date": "2026-10-28",
+          "team_id": 1610612755,
+          "team_abbr": "PHI",
+          "opponent": "IND",
+          "is_home": false,
+          "wl": "W",
+          "pts": 114,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600148",
+          "game_date": "2026-10-31",
+          "team_id": 1610612755,
+          "team_abbr": "PHI",
+          "opponent": "CHA",
+          "is_home": false,
+          "wl": "W",
+          "pts": 109,
+          "state": "did_not_play",
+          "basis": "Summary explicit inactive under PHI"
+        },
+        {
+          "game_id": "0022600163",
+          "game_date": "2026-11-02",
+          "team_id": 1610612755,
+          "team_abbr": "PHI",
+          "opponent": "CHI",
+          "is_home": true,
+          "wl": "W",
+          "pts": 126,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600173",
+          "game_date": "2026-11-04",
+          "team_id": 1610612755,
+          "team_abbr": "PHI",
+          "opponent": "DET",
+          "is_home": false,
+          "wl": "W",
+          "pts": 112,
+          "state": "played",
+          "basis": "positive source MIN"
+        }
+      ],
+      "expected_observed_scope": {
+        "with": {
+          "game_ids": [
+            "0022600002",
+            "0022600006",
+            "0022600018",
+            "0022600117",
+            "0022600135",
+            "0022600163",
+            "0022600173"
+          ],
+          "games": 7,
+          "wins": 6,
+          "losses": 1,
+          "team_points": 763,
+          "ppg": 109.0
+        },
+        "without": {
+          "game_ids": [
+            "0022600106",
+            "0022600148"
+          ],
+          "games": 2,
+          "wins": 2,
+          "losses": 0,
+          "team_points": 236,
+          "ppg": 118.0
+        }
+      },
+      "coverage": {
+        "played": 7,
+        "did_not_play": 2,
+        "unknown": 0
+      }
+    },
+    "Luka_LAL": {
+      "player_id": 1629029,
+      "team_id": 1610612747,
+      "games": [
+        {
+          "game_id": "0022600005",
+          "game_date": "2026-10-21",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "GSW",
+          "is_home": true,
+          "wl": "W",
+          "pts": 127,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600023",
+          "game_date": "2026-10-30",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "GSW",
+          "is_home": false,
+          "wl": "L",
+          "pts": 95,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600102",
+          "game_date": "2026-10-23",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "LAC",
+          "is_home": true,
+          "wl": "W",
+          "pts": 125,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600112",
+          "game_date": "2026-10-25",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "UTA",
+          "is_home": false,
+          "wl": "W",
+          "pts": 132,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600131",
+          "game_date": "2026-10-27",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "POR",
+          "is_home": true,
+          "wl": "L",
+          "pts": 129,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600143",
+          "game_date": "2026-10-28",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "LAC",
+          "is_home": false,
+          "wl": "W",
+          "pts": 103,
+          "state": "did_not_play",
+          "basis": "Summary explicit inactive under LAL"
+        },
+        {
+          "game_id": "0022600157",
+          "game_date": "2026-11-01",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "TOR",
+          "is_home": true,
+          "wl": "W",
+          "pts": 131,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600172",
+          "game_date": "2026-11-02",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "MIA",
+          "is_home": true,
+          "wl": "W",
+          "pts": 138,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600185",
+          "game_date": "2026-11-04",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "SAC",
+          "is_home": false,
+          "wl": "W",
+          "pts": 116,
+          "state": "played",
+          "basis": "positive source MIN"
+        }
+      ],
+      "expected_observed_scope": {
+        "with": {
+          "game_ids": [
+            "0022600005",
+            "0022600023",
+            "0022600102",
+            "0022600112",
+            "0022600131",
+            "0022600157",
+            "0022600172",
+            "0022600185"
+          ],
+          "games": 8,
+          "wins": 6,
+          "losses": 2,
+          "team_points": 993,
+          "ppg": 124.125
+        },
+        "without": {
+          "game_ids": [
+            "0022600143"
+          ],
+          "games": 1,
+          "wins": 1,
+          "losses": 0,
+          "team_points": 103,
+          "ppg": 103.0
+        }
+      },
+      "coverage": {
+        "played": 8,
+        "did_not_play": 1,
+        "unknown": 0
+      }
+    },
+    "Reaves_LAL": {
+      "player_id": 1630559,
+      "team_id": 1610612747,
+      "games": [
+        {
+          "game_id": "0022600005",
+          "game_date": "2026-10-21",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "GSW",
+          "is_home": true,
+          "wl": "W",
+          "pts": 127,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600023",
+          "game_date": "2026-10-30",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "GSW",
+          "is_home": false,
+          "wl": "L",
+          "pts": 95,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600102",
+          "game_date": "2026-10-23",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "LAC",
+          "is_home": true,
+          "wl": "W",
+          "pts": 125,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600112",
+          "game_date": "2026-10-25",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "UTA",
+          "is_home": false,
+          "wl": "W",
+          "pts": 132,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600131",
+          "game_date": "2026-10-27",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "POR",
+          "is_home": true,
+          "wl": "L",
+          "pts": 129,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600143",
+          "game_date": "2026-10-28",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "LAC",
+          "is_home": false,
+          "wl": "W",
+          "pts": 103,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600157",
+          "game_date": "2026-11-01",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "TOR",
+          "is_home": true,
+          "wl": "W",
+          "pts": 131,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600172",
+          "game_date": "2026-11-02",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "MIA",
+          "is_home": true,
+          "wl": "W",
+          "pts": 138,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600185",
+          "game_date": "2026-11-04",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent": "SAC",
+          "is_home": false,
+          "wl": "W",
+          "pts": 116,
+          "state": "played",
+          "basis": "positive source MIN"
+        }
+      ],
+      "expected_observed_scope": {
+        "with": {
+          "game_ids": [
+            "0022600005",
+            "0022600023",
+            "0022600102",
+            "0022600112",
+            "0022600131",
+            "0022600143",
+            "0022600157",
+            "0022600172",
+            "0022600185"
+          ],
+          "games": 9,
+          "wins": 7,
+          "losses": 2,
+          "team_points": 1096,
+          "ppg": 121.77777777777777
+        },
+        "without": {
+          "game_ids": [],
+          "games": 0,
+          "wins": 0,
+          "losses": 0,
+          "team_points": 0,
+          "ppg": null
+        }
+      },
+      "coverage": {
+        "played": 9,
+        "did_not_play": 0,
+        "unknown": 0
+      }
+    },
+    "Davis_observed_WAS": {
+      "player_id": 203076,
+      "team_id": 1610612764,
+      "games": [
+        {
+          "game_id": "0022600015",
+          "game_date": "2026-10-30",
+          "team_id": 1610612764,
+          "team_abbr": "WAS",
+          "opponent": "CHA",
+          "is_home": true,
+          "wl": "W",
+          "pts": 95,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600086",
+          "game_date": "2026-10-21",
+          "team_id": 1610612764,
+          "team_abbr": "WAS",
+          "opponent": "MIL",
+          "is_home": true,
+          "wl": "W",
+          "pts": 128,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600097",
+          "game_date": "2026-10-23",
+          "team_id": 1610612764,
+          "team_abbr": "WAS",
+          "opponent": "TOR",
+          "is_home": true,
+          "wl": "L",
+          "pts": 102,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600108",
+          "game_date": "2026-10-24",
+          "team_id": 1610612764,
+          "team_abbr": "WAS",
+          "opponent": "CHI",
+          "is_home": false,
+          "wl": "W",
+          "pts": 124,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600119",
+          "game_date": "2026-10-26",
+          "team_id": 1610612764,
+          "team_abbr": "WAS",
+          "opponent": "CHA",
+          "is_home": false,
+          "wl": "L",
+          "pts": 103,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600133",
+          "game_date": "2026-10-28",
+          "team_id": 1610612764,
+          "team_abbr": "WAS",
+          "opponent": "CLE",
+          "is_home": false,
+          "wl": "L",
+          "pts": 111,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600162",
+          "game_date": "2026-11-02",
+          "team_id": 1610612764,
+          "team_abbr": "WAS",
+          "opponent": "ORL",
+          "is_home": false,
+          "wl": "W",
+          "pts": 103,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600174",
+          "game_date": "2026-11-04",
+          "team_id": 1610612764,
+          "team_abbr": "WAS",
+          "opponent": "ATL",
+          "is_home": true,
+          "wl": "L",
+          "pts": 105,
+          "state": "played",
+          "basis": "positive source MIN"
+        }
+      ],
+      "expected_observed_scope": {
+        "with": {
+          "game_ids": [
+            "0022600015",
+            "0022600086",
+            "0022600097",
+            "0022600108",
+            "0022600119",
+            "0022600133",
+            "0022600162",
+            "0022600174"
+          ],
+          "games": 8,
+          "wins": 4,
+          "losses": 4,
+          "team_points": 871,
+          "ppg": 108.875
+        },
+        "without": {
+          "game_ids": [],
+          "games": 0,
+          "wins": 0,
+          "losses": 0,
+          "team_points": 0,
+          "ppg": null
+        }
+      },
+      "coverage": {
+        "played": 8,
+        "did_not_play": 0,
+        "unknown": 0
+      }
+    },
+    "Tatum_observed_BOS": {
+      "player_id": 1628369,
+      "team_id": 1610612738,
+      "games": [
+        {
+          "game_id": "0022600001",
+          "game_date": "2026-10-20",
+          "team_id": 1610612738,
+          "team_abbr": "BOS",
+          "opponent": "DET",
+          "is_home": false,
+          "wl": "L",
+          "pts": 113,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600008",
+          "game_date": "2026-10-23",
+          "team_id": 1610612738,
+          "team_abbr": "BOS",
+          "opponent": "NYK",
+          "is_home": true,
+          "wl": "W",
+          "pts": 107,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600016",
+          "game_date": "2026-10-30",
+          "team_id": 1610612738,
+          "team_abbr": "BOS",
+          "opponent": "CHI",
+          "is_home": true,
+          "wl": "W",
+          "pts": 125,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600121",
+          "game_date": "2026-10-26",
+          "team_id": 1610612738,
+          "team_abbr": "BOS",
+          "opponent": "CHI",
+          "is_home": true,
+          "wl": "W",
+          "pts": 134,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600128",
+          "game_date": "2026-10-27",
+          "team_id": 1610612738,
+          "team_abbr": "BOS",
+          "opponent": "BKN",
+          "is_home": true,
+          "wl": "W",
+          "pts": 125,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600154",
+          "game_date": "2026-11-01",
+          "team_id": 1610612738,
+          "team_abbr": "BOS",
+          "opponent": "ORL",
+          "is_home": false,
+          "wl": "W",
+          "pts": 108,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600167",
+          "game_date": "2026-11-02",
+          "team_id": 1610612738,
+          "team_abbr": "BOS",
+          "opponent": "HOU",
+          "is_home": false,
+          "wl": "L",
+          "pts": 93,
+          "state": "played",
+          "basis": "positive source MIN"
+        },
+        {
+          "game_id": "0022600175",
+          "game_date": "2026-11-04",
+          "team_id": 1610612738,
+          "team_abbr": "BOS",
+          "opponent": "MIL",
+          "is_home": true,
+          "wl": "W",
+          "pts": 109,
+          "state": "unknown",
+          "basis": null
+        }
+      ],
+      "expected_observed_scope": {
+        "with": {
+          "game_ids": [
+            "0022600001",
+            "0022600008",
+            "0022600016",
+            "0022600121",
+            "0022600128",
+            "0022600154",
+            "0022600167"
+          ],
+          "games": 7,
+          "wins": 5,
+          "losses": 2,
+          "team_points": 805,
+          "ppg": 115.0
+        },
+        "without": {
+          "game_ids": [],
+          "games": 0,
+          "wins": 0,
+          "losses": 0,
+          "team_points": 0,
+          "ppg": null
+        }
+      },
+      "coverage": {
+        "played": 7,
+        "did_not_play": 0,
+        "unknown": 1
+      }
+    }
+  },
+  "LAL_vs_BOS_or_NYK_parent_game_ids": [],
+  "reported_Rest": {
+    "player_id": 1629029,
+    "unresolved_game_ids": [
+      "0022600143"
+    ],
+    "reason": "Explicit inactive state lacks source-reported Rest cause; no Rest zero/positive accepted"
+  },
+  "membership_limits": "Observed LeBronPHI/DavisWAS rows do not establish dated nonmembership for explicit LAL/PHI cross-club conditions.",
+  "preservation_limits": "Do not overwrite accepted prior107canonical corrections. Full11raw/5processed/currentfreshness/release acceptance is separate; preserve484known old-scope unknown rates, with new16period universe/unassessed fields unknown."
+}

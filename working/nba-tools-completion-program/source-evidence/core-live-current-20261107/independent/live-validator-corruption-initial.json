@@ -1,0 +1,26 @@
+{
+  "classification": "Synthetic validation-corruption probes using retained actual S4 payload and frozen ownership oracle; not public query or browser execution",
+  "reviewed_file_sha256": "2922d93a17b6d6e958e43d51033f90cbec84b4e21e5933ce05e97691e599c64a",
+  "controls": [
+    {
+      "probe": "baseline_s4",
+      "accepted": true
+    },
+    {
+      "probe": "wrong_s4_visible_actor_polarity",
+      "accepted": true
+    },
+    {
+      "probe": "wrong_s4_visible_reb_ast_record",
+      "accepted": true
+    },
+    {
+      "probe": "wrong_s4_query",
+      "accepted": true
+    },
+    {
+      "probe": "wrong_k05_visible_subject_and_season",
+      "accepted": true
+    }
+  ]
+}

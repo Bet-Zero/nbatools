@@ -23,6 +23,10 @@ const deliveryIds = [...deliveryBaseIds, ...deliveryWarmIds];
 // unchanged answers. The final Python gate still requires all32cases/bothviews.
 const deliveryNoData = cases.length === 1 && cases[0].id === "k12-n1";
 const delivery = deliveryNoData || (cases.length === deliveryIds.length && deliveryIds.every(id => cases.some(item => item.id === id)));
+// Separately reviewed historical integration; readiness remains an independent,
+// recorded obligation. Existing complete strict P3 bundles are unchanged.
+const historicalIntegrationIds = ["k12-s1", "k12-r1", "k12-b1", "k12-c1", "k12-l1", "k12-x1", "k12-m1", "k12-z1", "k12-e1", "k12-n1", "k12-h1", "k12-r1-win-loss", "live-k05", "live-k09", "live-k10", "live-k08", "live-s4-team-with", "live-s4-team-without", "live-s4-player-with", "live-s4-player-without", "live-owned-team", "live-owned-opponent"];
+const historicalIntegration = cases.length === historicalIntegrationIds.length && historicalIntegrationIds.every(id => cases.some(item => item.id === id));
 const core = cases.length === 26 && cases.every(item => /^k0[13][_-]/.test(item.id));
 const summaryRanking = cases.length === 33 && cases.every(item => /^k0[24][_-]/.test(item.id));
 const ownershipComparison = cases.length === 20 && cases.every(item => /^k0[56][_-]/.test(item.id));
@@ -53,7 +57,7 @@ const sharedTeamComparisonIds = ["comparison-shared-primary", "comparison-canoni
 const sharedTeamComparison = cases.length === sharedTeamComparisonIds.length && sharedTeamComparisonIds.every(id => cases.some(item => item.id === id));
 const medicalSubjectIds = ["medical-team-primary", "medical-prefix-owner", "medical-opponent-union", "medical-comparison-owner", "medical-adjective-owner", "medical-status-played-chain", "medical-played-positive", "medical-unfiltered-comparison"];
 const medicalSubjects = cases.length === medicalSubjectIds.length && medicalSubjectIds.every(id => cases.some(item => item.id === id));
-if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes && !originalStatPair && !sharedTeamComparison && !medicalSubjects && !sequences && !playoffHistory && !populations && !delivery) throw new Error("Expected a complete reviewed browser bundle");
+if (!historicalIntegration && !core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes && !originalStatPair && !sharedTeamComparison && !medicalSubjects && !sequences && !playoffHistory && !populations && !delivery) throw new Error("Expected a complete reviewed browser bundle");
 await mkdir(output, { recursive: true });
 let executablePath;
 for (const file of ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"]) {
@@ -72,8 +76,17 @@ try {
     page.on("pageerror", error => errors.push(error.message));
     const navigation = await page.goto(base, { timeout: 30000 });
     if (!navigation?.ok()) throw new Error("Application page unavailable");
-    const freshness = delivery ? await (await context.request.get(base + "/freshness")).json() : null;
+    const freshness = (delivery || historicalIntegration) ? await (await context.request.get(base + "/freshness")).json() : null;
     const assets = await page.locator('script[type="module"][src]').evaluateAll(nodes => nodes.map(n => n.src));
+    let servedAssetSha256 = null;
+    if (historicalIntegration) {
+      if (assets.length !== 1 || !assets[0].startsWith(base + "/assets/index-")) throw new Error("Unexpected served application asset");
+      const response = await context.request.get(assets[0], { maxRedirects: 0, timeout: 30000 });
+      if (!response.ok()) throw new Error("Served application asset unavailable");
+      const bytes = await response.body();
+      servedAssetSha256 = createHash("sha256").update(bytes).digest("hex");
+      await writeFile(`${output}/served-application.js`, bytes);
+    }
     for (const item of cases) {
       // Public admission permits ten queries/minute; preserve it without retries
       // or bypasses. Readiness requests do not invoke statistical queries.
@@ -134,13 +147,15 @@ try {
       })));
       const forbidden = (item.forbidden ?? []).filter(value => text.includes(value));
       const missing = item.text.filter(value => !text.includes(value));
-      const deliveryEvidence = delivery ? {
+      const deliveryEvidence = (delivery || historicalIntegration) ? {
         freshness,
+        capturedAt: new Date().toISOString(),
+        heroText: await page.locator('[data-state-surface="result"] p[class*="sentence"]').allTextContents().then(items => items.join("\n")),
         freshnessText: await page.getByRole("button", { name: /^Data freshness:/ }).innerText(),
         images: await page.locator('[data-state-surface="result"] img').evaluateAll(nodes => nodes.map(node => node.src)),
       } : {};
       const receipt = { ...deliveryEvidence, id: item.id, viewport, query: item.query, http: response.status(), elapsedMs: Date.now() - start, responseElapsedMs,
-        payload, text, readinessBefore, readinessAfter, overflow, errors: [...errors], missing,
+        payload, text, servedAssetSha256, readinessBefore, readinessAfter, readinessHttpBefore: before.status(), readinessHttpAfter: after.status(), overflow, errors: [...errors], missing,
         headers, grainErrors, tables, forbidden, assets, screenshot, screenshotSha256: createHash("sha256").update(image).digest("hex") };
       receipts.push(receipt);
       if (forbidden.length || grainErrors.length || missing.length || errors.length || overflow.document > width || response.status() !== 200) failures.push(`${viewport}/${item.id}`);
