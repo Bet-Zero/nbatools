@@ -122,3 +122,14 @@ numerical and normal exact-head CI/landing results are recorded in
 The final historical companion preserves663 original bindings:649 unchanged,
 14 separately reviewed, same22questions/44captures and all old source receipts.
 No new acceptance population is introduced.
+
+
+Final required [42771586784](https://github.com/Bet-Zero/nbatools/actions/runs/42771586784)
+passed2/2selected/executed with0skip/fail/error/xfail on reviewed64c62eef,
+executedmanifest-only6fcf0dad: all72reader child controls and original22/44gate.
+See [final receipt](final-required-numerical.json). ApplicationCI42771489894 passed
+all blocking checks on64c62eef, includingPython3.11/3.12/3.13 andfrontend; known
+dev-tree advisories stay informational. The final receipt/checkpoint-only commit
+changes no source/contract/implementation/data; final-headCI andlanding are
+recorded inPR603. No further numerical/source re-execution is needed for these
+receipt-only changes. No complete publication candidate is ready.
