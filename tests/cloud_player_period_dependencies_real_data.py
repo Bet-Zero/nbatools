@@ -47,7 +47,7 @@ def test_required_player_period_dependency_consumers(tmp_path):
     )
     assert executed.returncode == 0, executed.stdout[-16000:] + executed.stderr[-4000:]
     suite = ET.parse(junit).getroot().find("testsuite")
-    assert suite is not None and int(suite.attrib["tests"]) == 60
+    assert suite is not None and int(suite.attrib["tests"]) == 72
     assert all(int(suite.attrib[k]) == 0 for k in ("failures", "errors", "skipped"))
     binding = json.loads((E / "binding.json").read_bytes())
     output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "player-period-dependencies"
@@ -61,7 +61,7 @@ def test_required_player_period_dependency_consumers(tmp_path):
                 base_generation=generation,
                 development_manifest_sha256=binding["manifest_sha256"],
                 unchanged_parent_manifest_sha256=binding["parent_manifest_sha256"],
-                focused_controls=60,
+                focused_controls=72,
                 failures=0,
                 errors=0,
                 skipped=0,

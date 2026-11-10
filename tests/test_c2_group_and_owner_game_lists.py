@@ -316,7 +316,6 @@ def test_a_group_after_an_opening_word_refuses(frame, group):
         "in league history",
         "in the fourth game of the season",
         "in the second and third quarter",
-        "in fourth quarters",
         "in the fourth round",
         "in the second quarter and the fourth quarter",
         "in the second night",
@@ -346,6 +345,7 @@ def test_an_unread_word_after_the_opponent_refuses(tail):
         ("they lost", "losses_only", True),
         ("that they won", "wins_only", True),
         ("in the 4th quarter", "quarter", "4"),
+        ("in fourth quarters", "quarter", "4"),
         ("in the second half", "half", "second"),
         ("in NBA history", "start_season", "1996-97"),
         ("on 0 days rest", "rest_days", 0),
@@ -367,6 +367,14 @@ def test_an_unread_word_after_the_opponent_refuses(tail):
 def test_read_words_after_the_opponent_still_answer(tail, key, value):
     kwargs = parse_query(f"best scoring games vs the Celtics by the Lakers {tail}")["route_kwargs"]
     assert (kwargs["team"], kwargs["opponent"], kwargs[key]) == ("LAL", "BOS", value)
+
+
+def test_recognized_plural_quarter_cannot_be_dropped_by_unsupported_team_finder():
+    result = execute_natural_query(
+        "best scoring games vs the Celtics by the Lakers in fourth quarters in 2023-24"
+    )
+    assert result.result_status == "no_result" and result.result_reason == "filter_not_supported"
+    assert "blocked: quarter" in " ".join(result.result.notes)
 
 
 @pytest.mark.parametrize(

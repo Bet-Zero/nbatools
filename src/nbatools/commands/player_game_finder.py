@@ -342,6 +342,7 @@ def build_result(
     without_player_reason: str | None = None,
     _reported_reason_evidence: dict | None = None,
     condition_expression: str | None = None,
+    _source_rate_bounds_percent_points: bool = False,
 ) -> FinderResult | NoResult:
     from nbatools.commands.data_utils import validate_last_n_scope
 
@@ -355,6 +356,31 @@ def build_result(
                 "Boolean expressions cannot combine with scalar/event/window predicates"
             )
         tree = parse_condition_text(condition_expression, team=team, opponent=opponent)
+    if _source_rate_bounds_percent_points and (quarter is not None or half is not None):
+        from dataclasses import replace
+
+        from nbatools.commands.aggregate_metrics import fractional_source_rate_bounds
+        from nbatools.commands.query_boolean_parser import ConditionNode
+
+        bounds = fractional_source_rate_bounds(
+            dict(stat=stat, min_value=min_value, max_value=max_value, conditions=conditions)
+        )
+        min_value, max_value, conditions = (
+            bounds["min_value"],
+            bounds["max_value"],
+            bounds["conditions"],
+        )
+
+        def fractional_tree(node):
+            if isinstance(node, ConditionNode):
+                bounds = fractional_source_rate_bounds(
+                    dict(stat=node.stat, min_value=node.min_value, max_value=node.max_value)
+                )
+                return replace(node, min_value=bounds["min_value"], max_value=bounds["max_value"])
+            return replace(node, left=fractional_tree(node.left), right=fractional_tree(node.right))
+
+        if tree is not None:
+            tree = fractional_tree(tree)
     seasons = resolve_seasons(season, start_season, end_season)
     notes: list[str] = []
 

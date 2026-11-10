@@ -260,6 +260,69 @@ def test_natural_or_and_http_unknown_refuse_without_partial_branch_or_count(qual
     asyncio.run(request())
 
 
+@pytest.mark.parametrize(
+    "condition,matched",
+    [
+        ("at least 10% usage", True),
+        ("at least 0.5% usage", True),
+        ("exactly 14.8% usage", True),
+        ("over 14.8% usage", False),
+        ("under 14.8% usage", False),
+        ("at least 8.7% rebound percentage", True),
+        ("exactly 0% turnover percentage", True),
+        ("exactly 0% assist percentage", True),
+        ("over 3 points and over 10 usage percentage", True),
+        ("over 1000 points or over 10 usage percentage", True),
+        ("(over 1000 points or over 10 usage percentage)", True),
+    ],
+)
+def test_known_natural_source_rate_units_and_complete_boolean_sample(qualified, condition, matched):
+    row = source_oracle()["selected_rows"][0]
+    assert (row["usg_pct"], row["reb_pct"], row["ast_pct"], row["tov_pct"]) == (0.148, 0.087, 0, 0)
+    query = f"Austin Reaves second quarter games with {condition} on 2026-11-04"
+    with development_snapshot(*qualified):
+        body = natural_query_payload(query)
+        assert body["result_status"] == ("ok" if matched else "no_result"), body
+        if matched:
+            assert [r["game_id"] for r in body["result"]["sections"]["finder"]] == [row["game_id"]]
+        else:
+            assert body["result_reason"] == "no_match"
+        structured = execute_structured_query(
+            "player_game_finder", **(kwargs(row) | {"stat": "usg_pct", "min_value": 0.1})
+        )
+        assert (
+            games(structured)[0]["usg_pct"] == 0.148
+        )  # Structured fractions are not divided again.
+
+    async def request():
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=create_app(*qualified)), base_url="http://127.0.0.1"
+        ) as client:
+            response = await client.post("/query", json={"query": query})
+            assert response.status_code == 200
+            actual = response.json()
+            assert actual["result_status"] == body["result_status"]
+            assert actual["result"]["metadata"] == body["result"]["metadata"]
+
+    asyncio.run(request())
+
+
+def test_fractional_percent_metadata_and_grouped_unknown_branch_remain_truthful(qualified):
+    with development_snapshot(*qualified):
+        body = natural_query_payload(
+            "Austin Reaves second quarter games with at least 0.5% usage on 2026-11-04"
+        )
+        assert body["result"]["metadata"]["min_value"] == 0.005
+        for condition in (
+            "(over 0 points or over 0 usage percentage)",
+            "(over 1000 points and over 0 usage percentage)",
+        ):
+            body = natural_query_payload(
+                f"Kevin Durant fourth quarter games with {condition} in 2026-27"
+            )
+            assert body["result_status"] == "no_result" and body["result_reason"] == "no_data"
+
+
 @pytest.mark.parametrize("metric", ["ts_pct", "efg_pct", "fg_pct", "fg3_pct", "ft_pct"])
 def test_source_zero_attempt_denominator_is_undefined_not_a_requested_zero(qualified, metric):
     args = kwargs(source_oracle()["selected_rows"][4])

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
+from decimal import Decimal
 from enum import StrEnum
 
 import pandas as pd
@@ -69,6 +70,25 @@ METRIC_DESCRIPTORS: dict[str, MetricDescriptor] = {
         ("pts", "fga", "fta"),
     ),
 }
+
+
+def fractional_source_rate_bounds(value):
+    """Copy natural percent-point bounds into canonical period fractions.
+
+    Only the four existing source-rate metrics use these units. Counts and
+    already fractional shooting bounds retain their existing meaning.
+    """
+    if isinstance(value, list):
+        return [fractional_source_rate_bounds(item) for item in value]
+    if not isinstance(value, dict):
+        return value
+    out = {key: fractional_source_rate_bounds(item) for key, item in value.items()}
+    descriptor = METRIC_DESCRIPTORS.get(str(out.get("stat")).lower())
+    if descriptor and descriptor.kind == AggregationKind.AVERAGE_ONLY:
+        for field in ("min_value", "max_value"):
+            if out.get(field) is not None:
+                out[field] = float(Decimal(str(out[field])) / 100)
+    return out
 
 
 def require_known_metric_inputs(

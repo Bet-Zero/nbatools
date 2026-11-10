@@ -42,11 +42,20 @@ semantic = {
             "manifest path unchanged."
         ),
     ),
+    "src/nbatools/commands/_natural_query_execution.py": (
+        "_execute_grouped_boolean_build_result",
+        (
+            "New checked-finder delegation requires quarter or half in base_kwargs. Both "
+            "predicates are None for all original 22 queries. The existing team/opponent "
+            "leaf delegation, including the two owned whole-game cases, remains identical."
+        ),
+    ),
     "src/nbatools/commands/aggregate_metrics.py": (
-        "require_known_metric_inputs",
+        "require_known_metric_inputs; fractional_source_rate_bounds",
         (
             "New helper returns before accessing data when selected_snapshot() is None; its"
             " new calls, including row-rate denominator checks, are also period-predicate gated."
+            " The new fraction conversion helper is called only under the natural period flag."
         ),
     ),
     "src/nbatools/commands/data_utils.py": (
@@ -79,7 +88,16 @@ semantic = {
             "deferred filtering and undefined/source rate notes are "
             "period_filter_requested gated. All 22 have no period request. In the false "
             "branch, stat/conditions old initial filters and default empty metadata remain "
-            "equivalent."
+            "equivalent. New scalar/list/tree bound conversion additionally requires the "
+            "natural source-rate flag and a quarter/half request, absent from all 22 queries."
+        ),
+    ),
+    "src/nbatools/commands/natural_query.py": (
+        "_finalize_route",
+        (
+            "The new private natural source-rate unit flag requires player_game_finder plus "
+            "a quarter or half. Original 22 queries have neither period predicate, so their "
+            "route kwargs remain unchanged and no bound conversion is selected."
         ),
     ),
     "src/nbatools/commands/team_record.py": (
@@ -99,6 +117,14 @@ semantic = {
             "New dependency-qualified byte/hash/schema reader requires a selected "
             "development snapshot. Published original 22 historical queries have no such "
             "context; no production fallback."
+        ),
+    ),
+    "src/nbatools/query_service.py": (
+        "_build_query_metadata",
+        (
+            "Numeric bound metadata conversion requires the private natural source-rate "
+            "flag. That flag is set only for period player finders, absent from all 22 "
+            "queries; original whole-game labels, values and numeric metadata are unchanged."
         ),
     ),
 }
@@ -163,7 +189,7 @@ def main():
         original_capture_sha256=sha(archive.read_bytes()),
         original_case_manifest_sha256=sha(cases_raw),
         original_bound_file_count=663,
-        unchanged_bound_file_count=652,
+        unchanged_bound_file_count=663 - len(changes),
         cases=cases,
         changes=changes,
         original_src_python_inventory=inventory,

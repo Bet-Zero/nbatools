@@ -1084,6 +1084,11 @@ Contract rules:
   shooting-rank attempt floor defines an independent eligibility sample before
   ratio validation. Whole-game team/opponent context and margin cannot supply
   a requested period metric basis through this development path.
+  Natural source-rate bounds use explicit percentage-point units and convert
+  with decimal arithmetic to canonical fractions for scalar, mixed and Boolean
+  predicates; structured numeric bounds stay canonical fractions. Published
+  numeric filter metadata also uses canonical fractions. Grouped player-period
+  expressions execute through the same checked finder before any aggregation.
 
 ---
 

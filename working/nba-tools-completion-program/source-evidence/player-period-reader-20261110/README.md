@@ -77,15 +77,48 @@ with the retained scorer oracle; no new source collection is needed.
 
 The [independent finish-line review](independent-finish-line-review.md) uses the
 existing 46-positive and twelve-binding mappings. The existing retained historical
-gate now has an exact reviewed companion for all 663 old file bindings (652
-unchanged, 11 reviewed), original 22 questions/44 captures and source inventory.
+gate now has an exact reviewed companion for all 663 old file bindings (649
+unchanged, 14 reviewed), original 22 questions/44 captures and source inventory.
 Original deployment/source bytes are unchanged; fresh public verification stays
 strict. Root independently reviewed that extension and its 12 corruption/scope
 controls. It requalifies retained delivery applicability, not a fresh deployment.
 
-Required numerical execution and exact-head CI/landing receipts are recorded in
-the PR and final checkpoint after they complete. No passing outer workflow or
+Required [42768691103](https://github.com/Bet-Zero/nbatools/actions/runs/42768691103)
+passed **2 selected / 2 executed / 2 passed**, zero skipped/failures/errors/xfails.
+It executed reviewed candidate6adda6ff through manifest-only childb2072746; the
+reader gate asserts all60 child controls pass, and the existing retained gate
+requalifies the original22/44 evidence. See [receipt](required-numerical.json).
+The existing required-source consumer control also passes on unchanged v6 inputs:
+Reaves starter9/PTS210 natural/structured/HTTP and ID18 complete9 with reported
+Rest0/other1/unknown0. See [local verification](local-verification.json).
+Exact-head CI/landing receipts remain PR merge gates. No passing outer workflow or
 refusal is substituted for a positive or an executed required numerical test.
 Production data, pointer, safeguards, settings, permissions, costs, credentials
 and refresh are unchanged. Agent2 is stopped; DQ005 and K12 cold chasing stay
 parked. No owner action is needed for this engineering checkpoint.
+
+
+The final unit/basis delta fixes a demonstrated false-empty natural percentage
+filter and delegates grouped period predicates to the checked finder (including
+unknown OR branches). Natural percent-point scalar/list/tree bounds convert with
+Decimal arithmetic; structured numeric fractions remain unchanged. Numeric API
+metadata is canonical, including0.5%=0.005. Exact14.8% selects source0.148;
+strictly greater does not. Existing whole-game behavior is unchanged.
+
+[Unit checks](unit-bound-matrix.json) pass36/36 independently, reusing the prior
+75 source/semantic checks. [Final delta pins](unit-reviewed-hashes.json) supersede
+only changed base-code pins in final-reviewed-hashes.json; no source/data pins
+changed. [Ten more actual browser captures](browser-units.zip) visibly verify
+0.5+USGPCT versus source14.8%, exact equality, known grouped positives and unknown
+grouped refusals, bringing local retained rendering evidence to30captures.
+Final affected tests:72reader +145existingC2 =217passed;12applicability controls
+also pass on the final14-file delta. The initial CI regression was an obsolete
+unread-plural-quarter test; it now verifies the recognized clause and separately
+proves unsupported team-finder execution cannot drop it.
+
+The initial required2/2 receipt remains bound to6adda6ff. Final unit-delta required
+numerical and normal exact-head CI/landing results are recorded in
+[PR603](https://github.com/Bet-Zero/nbatools/pull/603); both must pass before merge.
+The final historical companion preserves663 original bindings:649 unchanged,
+14 separately reviewed, same22questions/44captures and all old source receipts.
+No new acceptance population is introduced.

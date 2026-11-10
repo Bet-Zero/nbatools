@@ -20,7 +20,12 @@ const cases = [
  ['zero-count', 'Ryan Kalkbrenner second quarter points on 2026-11-04', 'ok', 22600176, 0, 1, 1, 'Quarter'],
  ['zero-derived', 'Ryan Kalkbrenner second quarter games with at least 0 true shooting percentage on 2026-11-04', 'no_data'],
  ['context-basis', 'Austin Reaves second quarter games when opponents score at least 20 points on 2026-11-04', 'no_data'],
-].filter(c=>process.argv[3]==='delta' ? ['zero-count','zero-derived','context-basis'].includes(c[0]) : !['zero-count','zero-derived','context-basis'].includes(c[0]));
+ ['rate-units', 'Austin Reaves second quarter games with at least 10% usage on 2026-11-04', 'ok', 22600185, 4, 2, 0, 'Quarter'],
+ ['sub-percent', 'Austin Reaves second quarter games with at least 0.5% usage on 2026-11-04', 'ok', 22600185, 4, 2, 0, 'Quarter'],
+ ['exact-rate', 'Austin Reaves second quarter games with exactly 14.8% usage on 2026-11-04', 'ok', 22600185, 4, 2, 0, 'Quarter'],
+ ['grouped-rate', 'Austin Reaves second quarter games with (over 1000 points or over 10 usage percentage) on 2026-11-04', 'ok', 22600185, 4, 2, 0, 'Quarter'],
+ ['grouped-unknown', 'Kevin Durant fourth quarter games with (over 0 points or over 0 usage percentage) in 2026-27', 'no_data'],
+].filter(c=>process.argv[3]==='units' ? ['rate-units','sub-percent','exact-rate','grouped-rate','grouped-unknown'].includes(c[0]) : process.argv[3]==='delta' ? ['zero-count','zero-derived','context-basis'].includes(c[0]) : ['quarter','half','ot','null-preserved','unknown-rate','unknown-or','sum'].includes(c[0]));
 const browser = await chromium.launch({executablePath:'/usr/bin/chromium',headless:true});
 const receipts=[]; const errors=[];
 try {
@@ -34,8 +39,12 @@ try {
    await page.getByRole('button',{name:'Query',exact:true}).click();
    const response=await pending;
    await page.locator('[data-app-state="loading"]').waitFor({state:'detached'});
+   const rateCase=['rate-units','sub-percent','exact-rate','grouped-rate'].includes(id);
+   if (id==='null-preserved' || id==='zero-count' || rateCase) {
+    const extra=page.getByRole('button',{name:'Show additional columns',exact:true});
+    if (await extra.count()) await extra.click();
+   }
    if (id==='null-preserved' || id==='zero-count') {
-    await page.getByRole('button',{name:'Show additional columns',exact:true}).click();
     await page.getByText('Details',{exact:true}).click();
    }
    if (status==='no_data' && !(await page.locator('[data-state-surface="result"]').innerText()).includes('PROVISIONAL')) {
@@ -55,6 +64,8 @@ try {
     if (points!==null && (rows[0].pts!==points || rows[0].reb!==rebounds || rows[0].ast!==assists)) throw Error('Wrong independent source values');
     if (id==='null-preserved' && (rows[0].usg_pct!==null || rows[0].tov_pct!==null || !text.includes('Unrequested source rates remain unknown'))) throw Error('Unknown rates hidden or zeroed');
     if (id==='zero-count' && (rows[0].ts_pct!==null || rows[0].efg_pct!==null)) throw Error('Undefined derived ratio set to zero');
+    if (['rate-units','sub-percent','exact-rate','grouped-rate'].includes(id) && rows[0].usg_pct!==0.148) throw Error('Source rate value changed');
+    if (id==='sub-percent' && (payload.result.metadata.min_value!==0.005 || !text.includes('0.5+ USG PCT'))) throw Error('Fractional percentage bound mislabeled');
    }
    const tables=await page.locator('table').evaluateAll(nodes=>nodes.map(n=>({text:n.innerText,headers:Array.from(n.querySelectorAll('th')).map(c=>c.innerText),rows:Array.from(n.querySelectorAll('tbody tr')).map(r=>Array.from(r.querySelectorAll('td')).map(c=>c.innerText))})));
    if (id==='null-preserved') {
@@ -65,7 +76,11 @@ try {
     const detail=tables.find(t=>t.headers.includes('TS PCT'));
     if (!detail || detail.rows[0][detail.headers.indexOf('TS PCT')]!=='—' || detail.rows[0][detail.headers.indexOf('EFG PCT')]!=='—') throw Error('Undefined derived ratio not visibly retained');
    }
-   if (id==='null-preserved' || id==='zero-count') {
+   if (rateCase) {
+    const detail=tables.find(t=>t.headers.includes('USG PCT'));
+    if (!detail || detail.rows[0][detail.headers.indexOf('USG PCT')]!=='14.8%') throw Error('Source rate display unit wrong');
+   }
+   if (id==='null-preserved' || id==='zero-count' || rateCase) {
     await page.locator('table').last().evaluate(table=>{for(let el=table.parentElement;el&&el!==document.body;el=el.parentElement) if(el.scrollWidth>el.clientWidth) el.scrollLeft=el.scrollWidth;});
    }
    const screenshot=`${viewport}-${id}.png`;

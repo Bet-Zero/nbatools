@@ -1847,8 +1847,10 @@ def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
 
     from nbatools.commands.query_boolean_parser import condition_tree_leaves
 
-    if route == "player_game_finder" and any(
-        n.stat.startswith(("team_", "opponent_")) for n in condition_tree_leaves(tree)
+    if route == "player_game_finder" and (
+        base_kwargs.get("quarter") is not None
+        or base_kwargs.get("half") is not None
+        or any(n.stat.startswith(("team_", "opponent_")) for n in condition_tree_leaves(tree))
     ):
         base_kwargs["condition_expression"] = condition_text
         base_kwargs["limit"] = result_limit
