@@ -402,7 +402,7 @@ def source_oracle():
             id="published-washington-ownership-control",
             classification="supplemental_changed_runtime_control_not_an_original46_case",
             query=f"P.J. Washington stats on {person.game_date} in {SEASON}",
-            route="player_game_summary",
+            route="player_game_finder",
             kwargs=dict(
                 player="P.J. Washington",
                 season=SEASON,
@@ -468,8 +468,8 @@ def source_oracle():
 
 def assert_ownership_answer(body, control, *, natural=True):
     """A separate published positive must exercise the changed name ownership."""
-    assert body["route"] == "player_game_summary"
-    assert body["query"] == (control["query"] if natural else "structured:player_game_summary")
+    assert control["route"] == body["route"] == "player_game_finder", compact_actual(body)
+    assert body["query"] == (control["query"] if natural else "structured:player_game_finder")
     assert body["result_status"] == "ok" and body["result_reason"] is None, compact_actual(body)
     meta, sections = body["result"]["metadata"], body["result"]["sections"]
     assert meta["season"] == SEASON and meta["player"] == "P.J. Washington"
@@ -482,17 +482,19 @@ def assert_ownership_answer(body, control, *, natural=True):
     assert meta["start_date"] == meta["end_date"] == control["kwargs"]["start_date"]
     expected = control["expected"]
     assert expected["games"] == 1 and expected["sums"]["reb"] > 0
-    (summary,) = sections["summary"]
-    assert summary["games"] == 1 and summary["reb_avg"] == expected["sums"]["reb"]
-    assert_summary_metrics(summary, expected, "player_game_summary")
-    (row,) = sections["game_log"]
+    assert set(sections) == {"finder"}
+    (row,) = sections["finder"]
     (original,) = expected["rows"]
-    for key in ("game_id", "team_id", "player_id"):
+    # Finder's established public schema has team_abbr, not numeric team_id.
+    # The numeric source key remains independently authenticated in the oracle.
+    assert int(original["team_id"]) == 1610612742 and original["team_abbr"] == "DAL"
+    assert row["team_abbr"] == original["team_abbr"]
+    for key in ("game_id", "player_id"):
         assert int(row[key]) == int(original[key])
     assert str(row["game_date"])[:10] == original["game_date"]
     assert row["reb"] == original["reb"] > 0
     for stat in STATS:
-        assert stat in row, f"Missing required player_game_summary row metric {stat}"
+        assert stat in row, f"Missing required player_game_finder row metric {stat}"
         assert row[stat] == pytest.approx(original[stat], abs=0.001)
 
 

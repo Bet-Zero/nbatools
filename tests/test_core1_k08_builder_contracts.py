@@ -3,7 +3,13 @@
 import pandas as pd
 import pytest
 
-from nbatools.commands import game_finder, game_summary, player_game_summary, team_record
+from nbatools.commands import (
+    game_finder,
+    game_summary,
+    player_game_finder,
+    player_game_summary,
+    team_record,
+)
 from tests.core1_k08_served_default_cases import (
     STATS,
     _sample,
@@ -23,9 +29,12 @@ def native(monkeypatch):
     monkeypatch.setattr(team_record, "load_team_games_for_seasons", lambda *a, **k: teams.copy())
     monkeypatch.setattr(game_finder, "load_team_games_for_seasons", lambda *a, **k: teams.copy())
     monkeypatch.setattr(
+        player_game_finder, "load_player_games_for_seasons", lambda *a, **k: players.copy()
+    )
+    monkeypatch.setattr(
         player_game_summary, "load_team_games_for_seasons", lambda *a, **k: teams.copy()
     )
-    for module in (team_record, game_finder, game_summary, player_game_summary):
+    for module in (team_record, game_finder, game_summary, player_game_summary, player_game_finder):
         monkeypatch.setattr(
             module, "compute_current_through_for_seasons", lambda *a, **k: "2026-02-01"
         )
@@ -86,3 +95,22 @@ def test_native_qualified_empty_summary_has_no_metric_or_row_claim(native):
     )
     assert result.result_status == "no_result" and result.result_reason == "no_match"
     assert result.to_dict()["sections"] == {}
+
+
+def test_native_dated_player_finder_requires_its_actual_identity_and_stat_schema(native):
+    players, _ = native
+    expected = players.loc[players.player_name.eq("Jaylen Brown")].iloc[0]
+    date = str(expected.game_date)[:10]
+    result = player_game_finder.build_result(
+        player="Jaylen Brown", season="2025-26", start_date=date, end_date=date
+    )
+    assert result.result_status == "ok"
+    sections = result.to_dict()["sections"]
+    assert set(sections) == {"finder"}
+    (row,) = sections["finder"]
+    assert "team_id" not in row
+    for key in ("game_id", "player_id", "team_abbr"):
+        assert row[key] == expected[key]
+    assert str(row["game_date"])[:10] == date
+    for stat in STATS:
+        assert stat in row and row[stat] == expected[stat]

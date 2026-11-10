@@ -5,6 +5,7 @@ import copy
 import pytest
 
 from nbatools.commands import _seasons
+from nbatools.commands import entity_resolution as er
 from nbatools.commands.natural_query import parse_query
 from tests import core1_k08_runtime_binding as runtime
 from tests.cloud_core1_k08_served_default_deployed_real_data import _rendered
@@ -125,7 +126,9 @@ def test_established_finder_abbreviation_schema_still_requires_exact_source_team
         assert_answer(body, case)
 
 
-@pytest.mark.parametrize("damage", [None, "false_zero", "implicit_WAS", "identity"])
+@pytest.mark.parametrize(
+    "damage", [None, "false_zero", "implicit_WAS", "identity", "row_team", "missing_stat"]
+)
 def test_supplemental_ownership_control_requires_published_source_positive(damage):
     body, case = _controlled_answer()
     original = case["expected"]["rows"][0]
@@ -135,10 +138,11 @@ def test_supplemental_ownership_control_requires_published_source_positive(damag
     case["expected"]["keys"] = ["game_id", "team_id", "player_id"]
     control = dict(
         query="P.J. Washington stats on 2026-01-01 in 2025-26",
+        route="player_game_finder",
         kwargs=dict(start_date="2026-01-01"),
         expected=case["expected"],
     )
-    body.update(route="player_game_summary", query=control["query"])
+    body.update(route="player_game_finder", query=control["query"])
     body["result"]["metadata"] = dict(
         season="2025-26",
         player="P.J. Washington",
@@ -148,21 +152,37 @@ def test_supplemental_ownership_control_requires_published_source_positive(damag
         start_date="2026-01-01",
         end_date="2026-01-01",
     )
-    body["result"]["sections"]["game_log"] = [copy.deepcopy(original)]
-    body["result"]["sections"]["summary"][0].update(
-        {k + "_avg": 5 for k in STATS} | {k + "_sum": 5 for k in STATS}
-    )
+    body["result"]["sections"] = dict(finder=[copy.deepcopy(original)])
+    body["result"]["sections"]["finder"][0].pop("team_id")
     if damage == "false_zero":
-        body["result"]["sections"]["summary"][0]["reb_avg"] = 0
+        body["result"]["sections"]["finder"][0]["reb"] = 0
     elif damage == "implicit_WAS":
         body["result"]["metadata"]["team"] = "WAS"
     elif damage == "identity":
         body["result"]["metadata"]["player_context"]["player_id"] = 999
+    elif damage == "row_team":
+        body["result"]["sections"]["finder"][0]["team_abbr"] = "WAS"
+    elif damage == "missing_stat":
+        body["result"]["sections"]["finder"][0].pop("fga")
     if damage:
         with pytest.raises(AssertionError):
             assert_ownership_answer(body, control)
     else:
         assert_ownership_answer(body, control)
+
+
+def test_supplemental_dated_question_actually_compiles_to_player_finder(monkeypatch, request):
+    # Actual parser, with an identity-only index fixture; no NBA-value assertion.
+    er.reset_player_index()
+    request.addfinalizer(er.reset_player_index)
+    monkeypatch.setattr(er, "data_source_cache_key", lambda: "supplement-dated-person")
+    monkeypatch.setattr(er, "_read_player_names", lambda data_dir=None: {"P.J. Washington"})
+    parsed = parse_query("P.J. Washington stats on 2026-01-01 in 2025-26")
+    assert parsed["route"] == "player_game_finder"
+    kwargs = parsed["route_kwargs"]
+    assert kwargs["player"] == "P.J. Washington" and kwargs["season"] == "2025-26"
+    assert kwargs["start_date"] == kwargs["end_date"] == "2026-01-01"
+    assert not kwargs.get("team") and not kwargs.get("opponent")
 
 
 @pytest.mark.parametrize(

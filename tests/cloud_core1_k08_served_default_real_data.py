@@ -125,6 +125,14 @@ def test_original_nine_on_published_generation():
         control = oracle["supplemental_ownership"]
         actual = dict(original46_case=False, checked_consumer_answers=0)
         receipt["supplemental_ownership"] = actual
+        compiled = parse_query(control["query"])
+        actual["authenticated_natural_compiled_route"] = compiled["route"]
+        persist()
+        assert compiled["route"] == control["route"] == "player_game_finder", dict(
+            query=control["query"],
+            route=compiled["route"],
+            route_kwargs=compiled.get("route_kwargs"),
+        )
         natural = query_result_to_payload(execute_natural_query(control["query"]))
         actual["natural"] = natural
         persist()
