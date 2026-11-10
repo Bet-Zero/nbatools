@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "status": "PASS_WITH_GAPS",
+  "exit_code": 0,
+  "configured_comparisons": 521,
+  "executed_comparisons": 521,
+  "comparable_comparisons": 477,
+  "no_signal_comparisons": 44,
+  "verdict_counts": {
+    "APPLIED": 145,
+    "REFUSED": 293,
+    "LIED": 0,
+    "DROPPED": 39,
+    "NO_SIGNAL": 44,
+    "ERROR": 0
+  },
+  "no_signal_reason_counts": {
+    "control_no_result:unsupported": 44
+  },
+  "data_generation": "availability-lebron-season-v1-20261031",
+  "config": "/home/runner/work/nbatools/nbatools/qa/filter_execution_sweep.yaml",
+  "config_sha256": "4201f3875a8dfc551a2c307e7058903c3f9b0926253d67d8535f6a8b3ada0653",
+  "only": null,
+  "started_at": "2026-11-10T09:04:07.919487+00:00",
+  "completed_at": "2026-11-10T09:04:50.461928+00:00"
+}

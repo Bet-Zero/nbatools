@@ -1,0 +1,26 @@
+{
+  "candidate_sha": "b246fd9b0b5f04924b493ee4ff8fde1a95a28d6a",
+  "generation": "availability-lebron-season-v1-20261031",
+  "scope": "targeted",
+  "required_selection": [
+    "tests/cloud_core1_k08_lal_default_real_data.py::test_original_luka_rest_and_reaves_default_questions",
+    "tests/cloud_core_historical_delivery_real_data.py::test_requalify_retained_actual_historical_api_and_ui",
+    "tests/cloud_core1_evidence_custody_real_data.py::test_retain_exact_existing_filter_artifact",
+    "tests/cloud_core1_evidence_custody_real_data.py::test_retain_exact_existing_nine_artifact"
+  ],
+  "required_test_limit": 100,
+  "selected": 4,
+  "executed": 4,
+  "passed": 3,
+  "skipped": 0,
+  "failed": 1,
+  "errors": 0,
+  "xfailed": 0,
+  "pytest_exit": 1,
+  "conclusion": "failure",
+  "problems": [
+    "pytest did not succeed (exit=1)",
+    "Every selected required test must execute and pass",
+    "Required tests contain skips, failures, errors, or expected failures"
+  ]
+}
