@@ -258,61 +258,68 @@ def test_finish_retained_original_nine_delivery(capfd):
     original_sha = "980cbb5d4ecfd9397d60989071ce409d3a2f9e4b11b8d35d51bf5ca1ff99ea02"
     raw = _fetch_exact(13759105450, 16528093, original_sha)
     root = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"])
+    root.mkdir(parents=True, exist_ok=True)
     (root / "original-live-42804652346.zip").write_bytes(raw)
-    _run(retained=raw)
-    # Preserve all actual API/DOM/runtime receipts and representative PNG bytes
-    # through the existing bounded log-transfer route. Original ZIP stays intact.
-    bundle = io.BytesIO()
-    representative = {
-        f"acquired_data/core1-k08-served-default-live/{view}-original-k08-{case}.png"
-        for view in ("desktop", "mobile")
-        for case in ("07", "30", "41")
-    }
-    inventory = []
-    with ZipFile(io.BytesIO(raw)) as original, ZipFile(bundle, "w", ZIP_DEFLATED) as transfer:
-        for info in original.infolist():
-            inventory.append(
-                dict(path=info.filename, size=info.file_size, sha256=sha(original.read(info)))
+    try:
+        _run(retained=raw)
+    finally:
+        # Preserve all actual API/DOM/runtime receipts and representative PNG bytes
+        # through the existing bounded log-transfer route. Original ZIP stays intact.
+        bundle = io.BytesIO()
+        representative = {
+            f"acquired_data/core1-k08-served-default-live/{view}-original-k08-{case}.png"
+            for view in ("desktop", "mobile")
+            for case in ("07", "30", "41")
+        }
+        inventory = []
+        with ZipFile(io.BytesIO(raw)) as original, ZipFile(bundle, "w", ZIP_DEFLATED) as transfer:
+            for info in original.infolist():
+                inventory.append(
+                    dict(path=info.filename, size=info.file_size, sha256=sha(original.read(info)))
+                )
+                if info.filename.endswith(".json") or info.filename in representative:
+                    transfer.writestr("original/" + info.filename, original.read(info))
+            assert representative.issubset(original.namelist())
+            for folder, count in (
+                ("core1-k08-served-default-live", 18),
+                ("core-historical-live-new-runtime", 44),
+            ):
+                prefix = "acquired_data/" + folder + "/"
+                browser = json.loads(original.read(prefix + "browser-receipt.json"))
+                assert len(browser["receipts"]) == count and not browser["failures"]
+                for item in browser["receipts"]:
+                    assert (
+                        sha(original.read(prefix + item["screenshot"])) == item["screenshotSha256"]
+                    )
+            passed22 = json.loads(
+                original.read("acquired_data/core-historical-live-new-runtime/acceptance.json")
             )
-            if info.filename.endswith(".json") or info.filename in representative:
-                transfer.writestr("original/" + info.filename, original.read(info))
-        assert representative.issubset(original.namelist())
-        for folder, count in (
-            ("core1-k08-served-default-live", 18),
-            ("core-historical-live-new-runtime", 44),
-        ):
-            prefix = "acquired_data/" + folder + "/"
-            browser = json.loads(original.read(prefix + "browser-receipt.json"))
-            assert len(browser["receipts"]) == count and not browser["failures"]
-            for item in browser["receipts"]:
-                assert sha(original.read(prefix + item["screenshot"])) == item["screenshotSha256"]
-        passed22 = json.loads(
-            original.read("acquired_data/core-historical-live-new-runtime/acceptance.json")
-        )
-        assert (
-            passed22["consumer_acceptance"] == "passed"
-            and passed22["fresh_deployment_accepted"] is True
-        )
-        completed = root / "core1-k08-served-default-live/acceptance.json"
-        transfer.writestr("completion/acceptance.json", completed.read_bytes())
-        transfer.writestr(
-            "original-artifact-inventory.json",
-            json.dumps(
-                dict(
-                    artifact_id=13759105450,
-                    original_size=len(raw),
-                    original_sha256=original_sha,
-                    retained_original_files=inventory,
-                    transfer_scope="all JSON, six original PNGs, completed nine-case receipt; not a full ZIP copy",
+            assert (
+                passed22["consumer_acceptance"] == "passed"
+                and passed22["fresh_deployment_accepted"] is True
+            )
+            completed = root / "core1-k08-served-default-live/acceptance.json"
+            transfer.writestr("completion/acceptance.json", completed.read_bytes())
+            transfer.writestr(
+                "original-artifact-inventory.json",
+                json.dumps(
+                    dict(
+                        artifact_id=13759105450,
+                        original_size=len(raw),
+                        original_sha256=original_sha,
+                        retained_original_files=inventory,
+                        transfer_scope="all JSON, six original PNGs, completed nine-case receipt; not a full ZIP copy",
+                    ),
+                    indent=2,
                 ),
-                indent=2,
-            ),
-        )
-    packed = bundle.getvalue()
-    assert len(packed) <= 5_000_000
-    (root / "core1-live-critical-receipts.zip").write_bytes(packed)
-    encoded = base64.b64encode(packed).decode("ascii")
-    with capfd.disabled():
-        for index, offset in enumerate(range(0, len(encoded), 16000)):
-            print(f"CORE1_LIVE_CHUNK_{index:03d}=" + encoded[offset : offset + 16000], flush=True)
-        print("CORE1_LIVE_SHA256=" + sha(packed), flush=True)
+            )
+        packed = bundle.getvalue()
+        assert len(packed) <= 5_000_000
+        (root / "core1-live-critical-receipts.zip").write_bytes(packed)
+        encoded = base64.b64encode(packed).decode("ascii")
+        with capfd.disabled():
+            for index, offset in enumerate(range(0, len(encoded), 16000)):
+                print(
+                    f"CORE1_LIVE_CHUNK_{index:03d}=" + encoded[offset : offset + 16000], flush=True
+                )
+            print("CORE1_LIVE_SHA256=" + sha(packed), flush=True)
