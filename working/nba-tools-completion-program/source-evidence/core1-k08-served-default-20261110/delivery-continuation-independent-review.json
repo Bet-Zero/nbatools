@@ -1,0 +1,23 @@
+{
+  "classification": "preexecution_semantic_review_not_actual_delivery_acceptance",
+  "files": {
+    "tests/cloud_core1_k08_served_default_deployed_real_data.py": "627211c13f9df297688cc071068d7c6a109b3efc5c53240092fbffee4de3cc97",
+    "tests/cloud_core1_evidence_custody_real_data.py": "7ceb505547eb29fb0f690548ce40c8e920b9f11963f023cd7956958c57585f99",
+    "tests/test_core1_k08_served_default_contract.py": "ae4ceb601e75215eab12dc4ea2a2a7c22037fcf9dec87b7a5c6fddd0b4a72bc5"
+  },
+  "changed_native_controls_passed": 5,
+  "representative_original_pngs": 6,
+  "representative_case_ids": [
+    7,
+    30,
+    41
+  ],
+  "fixed_original_artifact_sha256": "980cbb5d4ecfd9397d60989071ce409d3a2f9e4b11b8d35d51bf5ca1ff99ea02",
+  "original_failure_preserved": true,
+  "reuses_same_qualified_source_and_exact_runtime": true,
+  "new_browser_queries": 0,
+  "new_unfinished_http_control": true,
+  "full_core1_accepted": false,
+  "current_publication_accepted": false,
+  "backend_model_identity": "unavailable"
+}

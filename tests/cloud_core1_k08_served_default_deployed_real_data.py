@@ -1,5 +1,7 @@
 """Actual new-runtime D for nine original K08 cases; no data/protection writes."""
 
+import base64
+import io
 import json
 import os
 import re
@@ -7,6 +9,7 @@ import subprocess
 import time
 from datetime import UTC, datetime
 from pathlib import Path
+from zipfile import ZIP_DEFLATED, ZipFile
 
 import pytest
 import requests
@@ -41,7 +44,7 @@ def _rendered(item, case):
     assert "provisional" not in text.lower()
     if not expected["games"]:
         assert "No Matching Results" in text and "120" in text
-        assert "Lakers" in text and ("Celtics" in text or "BOS" in text)
+        assert re.search(r"\b(?:Lakers|LAL)\b", text) and re.search(r"\b(?:Celtics|BOS)\b", text)
         assert "Tatum" in text and not item["tables"]
         return
     assert "No Matching Results" not in text
@@ -72,7 +75,42 @@ def _rendered(item, case):
         assert "Tatum" in text and ("Celtics" in text or "BOS" in text)
 
 
-def test_actual_new_runtime_original_nine_desktop_and_mobile():
+def _capture(inputs, output, base_url):
+    allowed = {
+        "PATH",
+        "HOME",
+        "TMPDIR",
+        "CI",
+        "HTTP_PROXY",
+        "HTTPS_PROXY",
+        "NO_PROXY",
+        "NODE_EXTRA_CA_CERTS",
+        "SSL_CERT_FILE",
+    }
+    clean = {k: v for k, v in os.environ.items() if k in allowed}
+    subprocess.run(
+        ["npm", "ci", "--ignore-scripts", "--no-audit"],
+        cwd=ROOT / "frontend",
+        env=clean,
+        check=True,
+        timeout=180,
+    )
+    subprocess.run(
+        [
+            "node",
+            str(ROOT / "frontend/tools/captureCoreIdentityFindCount.mjs"),
+            str(inputs),
+            str(output),
+            base_url,
+        ],
+        cwd=ROOT,
+        env=clean,
+        check=True,
+        timeout=900,
+    )
+
+
+def _run(*, retained=None):
     oracle = source_oracle()
     output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "core1-k08-served-default-live"
     output.mkdir(parents=True, exist_ok=False)
@@ -106,49 +144,93 @@ def test_actual_new_runtime_original_nine_desktop_and_mobile():
         ]
         inputs = output / "cases.json"
         inputs.write_text(json.dumps(cases) + "\n")
-        allowed = {
-            "PATH",
-            "HOME",
-            "TMPDIR",
-            "CI",
-            "HTTP_PROXY",
-            "HTTPS_PROXY",
-            "NO_PROXY",
-            "NODE_EXTRA_CA_CERTS",
-            "SSL_CERT_FILE",
-        }
-        clean = {k: v for k, v in os.environ.items() if k in allowed}
-        subprocess.run(
-            ["npm", "ci", "--ignore-scripts", "--no-audit"],
-            cwd=ROOT / "frontend",
-            env=clean,
-            check=True,
-            timeout=180,
-        )
-        subprocess.run(
-            [
-                "node",
-                str(ROOT / "frontend/tools/captureCoreIdentityFindCount.mjs"),
-                str(inputs),
-                str(output),
-                before["base_url"],
-            ],
-            cwd=ROOT,
-            env=clean,
-            check=True,
-            timeout=900,
-        )
+        if retained is None:
+            _capture(inputs, output, before["base_url"])
+        else:
+            prefix = "acquired_data/core1-k08-served-default-live/"
+            with ZipFile(io.BytesIO(retained)) as archive:
+                old = json.loads(archive.read(prefix + "acceptance.json"))
+                assert old["consumer_acceptance"] == "failed"
+                assert old["error_type"] == "AssertionError"
+                assert old["original_ids"] == receipt["original_ids"]
+                assert json.loads(archive.read(prefix + "independent-raw-oracle.json")) == oracle
+                original_runtime = old["runtime_before"]
+                for field in ("base_url", "deployed_sha", "build_input_tree_sha256"):
+                    assert original_runtime[field] == before[field]
+                assert original_runtime["deployment"]["id"] == before["deployment"]["id"]
+                for info in archive.infolist():
+                    if info.is_dir() or not info.filename.startswith(prefix):
+                        continue
+                    name = info.filename.removeprefix(prefix)
+                    assert Path(name).name == name
+                    target = (
+                        "original-failed-acceptance.json" if name == "acceptance.json" else name
+                    )
+                    (output / target).write_bytes(archive.read(info))
+                receipt["retained_capture"] = dict(
+                    original_run=42804652346,
+                    artifact_id=13759105450,
+                    sha256=sha(retained),
+                    runtime_before_original=original_runtime,
+                    new_browser_queries=2,
+                    classification="same-new-runtime original18 capture requalification; earlier verifier failure retained",
+                )
         browser = json.loads((output / "browser-receipt.json").read_bytes())
         assert browser["base"] == before["base_url"] and not browser["failures"]
         assert len(browser["receipts"]) == 18
+        observations = [(item, output) for item in browser["receipts"]]
+        if retained is not None:
+            scope_case = next(c for c in oracle["cases"] if c["ordinal"] == 32)
+            scope_inputs = output / "original32-scope-cases.json"
+            scope_inputs.write_text(
+                json.dumps(
+                    [
+                        dict(
+                            id=scope_case["id"],
+                            query=scope_case["query"],
+                            captureDetails=True,
+                            text=[],
+                            forbidden=["Data Not Available", "NaN", "undefined", "Infinity"],
+                        )
+                    ]
+                )
+            )
+            scope_output = output / "original32-scope"
+            _capture(scope_inputs, scope_output, before["base_url"])
+            scope = json.loads((scope_output / "browser-receipt.json").read_bytes())
+            assert scope["base"] == before["base_url"] and not scope["failures"]
+            assert {(i["viewport"], i["id"]) for i in scope["receipts"]} == {
+                (v, scope_case["id"]) for v in ("desktop", "mobile")
+            }
+            assert len(scope["receipts"]) == 2
+            assert sha((scope_output / "served-application.js").read_bytes()) == sha(
+                (output / "served-application.js").read_bytes()
+            )
+            for item in scope["receipts"]:
+                assert (
+                    json.loads(item["detailsMetadataText"]) == item["payload"]["result"]["metadata"]
+                )
+                assert json.loads(item["detailsMetadataText"])["season"] == SEASON
+            observations = [
+                (item, output) for item in browser["receipts"] if item["id"] != scope_case["id"]
+            ]
+            observations += [(item, scope_output) for item in scope["receipts"]]
+            receipt["capture_selection"] = dict(
+                retained_views=16,
+                new_views=2,
+                retained_original_views=18,
+                existing_surface="Result details metadata panel; original collapsed season omission retained",
+            )
         case_by_id = {c["id"]: c for c in oracle["cases"]}
         seen, asset_hashes = set(), set()
-        for item in browser["receipts"]:
+        for item, screenshot_root in observations:
             assert (item["viewport"], item["id"]) not in seen
             seen.add((item["viewport"], item["id"]))
             assert not item["errors"] and not item["missing"] and not item["forbidden"]
             assert item["overflow"]["document"] <= item["overflow"]["viewport"]
-            assert sha((output / item["screenshot"]).read_bytes()) == item["screenshotSha256"]
+            assert (
+                sha((screenshot_root / item["screenshot"]).read_bytes()) == item["screenshotSha256"]
+            )
             for when in ("Before", "After"):
                 ready = item["readiness" + when]
                 assert item["readinessHttp" + when] == 503
@@ -212,3 +294,89 @@ def test_actual_new_runtime_original_nine_desktop_and_mobile():
     finally:
         receipt["completed_at"] = datetime.now(UTC).isoformat()
         (output / "acceptance.json").write_text(json.dumps(receipt, indent=2) + "\n")
+
+
+def test_actual_new_runtime_original_nine_desktop_and_mobile():
+    _run()
+
+
+def test_finish_retained_original_nine_delivery(capfd):
+    """Qualify original18, finish the one unattempted HTTP control; no recapture."""
+    from tests.cloud_core1_evidence_custody_real_data import _fetch_exact
+
+    original_sha = "980cbb5d4ecfd9397d60989071ce409d3a2f9e4b11b8d35d51bf5ca1ff99ea02"
+    raw = _fetch_exact(13759105450, 16528093, original_sha)
+    root = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"])
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "original-live-42804652346.zip").write_bytes(raw)
+    try:
+        _run(retained=raw)
+    finally:
+        # Preserve all actual API/DOM/runtime receipts and representative PNG bytes
+        # through the existing bounded log-transfer route. Original ZIP stays intact.
+        bundle = io.BytesIO()
+        representative = {
+            f"acquired_data/core1-k08-served-default-live/{view}-original-k08-{case}.png"
+            for view in ("desktop", "mobile")
+            for case in ("07", "30", "41")
+        }
+        inventory = []
+        with ZipFile(io.BytesIO(raw)) as original, ZipFile(bundle, "w", ZIP_DEFLATED) as transfer:
+            for info in original.infolist():
+                inventory.append(
+                    dict(path=info.filename, size=info.file_size, sha256=sha(original.read(info)))
+                )
+                if info.filename.endswith(".json") or info.filename in representative:
+                    transfer.writestr("original/" + info.filename, original.read(info))
+            assert representative.issubset(original.namelist())
+            for folder, count in (
+                ("core1-k08-served-default-live", 18),
+                ("core-historical-live-new-runtime", 44),
+            ):
+                prefix = "acquired_data/" + folder + "/"
+                browser = json.loads(original.read(prefix + "browser-receipt.json"))
+                assert len(browser["receipts"]) == count and not browser["failures"]
+                for item in browser["receipts"]:
+                    assert (
+                        sha(original.read(prefix + item["screenshot"])) == item["screenshotSha256"]
+                    )
+            passed22 = json.loads(
+                original.read("acquired_data/core-historical-live-new-runtime/acceptance.json")
+            )
+            assert (
+                passed22["consumer_acceptance"] == "passed"
+                and passed22["fresh_deployment_accepted"] is True
+            )
+            completed = root / "core1-k08-served-default-live/acceptance.json"
+            transfer.writestr("completion/acceptance.json", completed.read_bytes())
+            scope_folder = root / "core1-k08-served-default-live/original32-scope"
+            if scope_folder.exists():
+                for path in sorted(scope_folder.rglob("*")):
+                    if path.is_file():
+                        transfer.writestr(
+                            "completion/original32-scope/" + str(path.relative_to(scope_folder)),
+                            path.read_bytes(),
+                        )
+            transfer.writestr(
+                "original-artifact-inventory.json",
+                json.dumps(
+                    dict(
+                        artifact_id=13759105450,
+                        original_size=len(raw),
+                        original_sha256=original_sha,
+                        retained_original_files=inventory,
+                        transfer_scope="all JSON, six original PNGs, two new Details PNGs when acquired, completed nine-case receipt; not a full ZIP copy",
+                    ),
+                    indent=2,
+                ),
+            )
+        packed = bundle.getvalue()
+        assert len(packed) <= 5_000_000
+        (root / "core1-live-critical-receipts.zip").write_bytes(packed)
+        encoded = base64.b64encode(packed).decode("ascii")
+        with capfd.disabled():
+            for index, offset in enumerate(range(0, len(encoded), 16000)):
+                print(
+                    f"CORE1_LIVE_CHUNK_{index:03d}=" + encoded[offset : offset + 16000], flush=True
+                )
+            print("CORE1_LIVE_SHA256=" + sha(packed), flush=True)

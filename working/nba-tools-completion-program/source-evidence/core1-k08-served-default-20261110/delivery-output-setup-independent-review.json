@@ -1,0 +1,9 @@
+{
+  "deployed_test_sha256": "dd4633bde7a093693f1d24708b28799d500da2b97a95841355b8d5d4e9bb7760",
+  "previous_deployed_test_sha256": "627211c13f9df297688cc071068d7c6a109b3efc5c53240092fbffee4de3cc97",
+  "ast_proof_only_directory_setup_and_try_finally_changed": true,
+  "all_previous_expected_checks_semantics_preserved": true,
+  "no_failure_suppression": true,
+  "actual_completion_pending": true,
+  "backend_model_identity": "unavailable"
+}

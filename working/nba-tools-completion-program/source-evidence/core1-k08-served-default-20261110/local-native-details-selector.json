@@ -1,0 +1,9 @@
+{
+  "selector": "[data-state-surface=\"result\"] details > summary, exact Details",
+  "actual_matches": 1,
+  "actual_rendered_metadata_matches_API": true,
+  "season": "2026-27",
+  "development_provisional": true,
+  "production_acceptance": false,
+  "scope": "actual local Washington H1 selector verification; same generic existing disclosure"
+}
