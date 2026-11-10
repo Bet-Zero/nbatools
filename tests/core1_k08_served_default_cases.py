@@ -132,6 +132,40 @@ def original_bindings():
     return out
 
 
+def equivalent_structured_kwargs(case):
+    """Use the independently qualified sample, not a data-free parser fallback.
+
+    Source qualification proves the complete unique LAL cohort (82 games,
+    60 played plus 22 explicit DNP). An unscoped membership chronology is a
+    distinct contract and remains unavailable without its dated evidence.
+    """
+    kwargs = dict(
+        season=SEASON,
+        season_type="Regular Season",
+        without_player="Jayson Tatum",
+        opponent="BOS",
+        team="LAL",
+    )
+    if case["kind"] in {"missed", "home_missed"}:
+        return dict(
+            season=SEASON,
+            season_type="Regular Season",
+            team="LAL",
+            without_player="LeBron James",
+            home_only=case["kind"] == "home_missed",
+            limit=100000,
+            sort_by="game_date",
+        )
+    if case["kind"] == "player":
+        kwargs.pop("team")
+        kwargs["player"] = "LeBron James"
+    elif case["route"] == "game_summary":
+        kwargs["stat"] = "pts"
+        if case["kind"] == "threshold":
+            kwargs["min_value"] = 120
+    return kwargs
+
+
 def _raw_frame(relative, entries, sources):
     raw = data_path(relative).read_bytes()
     entry = entries[relative]
@@ -376,31 +410,7 @@ def source_oracle():
         cases = original_bindings()
         for case in cases:
             case["expected"] = _sample(samples[case["kind"]], player=case["kind"] == "player")
-            kwargs = dict(
-                season=SEASON,
-                season_type="Regular Season",
-                without_player="Jayson Tatum",
-                opponent="BOS",
-                team="LAL",
-            )
-            if case["kind"] in {"missed", "home_missed"}:
-                kwargs = dict(
-                    season=SEASON,
-                    season_type="Regular Season",
-                    membership_player="LeBron James",
-                    without_player="LeBron James",
-                    home_only=case["kind"] == "home_missed",
-                    limit=100000,
-                    sort_by="game_date",
-                )
-            elif case["kind"] == "player":
-                kwargs.pop("team")
-                kwargs["player"] = "LeBron James"
-            elif case["route"] == "game_summary":
-                kwargs["stat"] = "pts"
-                if case["kind"] == "threshold":
-                    kwargs["min_value"] = 120
-            case["kwargs"] = kwargs
+            case["kwargs"] = equivalent_structured_kwargs(case)
         # Keep ID26's entire multi-opponent population visible as a distinct
         # unfinished requirement; no other-game or omitted-player inference.
         id26 = lal.loc[lal.opponent_team_abbr.isin(["BOS", "NYK"])]
@@ -448,7 +458,7 @@ def assert_ownership_answer(body, control, *, natural=True):
     """A separate published positive must exercise the changed name ownership."""
     assert body["route"] == "player_game_summary"
     assert body["query"] == (control["query"] if natural else "structured:player_game_summary")
-    assert body["result_status"] == "ok" and body["result_reason"] is None
+    assert body["result_status"] == "ok" and body["result_reason"] is None, compact_actual(body)
     meta, sections = body["result"]["metadata"], body["result"]["sections"]
     assert meta["season"] == SEASON and meta["player"] == "P.J. Washington"
     assert meta["player_context"]["player_id"] == 1629023
@@ -472,10 +482,38 @@ def assert_ownership_answer(body, control, *, natural=True):
     assert row["reb"] == original["reb"] > 0
 
 
+def compact_actual(body):
+    """Portable failure diagnostics without full data rows or environment values."""
+    meta = (body.get("result") or {}).get("metadata") or {}
+    return json.dumps(
+        dict(
+            route=body.get("route"),
+            query=body.get("query"),
+            result_status=body.get("result_status"),
+            result_reason=body.get("result_reason"),
+            notes=body.get("notes"),
+            metadata_notes=meta.get("notes"),
+            team=meta.get("team"),
+            without_player=meta.get("without_player"),
+            season=meta.get("season"),
+        ),
+        default=str,
+    )[:2000]
+
+
 def assert_answer(body, case, *, natural=True):
     """Check identities, complete row keys, numerators, denominators and labels."""
-    assert body["route"] == case["route"]
-    assert body["query"] == (case["query"] if natural else "structured:" + case["route"])
+    assert body["route"] == case["route"], compact_actual(body)
+    assert body["query"] == (case["query"] if natural else "structured:" + case["route"]), (
+        compact_actual(body)
+    )
+    expected = case["expected"]
+    if expected["games"]:
+        assert body["result_status"] == "ok" and body["result_reason"] is None, compact_actual(body)
+    else:
+        assert body["result_status"] == "no_result" and body["result_reason"] == "no_match", (
+            compact_actual(body)
+        )
     metadata, sections = body["result"]["metadata"], body["result"]["sections"]
     assert (
         metadata["season"] == SEASON
@@ -486,15 +524,13 @@ def assert_answer(body, case, *, natural=True):
     assert metadata["without_player"] == (
         "LeBron James" if case["kind"] in {"missed", "home_missed"} else "Jayson Tatum"
     )
-    expected = case["expected"]
     if not expected["games"]:
-        assert body["result_status"] == "no_result" and body["result_reason"] == "no_match"
         assert not sections
         assert metadata["team"] == "LAL" and metadata["opponent"] == "BOS"
         assert metadata["stat"] == "pts" and metadata["min_value"] == 120
         return
-    assert body["result_status"] == "ok" and body["result_reason"] is None
     if case["kind"] in {"missed", "home_missed"}:
+        assert metadata["team"] == "LAL"
         actual = sections["finder"]
         if natural:
             assert sections["count"] == [{"count": expected["games"]}]

@@ -12,6 +12,7 @@ from tests.core1_k08_served_default_cases import (
     STATS,
     assert_answer,
     assert_ownership_answer,
+    equivalent_structured_kwargs,
     original_bindings,
 )
 
@@ -24,6 +25,15 @@ def test_original_mapping_and_served_default_remain_exact(monkeypatch):
         assert parsed["route_kwargs"]["season"] == "2025-26"
         assert "this season" not in case["query"] and "current season" not in case["query"]
     assert _seasons.previous_season("Regular Season") == "2024-25"
+
+
+@pytest.mark.parametrize("ordinal", [7, 8])
+def test_structured_missed_sample_is_complete_qualified_club_not_unscoped_chronology(ordinal):
+    case = next(c for c in original_bindings() if c["ordinal"] == ordinal)
+    kwargs = equivalent_structured_kwargs(case)
+    assert kwargs["season"] == "2025-26" and kwargs["team"] == "LAL"
+    assert kwargs["without_player"] == "LeBron James" and "membership_player" not in kwargs
+    assert kwargs["home_only"] is (ordinal == 8)
 
 
 def _controlled_answer():

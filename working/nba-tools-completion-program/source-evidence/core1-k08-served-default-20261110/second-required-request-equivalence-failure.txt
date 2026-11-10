@@ -1,0 +1,79 @@
+=================================== FAILURES ===================================
+__________________ test_original_nine_on_published_generation __________________
+
+    def test_original_nine_on_published_generation():
+        oracle = source_oracle()
+        assert default_end_season("Regular Season") == SEASON
+        assert previous_season("Regular Season") == "2024-25"
+        output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "core1-k08-served-default"
+        output.mkdir(parents=True, exist_ok=False)
+        (output / "independent-raw-oracle.json").write_text(json.dumps(oracle, indent=2) + "\n")
+        client = TestClient(app)
+        receipt = dict(
+            candidate_sha=os.environ["VALIDATION_SHA"],
+            classification="original_nine_K08_inputs_at_published_served_default_not_literal_current",
+            generation=oracle["generation"],
+            manifest_sha256=oracle["manifest_sha256"],
+            original46_ids_sha256=oracle["original46_ids_sha256"],
+            answers=[],
+            accepted_original_ids=[],
+            consumer_acceptance="pending",
+            source_requests=0,
+            production_writes=0,
+            literal_current_accepted=False,
+            all46_accepted=False,
+            full_core1_accepted=False,
+            fresh_deployment_accepted=False,
+        )
+        try:
+            for case in oracle["cases"]:
+                natural = query_result_to_payload(execute_natural_query(case["query"]))
+                assert_answer(natural, case)
+                structured = query_result_to_payload(
+                    execute_structured_query(case["route"], **case["kwargs"])
+                )
+>               assert_answer(structured, case, natural=False)
+
+tests/cloud_core1_k08_served_default_real_data.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+body = {'ok': False, 'query': 'structured:game_finder', 'route': 'game_finder', 'result_status': 'no_result', ...}
+case = {'ordinal': 7, 'query': 'games LeBron missed', 'route': 'game_finder', 'kind': 'missed', ...}
+natural = False
+
+    def assert_answer(body, case, *, natural=True):
+        """Check identities, complete row keys, numerators, denominators and labels."""
+        assert body["route"] == case["route"]
+        assert body["query"] == (case["query"] if natural else "structured:" + case["route"])
+        metadata, sections = body["result"]["metadata"], body["result"]["sections"]
+        assert (
+            metadata["season"] == SEASON
+            and not metadata.get("start_season")
+            and not metadata.get("end_season")
+        )
+        assert not metadata.get("data_quality") and not metadata.get("unsupported_filters")
+        assert metadata["without_player"] == (
+            "LeBron James" if case["kind"] in {"missed", "home_missed"} else "Jayson Tatum"
+        )
+        expected = case["expected"]
+        if not expected["games"]:
+            assert body["result_status"] == "no_result" and body["result_reason"] == "no_match"
+            assert not sections
+            assert metadata["team"] == "LAL" and metadata["opponent"] == "BOS"
+            assert metadata["stat"] == "pts" and metadata["min_value"] == 120
+            return
+>       assert body["result_status"] == "ok" and body["result_reason"] is None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError
+
+tests/core1_k08_served_default_cases.py:496: AssertionError
+=============================== warnings summary ===============================
+../../../../../opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages/fastapi/testclient.py:1
+  /opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/cloud_core1_k08_served_default_real_data.py::test_original_nine_on_published_generation - AssertionError
+1 failed, 1 warning in 6.51s
+
