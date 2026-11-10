@@ -1,0 +1,16 @@
+{
+  "classification": "preimplementation_existing_surface_judgment_not_actual_details_acceptance",
+  "original32_strict_api_source_both_views_pass": true,
+  "original32_games": 2,
+  "original32_pts_total": 194,
+  "original32_ppg": 97,
+  "collapsed_original32_season_visible": false,
+  "existing_details_renders_metadata": true,
+  "approved_plan": "two new actual ID32 desktop/mobile Details-open observations; original16+new2 composite with original18 untouched",
+  "requires_exact_result_details_metadata_season": true,
+  "original32_png_currently_in_local_bundle": false,
+  "original30_desktop_mobile_png_visually_inspected": true,
+  "no_new_above_fold_requirement_found": true,
+  "app_source_change_authorized_or_needed": false,
+  "backend_model_identity": "unavailable"
+}

@@ -1,0 +1,22 @@
+{
+  "classification": "preexecution_details_capture_semantic_review",
+  "files": {
+    "frontend/tools/captureCoreIdentityFindCount.mjs": "2d152f86d0f5513815ec4ff212a1a7fd83ad6e4893e31673793768cde093e615",
+    "tests/cloud_core1_k08_served_default_deployed_real_data.py": "98ad7acb397a813c56047431c73c97b157f226c8c17a88af81ac00a311295c36"
+  },
+  "exact_single_case_id": "original-k08-32",
+  "new_browser_views": 2,
+  "retained_selected_views": 16,
+  "original_retained_views_preserved": 18,
+  "unchanged_other_views_reused": 60,
+  "details_metadata_must_equal_actual_api": true,
+  "strict_season_guard_preserved": true,
+  "same_source_runtime_asset_required": true,
+  "original_collapsed_season_omission_disclosed": true,
+  "no_app_source_change": true,
+  "actual_completion_pending": true,
+  "backend_model_identity": "unavailable",
+  "native_summary_selector_correction_approved": true,
+  "previous_role_assumption_incorrect": true,
+  "failed_control_selection_run": 42809499289
+}

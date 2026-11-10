@@ -144,7 +144,7 @@ try {
       }
       let detailsMetadataText = null;
       if (originalK08Scope) {
-        await page.getByRole("button", { name: "Details", exact: true }).click();
+        await page.locator('[data-state-surface="result"] details > summary').filter({ hasText: /^Details$/ }).click();
         const details = page.getByLabel("Result details", { exact: true });
         await details.waitFor({ state: "visible" });
         detailsMetadataText = await details.locator("pre").innerText();
