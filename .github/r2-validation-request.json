@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "22bd1d7f455b2a4b6950822b5bfc191ee89c07cd",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/cloud_core1_k08_served_default_deployed_real_data.py::test_actual_new_runtime_original_nine_desktop_and_mobile",
+    "tests/cloud_core_historical_delivery_real_data.py::test_actual_new_runtime_historical_api_and_ui"
+  ],
+  "raw_qa_cases": []
+}
