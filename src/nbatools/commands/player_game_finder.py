@@ -10,6 +10,7 @@ from nbatools.commands._condition_utils import (
 )
 from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
+from nbatools.commands.aggregate_metrics import require_known_metric_inputs
 from nbatools.commands.data_utils import (
     WINDOW_SCOPES,
     apply_last_n_sample,
@@ -341,6 +342,7 @@ def build_result(
     without_player_reason: str | None = None,
     _reported_reason_evidence: dict | None = None,
     condition_expression: str | None = None,
+    _source_rate_bounds_percent_points: bool = False,
 ) -> FinderResult | NoResult:
     from nbatools.commands.data_utils import validate_last_n_scope
 
@@ -354,6 +356,31 @@ def build_result(
                 "Boolean expressions cannot combine with scalar/event/window predicates"
             )
         tree = parse_condition_text(condition_expression, team=team, opponent=opponent)
+    if _source_rate_bounds_percent_points and (quarter is not None or half is not None):
+        from dataclasses import replace
+
+        from nbatools.commands.aggregate_metrics import fractional_source_rate_bounds
+        from nbatools.commands.query_boolean_parser import ConditionNode
+
+        bounds = fractional_source_rate_bounds(
+            dict(stat=stat, min_value=min_value, max_value=max_value, conditions=conditions)
+        )
+        min_value, max_value, conditions = (
+            bounds["min_value"],
+            bounds["max_value"],
+            bounds["conditions"],
+        )
+
+        def fractional_tree(node):
+            if isinstance(node, ConditionNode):
+                bounds = fractional_source_rate_bounds(
+                    dict(stat=node.stat, min_value=node.min_value, max_value=node.max_value)
+                )
+                return replace(node, min_value=bounds["min_value"], max_value=bounds["max_value"])
+            return replace(node, left=fractional_tree(node.left), right=fractional_tree(node.right))
+
+        if tree is not None:
+            tree = fractional_tree(tree)
     seasons = resolve_seasons(season, start_season, end_season)
     notes: list[str] = []
 
@@ -587,10 +614,10 @@ def build_result(
         away_only=away_only,
         wins_only=wins_only,
         losses_only=losses_only,
-        stat=stat,
+        stat=stat if not period_filter_requested else None,
         min_value=min_value,
         max_value=max_value,
-        conditions=conditions,
+        conditions=conditions if not period_filter_requested else None,
         start_date=start_date,
         end_date=end_date,
         identity_notes=notes,
@@ -637,6 +664,53 @@ def build_result(
                 reason="filter_not_supported",
                 notes=[roster_note],
             )
+
+    if period_filter_requested:
+        from nbatools.development_data import DevelopmentDataUnavailable, selected_snapshot
+
+        if roster_caveats and selected_snapshot() is not None:
+            raise DevelopmentDataUnavailable(
+                "Requested period population has unknown roster classification"
+            )
+        if window_game_ids is not None:
+            df = apply_last_n_sample(df, last_n, window_game_ids)
+        selection_metrics = {c["stat"] for c in conditions or []}
+        if stat and (min_value is not None or max_value is not None or sort_by == "stat"):
+            selection_metrics.add(stat)
+        if tree is not None:
+            from nbatools.commands.query_boolean_parser import condition_tree_leaves
+
+            selection_metrics.update(leaf.stat for leaf in condition_tree_leaves(tree))
+        requested = {str(m).lower() for m in selection_metrics | {stat} if m}
+        if selected_snapshot() is not None and requested & (
+            set(MARGIN_STATS) | set(PLAYER_GAME_CONTEXT_STATS)
+        ):
+            raise DevelopmentDataUnavailable(
+                "Whole-game context does not qualify the requested period metric basis"
+            )
+        prepared = attach_player_game_context_stats(
+            attach_margin_stats(df, selection_metrics), selection_metrics
+        )
+        eligible = prepared
+        attempts = _RATE_SORT_ATTEMPTS.get(str(stat).lower())
+        if (
+            attempts
+            and sort_by == "stat"
+            and min_value is None
+            and max_value is None
+            and last_n is None
+        ):
+            # Existing, disclosed attempt eligibility is independent of a ratio's
+            # value. Validate the exact competitors the later rank will use.
+            eligible = prepared.loc[
+                pd.to_numeric(prepared[attempts[0]], errors="coerce").ge(attempts[1])
+            ]
+        require_known_metric_inputs(
+            eligible, selection_metrics, operation="period selection/ranking", row_rates=True
+        )
+        df = _apply_filters(
+            prepared, stat=stat, min_value=min_value, max_value=max_value, conditions=conditions
+        )
 
     if tree is not None:
         from nbatools.commands.query_boolean_parser import (
@@ -716,6 +790,9 @@ def build_result(
     if limit is not None:
         df = df.head(limit).copy()
 
+    if period_filter_requested and stat:
+        require_known_metric_inputs(df, [stat], operation="requested period metric", row_rates=True)
+
     output_cols = [
         "rank",
         "population_scope",
@@ -765,8 +842,21 @@ def build_result(
 
     current_through = compute_current_through_for_seasons(seasons, season_type)
 
+    games = df[output_cols].copy()
+    unknown_fields = [
+        c
+        for c in ("usg_pct", "ast_pct", "reb_pct", "tov_pct")
+        if c in games and games[c].isna().any()
+    ]
+    if period_filter_requested and unknown_fields:
+        notes.append("Unrequested source rates remain unknown (null): " + ", ".join(unknown_fields))
+    if period_filter_requested:
+        undefined = [c for c in ("efg_pct", "ts_pct") if c in games and games[c].isna().any()]
+        if undefined:
+            notes.append("Undefined derived rates have no attempts (null): " + ", ".join(undefined))
     return FinderResult(
-        games=df[output_cols].copy(),
+        games=games,
+        metadata={"unknown_source_fields": unknown_fields} if period_filter_requested else {},
         current_through=current_through,
         notes=notes,
         caveats=(

@@ -1,0 +1,18 @@
+{
+  "backend_model_identity": "unavailable",
+  "unit_checks": 36,
+  "unit_passed": 36,
+  "browser_unit_receipts": 10,
+  "files": {
+    "src/nbatools/commands/_natural_query_execution.py": "5d450402f3114d6906a4d38d8d104cd7200f24f7b369d3cee6a014d30120cfe6",
+    "src/nbatools/commands/aggregate_metrics.py": "902310143174f35f2312670cbbc5959c3296327fab6d43d4bf2a280485adaa90",
+    "src/nbatools/commands/natural_query.py": "4c6eb924357aa17f8ec34fa8dc7f227ccef7cf349e0ab70fa09c20f2db1fa259",
+    "src/nbatools/commands/player_game_finder.py": "3a7d1c516a6a89663060fd13f95b078190d4f1f33a273f023fa050c07168bc91",
+    "src/nbatools/query_service.py": "1055b63f46ba13e2723684e4be38b48cd81d55508c0bdc85cba8e19d4e9dbf83",
+    "docs/reference/data_contracts.md": "65a15a0a2ae105547f1014dc243c8d23ec0483108b0032258fe0f3d1d239448c",
+    "tests/test_player_period_dependencies.py": "0154a4573afffa1561d7687a07fc4d6424e77a93172e33db065b6543a239f2c9",
+    "tests/test_c2_group_and_owner_game_lists.py": "007b9e44c6befc14832f08644a501bf293cad30e53ca68b24fd61c9c828f2a71",
+    "work/player-period-dependencies/browser-units-final/browser.json": "59923a013c7467c999cea7fd698f015563f4f236a3bb28bb5ce05ead60e39647",
+    "work/period-dependency-independent/unit-bound-matrix.json": "37c58f60f6756a1918af3bc30b5720819c0b7175f75d22c6d6b4ae2cd4828df3"
+  }
+}

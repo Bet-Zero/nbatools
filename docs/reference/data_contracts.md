@@ -1066,6 +1066,29 @@ Contract rules:
   dataset's exact requested window; one missing key returns
   `filter_not_supported` with the missing game/entity/window detail instead of
   partially mixing whole-game and period-window rows
+- Isolated development reading may use an optional manifest-bound
+  `player_period_inputs` qualification companion. It binds unchanged qualified
+  parent bytes and the exact source-listed OT population; ordinary file reads,
+  older versions and publication validators remain strict. Only the existing
+  source-rate columns may retain unknowns. Identity, count, clock and schema
+  inputs must be complete. Query dependencies use the existing metric
+  descriptors: predicate/ranking inputs are checked before rows can disappear,
+  and displayed metrics after independently defined sample selection. Every
+  requested dependency must be finite and known; derived statistics require
+  their complete numerator/denominator leaves. Unknown source rates remain
+  null, including unrequested table fields, with an explicit result note. An
+  unknown-dependent OR branch invalidates the whole answer. This admission is
+  source-qualified input use, not full snapshot or production acceptance.
+  Requested row-level shooting ratios also require positive attempt
+  denominators; undefined derived TS/eFG remain null. The existing disclosed
+  shooting-rank attempt floor defines an independent eligibility sample before
+  ratio validation. Whole-game team/opponent context and margin cannot supply
+  a requested period metric basis through this development path.
+  Natural source-rate bounds use explicit percentage-point units and convert
+  with decimal arithmetic to canonical fractions for scalar, mixed and Boolean
+  predicates; structured numeric bounds stay canonical fractions. Published
+  numeric filter metadata also uses canonical fractions. Grouped player-period
+  expressions execute through the same checked finder before any aggregation.
 
 ---
 

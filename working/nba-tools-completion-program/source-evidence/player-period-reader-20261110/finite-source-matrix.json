@@ -1,0 +1,251 @@
+{
+  "checks": [
+    {
+      "check": "finite_source_q1",
+      "passed": true,
+      "detail": {
+        "expected_rows": 368,
+        "actual_rows": 368,
+        "source_sums": {
+          "pts": 910,
+          "reb": 357,
+          "ast": 228,
+          "fgm": 336,
+          "fga": 717,
+          "fg3m": 119,
+          "fta": 151
+        },
+        "source_ratios": {
+          "ts_pct": 0.5807719799857041,
+          "efg_pct": 0.5516039051603905
+        },
+        "consumer_ratios": {
+          "ts_pct": 0.5807719799857041,
+          "efg_pct": 0.5516039051603905
+        }
+      }
+    },
+    {
+      "check": "finite_source_q2",
+      "passed": true,
+      "detail": {
+        "expected_rows": 368,
+        "actual_rows": 368,
+        "source_sums": {
+          "pts": 901,
+          "reb": 344,
+          "ast": 221,
+          "fgm": 318,
+          "fga": 699,
+          "fg3m": 103,
+          "fta": 203
+        },
+        "source_ratios": {
+          "ts_pct": 0.5714684392125025,
+          "efg_pct": 0.5286123032904149
+        },
+        "consumer_ratios": {
+          "ts_pct": 0.5714684392125025,
+          "efg_pct": 0.5286123032904149
+        }
+      }
+    },
+    {
+      "check": "finite_source_q3",
+      "passed": true,
+      "detail": {
+        "expected_rows": 368,
+        "actual_rows": 368,
+        "source_sums": {
+          "pts": 899,
+          "reb": 361,
+          "ast": 194,
+          "fgm": 312,
+          "fga": 696,
+          "fg3m": 93,
+          "fta": 238
+        },
+        "source_ratios": {
+          "ts_pct": 0.5613697672095114,
+          "efg_pct": 0.5150862068965517
+        },
+        "consumer_ratios": {
+          "ts_pct": 0.5613697672095114,
+          "efg_pct": 0.5150862068965517
+        }
+      }
+    },
+    {
+      "check": "finite_source_q4",
+      "passed": true,
+      "detail": {
+        "expected_rows": 368,
+        "actual_rows": 368,
+        "source_sums": {
+          "pts": 869,
+          "reb": 352,
+          "ast": 192,
+          "fgm": 297,
+          "fga": 675,
+          "fg3m": 88,
+          "fta": 247
+        },
+        "source_ratios": {
+          "ts_pct": 0.5544354838709677,
+          "efg_pct": 0.5051851851851852
+        },
+        "consumer_ratios": {
+          "ts_pct": 0.5544354838709677,
+          "efg_pct": 0.5051851851851852
+        }
+      }
+    },
+    {
+      "check": "finite_source_h1",
+      "passed": true,
+      "detail": {
+        "expected_rows": 368,
+        "actual_rows": 368,
+        "source_sums": {
+          "pts": 1811,
+          "reb": 701,
+          "ast": 449,
+          "fgm": 654,
+          "fga": 1416,
+          "fg3m": 222,
+          "fta": 354
+        },
+        "source_ratios": {
+          "ts_pct": 0.5761057667837329,
+          "efg_pct": 0.5402542372881356
+        },
+        "consumer_ratios": {
+          "ts_pct": 0.5761057667837329,
+          "efg_pct": 0.5402542372881356
+        }
+      }
+    },
+    {
+      "check": "finite_source_h2",
+      "passed": true,
+      "detail": {
+        "expected_rows": 368,
+        "actual_rows": 368,
+        "source_sums": {
+          "pts": 1768,
+          "reb": 713,
+          "ast": 386,
+          "fgm": 609,
+          "fga": 1371,
+          "fg3m": 181,
+          "fta": 485
+        },
+        "source_ratios": {
+          "ts_pct": 0.5579399141630901,
+          "efg_pct": 0.5102115244347192
+        },
+        "consumer_ratios": {
+          "ts_pct": 0.5579399141630901,
+          "efg_pct": 0.5102115244347192
+        }
+      }
+    },
+    {
+      "check": "finite_source_ot",
+      "passed": true,
+      "detail": {
+        "expected_rows": 28,
+        "actual_rows": 28,
+        "source_sums": {
+          "pts": 44,
+          "reb": 14,
+          "ast": 9,
+          "fgm": 14,
+          "fga": 29,
+          "fg3m": 6,
+          "fta": 11
+        },
+        "source_ratios": {
+          "ts_pct": 0.6501182033096926,
+          "efg_pct": 0.5862068965517241
+        },
+        "consumer_ratios": {
+          "ts_pct": 0.6501182033096926,
+          "efg_pct": 0.5862068965517241
+        }
+      }
+    },
+    {
+      "check": "synthetic_unknown_ts_pct",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "check": "synthetic_unknown_usg_pct",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "check": "controlled_missing_q2",
+      "passed": true,
+      "detail": {
+        "query_class": "finder",
+        "result_status": "no_result",
+        "result_reason": "filter_not_supported",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "quarter filter is not supported with current data; try removing this filter or asking for full-game stats (player_game_period_stats coverage incomplete; requested_keys=368; covered_keys=367; window=quarter:2; missing_keys_total=1; missing_keys=[game_id=22600185, team_id=1610612747, player_id=1630559])."
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "controlled_missing_ot",
+      "passed": true,
+      "detail": {
+        "query_class": "finder",
+        "result_status": "no_result",
+        "result_reason": "filter_not_supported",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "quarter filter is not supported with current data; try removing this filter or asking for full-game stats (player_game_period_stats coverage incomplete; requested_keys=28; covered_keys=27; window=overtime:ot; missing_keys_total=1; missing_keys=[game_id=22600179, team_id=1610612740, player_id=1630180])."
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "ordinary_resolve_still_strict",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "check": "immutable_v5_original_refusal",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "check": "warm_corruption",
+      "passed": true,
+      "detail": {
+        "query_class": "finder",
+        "result_status": "no_result",
+        "result_reason": "unsupported",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Pinned development bytes changed: data/raw/player_game_period_stats/2026-27_regular_season.csv"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    }
+  ],
+  "all_passed": true,
+  "nba_requests": 0,
+  "production_writes": 0,
+  "backend_model_identity": "unavailable"
+}

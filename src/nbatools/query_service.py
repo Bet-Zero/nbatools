@@ -887,6 +887,14 @@ def _build_query_metadata(
     if isinstance(opponent, list):
         meta["opponents"] = opponent
 
+    if route_kwargs.get("_source_rate_bounds_percent_points"):
+        from nbatools.commands.aggregate_metrics import fractional_source_rate_bounds
+
+        # Raw natural text/chips already state percentage points. Numeric
+        # metadata uses the same fractional units as canonical period rows,
+        # including sub-one-percent bounds; do not infer units from magnitude.
+        meta = fractional_source_rate_bounds(meta)
+
     player_values = [value for value in [player_a, player_b] if value]
     if not player_values and player:
         player_values = [player]

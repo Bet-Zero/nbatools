@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import fnmatch
 import hashlib
+import io
 import json
 import os
 from contextlib import contextmanager
@@ -21,6 +22,12 @@ _SELECTED: ContextVar[DevelopmentSnapshot | None] = ContextVar("development_snap
 
 class DevelopmentDataUnavailable(ValueError):
     """A consumed provisional file cannot support a complete calculation."""
+
+    def __init__(self, message: str):
+        # A failed branch cannot disappear inside OR/count/result composition.
+        if message not in _UNAVAILABLE.get():
+            _UNAVAILABLE.set((*_UNAVAILABLE.get(), message))
+        super().__init__(message)
 
 
 def clear_query_issues() -> None:
@@ -173,6 +180,110 @@ class DevelopmentSnapshot:
             return False
         self.resolve_path(path)
         return True
+
+    def player_period_qualification(self, path: str | Path) -> dict | None:
+        """Authenticate an optional, source-qualified dependency-reading companion.
+
+        Old snapshots keep the original strict path behavior. A structural pass
+        alone cannot qualify non-null values from an older provisional version.
+        """
+        relative = self._relative(path)
+        if Path(relative).parent.as_posix() != "data/raw/player_game_period_stats":
+            raise ValueError("Dependency reading is restricted to player-period inputs")
+        target = self._verified_path(relative)  # Also executed before cache hits.
+        reports = [
+            r
+            for r in self.document["validation_reports"]
+            if r.get("kind") == "player_period_inputs" and r.get("dataset_path") == relative
+        ]
+        if not reports:
+            return None
+        if len(reports) != 1:
+            raise ValueError("Ambiguous player-period qualification")
+        record = reports[0]
+        raw = self._verified_path(record["path"]).read_bytes()
+        if sha256(raw) != record["sha256"]:
+            raise ValueError("Player-period qualification hash mismatch")
+        proof = json.loads(raw)
+        from nbatools.commands.aggregate_metrics import METRIC_DESCRIPTORS, AggregationKind
+
+        rates = {k for k, v in METRIC_DESCRIPTORS.items() if v.kind == AggregationKind.AVERAGE_ONLY}
+        if (
+            proof.get("schema_version") != 1
+            or proof.get("kind") != "player_period_inputs"
+            or proof.get("dataset_path") != relative
+            or proof.get("dataset_sha256") != sha256(target.read_bytes())
+            or set(proof.get("deferred_columns", [])) != rates
+            or not proof.get("source_qualification")
+        ):
+            raise ValueError("Invalid player-period dependency qualification")
+        parent_raw = self._verified_path(proof["origin_manifest_path"]).read_bytes()
+        if sha256(parent_raw) != proof["origin_manifest_sha256"]:
+            raise ValueError("Player-period origin manifest changed")
+        parent = json.loads(parent_raw)
+        if parent["files"].get(relative) != proof["dataset_sha256"]:
+            raise ValueError("Qualified player-period origin differs")
+        if any(self.files.get(p) != digest for p, digest in parent["files"].items()):
+            raise ValueError("Dependency companion changed its qualified parent inputs")
+        return proof
+
+    def read_player_period_frame(self, path: str | Path):
+        """Keep source rate nulls for checked consumers; expose no permissive path."""
+        import numpy as np
+        import pandas as pd
+
+        proof = self.player_period_qualification(path)
+        if proof is None:
+            return pd.read_csv(self.resolve_path(path))  # Preserve old-version refusal.
+        raw = self._verified_path(path).read_bytes()
+        if sha256(raw) != proof["dataset_sha256"]:
+            raise ValueError("Qualified player-period bytes changed")
+        frame = pd.read_csv(io.BytesIO(raw))
+        from nbatools.commands.aggregate_metrics import METRIC_DESCRIPTORS
+        from nbatools.commands.pipeline.validate_raw import validate_player_game_period_stats_df
+
+        numeric = set(METRIC_DESCRIPTORS) & set(frame)
+        numeric.update(
+            {
+                "game_id",
+                "team_id",
+                "opponent_team_id",
+                "player_id",
+                "source_start_period",
+                "source_end_period",
+                "is_home",
+                "is_away",
+            }
+        )
+        deferred = set(proof["deferred_columns"])
+        for field in numeric:
+            if field not in frame:
+                raise DevelopmentDataUnavailable(f"Missing required player-period input: {field}")
+            values = pd.to_numeric(frame[field], errors="coerce")
+            malformed = frame[field].notna() & values.isna()
+            if malformed.any() or np.isinf(values).any():
+                raise DevelopmentDataUnavailable(f"Invalid player-period numeric input: {field}")
+            if field not in deferred and values.isna().any():
+                raise DevelopmentDataUnavailable(f"Unknown required player-period input: {field}")
+        for field in (
+            "game_date",
+            "season",
+            "season_type",
+            "player_name",
+            "team_abbr",
+            "opponent_team_abbr",
+            "wl",
+        ):
+            if field not in frame or frame[field].isna().any():
+                raise DevelopmentDataUnavailable(f"Unknown player-period identity/scope: {field}")
+        if pd.to_datetime(frame.game_date, errors="coerce").isna().any():
+            raise DevelopmentDataUnavailable("Invalid player-period date scope")
+        validate_player_game_period_stats_df(frame)
+        ot = frame.loc[frame.period_family.eq("overtime"), ["game_id", "team_id", "player_id"]]
+        actual_ot = sorted([list(map(int, row)) for row in ot.itertuples(index=False, name=None)])
+        if actual_ot != proof.get("overtime_player_keys"):
+            raise DevelopmentDataUnavailable("Qualified overtime source population differs")
+        return frame
 
     def glob(self, pattern: str | Path) -> list[Path]:
         return [

@@ -1,0 +1,497 @@
+{
+  "all_passed": true,
+  "checks": [
+    {
+      "check": "qualified_zero_attempt_counts",
+      "passed": true,
+      "detail": {
+        "rank": 1,
+        "game_date": "2026-11-04 00:00:00",
+        "game_id": 22600176,
+        "season": "2026-27",
+        "season_type": "Regular Season",
+        "player_name": "Ryan Kalkbrenner",
+        "player_id": 1641750,
+        "team_name": "Charlotte Hornets",
+        "team_abbr": "CHA",
+        "opponent_team_name": "Brooklyn Nets",
+        "opponent_team_abbr": "BKN",
+        "is_home": 0,
+        "is_away": 1,
+        "wl": "L",
+        "minutes": 5.0,
+        "pts": 0.0,
+        "reb": 1.0,
+        "ast": 1.0,
+        "stl": 0.0,
+        "blk": 0.0,
+        "fgm": 0.0,
+        "fga": 0.0,
+        "fg_pct": 0.0,
+        "fg3m": 0.0,
+        "fg3a": 0.0,
+        "fg3_pct": 0.0,
+        "ftm": 0.0,
+        "fta": 0.0,
+        "ft_pct": 0.0,
+        "tov": 0.0,
+        "plus_minus": 7.0,
+        "efg_pct": null,
+        "ts_pct": null,
+        "usg_pct": 0.0,
+        "ast_pct": 0.167,
+        "reb_pct": 0.1,
+        "tov_pct": 0.0
+      }
+    },
+    {
+      "check": "incidental_derived_null",
+      "passed": true,
+      "detail": {
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Undefined derived rates have no attempts (null): efg_pct, ts_pct"
+        ]
+      }
+    },
+    {
+      "check": "undefined_ts_pct_direct",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Undefined ts_pct: zero-attempt denominator prevents complete requested period metric"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "undefined_ts_pct_threshold",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Undefined ts_pct: zero-attempt denominator prevents complete period selection/ranking"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "undefined_ts_pct_sort",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Undefined ts_pct: zero-attempt denominator prevents complete period selection/ranking"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "undefined_efg_pct_direct",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Undefined efg_pct: zero-attempt denominator prevents complete requested period metric"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "undefined_efg_pct_threshold",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Undefined efg_pct: zero-attempt denominator prevents complete period selection/ranking"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "undefined_efg_pct_sort",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Undefined efg_pct: zero-attempt denominator prevents complete period selection/ranking"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "undefined_fg_pct_direct",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Undefined fg_pct: zero-attempt denominator prevents complete requested period metric"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "undefined_fg_pct_threshold",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Undefined fg_pct: zero-attempt denominator prevents complete period selection/ranking"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "undefined_fg_pct_sort",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Undefined fg_pct: zero-attempt denominator prevents complete period selection/ranking"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "undefined_fg3_pct_direct",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Undefined fg3_pct: zero-attempt denominator prevents complete requested period metric"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "undefined_fg3_pct_threshold",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Undefined fg3_pct: zero-attempt denominator prevents complete period selection/ranking"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "undefined_fg3_pct_sort",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Undefined fg3_pct: zero-attempt denominator prevents complete period selection/ranking"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "undefined_ft_pct_direct",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Undefined ft_pct: zero-attempt denominator prevents complete requested period metric"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "undefined_ft_pct_threshold",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Undefined ft_pct: zero-attempt denominator prevents complete period selection/ranking"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "undefined_ft_pct_sort",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Undefined ft_pct: zero-attempt denominator prevents complete period selection/ranking"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "wrong_basis_team_pts_direct",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Whole-game context does not qualify the requested period metric basis"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "wrong_basis_team_pts_mixed_predicate",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Whole-game context does not qualify the requested period metric basis"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "wrong_basis_opponent_pts_direct",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Whole-game context does not qualify the requested period metric basis"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "wrong_basis_opponent_pts_mixed_predicate",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Whole-game context does not qualify the requested period metric basis"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "wrong_basis_margin_direct",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Whole-game context does not qualify the requested period metric basis"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "wrong_basis_margin_mixed_predicate",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Whole-game context does not qualify the requested period metric basis"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "wrong_basis_win_margin_direct",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Whole-game context does not qualify the requested period metric basis"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "wrong_basis_win_margin_mixed_predicate",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Whole-game context does not qualify the requested period metric basis"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "wrong_basis_loss_margin_direct",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Whole-game context does not qualify the requested period metric basis"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "wrong_basis_loss_margin_mixed_predicate",
+      "passed": true,
+      "detail": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006.",
+          "Whole-game context does not qualify the requested period metric basis"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "check": "independently_defined_rank_sample",
+      "passed": true,
+      "detail": {
+        "actual": [
+          [
+            22600177,
+            1628973
+          ],
+          [
+            22600186,
+            1628389
+          ],
+          [
+            22600184,
+            1641705
+          ]
+        ],
+        "expected": [
+          [
+            22600177,
+            1628973
+          ],
+          [
+            22600186,
+            1628389
+          ],
+          [
+            22600184,
+            1641705
+          ]
+        ],
+        "caveats": [
+          "games with fewer than 10 field goal attempts left out"
+        ]
+      }
+    }
+  ],
+  "backend_model_identity": "unavailable",
+  "source_values_changed": false
+}

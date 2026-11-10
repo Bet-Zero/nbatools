@@ -1,0 +1,57 @@
+{
+  "reviewed_candidate": "6adda6ff8a39ef90f1fedccb59e902d297c9db6c",
+  "focused_local": {
+    "passed": 96,
+    "reader": 60,
+    "historical_applicability": 12,
+    "affected_existing_period": 24,
+    "skipped": 0,
+    "failures": 0
+  },
+  "independent": {
+    "reader_passed": 33,
+    "source_passed": 14,
+    "basis_passed": 28,
+    "separate_open_name_team_collision": 1,
+    "backend_model": "unavailable"
+  },
+  "browser": {
+    "captures": 20,
+    "desktop": 10,
+    "mobile": 10,
+    "main_sha256": "278098ae68cee4980d8230c6b0c845e5d631abcfef495a1a8988e746d583310a",
+    "basis_sha256": "3c0808695bf47c0ef0c739c1987a6d2c7e22cb58494d56afaf82fde01b22c4bb"
+  },
+  "preserved_required_consumers": {
+    "existing_selector": "tests/test_current123_required_integration.py::test_current_starter_natural_structured_http_and_id18_are_distinct_qualified_scopes",
+    "v6_replay": "passed",
+    "starter_games": 9,
+    "starter_points_sum": 210,
+    "id18_selected_games": 9,
+    "reported_rest": 0,
+    "reported_other": 1,
+    "reported_unknown": 0,
+    "medical_status_inferred": false
+  },
+  "structural": {
+    "required_raw_families": 11,
+    "required_processed_families": 5,
+    "validation_state": "passed"
+  },
+  "production_writes": 0,
+  "new_source_requests": 0,
+  "full_snapshot_accepted": false,
+  "final_unit_delta": {
+    "reader_controls": 72,
+    "affected_c2_controls": 145,
+    "passed": 217,
+    "independent_new_checks": 36,
+    "earlier_source_semantic_checks_reused": 75,
+    "browser_captures_added": 10,
+    "historical_bindings": {
+      "original": 663,
+      "unchanged": 649,
+      "reviewed_delta": 14
+    }
+  }
+}

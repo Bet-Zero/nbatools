@@ -11638,6 +11638,13 @@ def _finalize_route(parsed: dict) -> dict:
             '("from 2023-24 to 2025-26")'
         ]
         return refused
+    if route == "player_game_finder" and (
+        kwargs.get("quarter") is not None or kwargs.get("half") is not None
+    ):
+        # Natural source-rate bounds use percentage points; canonical period
+        # source rates are fractions. Keep this origin explicit through OR/tree
+        # execution, without changing structured canonical numeric bounds.
+        out["route_kwargs"] = {**out["route_kwargs"], "_source_rate_bounds_percent_points": True}
     return out
 
 

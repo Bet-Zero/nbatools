@@ -1,0 +1,20 @@
+{
+  "backend_model_identity": "unavailable",
+  "files": {
+    "src/nbatools/development_data.py": "de70cf60404ff94b6c859127b37e59c52a056ae4f4dad4c814074eba5904732b",
+    "src/nbatools/commands/aggregate_metrics.py": "d3620d4753855c5a776a3e96667458fc8e8c7e39c93688a40010617392c46daa",
+    "src/nbatools/commands/data_utils.py": "05b2a2275453a5a75dccd046f2886b020cd54dd3461fd71c89653c84a4557c4d",
+    "src/nbatools/commands/player_game_finder.py": "aeb6057784201fa38710f14f5705cf8d2d6f967b585467bf90634834415e4326",
+    "src/nbatools/commands/_parse_helpers.py": "8e776dda196d2346a4dca8f40b5bb69dc7b21803c190249036b0f32cedb26582",
+    "docs/reference/data_contracts.md": "5417e41bb80484e683943b76645404af2e1298c9ef783ea975bf6c161d183c41",
+    "tests/test_player_period_dependencies.py": "b2fa871ac5dbe9d5ab790f5a671b1f2000c61f9fc25fa575f02502d544eedc42",
+    "tests/cloud_player_period_dependencies_real_data.py": "8c2b428568ebc6af9822bdd6e847856591694def39614bd2f8f40614aa529f46",
+    "working/nba-tools-completion-program/source-evidence/player-period-reader-20261110/binding.json": "11dda9f9befbc2042d2a5f9ec9bfcd59fb3e38b58153f4ecbebcde49b65918e0",
+    "work/player-period-dependencies/browser-final/browser.json": "b8cea160dbfdd912737f1a27325c918e8b787c207053af803c9ad7875908e285",
+    "work/player-period-dependencies/browser-denominators/browser.json": "8b568d6409651d233c83e4814cdca1352555ab9bed48aed203cf9c79cf230d51",
+    "work/period-dependency-independent/final-matrix.json": "21446c9d42f03b27402338ca43b575673806d40a33a336a0b6f8b5d42ac8a8fe",
+    "work/period-dependency-independent/finite-source-matrix.json": "54c05919f74ef7fe18294afeac840b76136e8a1d2f7aae4618f1fdde5172454b",
+    "work/period-dependency-independent/delta-basis-matrix.json": "0a2990fc6f754e468ae848e8156305ace8577b650eeea9ace287551f57067c11"
+  },
+  "browser_review_complete": true
+}

@@ -1,0 +1,9 @@
+{
+  "archive": "current123-period-reader-v6.zip",
+  "archive_sha256": "b2c34ea7603662c191fa0e3dcf8518478563e003ece9f068161eebe0ebae4d7d",
+  "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+  "old_unknowns": 484,
+  "parent_manifest_sha256": "535384a4710739a779f0772da4e3bcee023bd88bfed91be16d0103cdf9d8ff75",
+  "production_writes": 0,
+  "source_values_changed": false
+}

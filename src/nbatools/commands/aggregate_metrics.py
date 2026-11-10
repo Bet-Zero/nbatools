@@ -4,11 +4,12 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
+from decimal import Decimal
 from enum import StrEnum
 
 import pandas as pd
 
-from nbatools.development_data import selected_snapshot
+from nbatools.development_data import DevelopmentDataUnavailable, selected_snapshot
 
 
 class AggregationKind(StrEnum):
@@ -69,6 +70,71 @@ METRIC_DESCRIPTORS: dict[str, MetricDescriptor] = {
         ("pts", "fga", "fta"),
     ),
 }
+
+
+def fractional_source_rate_bounds(value):
+    """Copy natural percent-point bounds into canonical period fractions.
+
+    Only the four existing source-rate metrics use these units. Counts and
+    already fractional shooting bounds retain their existing meaning.
+    """
+    if isinstance(value, list):
+        return [fractional_source_rate_bounds(item) for item in value]
+    if not isinstance(value, dict):
+        return value
+    out = {key: fractional_source_rate_bounds(item) for key, item in value.items()}
+    descriptor = METRIC_DESCRIPTORS.get(str(out.get("stat")).lower())
+    if descriptor and descriptor.kind == AggregationKind.AVERAGE_ONLY:
+        for field in ("min_value", "max_value"):
+            if out.get(field) is not None:
+                out[field] = float(Decimal(str(out[field])) / 100)
+    return out
+
+
+def require_known_metric_inputs(
+    df: pd.DataFrame, metrics: Iterable[str], *, operation: str, row_rates: bool = False
+) -> None:
+    """Check all dependency leaves before a predicate or sample-changing operation.
+
+    The existing descriptor supplies ratio numerators/denominators. A source
+    average-only rate remains a source input: it is never rebuilt from counts.
+    """
+    if selected_snapshot() is None:
+        return
+    metrics = {str(m).lower() for m in metrics if m}
+    required = set()
+    for metric in metrics:
+        if not metric:
+            continue
+        metric = str(metric).lower()
+        descriptor = METRIC_DESCRIPTORS.get(metric)
+        required.update(
+            descriptor.required_columns if descriptor and descriptor.required_columns else (metric,)
+        )
+    for field in sorted(required):
+        if (
+            field not in df
+            or pd.to_numeric(df[field], errors="coerce").isna().any()
+            or pd.to_numeric(df[field], errors="coerce").isin([float("inf"), float("-inf")]).any()
+        ):
+            raise DevelopmentDataUnavailable(
+                f"Unknown {field} input prevents complete {operation}; no rows were discarded"
+            )
+    if row_rates:
+        for metric in metrics:
+            denominator = {
+                "fg_pct": "fga",
+                "fg3_pct": "fg3a",
+                "ft_pct": "fta",
+                "efg_pct": "fga",
+            }.get(metric)
+            values = pd.to_numeric(df[denominator]) if denominator else None
+            if metric == "ts_pct":
+                values = pd.to_numeric(df["fga"]) + 0.44 * pd.to_numeric(df["fta"])
+            if values is not None and values.le(0).any():
+                raise DevelopmentDataUnavailable(
+                    f"Undefined {metric}: zero-attempt denominator prevents complete {operation}"
+                )
 
 
 def _numeric_sum(df: pd.DataFrame, column: str) -> float | None:
