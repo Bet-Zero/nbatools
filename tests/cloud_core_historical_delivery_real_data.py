@@ -3,9 +3,11 @@
 This does not replace or relax the existing strict-ready deployed P3 gates.
 """
 
+import ast
 import hashlib
 import json
 import os
+import re
 import subprocess
 import time
 from datetime import UTC, datetime
@@ -17,6 +19,7 @@ import pytest
 import requests
 
 from nbatools.data_source import data_generation_context, data_path
+from nbatools.development_data import selected_snapshot
 from tests.cloud_reported_rest_deployed_real_data import _assert_count
 from tests.test_deployed_k12_delivery_browser import _assert_rendered
 from tests.test_k05_subject_ownership_real_data import CASES as K05
@@ -38,10 +41,92 @@ URL = "https://nbatools.vercel.app"
 S4 = PROGRAM / "source-evidence/paired-missing-20261107/r2-final/composed-acceptance.json"
 OWNED = PROGRAM / "source-evidence/distinct-player-or-20261106/independent/oracle.json"
 LEBRON = PROGRAM / "source-evidence/k08-lebron-remaining/qualification.json"
+APPLICABILITY = EVIDENCE / "historical-applicability-20261110.json"
+APPLICABILITY_SHA256 = "1ad87e6971ac7d0abea468d1534e21917187bfe9e0d1ea8b62f75e929aa28763"
 
 
 def _sha(raw):
     return hashlib.sha256(raw).hexdigest()
+
+
+def _parser_predicates(source):
+    """Evaluate only the three reviewed historical-query detection predicates."""
+    tree = ast.parse(source)
+    nodes = [
+        node
+        for node in tree.body
+        if (isinstance(node, ast.FunctionDef) and node.name in {"detect_quarter", "detect_half"})
+        or (
+            isinstance(node, ast.Assign)
+            and any(
+                isinstance(target, ast.Name) and target.id == "_LIST_VS" for target in node.targets
+            )
+        )
+    ]
+    assert len(nodes) == 3
+    namespace = {"re": re}
+    exec(compile(ast.Module(body=nodes, type_ignores=[]), "reviewed_predicates", "exec"), namespace)
+    return namespace
+
+
+def _retained_applicability(binding, *, path=APPLICABILITY, expected_sha=APPLICABILITY_SHA256):
+    """Bind the original 44 captures to a separately reviewed, finite code delta.
+
+    This never qualifies a new deployment. Every old bound file still has an
+    exact hash, and changed files need both an exact reviewed hash and an
+    explicit semantic reach explanation for all original 22 query identities.
+    """
+    raw = path.read_bytes()
+    assert _sha(raw) == expected_sha, "Unreviewed historical applicability companion"
+    proof = json.loads(raw)
+    assert proof["classification"] == "retained_original44_applicability_only"
+    binding_raw = (EVIDENCE / "live-code-binding.json").read_bytes()
+    assert proof["live_binding_sha256"] == _sha(binding_raw)
+    assert binding == json.loads(binding_raw), "Original binding population must remain exact"
+    assert len(binding["application_file_sha256"]) == proof["original_bound_file_count"] == 663
+    assert selected_snapshot() is None, "Retained production captures cannot use development data"
+    archive = EVIDENCE / "historical-live-original.zip"
+    assert _sha(archive.read_bytes()) == proof["original_capture_sha256"]
+    with ZipFile(archive) as z:
+        cases_raw = z.read("acquired_data/core-historical-live/cases.json")
+        captures = json.loads(z.read("acquired_data/core-historical-live/browser-receipt.json"))
+    assert _sha(cases_raw) == proof["original_case_manifest_sha256"]
+    cases = [{"id": c["id"], "query": c["query"]} for c in json.loads(cases_raw)]
+    assert cases == proof["cases"] and len(cases) == 22
+    assert len({c["id"] for c in cases}) == 22 and len(captures["receipts"]) == 44
+    assert all(
+        "data_quality" not in c["payload"]["result"]["metadata"] for c in captures["receipts"]
+    )
+    reviewed = {change["path"]: change for change in proof["changes"]}
+    assert len(reviewed) == len(proof["changes"]) == 11
+    changed = {}
+    for relative, old_digest in binding["application_file_sha256"].items():
+        actual = _sha((ROOT / relative).read_bytes())
+        if actual != old_digest:
+            changed[relative] = actual
+    assert set(changed) == set(reviewed), "Historical bound file changed without semantic review"
+    for relative, actual in changed.items():
+        item = reviewed[relative]
+        assert item["old_sha256"] == binding["application_file_sha256"][relative]
+        assert item["reviewed_sha256"] == actual, f"Unreviewed change: {relative}"
+        assert item["reviewed_functions"] and item["semantic_reach"]
+        assert item["eligible_existing_case_ids"] == [case["id"] for case in cases]
+    inventory = sorted(str(p.relative_to(ROOT)) for p in (ROOT / "src").rglob("*.py"))
+    assert inventory == proof["original_src_python_inventory"], (
+        "Unreviewed source module addition/deletion"
+    )
+    parser_path = "src/nbatools/commands/_parse_helpers.py"
+    original = _parser_predicates(proof["original_parser_predicates"])
+    current = _parser_predicates((ROOT / parser_path).read_text())
+    for case in cases:
+        text = case["query"].lower()
+        for name in ("detect_quarter", "detect_half"):
+            assert original[name](text) is None and current[name](text) is None
+        assert original["_LIST_VS"].findall(text) == current["_LIST_VS"].findall(text)
+        assert not re.search(r"\b(?:vs\.?|against|versus)\s+either\b", text)
+        assert not re.search(r"\b(?:rest|injured|injury)\b", text)
+    assert proof["full_core1_accepted"] is False and proof["fresh_deployment_accepted"] is False
+    return {"companion_sha256": expected_sha, "cases": cases, "changed_files": len(changed)}
 
 
 def _outcome(body):
@@ -295,6 +380,7 @@ def _verify(item, delivery, sources, frozen, seq_sources, history_sources, lebro
 
 def _run(tmp_path, *, retained=False):
     binding = json.loads((EVIDENCE / "live-code-binding.json").read_bytes())
+    applicability = None
     deployment = binding["production_deployment"]
     assert deployment["id"] == "dpl_4nuGwYBav8vm6s3gfqFoGYdQgdeL"
     assert (
@@ -315,8 +401,12 @@ def _run(tmp_path, *, retained=False):
         assert datetime.fromisoformat(post["checked_at"]) > datetime.fromisoformat(
             "2026-11-07T04:21:56.249817+00:00"
         )
-    for path, digest in binding["application_file_sha256"].items():
-        assert _sha((ROOT / path).read_bytes()) == digest
+    if retained:
+        applicability = _retained_applicability(binding)
+    else:
+        # Fresh public captures retain the original strict deployed-code binding.
+        for path, digest in binding["application_file_sha256"].items():
+            assert _sha((ROOT / path).read_bytes()) == digest
     for path, digest in binding["reused_evidence_sha256"].items():
         assert _sha((ROOT / path).read_bytes()) == digest
     with data_generation_context() as generation:
@@ -325,6 +415,8 @@ def _run(tmp_path, *, retained=False):
             and _sha(data_path("metadata/generation_manifest.json").read_bytes()) == MANIFEST
         )
         cases, delivery, sources, frozen, seq_sources, history_sources, lebron, s4 = _cases()
+        if applicability:
+            assert [{"id": c["id"], "query": c["query"]} for c in cases] == applicability["cases"]
         entries = json.loads(data_path("metadata/generation_manifest.json").read_bytes())["files"]
         entries = {e["path"]: e for e in entries}
         # Rebind retained S4 source inputs and accepted 2022 Boolean inputs.
@@ -365,6 +457,7 @@ def _run(tmp_path, *, retained=False):
         nba_source_requests=0,
         k05_sample_keys_scope="qualified independent raw cohort; public summary does not expose game_log",
         production_writes=0,
+        retained_code_applicability=applicability,
         consumer_acceptance="pending",
         capture_started_at=datetime.now(UTC).isoformat(),
         deployment_post_binding="pending independent provider observation after capture",

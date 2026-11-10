@@ -1,0 +1,747 @@
+{
+  "source_oracle_sha256": "59fd69280de504dc656611988f074b49eeecb35e1830d1cbbb0db07f9e1bec1a",
+  "book_oracle_sha256": "7d054703091f5f0334d2b01dd7bd978e619d2e36a11eead390fdb23cf0646698",
+  "accepted_snapshot": "535384a4710739a779f0772da4e3bcee023bd88bfed91be16d0103cdf9d8ff75",
+  "derived_from_app": false,
+  "selected_rows": [
+    {
+      "game_id": 22600185,
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "window": "q2",
+      "source_clock": "9:32",
+      "clock_basis": "literal_source",
+      "minutes": 9.533333333333333,
+      "fgm": 1,
+      "fga": 3,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 2,
+      "fta": 2,
+      "oreb": 1,
+      "dreb": 1,
+      "reb": 2,
+      "ast": 0,
+      "stl": 0,
+      "blk": 0,
+      "tov": 0,
+      "pf": 0,
+      "pts": 4,
+      "plus_minus": 5.0,
+      "usg_pct": 0.148,
+      "ast_pct": 0.0,
+      "reb_pct": 0.087,
+      "tov_pct": 0.0,
+      "efg_pct": 0.3333333333333333,
+      "ts_pct": 0.5154639175257733
+    },
+    {
+      "game_id": 22600185,
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "window": "h1",
+      "source_clock": "19:28",
+      "clock_basis": "literal_source",
+      "minutes": 19.466666666666665,
+      "fgm": 3,
+      "fga": 8,
+      "fg3m": 1,
+      "fg3a": 3,
+      "ftm": 2,
+      "fta": 2,
+      "oreb": 1,
+      "dreb": 1,
+      "reb": 2,
+      "ast": 1,
+      "stl": 0,
+      "blk": 0,
+      "tov": 0,
+      "pf": 0,
+      "pts": 9,
+      "plus_minus": 2.0,
+      "usg_pct": 0.18,
+      "ast_pct": 0.083,
+      "reb_pct": 0.047,
+      "tov_pct": 0.0,
+      "efg_pct": 0.4375,
+      "ts_pct": 0.5067567567567567
+    },
+    {
+      "game_id": 22600184,
+      "team_id": 1610612742,
+      "player_id": 1629023,
+      "player_name": "P.J. Washington",
+      "window": "q2",
+      "source_clock": "9:14",
+      "clock_basis": "literal_source",
+      "minutes": 9.233333333333333,
+      "fgm": 2,
+      "fga": 4,
+      "fg3m": 1,
+      "fg3a": 1,
+      "ftm": 0,
+      "fta": 0,
+      "oreb": 0,
+      "dreb": 1,
+      "reb": 1,
+      "ast": 0,
+      "stl": 0,
+      "blk": 0,
+      "tov": 0,
+      "pf": 1,
+      "pts": 5,
+      "plus_minus": -10.0,
+      "usg_pct": 0.182,
+      "ast_pct": 0.0,
+      "reb_pct": 0.045454545454545456,
+      "tov_pct": 0.0,
+      "efg_pct": 0.625,
+      "ts_pct": 0.625
+    },
+    {
+      "game_id": 22600184,
+      "team_id": 1610612742,
+      "player_id": 1629023,
+      "player_name": "P.J. Washington",
+      "window": "h1",
+      "source_clock": "17:45",
+      "clock_basis": "literal_source",
+      "minutes": 17.75,
+      "fgm": 5,
+      "fga": 10,
+      "fg3m": 2,
+      "fg3a": 4,
+      "ftm": 1,
+      "fta": 2,
+      "oreb": 2,
+      "dreb": 2,
+      "reb": 4,
+      "ast": 1,
+      "stl": 0,
+      "blk": 0,
+      "tov": 1,
+      "pf": 1,
+      "pts": 13,
+      "plus_minus": -12.0,
+      "usg_pct": 0.25,
+      "ast_pct": 0.111,
+      "reb_pct": 0.08163265306122448,
+      "tov_pct": 0.077,
+      "efg_pct": 0.6,
+      "ts_pct": 0.5974264705882353
+    },
+    {
+      "game_id": 22600176,
+      "team_id": 1610612766,
+      "player_id": 1641750,
+      "player_name": "Ryan Kalkbrenner",
+      "window": "q2",
+      "source_clock": "4:60",
+      "clock_basis": "complementary_derived",
+      "minutes": 5.0,
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "oreb": 1,
+      "dreb": 0,
+      "reb": 1,
+      "ast": 1,
+      "stl": 0,
+      "blk": 0,
+      "tov": 0,
+      "pf": 0,
+      "pts": 0,
+      "plus_minus": 7.0,
+      "usg_pct": 0.0,
+      "ast_pct": 0.167,
+      "reb_pct": 0.1,
+      "tov_pct": 0.0,
+      "efg_pct": 0,
+      "ts_pct": 0
+    },
+    {
+      "game_id": 22600183,
+      "team_id": 1610612756,
+      "player_id": 1642863,
+      "player_name": "Khaman Maluach",
+      "window": "h1",
+      "source_clock": "9:60",
+      "clock_basis": "complementary_derived",
+      "minutes": 10.0,
+      "fgm": 2,
+      "fga": 4,
+      "fg3m": 0,
+      "fg3a": 1,
+      "ftm": 0,
+      "fta": 0,
+      "oreb": 0,
+      "dreb": 3,
+      "reb": 3,
+      "ast": 2,
+      "stl": 0,
+      "blk": 1,
+      "tov": 0,
+      "pf": 0,
+      "pts": 4,
+      "plus_minus": -6.0,
+      "usg_pct": 0.174,
+      "ast_pct": 0.25,
+      "reb_pct": 0.15,
+      "tov_pct": 0.0,
+      "efg_pct": 0.5,
+      "ts_pct": 0.5
+    },
+    {
+      "game_id": 22600179,
+      "team_id": 1610612740,
+      "player_id": 1630180,
+      "player_name": "Saddiq Bey",
+      "window": "ot",
+      "source_clock": "5:00",
+      "clock_basis": "literal_source",
+      "minutes": 5.0,
+      "fgm": 3,
+      "fga": 3,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 2,
+      "fta": 3,
+      "oreb": 1,
+      "dreb": 0,
+      "reb": 1,
+      "ast": 0,
+      "stl": 0,
+      "blk": 0,
+      "tov": 0,
+      "pf": 0,
+      "pts": 8,
+      "plus_minus": 7.0,
+      "usg_pct": 0.364,
+      "ast_pct": 0.0,
+      "reb_pct": 0.111,
+      "tov_pct": 0.0,
+      "efg_pct": 1.0,
+      "ts_pct": 0.9259259259259258
+    },
+    {
+      "game_id": 22600186,
+      "team_id": 1610612746,
+      "player_id": 1629636,
+      "player_name": "Darius Garland",
+      "window": "ot",
+      "source_clock": "4:57",
+      "clock_basis": "literal_source",
+      "minutes": 4.95,
+      "fgm": 3,
+      "fga": 3,
+      "fg3m": 1,
+      "fg3a": 1,
+      "ftm": 2,
+      "fta": 2,
+      "oreb": 0,
+      "dreb": 0,
+      "reb": 0,
+      "ast": 0,
+      "stl": 0,
+      "blk": 0,
+      "tov": 0,
+      "pf": 0,
+      "pts": 9,
+      "plus_minus": 2.0,
+      "usg_pct": 0.444,
+      "ast_pct": 0.0,
+      "reb_pct": 0.0,
+      "tov_pct": 0.0,
+      "efg_pct": 1.1666666666666667,
+      "ts_pct": 1.1597938144329898
+    }
+  ],
+  "finite_new16_aggregates": [
+    {
+      "player_id": 1630559,
+      "window": "q1",
+      "game_ids": [
+        22600185
+      ],
+      "games": 1,
+      "sums": {
+        "pts": 5,
+        "reb": 0,
+        "ast": 1,
+        "fgm": 2,
+        "fga": 5,
+        "fg3m": 1,
+        "fg3a": 3,
+        "ftm": 0,
+        "fta": 0,
+        "minutes": 9.933333333333334
+      },
+      "averages": {
+        "pts": 5.0,
+        "reb": 0.0,
+        "ast": 1.0,
+        "minutes": 9.933333333333334
+      },
+      "ts_pct": 0.5,
+      "efg_pct": 0.5
+    },
+    {
+      "player_id": 1630559,
+      "window": "q2",
+      "game_ids": [
+        22600185
+      ],
+      "games": 1,
+      "sums": {
+        "pts": 4,
+        "reb": 2,
+        "ast": 0,
+        "fgm": 1,
+        "fga": 3,
+        "fg3m": 0,
+        "fg3a": 0,
+        "ftm": 2,
+        "fta": 2,
+        "minutes": 9.533333333333333
+      },
+      "averages": {
+        "pts": 4.0,
+        "reb": 2.0,
+        "ast": 0.0,
+        "minutes": 9.533333333333333
+      },
+      "ts_pct": 0.5154639175257733,
+      "efg_pct": 0.3333333333333333
+    },
+    {
+      "player_id": 1630559,
+      "window": "h1",
+      "game_ids": [
+        22600185
+      ],
+      "games": 1,
+      "sums": {
+        "pts": 9,
+        "reb": 2,
+        "ast": 1,
+        "fgm": 3,
+        "fga": 8,
+        "fg3m": 1,
+        "fg3a": 3,
+        "ftm": 2,
+        "fta": 2,
+        "minutes": 19.466666666666665
+      },
+      "averages": {
+        "pts": 9.0,
+        "reb": 2.0,
+        "ast": 1.0,
+        "minutes": 19.466666666666665
+      },
+      "ts_pct": 0.5067567567567567,
+      "efg_pct": 0.4375
+    },
+    {
+      "player_id": 1629023,
+      "window": "q1",
+      "game_ids": [
+        22600184
+      ],
+      "games": 1,
+      "sums": {
+        "pts": 8,
+        "reb": 3,
+        "ast": 1,
+        "fgm": 3,
+        "fga": 6,
+        "fg3m": 1,
+        "fg3a": 3,
+        "ftm": 1,
+        "fta": 2,
+        "minutes": 8.516666666666667
+      },
+      "averages": {
+        "pts": 8.0,
+        "reb": 3.0,
+        "ast": 1.0,
+        "minutes": 8.516666666666667
+      },
+      "ts_pct": 0.5813953488372093,
+      "efg_pct": 0.5833333333333334
+    },
+    {
+      "player_id": 1629023,
+      "window": "q2",
+      "game_ids": [
+        22600184
+      ],
+      "games": 1,
+      "sums": {
+        "pts": 5,
+        "reb": 1,
+        "ast": 0,
+        "fgm": 2,
+        "fga": 4,
+        "fg3m": 1,
+        "fg3a": 1,
+        "ftm": 0,
+        "fta": 0,
+        "minutes": 9.233333333333333
+      },
+      "averages": {
+        "pts": 5.0,
+        "reb": 1.0,
+        "ast": 0.0,
+        "minutes": 9.233333333333333
+      },
+      "ts_pct": 0.625,
+      "efg_pct": 0.625
+    },
+    {
+      "player_id": 1629023,
+      "window": "h1",
+      "game_ids": [
+        22600184
+      ],
+      "games": 1,
+      "sums": {
+        "pts": 13,
+        "reb": 4,
+        "ast": 1,
+        "fgm": 5,
+        "fga": 10,
+        "fg3m": 2,
+        "fg3a": 4,
+        "ftm": 1,
+        "fta": 2,
+        "minutes": 17.75
+      },
+      "averages": {
+        "pts": 13.0,
+        "reb": 4.0,
+        "ast": 1.0,
+        "minutes": 17.75
+      },
+      "ts_pct": 0.5974264705882353,
+      "efg_pct": 0.6
+    },
+    {
+      "player_id": 1630180,
+      "window": "q1",
+      "game_ids": [
+        22600179
+      ],
+      "games": 1,
+      "sums": {
+        "pts": 4,
+        "reb": 1,
+        "ast": 0,
+        "fgm": 2,
+        "fga": 4,
+        "fg3m": 0,
+        "fg3a": 1,
+        "ftm": 0,
+        "fta": 0,
+        "minutes": 5.633333333333334
+      },
+      "averages": {
+        "pts": 4.0,
+        "reb": 1.0,
+        "ast": 0.0,
+        "minutes": 5.633333333333334
+      },
+      "ts_pct": 0.5,
+      "efg_pct": 0.5
+    },
+    {
+      "player_id": 1630180,
+      "window": "q2",
+      "game_ids": [
+        22600179
+      ],
+      "games": 1,
+      "sums": {
+        "pts": 8,
+        "reb": 1,
+        "ast": 2,
+        "fgm": 3,
+        "fga": 3,
+        "fg3m": 2,
+        "fg3a": 2,
+        "ftm": 0,
+        "fta": 0,
+        "minutes": 7.766666666666667
+      },
+      "averages": {
+        "pts": 8.0,
+        "reb": 1.0,
+        "ast": 2.0,
+        "minutes": 7.766666666666667
+      },
+      "ts_pct": 1.3333333333333333,
+      "efg_pct": 1.3333333333333333
+    },
+    {
+      "player_id": 1630180,
+      "window": "h1",
+      "game_ids": [
+        22600179
+      ],
+      "games": 1,
+      "sums": {
+        "pts": 12,
+        "reb": 2,
+        "ast": 2,
+        "fgm": 5,
+        "fga": 7,
+        "fg3m": 2,
+        "fg3a": 3,
+        "ftm": 0,
+        "fta": 0,
+        "minutes": 13.4
+      },
+      "averages": {
+        "pts": 12.0,
+        "reb": 2.0,
+        "ast": 2.0,
+        "minutes": 13.4
+      },
+      "ts_pct": 0.8571428571428571,
+      "efg_pct": 0.8571428571428571
+    },
+    {
+      "player_id": 1630180,
+      "window": "ot",
+      "game_ids": [
+        22600179
+      ],
+      "games": 1,
+      "sums": {
+        "pts": 8,
+        "reb": 1,
+        "ast": 0,
+        "fgm": 3,
+        "fga": 3,
+        "fg3m": 0,
+        "fg3a": 0,
+        "ftm": 2,
+        "fta": 3,
+        "minutes": 5.0
+      },
+      "averages": {
+        "pts": 8.0,
+        "reb": 1.0,
+        "ast": 0.0,
+        "minutes": 5.0
+      },
+      "ts_pct": 0.9259259259259258,
+      "efg_pct": 1.0
+    },
+    {
+      "player_id": 1629636,
+      "window": "q1",
+      "game_ids": [
+        22600186
+      ],
+      "games": 1,
+      "sums": {
+        "pts": 2,
+        "reb": 0,
+        "ast": 2,
+        "fgm": 1,
+        "fga": 1,
+        "fg3m": 0,
+        "fg3a": 0,
+        "ftm": 0,
+        "fta": 0,
+        "minutes": 9.983333333333333
+      },
+      "averages": {
+        "pts": 2.0,
+        "reb": 0.0,
+        "ast": 2.0,
+        "minutes": 9.983333333333333
+      },
+      "ts_pct": 1.0,
+      "efg_pct": 1.0
+    },
+    {
+      "player_id": 1629636,
+      "window": "q2",
+      "game_ids": [
+        22600186
+      ],
+      "games": 1,
+      "sums": {
+        "pts": 6,
+        "reb": 0,
+        "ast": 1,
+        "fgm": 2,
+        "fga": 2,
+        "fg3m": 2,
+        "fg3a": 2,
+        "ftm": 0,
+        "fta": 0,
+        "minutes": 4.633333333333334
+      },
+      "averages": {
+        "pts": 6.0,
+        "reb": 0.0,
+        "ast": 1.0,
+        "minutes": 4.633333333333334
+      },
+      "ts_pct": 1.5,
+      "efg_pct": 1.5
+    },
+    {
+      "player_id": 1629636,
+      "window": "h1",
+      "game_ids": [
+        22600186
+      ],
+      "games": 1,
+      "sums": {
+        "pts": 8,
+        "reb": 0,
+        "ast": 3,
+        "fgm": 3,
+        "fga": 3,
+        "fg3m": 2,
+        "fg3a": 2,
+        "ftm": 0,
+        "fta": 0,
+        "minutes": 14.616666666666667
+      },
+      "averages": {
+        "pts": 8.0,
+        "reb": 0.0,
+        "ast": 3.0,
+        "minutes": 14.616666666666667
+      },
+      "ts_pct": 1.3333333333333333,
+      "efg_pct": 1.3333333333333333
+    },
+    {
+      "player_id": 1629636,
+      "window": "ot",
+      "game_ids": [
+        22600186
+      ],
+      "games": 1,
+      "sums": {
+        "pts": 9,
+        "reb": 0,
+        "ast": 0,
+        "fgm": 3,
+        "fga": 3,
+        "fg3m": 1,
+        "fg3a": 1,
+        "ftm": 2,
+        "fta": 2,
+        "minutes": 4.95
+      },
+      "averages": {
+        "pts": 9.0,
+        "reb": 0.0,
+        "ast": 0.0,
+        "minutes": 4.95
+      },
+      "ts_pct": 1.1597938144329898,
+      "efg_pct": 1.1666666666666667
+    }
+  ],
+  "known_unknown_count": 484,
+  "known_unknown_fields": [
+    "tov_pct",
+    "usg_pct"
+  ],
+  "negative_witnesses": [
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    }
+  ],
+  "source_fetches": 0,
+  "production_writes": 0
+}

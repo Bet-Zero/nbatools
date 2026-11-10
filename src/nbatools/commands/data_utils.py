@@ -594,6 +594,27 @@ def period_coverage_failure(
         return None
     period_family, period_value = descriptor
     coverage_base = base
+    if period_family == "overtime" and entity_key_columns == ["team_id", "player_id"]:
+        from nbatools.development_data import selected_snapshot
+
+        snapshot = selected_snapshot()
+        if snapshot is not None:
+            expected = set()
+            for season in base.season.astype(str).unique():
+                safe = normalize_season_type(base.season_type.iloc[0])
+                proof = snapshot.player_period_qualification(
+                    f"data/raw/player_game_period_stats/{season}_{safe}.csv"
+                )
+                if proof is None:
+                    break
+                expected.update(tuple(key) for key in proof["overtime_player_keys"])
+            else:
+                # The qualified source's OT participation list is the population;
+                # regulation games/unlisted whole-game players are not zero rows.
+                keys = list(
+                    base[["game_id", "team_id", "player_id"]].itertuples(index=False, name=None)
+                )
+                coverage_base = base.loc[[tuple(map(int, key)) in expected for key in keys]].copy()
     if period_family == "overtime" and entity_key_columns == ["team_id"]:
         if "minutes" not in coverage_base.columns:
             raise ValueError("team overtime coverage requires whole-game team minutes")
@@ -1351,7 +1372,12 @@ def _load_player_game_period_stats_cached(
     def load() -> pd.DataFrame:
         safe = normalize_season_type(season_type)
         path = f"data/raw/player_game_period_stats/{season}_{safe}.csv"
-        df = data_read_csv(path)
+        from nbatools.development_data import selected_snapshot
+
+        snapshot = selected_snapshot()
+        df = (
+            snapshot.read_player_period_frame(path) if snapshot is not None else data_read_csv(path)
+        )
         missing = [col for col in PLAYER_GAME_PERIOD_REQUIRED_COLUMNS if col not in df.columns]
         if missing:
             raise ValueError(f"player_game_period_stats missing required columns: {missing}")
@@ -1412,8 +1438,19 @@ def _load_player_game_period_stats_cached(
             raise ValueError("player_game_period_stats source_end_period mismatch")
 
         df = add_advanced_pct_columns(df)
+        if snapshot is not None:
+            # Undefined derived rates stay distinct from source-defined zeros.
+            # This changes no stored input or published/old-version behavior.
+            df["efg_pct"] = safe_divide(df.fgm + 0.5 * df.fg3m, df.fga, fill=None)
+            df["ts_pct"] = safe_divide(df.pts, 2 * (df.fga + 0.44 * df.fta), fill=None)
         return df
 
+    from nbatools.development_data import selected_snapshot
+
+    if selected_snapshot() is not None:
+        # Reverify pinned bytes and qualification on every development request;
+        # cached frames must never conceal corruption after a previous read.
+        return load()
     return FRAME_CACHE.get_or_load(
         _season_frame_cache_key("player_game_period_stats", data_root, season_type, season),
         load,
@@ -1421,13 +1458,16 @@ def _load_player_game_period_stats_cached(
 
 
 def load_player_game_period_stats_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
+    from nbatools.development_data import selected_snapshot
+
     data_root = data_source_cache_key()
-    _require_season_files(
-        seasons,
-        season_type,
-        directory="data/raw/player_game_period_stats",
-        dataset="player_game_period_stats",
-    )
+    if selected_snapshot() is None:
+        _require_season_files(
+            seasons,
+            season_type,
+            directory="data/raw/player_game_period_stats",
+            dataset="player_game_period_stats",
+        )
     frames = [
         _load_player_game_period_stats_cached(season, season_type, data_root) for season in seasons
     ]

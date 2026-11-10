@@ -4440,10 +4440,10 @@ def detect_quarter(text: str) -> str | None:
     ``4th quarter`` / ``fourth quarter``, plus ``overtime`` / ``OT``.
     """
     patterns = (
-        (r"\b(?:1st|first)\s+quarter\b|\bq1\b", "1"),
-        (r"\b(?:2nd|second)\s+quarter\b|\bq2\b", "2"),
-        (r"\b(?:3rd|third)\s+quarter\b|\bq3\b", "3"),
-        (r"\b(?:4th|fourth)\s+quarter\b|\bq4\b", "4"),
+        (r"\b(?:1st|first)\s+quarters?\b|\bq1\b", "1"),
+        (r"\b(?:2nd|second)\s+quarters?\b|\bq2\b", "2"),
+        (r"\b(?:3rd|third)\s+quarters?\b|\bq3\b", "3"),
+        (r"\b(?:4th|fourth)\s+quarters?\b|\bq4\b", "4"),
         (r"\b(?:overtime|ot)\b", "OT"),
     )
     for pattern, value in patterns:
@@ -4458,9 +4458,9 @@ def detect_half(text: str) -> str | None:
     Surface forms: ``first half`` / ``1st half`` and
     ``second half`` / ``2nd half``.
     """
-    if re.search(r"\b(?:1st|first)\s+half\b", text):
+    if re.search(r"\b(?:1st|first)\s+(?:half|halves)\b", text):
         return "first"
-    if re.search(r"\b(?:2nd|second)\s+half\b", text):
+    if re.search(r"\b(?:2nd|second)\s+(?:half|halves)\b", text):
         return "second"
     return None
 
