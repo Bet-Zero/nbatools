@@ -1,8 +1,9 @@
 {
-  "tests/core1_k08_served_default_cases.py": "2243a2e632d284d5f03ac09184d3612a9598ccf00773475a56c30d343cb729df",
+  "tests/core1_k08_served_default_cases.py": "14efa80a7358e983c971d7b1b9c57fb5e762d65e4f1b011a7232a58f9dd48791",
   "tests/cloud_core1_k08_served_default_real_data.py": "f139dabbe5d2c0a4b7625ddc56197ac35977de574cd04f36fd0123d76d5785d0",
   "tests/core1_k08_runtime_binding.py": "d35dcc1530d48df5b2f47cfb93c294f86943d5d9a3703180194786eea1aac9d5",
   "tests/cloud_core1_k08_served_default_deployed_real_data.py": "9c6c0b506c0518a6007589f0b4b8a87550c106b7fa56820e330cee1d2f262dee",
   "tests/test_core1_k08_served_default_contract.py": "454a0c9e712d9e82a3931d13c85f14594b23f7bf4693daa0aa8ec5c4e66cf169",
-  "frontend/tools/captureCoreIdentityFindCount.mjs": "30e8433073c7f0a84e91740be2eb10808e43d2270b36b4b039cff3072c262787"
+  "frontend/tools/captureCoreIdentityFindCount.mjs": "30e8433073c7f0a84e91740be2eb10808e43d2270b36b4b039cff3072c262787",
+  "tests/test_core1_k08_raw_player_context.py": "ac4059713231a05fad7be0eaf2ace9c70e03c6e3ef815ba3c9381f57449b4135"
 }

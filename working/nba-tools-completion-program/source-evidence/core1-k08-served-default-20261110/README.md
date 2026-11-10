@@ -111,3 +111,9 @@ The 484 historical rate values, current DQ-006 membership, current freshness,
 unpublished full historical ID44 and parked K12 cold observations remain separate
 requirements with their existing consumers and acceptance scopes. Historical
 capability can advance independently while full original Core-1/V1 remains open.
+
+## First required execution and narrow oracle repair
+
+Required run [42782615330](https://github.com/Bet-Zero/nbatools/actions/runs/42782615330) executed3nodes: ownership25child controls and the retained22/44historical gate passed; the new nine-ID node failed before consumer execution. Its raw player oracle incorrectly required team-owned `wl` in the canonical37-column player source. Failed summary and full assertion excerpt are retained here; no nine-answer acceptance is inferred.
+
+The corrected independent oracle attaches `wl` from authenticated raw team facts through exact game/team/date/season/type keys. Many-to-one joins, unchanged original rows/IDs, full shared opponent/abbreviation/venue context, catalog participants/finality and duplicate/null/missing/conflict guards remain strict. Neutral/untrusted venue preserves source0/0 and exact unordered participants instead of inventing an orientation or imposing an unused venue prerequisite. Both Washington's separate supplement and original LeBronID41 use this same join. Eleven retained-schema/corruption controls plus the prior21finite verifier controls pass32/32. This changes only the test oracle; all four application hashes and the two passed first-run nodes remain applicable unchanged. Only the failed nine-ID numerical node needs another source-backed execution.

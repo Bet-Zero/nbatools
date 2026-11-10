@@ -155,7 +155,9 @@ def _sample(frame, *, player=False):
     ]
     if player:
         columns += ["player_id", "player_name"]
-    assert set(columns).issubset(frame)
+    assert set(columns).issubset(frame), (
+        f"Missing sample fields: {sorted(set(columns) - set(frame))}; actual columns: {list(frame.columns)}"
+    )
     assert frame[list(STATS)].apply(pd.to_numeric, errors="coerce").notna().all().all()
     keys = ["game_id", "team_id"] + (["player_id"] if player else [])
     assert not frame.duplicated(keys).any()
@@ -170,6 +172,83 @@ def _sample(frame, *, player=False):
         sums={stat: float(frame[stat].sum()) for stat in STATS},
         means={stat: float(frame[stat].mean()) if len(frame) else None for stat in STATS},
     )
+
+
+def player_team_context(players, teams, catalog):
+    """Attach team-owned outcome facts through complete independent raw keys."""
+    keys = ["game_id", "team_id", "game_date", "season", "season_type"]
+    shared = ["team_abbr", "opponent_team_id", "opponent_team_abbr", "is_home", "is_away"]
+    required = {*keys, *shared, "player_id", "player_name", *STATS}
+    assert required.issubset(players), (
+        f"Raw player fields missing: {sorted(required - set(players))}; actual: {list(players.columns)}"
+    )
+    assert players[list(required)].notna().all().all(), (
+        "Incomplete raw player identity/context/metric"
+    )
+    assert not players.duplicated(["game_id", "player_id"]).any(), "Duplicate raw player key"
+    assert {*keys, *shared, "wl"}.issubset(teams)
+    assert not teams.duplicated(["game_id", "team_id"]).any(), "Duplicate team key"
+    facts = teams[[*keys, *shared, "wl"]].rename(columns={c: "_team_" + c for c in [*shared, "wl"]})
+    out = players.merge(
+        facts, on=keys, how="left", validate="many_to_one", indicator="_team_join", sort=False
+    )
+    assert len(out) == len(players) and out._team_join.eq("both").all(), (
+        "Incomplete exact game/team/date context join"
+    )
+    for field in shared:
+        assert out[field].eq(out["_team_" + field]).all(), f"Contradictory team context: {field}"
+    assert out._team_wl.isin(["W", "L"]).all(), "Unknown team outcome"
+    if "wl" in players:
+        assert out.wl.eq(out._team_wl).all(), "Contradictory existing player outcome"
+    out["wl"] = out._team_wl
+    out = out.drop(columns=["_team_join", *["_team_" + c for c in [*shared, "wl"]]])
+    game_keys = ["game_id", "game_date", "season", "season_type"]
+    identity = [
+        "team_a_id",
+        "team_b_id",
+        "home_team_id",
+        "away_team_id",
+        "home_away_designation_trusted",
+        "is_final",
+    ]
+    assert {*game_keys, *identity}.issubset(catalog)
+    assert not catalog.game_id.duplicated().any(), "Duplicate final-game catalog key"
+    final = catalog[[*game_keys, *identity]]
+    joined = out.merge(
+        final,
+        on=game_keys,
+        how="left",
+        validate="many_to_one",
+        indicator="_catalog_join",
+        sort=False,
+    )
+    assert len(joined) == len(players) and joined._catalog_join.eq("both").all(), (
+        "Incomplete exact final catalog join"
+    )
+    assert joined.is_final.astype(str).str.lower().isin(["true", "1", "1.0"]).all(), (
+        "Player sample has nonfinal game"
+    )
+    own_home = joined.team_id.eq(joined.home_team_id) & joined.opponent_team_id.eq(
+        joined.away_team_id
+    )
+    own_away = joined.team_id.eq(joined.away_team_id) & joined.opponent_team_id.eq(
+        joined.home_team_id
+    )
+    side_a = joined.team_id.eq(joined.team_a_id) & joined.opponent_team_id.eq(joined.team_b_id)
+    side_b = joined.team_id.eq(joined.team_b_id) & joined.opponent_team_id.eq(joined.team_a_id)
+    assert (side_a | side_b).all(), "Player/team participants disagree with final catalog"
+    trusted = (
+        joined.home_away_designation_trusted.astype(str).str.lower().isin(["true", "1", "1.0"])
+    )
+    assert (own_home | own_away | ~trusted).all(), (
+        "Trusted player/team sides disagree with final catalog"
+    )
+    home_flag = joined.is_home.astype(str).str.lower().isin(["true", "1", "1.0"])
+    away_flag = joined.is_away.astype(str).str.lower().isin(["true", "1", "1.0"])
+    assert home_flag.eq(own_home & trusted).all() and away_flag.eq(own_away & trusted).all(), (
+        "Player home/away disagrees with final catalog"
+    )
+    return out
 
 
 def source_oracle():
@@ -205,6 +284,7 @@ def source_oracle():
             frames[k]
             for k in ("team_game_stats", "player_game_stats", "player_game_availability", "games")
         ]
+        players = player_team_context(players, teams, catalog)
         lal = teams.loc[teams.team_id.eq(LAL)].copy()
         assert len(lal) == 82 and not lal.game_id.duplicated().any()
         assert lal.season.eq(SEASON).all() and lal.season_type.eq("Regular Season").all()

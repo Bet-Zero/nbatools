@@ -1,0 +1,119 @@
+{
+  "checks": [
+    {
+      "query": "  P.J.\tWashington games for DAL vs WAS in 2024-25",
+      "expected": [
+        "P.J. Washington",
+        "DAL",
+        "WAS"
+      ],
+      "actual": [
+        null,
+        null,
+        null
+      ],
+      "passed": false
+    },
+    {
+      "query": "P.J. W\u00e1shington games for DAL against SAS in 2024-25",
+      "expected": [
+        "P.J. Washington",
+        "DAL",
+        "SAS"
+      ],
+      "actual": [
+        "P.J. Washington",
+        "DAL",
+        "SAS"
+      ],
+      "passed": true
+    },
+    {
+      "query": "P.J.-Washington games against Washington in 2024-25",
+      "expected": [
+        "P.J. Washington",
+        null,
+        "WAS"
+      ],
+      "actual": [
+        "P.J. Washington",
+        null,
+        "WAS"
+      ],
+      "passed": true
+    },
+    {
+      "query": "Orlando-Robinson games for MIA against ORL in 2024-25",
+      "expected": [
+        "Orlando Robinson",
+        "MIA",
+        "ORL"
+      ],
+      "actual": [
+        "Orlando Robinson",
+        "MIA",
+        "ORL"
+      ],
+      "passed": true
+    },
+    {
+      "query": "ALLAN\tHOUSTON games for NYK against HOU in 2024-25",
+      "expected": [
+        "Allan Houston",
+        "NYK",
+        "HOU"
+      ],
+      "actual": [
+        "Allan Houston",
+        "NYK",
+        "HOU"
+      ],
+      "passed": true
+    },
+    {
+      "query": "Brandon Boston Jr. games for LAC against Boston in 2024-25",
+      "expected": [
+        "Brandon Boston Jr.",
+        "LAC",
+        "BOS"
+      ],
+      "actual": [
+        "Brandon Boston Jr.",
+        "LAC",
+        "BOS"
+      ],
+      "passed": true
+    },
+    {
+      "query": "Cleveland B\u00fcckner games for NYK against CLE in 2024-25",
+      "expected": [
+        "Cleveland Buckner",
+        "NYK",
+        "CLE"
+      ],
+      "actual": [
+        "Cleveland Buckner",
+        "NYK",
+        "CLE"
+      ],
+      "passed": true
+    },
+    {
+      "query": "P.J. Washington games for the Washington Wizards against the Dallas Mavericks in 2024-25",
+      "expected": [
+        "P.J. Washington",
+        "WAS",
+        "DAL"
+      ],
+      "actual": [
+        "P.J. Washington",
+        "WAS",
+        "DAL"
+      ],
+      "passed": true
+    }
+  ],
+  "all_passed": false,
+  "source_requests": 0,
+  "production_writes": 0
+}
