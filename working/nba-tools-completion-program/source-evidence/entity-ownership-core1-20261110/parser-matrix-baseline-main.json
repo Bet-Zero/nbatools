@@ -1,0 +1,674 @@
+{
+  "kind": "pure parser controlled-name fixtures, not NBA data or source answers",
+  "backend_model_identity": "unavailable",
+  "controlled_names": [
+    "Allan Houston",
+    "Brandon Boston Jr.",
+    "Cleveland Buckner",
+    "Duane Washington Jr.",
+    "LeBron James",
+    "Nikola Joki\u0107",
+    "Orlando Johnson",
+    "Orlando Robinson",
+    "P.J. Washington",
+    "TyTy Washington Jr."
+  ],
+  "checks": [
+    {
+      "query": "P.J. Washington rebounds in 2024-25",
+      "expected": {
+        "player": "P.J. Washington",
+        "team": null,
+        "opponent": null
+      },
+      "actual": {
+        "player": "P.J. Washington",
+        "team": "WAS",
+        "opponent": null
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "PJ Washington rebounds in 2024-25",
+      "expected": {
+        "player": "P.J. Washington",
+        "team": null,
+        "opponent": null
+      },
+      "actual": {
+        "player": "P.J. Washington",
+        "team": "WAS",
+        "opponent": null
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "Duane Washington Jr. rebounds in 2024-25",
+      "expected": {
+        "player": "Duane Washington Jr.",
+        "team": null,
+        "opponent": null
+      },
+      "actual": {
+        "player": "Duane Washington Jr.",
+        "team": "WAS",
+        "opponent": null
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "TyTy Washington Jr. rebounds in 2024-25",
+      "expected": {
+        "player": "TyTy Washington Jr.",
+        "team": null,
+        "opponent": null
+      },
+      "actual": {
+        "player": "TyTy Washington Jr.",
+        "team": "WAS",
+        "opponent": null
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "Orlando Robinson rebounds in 2024-25",
+      "expected": {
+        "player": "Orlando Robinson",
+        "team": null,
+        "opponent": null
+      },
+      "actual": {
+        "player": "David Robinson",
+        "team": "ORL",
+        "opponent": null
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "Orlando Johnson rebounds in 2024-25",
+      "expected": {
+        "player": "Orlando Johnson",
+        "team": null,
+        "opponent": null
+      },
+      "actual": {
+        "player": null,
+        "team": "ORL",
+        "opponent": null
+      },
+      "route": "game_finder",
+      "passed": false
+    },
+    {
+      "query": "Allan Houston rebounds in 2024-25",
+      "expected": {
+        "player": "Allan Houston",
+        "team": null,
+        "opponent": null
+      },
+      "actual": {
+        "player": null,
+        "team": "HOU",
+        "opponent": null
+      },
+      "route": "game_finder",
+      "passed": false
+    },
+    {
+      "query": "Brandon Boston Jr. rebounds in 2024-25",
+      "expected": {
+        "player": "Brandon Boston Jr.",
+        "team": null,
+        "opponent": null
+      },
+      "actual": {
+        "player": "Brandon Boston Jr.",
+        "team": "BOS",
+        "opponent": null
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "Cleveland Buckner rebounds in 2024-25",
+      "expected": {
+        "player": "Cleveland Buckner",
+        "team": null,
+        "opponent": null
+      },
+      "actual": {
+        "player": "Cleveland Buckner",
+        "team": "CLE",
+        "opponent": null
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "P.J. Washington's rebounds in 2024-25",
+      "expected": {
+        "player": "P.J. Washington",
+        "team": null,
+        "opponent": null
+      },
+      "actual": {
+        "player": "P.J. Washington",
+        "team": "WAS",
+        "opponent": null
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "pj rebounds in 2024-25",
+      "expected": {
+        "player": "P.J. Washington",
+        "team": null,
+        "opponent": null
+      },
+      "actual": {
+        "player": "P.J. Washington",
+        "team": null,
+        "opponent": null
+      },
+      "route": "player_game_finder",
+      "passed": true
+    },
+    {
+      "query": "Washington Wizards record in 2024-25",
+      "expected": {
+        "player": null,
+        "team": "WAS"
+      },
+      "actual": {
+        "player": null,
+        "team": "WAS"
+      },
+      "route": "team_record",
+      "passed": true
+    },
+    {
+      "query": "WAS record in 2024-25",
+      "expected": {
+        "player": null,
+        "team": "WAS"
+      },
+      "actual": {
+        "player": null,
+        "team": "WAS"
+      },
+      "route": "team_record",
+      "passed": true
+    },
+    {
+      "query": "Boston Celtics record in 2024-25",
+      "expected": {
+        "player": null,
+        "team": "BOS"
+      },
+      "actual": {
+        "player": null,
+        "team": "BOS"
+      },
+      "route": "team_record",
+      "passed": true
+    },
+    {
+      "query": "BOS record in 2024-25",
+      "expected": {
+        "player": null,
+        "team": "BOS"
+      },
+      "actual": {
+        "player": null,
+        "team": "BOS"
+      },
+      "route": "team_record",
+      "passed": true
+    },
+    {
+      "query": "Orlando Magic record in 2024-25",
+      "expected": {
+        "player": null,
+        "team": "ORL"
+      },
+      "actual": {
+        "player": null,
+        "team": "ORL"
+      },
+      "route": "team_record",
+      "passed": true
+    },
+    {
+      "query": "ORL record in 2024-25",
+      "expected": {
+        "player": null,
+        "team": "ORL"
+      },
+      "actual": {
+        "player": null,
+        "team": "ORL"
+      },
+      "route": "team_record",
+      "passed": true
+    },
+    {
+      "query": "Houston Rockets record in 2024-25",
+      "expected": {
+        "player": null,
+        "team": "HOU"
+      },
+      "actual": {
+        "player": null,
+        "team": "HOU"
+      },
+      "route": "team_record",
+      "passed": true
+    },
+    {
+      "query": "HOU record in 2024-25",
+      "expected": {
+        "player": null,
+        "team": "HOU"
+      },
+      "actual": {
+        "player": null,
+        "team": "HOU"
+      },
+      "route": "team_record",
+      "passed": true
+    },
+    {
+      "query": "Dallas Mavericks record in 2024-25",
+      "expected": {
+        "player": null,
+        "team": "DAL"
+      },
+      "actual": {
+        "player": null,
+        "team": "DAL"
+      },
+      "route": "team_record",
+      "passed": true
+    },
+    {
+      "query": "DAL record in 2024-25",
+      "expected": {
+        "player": null,
+        "team": "DAL"
+      },
+      "actual": {
+        "player": null,
+        "team": "DAL"
+      },
+      "route": "team_record",
+      "passed": true
+    },
+    {
+      "query": "P.J. Washington games for DAL against SAS in 2024-25",
+      "expected": {
+        "player": "P.J. Washington",
+        "team": "DAL",
+        "opponent": "SAS"
+      },
+      "actual": {
+        "player": "P.J. Washington",
+        "team": "WAS",
+        "opponent": "SAS"
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "Orlando Robinson games for MIA against ORL in 2024-25",
+      "expected": {
+        "player": "Orlando Robinson",
+        "team": "MIA",
+        "opponent": "ORL"
+      },
+      "actual": {
+        "player": "David Robinson",
+        "team": null,
+        "opponent": "ORL"
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "Allan Houston games for NYK against HOU in 2024-25",
+      "expected": {
+        "player": "Allan Houston",
+        "team": "NYK",
+        "opponent": "HOU"
+      },
+      "actual": {
+        "player": null,
+        "team": "HOU",
+        "opponent": "HOU"
+      },
+      "route": "game_finder",
+      "passed": false
+    },
+    {
+      "query": "Brandon Boston Jr. games for LAC against BOS in 2024-25",
+      "expected": {
+        "player": "Brandon Boston Jr.",
+        "team": "LAC",
+        "opponent": "BOS"
+      },
+      "actual": {
+        "player": "Brandon Boston Jr.",
+        "team": null,
+        "opponent": "BOS"
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "Duane Washington Jr. games for IND against WAS in 2024-25",
+      "expected": {
+        "player": "Duane Washington Jr.",
+        "team": "IND",
+        "opponent": "WAS"
+      },
+      "actual": {
+        "player": "Duane Washington Jr.",
+        "team": null,
+        "opponent": "WAS"
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "TyTy Washington Jr. games for HOU against WAS in 2024-25",
+      "expected": {
+        "player": "TyTy Washington Jr.",
+        "team": "HOU",
+        "opponent": "WAS"
+      },
+      "actual": {
+        "player": "TyTy Washington Jr.",
+        "team": null,
+        "opponent": "WAS"
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "P.J. Washington games for Washington against Dallas in 2024-25",
+      "expected": {
+        "player": "P.J. Washington",
+        "team": "WAS",
+        "opponent": "DAL"
+      },
+      "actual": {
+        "player": "P.J. Washington",
+        "team": "WAS",
+        "opponent": "DAL"
+      },
+      "route": "player_game_finder",
+      "passed": true
+    },
+    {
+      "query": "P.J. Washington games for the Dallas Mavericks against the San Antonio Spurs in 2024-25",
+      "expected": {
+        "player": "P.J. Washington",
+        "team": "DAL",
+        "opponent": "SAS"
+      },
+      "actual": {
+        "player": "P.J. Washington",
+        "team": "DAL",
+        "opponent": "SAS"
+      },
+      "route": "player_game_finder",
+      "passed": true
+    },
+    {
+      "query": "P.J. Washington games against Washington in 2024-25",
+      "expected": {
+        "player": "P.J. Washington",
+        "team": null,
+        "opponent": "WAS"
+      },
+      "actual": {
+        "player": "P.J. Washington",
+        "team": null,
+        "opponent": "WAS"
+      },
+      "route": "player_game_finder",
+      "passed": true
+    },
+    {
+      "query": "Orlando Robinson games against Orlando in 2024-25",
+      "expected": {
+        "player": "Orlando Robinson",
+        "team": null,
+        "opponent": "ORL"
+      },
+      "actual": {
+        "player": "David Robinson",
+        "team": null,
+        "opponent": "ORL"
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "Allan Houston games against Houston in 2024-25",
+      "expected": {
+        "player": "Allan Houston",
+        "team": null,
+        "opponent": "HOU"
+      },
+      "actual": {
+        "player": null,
+        "team": "HOU",
+        "opponent": "HOU"
+      },
+      "route": "game_finder",
+      "passed": false
+    },
+    {
+      "query": "Brandon Boston Jr. games against Boston in 2024-25",
+      "expected": {
+        "player": "Brandon Boston Jr.",
+        "team": null,
+        "opponent": "BOS"
+      },
+      "actual": {
+        "player": "Brandon Boston Jr.",
+        "team": null,
+        "opponent": "BOS"
+      },
+      "route": "player_game_finder",
+      "passed": true
+    },
+    {
+      "query": "P.J. Washington games against the Washington Wizards in 2024-25",
+      "expected": {
+        "player": "P.J. Washington",
+        "team": null,
+        "opponent": "WAS"
+      },
+      "actual": {
+        "player": "P.J. Washington",
+        "team": null,
+        "opponent": "WAS"
+      },
+      "route": "player_game_finder",
+      "passed": true
+    },
+    {
+      "query": "Jokic games vs P.J. Washington in 2024-25",
+      "expected": {
+        "player": "Nikola Joki\u0107",
+        "team": null,
+        "opponent": null,
+        "opponent_player": "P.J. Washington"
+      },
+      "actual": {
+        "player": "Nikola Joki\u0107",
+        "team": null,
+        "opponent": "WAS",
+        "opponent_player": null
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "LeBron games against Orlando Robinson in 2024-25",
+      "expected": {
+        "player": "LeBron James",
+        "team": null,
+        "opponent": null,
+        "opponent_player": "Orlando Robinson"
+      },
+      "actual": {
+        "player": "LeBron James",
+        "team": null,
+        "opponent": "ORL",
+        "opponent_player": null
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "Allan Houston games against Brandon Boston Jr. in 2024-25",
+      "expected": {
+        "player": "Allan Houston",
+        "team": null,
+        "opponent": null,
+        "opponent_player": "Brandon Boston Jr."
+      },
+      "actual": {
+        "player": "Allan Houston",
+        "team": "HOU",
+        "opponent": "BOS",
+        "opponent_player": null
+      },
+      "route": "player_game_finder",
+      "passed": false
+    },
+    {
+      "query": "P.J. Washington games with Orlando Robinson in 2024-25",
+      "expected": {
+        "player": "P.J. Washington",
+        "team": null,
+        "with_player": "Orlando Robinson"
+      },
+      "actual": {
+        "player": "P.J. Washington",
+        "team": "WAS",
+        "with_player": "David Robinson"
+      },
+      "route": "player_game_summary",
+      "passed": false
+    },
+    {
+      "query": "Orlando Robinson games without P.J. Washington in 2024-25",
+      "expected": {
+        "player": "Orlando Robinson",
+        "team": null,
+        "without_player": "P.J. Washington"
+      },
+      "actual": {
+        "player": "Orlando Robinson",
+        "team": "WAS",
+        "without_player": null
+      },
+      "route": "player_game_summary",
+      "passed": false
+    },
+    {
+      "query": "Lakers record without P.J. Washington in 2024-25",
+      "expected": {
+        "player": null,
+        "team": "LAL",
+        "without_player": "P.J. Washington"
+      },
+      "actual": {
+        "player": "P.J. Washington",
+        "team": "WAS",
+        "without_player": null
+      },
+      "route": "team_record",
+      "passed": false
+    },
+    {
+      "query": "compare Allan Houston and P.J. Washington points in 2024-25",
+      "expected": {
+        "player_a": "Allan Houston",
+        "player_b": "P.J. Washington",
+        "team_a": null,
+        "team_b": null
+      },
+      "actual": {
+        "player_a": null,
+        "player_b": null,
+        "team_a": null,
+        "team_b": null
+      },
+      "route": "player_compare",
+      "passed": false
+    },
+    {
+      "query": "compare Orlando Robinson and Brandon Boston Jr. rebounds in 2024-25",
+      "expected": {
+        "player_a": "Orlando Robinson",
+        "player_b": "Brandon Boston Jr.",
+        "team_a": null,
+        "team_b": null
+      },
+      "actual": {
+        "player_a": null,
+        "player_b": null,
+        "team_a": null,
+        "team_b": null
+      },
+      "route": "player_compare",
+      "passed": false
+    },
+    {
+      "query": "compare Houston and Boston records in 2024-25",
+      "expected": {
+        "team_a": "HOU",
+        "team_b": "BOS",
+        "player_a": null,
+        "player_b": null
+      },
+      "actual": {
+        "team_a": "HOU",
+        "team_b": "BOS",
+        "player_a": null,
+        "player_b": null
+      },
+      "route": "team_compare",
+      "passed": true
+    },
+    {
+      "query": "Boston Celtics games vs Houston Rockets in 2024-25",
+      "expected": {
+        "team": "BOS",
+        "opponent": "HOU",
+        "player": null
+      },
+      "actual": {
+        "team": "BOS",
+        "opponent": "HOU",
+        "player": null
+      },
+      "route": "game_finder",
+      "passed": true
+    }
+  ],
+  "pass_count": 18,
+  "total": 44,
+  "new_source_requests": 0,
+  "production_writes": 0
+}

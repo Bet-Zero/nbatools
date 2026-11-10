@@ -1,0 +1,8 @@
+{
+  "src/nbatools/commands/entity_resolution.py": "3f65cf6ae98297e251931f01b34f8e374cdd10a2c1f4ff8a904a0a8613d41215",
+  "src/nbatools/commands/_matchup_utils.py": "485bd20fda37c0c5b8a28b99594bad3d40ccdcae748ba2fa45c75b23ea810661",
+  "src/nbatools/commands/natural_query.py": "dce7dd18fc550bf25af2c13c1238a407d835c6ae8f7dc26ab6148ba3ab549173",
+  "src/nbatools/query_service.py": "e285171fc726649db422605d794b919a27df7f5b83d9f16d8d8a2a5fd5c90eb7",
+  "tests/test_player_team_ownership.py": "6ff8dcfac2b4ca8936e21a3ed63b20eb6ab8fd6c52aff497fdabc42b98da5a1d",
+  "tests/cloud_player_team_ownership_real_data.py": "34c8dbcb40efcb03d040241c4f6673f05e551ffe48a75b151270e9871ce60333"
+}

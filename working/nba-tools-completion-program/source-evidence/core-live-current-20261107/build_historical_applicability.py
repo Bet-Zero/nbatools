@@ -50,6 +50,16 @@ semantic = {
             "leaf delegation, including the two owned whole-game cases, remains identical."
         ),
     ),
+    "src/nbatools/commands/_matchup_utils.py": (
+        "team/opponent scans; extract_team_comparison; presence clause punctuation",
+        (
+            "The original 22 names are Curry, Brunson, Jokic, Ewing, LeBron James, Tatum "
+            "and Brown, none with internal team-alias words or initial periods. New "
+            "full-person team masking therefore preserves their explicit team/opponent "
+            "mentions. No original query uses PLAYER for TEAM versus OPPONENT. Presence "
+            "name punctuation changes only initial periods, absent from these inputs."
+        ),
+    ),
     "src/nbatools/commands/aggregate_metrics.py": (
         "require_known_metric_inputs; fractional_source_rate_bounds",
         (
@@ -65,6 +75,16 @@ semantic = {
             "source-population specialization also requires both overtime request and "
             "selector. Zero-attempt TS/eFG null derivation requires a selected snapshot. "
             "None of the 22 queries requests periods."
+        ),
+    ),
+    "src/nbatools/commands/entity_resolution.py": (
+        "resolve_player_in_query; mask_player_owned_team_words; resolve_team_in_query",
+        (
+            "All original 22 person names lack internal team-alias words and initial "
+            "periods. Their complete-name-before-alias precedence and identities remain "
+            "unchanged. The new substring precheck is equivalent to the following bounded "
+            "regex; broader full-name lookup adds no different matching person to these "
+            "exact names. Team masking does not erase any independent team mention."
         ),
     ),
     "src/nbatools/commands/pipeline/player_game_availability_report.py": (
@@ -93,11 +113,14 @@ semantic = {
         ),
     ),
     "src/nbatools/commands/natural_query.py": (
-        "_finalize_route",
+        "_finalize_route; _teams_in_order; _team_mentions",
         (
             "The new private natural source-rate unit flag requires player_game_finder plus "
             "a quarter or half. Original 22 queries have neither period predicate, so their "
             "route kwargs remain unchanged and no bound conversion is selected."
+            " New team-mention masking only hides complete person spans with internal "
+            "team words; none of the original 22 names contains one, so team lists and "
+            "comparison subjects remain identical."
         ),
     ),
     "src/nbatools/commands/team_record.py": (
@@ -120,11 +143,16 @@ semantic = {
         ),
     ),
     "src/nbatools/query_service.py": (
-        "_build_query_metadata",
+        "_build_query_metadata; _build_applied_filters; structured metadata call site",
         (
             "Numeric bound metadata conversion requires the private natural source-rate "
             "flag. That flag is set only for period player finders, absent from all 22 "
             "queries; original whole-game labels, values and numeric metadata are unchanged."
+            " The additive Playing for label requires an actual primary player plus explicit "
+            "team; none of these 22 player requests has a team filter and team requests have "
+            "no primary player. The existing comparison rule remains the same. Passing real "
+            "structured kwargs preserves this same ownership condition, without changing "
+            "the original natural HTTP captures."
         ),
     ),
 }

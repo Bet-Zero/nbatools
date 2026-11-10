@@ -2344,6 +2344,9 @@ _TWO_TEAM_JOIN = re.compile(r"^\s*(?:the\s+)?(?:vs\.?|versus|and|&|,)?\s*(?:the\
 def _teams_in_order(text: str) -> list[tuple[int, int, str]]:
     """Each team named in *text* (start, end, abbreviation), first mention first."""
     from nbatools.commands._matchup_utils import TEAM_ALIASES
+    from nbatools.commands.entity_resolution import mask_player_owned_team_words
+
+    text = mask_player_owned_team_words(text)
 
     found: dict[str, tuple[int, int]] = {}
     taken: list[tuple[int, int]] = []
@@ -2361,6 +2364,9 @@ def _teams_in_order(text: str) -> list[tuple[int, int, str]]:
 def _team_mentions(text: str) -> list[tuple[int, int, str]]:
     """Every team mention in *text* (start, end, abbreviation), in order."""
     from nbatools.commands._matchup_utils import TEAM_ALIASES
+    from nbatools.commands.entity_resolution import mask_player_owned_team_words
+
+    text = mask_player_owned_team_words(text)
 
     taken: list[tuple[int, int, str]] = []
     for key in sorted(TEAM_ALIASES, key=len, reverse=True):

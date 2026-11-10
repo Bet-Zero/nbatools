@@ -1,0 +1,43 @@
+{
+  "kind": "independent source reuse; no candidate CSV as expected-value source",
+  "game_id": 22600184,
+  "game_date": "2026-11-04",
+  "player_id": 1629023,
+  "player_name": "P.J. Washington",
+  "team_id": 1610612742,
+  "team_abbr": "DAL",
+  "window": "h1",
+  "oreb": 2,
+  "dreb": 2,
+  "reb": 4,
+  "first_half_clock": "17:45",
+  "book_corrections": [
+    {
+      "dataset": "player",
+      "game_id": 22600184,
+      "window": "h1",
+      "team_id": 1610612742,
+      "player_id": 1629023,
+      "field": "reboundsDefensive",
+      "before": 1,
+      "after": 2
+    },
+    {
+      "dataset": "player",
+      "game_id": 22600184,
+      "window": "h1",
+      "team_id": 1610612742,
+      "player_id": 1629023,
+      "field": "reboundsTotal",
+      "before": 3,
+      "after": 4
+    }
+  ],
+  "source_oracle_sha256": "59fd69280de504dc656611988f074b49eeecb35e1830d1cbbb0db07f9e1bec1a",
+  "book_oracle_sha256": "7d054703091f5f0334d2b01dd7bd978e619d2e36a11eead390fdb23cf0646698",
+  "pdf_sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b",
+  "accepted_v5_manifest": "535384a4710739a779f0772da4e3bcee023bd88bfed91be16d0103cdf9d8ff75",
+  "accepted_pr603_companion_manifest": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+  "source_requests": 0,
+  "production_writes": 0
+}

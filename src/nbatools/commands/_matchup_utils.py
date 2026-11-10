@@ -18,6 +18,7 @@ from nbatools.commands.entity_resolution import (
     TEAM_ALIASES,
     ResolutionResult,
     mask_copula_team_lookalikes,
+    mask_player_owned_team_words,
     phrase_has_partial_nickname_player_typo,
     player_ids_for_name,
     resolve_player_in_query,
@@ -45,7 +46,7 @@ def detect_player_resolved(text: str) -> ResolutionResult:
 
 
 def detect_team_in_text(text: str) -> str | None:
-    scan_text = mask_copula_team_lookalikes(text)
+    scan_text = mask_player_owned_team_words(mask_copula_team_lookalikes(text))
     for key in sorted(TEAM_ALIASES.keys(), key=len, reverse=True):
         if re.search(rf"\b{re.escape(key)}\b", scan_text):
             return TEAM_ALIASES[key]
@@ -58,7 +59,7 @@ def detect_team_in_text(text: str) -> str | None:
 
 def detect_team_resolved(text: str) -> ResolutionResult:
     """Like detect_team_in_text but returns full ResolutionResult."""
-    scan_text = mask_copula_team_lookalikes(text)
+    scan_text = mask_player_owned_team_words(mask_copula_team_lookalikes(text))
     for key in sorted(TEAM_ALIASES.keys(), key=len, reverse=True):
         if re.search(rf"\b{re.escape(key)}\b", scan_text):
             return ResolutionResult(
@@ -103,12 +104,13 @@ _OPPONENT_TEAM_PREFIX = re.compile(
 
 def detect_opponent(text: str) -> tuple[str | None, str]:
     cleaned_text = strip_matchup_noise(text)
+    scan_text = mask_player_owned_team_words(cleaned_text)
 
     # Consume the resolved entity span, not an open-ended phrase. Punctuation
     # and following clauses belong to the remaining request: "against Utah by
     # season:" must retain the grouping, and "against Denver scoring ..." must
     # retain the scoring predicate. Longest aliases protect multiword names.
-    matched_team = _OPPONENT_TEAM_PREFIX.search(cleaned_text)
+    matched_team = _OPPONENT_TEAM_PREFIX.search(scan_text)
     if matched_team:
         opponent = TEAM_ALIASES[matched_team.group("team")]
         cleaned = cleaned_text[: matched_team.start()] + " " + cleaned_text[matched_team.end() :]
@@ -125,7 +127,7 @@ def detect_opponent(text: str) -> tuple[str | None, str]:
     ]
 
     for pattern in patterns:
-        m = re.search(pattern, cleaned_text)
+        m = re.search(pattern, scan_text)
         if not m:
             continue
 
@@ -316,7 +318,8 @@ def _extract_question_form_player_comparison(
 
 
 def extract_team_comparison(text: str) -> tuple[str | None, str | None]:
-    cleaned_text = strip_matchup_noise(text)
+    original = strip_matchup_noise(text)
+    cleaned_text = mask_player_owned_team_words(original)
     question = re.search(
         r"\bhow\s+(?:do|did)\s+(?:the\s+)?(.+?)\s+and\s+(?:the\s+)?(.+?)\s+compare\b",
         cleaned_text,
@@ -347,6 +350,12 @@ def extract_team_comparison(text: str) -> tuple[str | None, str | None]:
         )
         m = re.search(pattern, cleaned_text)
         if not m:
+            continue
+
+        # In "PLAYER games for TEAM vs OPPONENT", TEAM is the person's
+        # explicit playing-for filter, not a second comparison subject.
+        prefix = original[: m.start()]
+        if re.search(r"\bfor\s+(?:the\s+)?$", prefix) and detect_player(original):
             continue
 
         team_a = TEAM_ALIASES[alias_a]
@@ -400,6 +409,7 @@ _PLAYOFF_PAIR_JOIN_RE = re.compile(r"\s+(?:and|vs\.?|versus)\s+(?:the\s+)?")
 def _non_overlapping_team_mentions(text: str) -> list[tuple[int, int, str]]:
     """Return longest non-overlapping team mentions in text order."""
     mentions: list[tuple[int, int, str]] = []
+    text = mask_player_owned_team_words(text)
 
     for alias, team in sorted(TEAM_ALIASES.items(), key=lambda x: len(x[0]), reverse=True):
         for match in re.finditer(rf"\b{re.escape(alias)}\b", text):
@@ -628,6 +638,11 @@ def _bare_surname(text: str) -> bool:
 _ABSENCE_CONJUNCTIONS = r"when|while"
 
 
+# Initial periods belong to the person, unlike sentence punctuation. Keep this
+# boundary shared by resolved/unresolved presence and absence name readers.
+_PERSON_CLAUSE_PUNCTUATION = r"(?:[?!,;:]|(?<!\b[a-z])\.)"
+
+
 def detect_without_player(
     text: str, *, resolve_name: Callable[[str], str | None] | None = None
 ) -> tuple[str | None, str]:
@@ -645,7 +660,8 @@ def detect_without_player(
     # Ordered most-specific first to avoid partial matches.
     absence_patterns = [
         # `without PLAYER` / `w/o PLAYER`
-        rf"\b(?:without|w/o)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|[?.!,;:]|$)",
+        rf"\b(?:without|w/o)\s+([\w .&'\-]+?)"
+        rf"(?=\s+(?:{STOP_WORDS})\b|{_PERSON_CLAUSE_PUNCTUATION}|$)",
         # `when/while PLAYER didn't/doesn't play` / `... did/does not play`
         rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)"
         r"\s+(?:didn'?t|did\s+not|doesn'?t|does\s+not)\s+play\b",
@@ -1048,7 +1064,7 @@ def detect_with_player(
     cleaned_text = text
     with_player_pattern = (
         rf"\b(?:with|w/)\s+([\w .&'\-]+?)"
-        rf"(?=\s+(?:available|without|w/o|{STOP_WORDS})\b|[?.!,;:]|$)"
+        rf"(?=\s+(?:available|without|w/o|{STOP_WORDS})\b|{_PERSON_CLAUSE_PUNCTUATION}|$)"
     )
     presence_patterns = [
         with_player_pattern,
@@ -1263,7 +1279,8 @@ def detect_unresolved_availability_player(
     """Return a raw availability name fragment that was requested but unresolved."""
     if mode == "without":
         patterns = [
-            rf"\b(?:without|w/o)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|[?.!,;:]|$)",
+            rf"\b(?:without|w/o)\s+([\w .&'\-]+?)"
+            rf"(?=\s+(?:{STOP_WORDS})\b|{_PERSON_CLAUSE_PUNCTUATION}|$)",
             rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)"
             r"\s+(?:didn'?t|did\s+not|doesn'?t|does\s+not)\s+play\b",
             rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+(?:is|was|were|are)\s+out\b",
@@ -1281,7 +1298,7 @@ def detect_unresolved_availability_player(
     elif mode == "with":
         with_player_pattern = (
             rf"\b(?:with|w/)\s+([\w .&'\-]+?)"
-            rf"(?=\s+(?:available|without|w/o|{STOP_WORDS})\b|[?.!,;:]|$)"
+            rf"(?=\s+(?:available|without|w/o|{STOP_WORDS})\b|{_PERSON_CLAUSE_PUNCTUATION}|$)"
         )
         patterns = [
             with_player_pattern,

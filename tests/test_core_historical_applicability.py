@@ -26,7 +26,7 @@ def _reseal(tmp_path, mutate):
 
 def test_reviewed_original22_applicability(binding):
     result = gate._retained_applicability(binding)
-    assert result["changed_files"] == 14
+    assert result["changed_files"] == 16
     assert len(result["cases"]) == 22
     assert result["companion_sha256"] == gate.APPLICABILITY_SHA256
 
