@@ -1,0 +1,148 @@
+=================================== FAILURES ===================================
+__________________ test_original_nine_on_published_generation __________________
+
+    def test_original_nine_on_published_generation():
+        output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "core1-k08-served-default"
+        output.mkdir(parents=True, exist_ok=False)
+        receipt = dict(
+            candidate_sha=os.environ["VALIDATION_SHA"],
+            classification="original_nine_K08_inputs_at_published_served_default_not_literal_current",
+            answers=[],
+            accepted_original_ids=[],
+            consumer_acceptance="pending",
+            source_requests=0,
+            production_writes=0,
+            literal_current_accepted=False,
+            all46_accepted=False,
+            full_core1_accepted=False,
+            fresh_deployment_accepted=False,
+        )
+    
+        def persist():
+            (output / "acceptance.json").write_text(
+                json.dumps(receipt, indent=2, default=_receipt_json_default) + "\n"
+            )
+    
+        def http_body(response):
+            try:
+                return response.json()
+            except ValueError:
+                return dict(non_json_body=response.text)
+    
+        try:
+            oracle = source_oracle()
+            receipt.update(
+                generation=oracle["generation"],
+                manifest_sha256=oracle["manifest_sha256"],
+                original46_ids_sha256=oracle["original46_ids_sha256"],
+            )
+            (output / "independent-raw-oracle.json").write_text(json.dumps(oracle, indent=2) + "\n")
+            assert default_end_season("Regular Season") == SEASON
+            assert previous_season("Regular Season") == "2024-25"
+            client = TestClient(app)
+            for case in oracle["cases"]:
+                actual = dict(
+                    original_id=case["ordinal"],
+                    query=case["query"],
+                    structured_kwargs=case["kwargs"],
+                    accepted=False,
+                )
+                receipt["answers"].append(actual)
+                if case["ordinal"] in {7, 8}:
+                    compiled = parse_query(case["query"])
+                    scope = compiled["route_kwargs"]
+                    actual["authenticated_natural_compiled_scope"] = dict(
+                        route=compiled["route"],
+                        season=scope.get("season"),
+                        team=scope.get("team"),
+                        without_player=scope.get("without_player"),
+                        membership_player=scope.get("membership_player"),
+                        home_only=scope.get("home_only"),
+                    )
+                    persist()
+                    assert compiled["route"] == "game_finder" and scope["season"] == SEASON, actual[
+                        "authenticated_natural_compiled_scope"
+                    ]
+                    assert scope.get("team") == "LAL" and not scope.get("membership_player"), actual[
+                        "authenticated_natural_compiled_scope"
+                    ]
+                    assert scope.get("without_player") == "LeBron James" and bool(
+                        scope.get("home_only")
+                    ) is (case["ordinal"] == 8), actual["authenticated_natural_compiled_scope"]
+                natural = query_result_to_payload(execute_natural_query(case["query"]))
+                actual["natural"] = natural
+                persist()
+>               assert_answer(natural, case)
+
+tests/cloud_core1_k08_served_default_real_data.py:98: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+body = {'ok': True, 'query': 'Lakers record vs Celtics with Tatum out', 'route': 'team_record', 'result_status': 'ok', ...}
+case = {'ordinal': 23, 'query': 'Lakers record vs Celtics with Tatum out', 'route': 'team_record', 'kind': 'record', ...}
+natural = True
+
+    def assert_answer(body, case, *, natural=True):
+        """Check identities, complete row keys, numerators, denominators and labels."""
+        assert body["route"] == case["route"], compact_actual(body)
+        assert body["query"] == (case["query"] if natural else "structured:" + case["route"]), (
+            compact_actual(body)
+        )
+        expected = case["expected"]
+        if expected["games"]:
+            assert body["result_status"] == "ok" and body["result_reason"] is None, compact_actual(body)
+        else:
+            assert body["result_status"] == "no_result" and body["result_reason"] == "no_match", (
+                compact_actual(body)
+            )
+        metadata, sections = body["result"]["metadata"], body["result"]["sections"]
+        assert (
+            metadata["season"] == SEASON
+            and not metadata.get("start_season")
+            and not metadata.get("end_season")
+        )
+        assert not metadata.get("data_quality") and not metadata.get("unsupported_filters")
+        assert metadata["without_player"] == (
+            "LeBron James" if case["kind"] in {"missed", "home_missed"} else "Jayson Tatum"
+        )
+        if not expected["games"]:
+            assert not sections
+            assert metadata["team"] == "LAL" and metadata["opponent"] == "BOS"
+            assert metadata["stat"] == "pts" and metadata["min_value"] == 120
+            return
+        if case["kind"] in {"missed", "home_missed"}:
+            assert metadata["team"] == "LAL"
+            actual = sections["finder"]
+            if natural:
+                assert sections["count"] == [{"count": expected["games"]}]
+        else:
+            actual = sections["game_log"]
+            assert metadata["opponent"] == "BOS"
+            if case["kind"] == "player":
+                assert metadata["player"] == "LeBron James"
+                assert metadata["player_context"]["player_id"] == LEBRON
+            else:
+                assert metadata["team"] == "LAL" and metadata["team_context"]["team_id"] == LAL
+            (summary,) = sections["summary"]
+            for field in ("games", "wins", "losses"):
+                assert summary[field] == expected[field]
+            for stat in STATS:
+>               assert summary[stat + "_avg"] == pytest.approx(expected["means"][stat], abs=0.001)
+                       ^^^^^^^^^^^^^^^^^^^^^^
+E               KeyError: 'fgm_avg'
+
+tests/core1_k08_served_default_cases.py:549: KeyError
+------------------------------ Captured log call -------------------------------
+INFO     nbatools.operational:operational_observability.py:125 {"cache_bytes":28044538,"cache_entries":4,"cache_evictions":0,"cache_hits":17,"cache_misses":4,"duration_ms":235.444,"endpoint":"/query","event":"public_request_complete","method":"POST","request_id":"req_692818d0c8b94c9dbd09f81597d0c32f","result_status":"ok","route":"game_finder","rss_peak_mb":267.285,"status":200,"status_class":"2xx"}
+INFO     nbatools.operational:operational_observability.py:125 {"cache_bytes":28044538,"cache_entries":4,"cache_evictions":0,"cache_hits":21,"cache_misses":4,"duration_ms":195.203,"endpoint":"/structured-query","event":"public_request_complete","method":"POST","request_id":"req_0caebfc943c7486e87726961f6dbf36b","result_status":"ok","route":"game_finder","rss_peak_mb":267.285,"status":200,"status_class":"2xx"}
+INFO     nbatools.operational:operational_observability.py:125 {"cache_bytes":28044538,"cache_entries":4,"cache_evictions":0,"cache_hits":42,"cache_misses":4,"duration_ms":154.204,"endpoint":"/query","event":"public_request_complete","method":"POST","request_id":"req_85599a77dc99439b909ef63de7af5ff1","result_status":"ok","route":"game_finder","rss_peak_mb":268.16,"status":200,"status_class":"2xx"}
+INFO     nbatools.operational:operational_observability.py:125 {"cache_bytes":28044538,"cache_entries":4,"cache_evictions":0,"cache_hits":46,"cache_misses":4,"duration_ms":129.221,"endpoint":"/structured-query","event":"public_request_complete","method":"POST","request_id":"req_f5516cbc403942b69b8ed70c351be016","result_status":"ok","route":"game_finder","rss_peak_mb":268.285,"status":200,"status_class":"2xx"}
+=============================== warnings summary ===============================
+../../../../../opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages/fastapi/testclient.py:1
+  /opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/cloud_core1_k08_served_default_real_data.py::test_original_nine_on_published_generation - KeyError: 'fgm_avg'
+1 failed, 1 warning in 9.32s
+

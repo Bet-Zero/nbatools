@@ -1,0 +1,69 @@
+{
+  "checks": [
+    {
+      "check": "24_static_schema_positive",
+      "passed": true
+    },
+    {
+      "check": "24_missing_mean",
+      "passed": true
+    },
+    {
+      "check": "24_wrong_mean",
+      "passed": true
+    },
+    {
+      "check": "24_missing_row",
+      "passed": true
+    },
+    {
+      "check": "32_static_schema_positive",
+      "passed": true
+    },
+    {
+      "check": "32_missing_mean",
+      "passed": true
+    },
+    {
+      "check": "32_wrong_mean",
+      "passed": true
+    },
+    {
+      "check": "32_missing_row",
+      "passed": true
+    },
+    {
+      "check": "32_missing_total",
+      "passed": true
+    },
+    {
+      "check": "41_static_schema_positive",
+      "passed": true
+    },
+    {
+      "check": "41_missing_mean",
+      "passed": true
+    },
+    {
+      "check": "41_wrong_mean",
+      "passed": true
+    },
+    {
+      "check": "41_missing_row",
+      "passed": true
+    },
+    {
+      "check": "41_missing_total",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "files": {
+    "tests/core1_k08_served_default_cases.py": "02fe6f13c63ef0b78a7c4352666162405251dfe489b7f6f410a1edb9475060aa",
+    "tests/test_core1_k08_served_default_contract.py": "d73573e83848ce0a4b4844b813bf6b5c0babb944a50b2d4fd01b7cafb35a1d4b",
+    "tests/test_core1_k08_builder_contracts.py": "4ca63c636c6b717213b192498c183cb4c95a13f4242944d5dc780e1ce2a667b3",
+    "tests/cloud_core1_k08_served_default_deployed_real_data.py": "0c1ae71f7c004c95510e10e6f26ae3268254994f1768700ae2b5c65c4687a6d8"
+  },
+  "app_source_changes": false,
+  "backend_model_identity": "unavailable"
+}

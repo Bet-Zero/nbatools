@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import subprocess
 import time
 from datetime import UTC, datetime
@@ -58,7 +59,9 @@ def _rendered(item, case):
     elif case["kind"] == "player":
         assert "LeBron James" in item["heroText"]
         for stat, noun in (("pts", "points"), ("reb", "rebounds"), ("ast", "assists")):
-            assert f"{expected['means'][stat]:.1f} {noun}" in item["heroText"]
+            shown = re.search(rf"\b(\d+(?:\.\d+)?) {noun}\b", item["heroText"])
+            assert shown, (stat, item["heroText"])
+            assert float(shown.group(1)) == pytest.approx(expected["means"][stat], abs=0.051)
     else:
         assert case["kind"] == "summary"
         rows = _table(item, "Game log")

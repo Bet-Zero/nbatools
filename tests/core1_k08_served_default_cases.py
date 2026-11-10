@@ -26,6 +26,18 @@ MANIFEST = "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3"
 SEASON = "2025-26"
 LAL, BOS, LEBRON, TATUM = 1610612747, 1610612738, 2544, 1628369
 STATS = ("pts", "reb", "ast", "fgm", "fga", "fg3m", "fg3a", "ftm", "fta", "tov")
+# Existing route contracts differ: a record is not a full box-score summary.
+# All ten source-backed row statistics remain mandatory for every public log.
+SUMMARY_AVERAGES = {
+    "team_record": ("pts", "reb", "ast", "fg3m", "tov"),
+    "game_summary": STATS,
+    "player_game_summary": STATS,
+}
+SUMMARY_TOTALS = {
+    "team_record": (),
+    "game_summary": STATS,
+    "player_game_summary": STATS,
+}
 ORIGINAL = PROGRAM / "source-evidence/owned-boolean-20261106/independent/k08-original-46.json"
 QUALIFICATION = PROGRAM / "source-evidence/k08-lebron-remaining/qualification.json"
 CASES = [
@@ -472,14 +484,41 @@ def assert_ownership_answer(body, control, *, natural=True):
     assert expected["games"] == 1 and expected["sums"]["reb"] > 0
     (summary,) = sections["summary"]
     assert summary["games"] == 1 and summary["reb_avg"] == expected["sums"]["reb"]
-    for stat in STATS:
-        assert summary[stat + "_avg"] == pytest.approx(expected["means"][stat], abs=0.001)
+    assert_summary_metrics(summary, expected, "player_game_summary")
     (row,) = sections["game_log"]
     (original,) = expected["rows"]
     for key in ("game_id", "team_id", "player_id"):
         assert int(row[key]) == int(original[key])
     assert str(row["game_date"])[:10] == original["game_date"]
     assert row["reb"] == original["reb"] > 0
+    for stat in STATS:
+        assert stat in row, f"Missing required player_game_summary row metric {stat}"
+        assert row[stat] == pytest.approx(original[stat], abs=0.001)
+
+
+def assert_summary_metrics(summary, expected, route):
+    for stat in SUMMARY_AVERAGES[route]:
+        field = stat + "_avg"
+        assert field in summary, (
+            f"Missing required {route} field {field}; actual keys: {list(summary)}"
+        )
+        assert summary[field] == pytest.approx(expected["means"][stat], abs=0.001), (
+            route,
+            field,
+            summary[field],
+            expected["means"][stat],
+        )
+    for stat in SUMMARY_TOTALS[route]:
+        field = stat + "_sum"
+        assert field in summary, (
+            f"Missing required {route} field {field}; actual keys: {list(summary)}"
+        )
+        assert summary[field] == pytest.approx(expected["sums"][stat], abs=0.001), (
+            route,
+            field,
+            summary[field],
+            expected["sums"][stat],
+        )
 
 
 def compact_actual(body):
@@ -545,10 +584,7 @@ def assert_answer(body, case, *, natural=True):
         (summary,) = sections["summary"]
         for field in ("games", "wins", "losses"):
             assert summary[field] == expected[field]
-        for stat in STATS:
-            assert summary[stat + "_avg"] == pytest.approx(expected["means"][stat], abs=0.001)
-            if stat + "_sum" in summary:
-                assert summary[stat + "_sum"] == pytest.approx(expected["sums"][stat], abs=0.001)
+        assert_summary_metrics(summary, expected, case["route"])
     keys = expected["keys"]
 
     def actual_key(row):
@@ -570,5 +606,5 @@ def assert_answer(body, case, *, natural=True):
         assert row["season"] == SEASON and row["team_abbr"] == "LAL"
         assert str(row["game_date"])[:10] == original["game_date"]
         for stat in STATS:
-            if stat in row:
-                assert row[stat] == pytest.approx(original[stat], abs=0.001)
+            assert stat in row, f"Missing required {case['route']} row metric {stat}"
+            assert row[stat] == pytest.approx(original[stat], abs=0.001)

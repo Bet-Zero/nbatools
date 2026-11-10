@@ -10,6 +10,8 @@ from tests import core1_k08_runtime_binding as runtime
 from tests.cloud_core1_k08_served_default_deployed_real_data import _rendered
 from tests.core1_k08_served_default_cases import (
     STATS,
+    SUMMARY_AVERAGES,
+    SUMMARY_TOTALS,
     assert_answer,
     assert_ownership_answer,
     equivalent_structured_kwargs,
@@ -36,8 +38,8 @@ def test_structured_missed_sample_is_complete_qualified_club_not_unscoped_chrono
     assert kwargs["home_only"] is (ordinal == 8)
 
 
-def _controlled_answer():
-    case = next(c for c in original_bindings() if c["ordinal"] == 24)
+def _controlled_answer(ordinal=24):
+    case = next(c for c in original_bindings() if c["ordinal"] == ordinal)
     row = dict(
         game_id=999,
         team_id=1610612747,
@@ -62,7 +64,17 @@ def _controlled_answer():
         opponent="BOS",
         team_context=dict(team_id=1610612747),
     )
-    summary = dict(games=1, wins=1, losses=0, **{k + "_avg": 5 for k in STATS})
+    if case["route"] == "player_game_summary":
+        row.update(player_id=2544, player_name="LeBron James")
+        case["expected"]["keys"] = ["game_id", "team_id", "player_id"]
+        metadata.update(player="LeBron James", player_context=dict(player_id=2544), team=None)
+    summary = dict(
+        games=1,
+        wins=1,
+        losses=0,
+        **{k + "_avg": 5 for k in SUMMARY_AVERAGES[case["route"]]},
+        **{k + "_sum": 5 for k in SUMMARY_TOTALS[case["route"]]},
+    )
     body = dict(
         route=case["route"],
         query=case["query"],
@@ -84,6 +96,18 @@ def test_public_rendering_cannot_accept_provisional_banner(banner):
     body, case = _controlled_answer()
     item = dict(query=case["query"], http=200, payload=body, text="2025-26 " + banner)
     with pytest.raises(AssertionError):
+        _rendered(item, case)
+
+
+@pytest.mark.parametrize("shown", ["5", "5.0", "6"])
+def test_single_game_player_prose_checks_values_without_inventing_decimal_template(shown):
+    body, case = _controlled_answer(41)
+    hero = f"LeBron James has averaged {shown} points, 5 rebounds and 5 assists in 2025-26 against BOS without Jayson Tatum."
+    item = dict(query=case["query"], http=200, payload=body, text=hero, heroText=hero)
+    if shown == "6":
+        with pytest.raises(AssertionError):
+            _rendered(item, case)
+    else:
         _rendered(item, case)
 
 
@@ -125,6 +149,9 @@ def test_supplemental_ownership_control_requires_published_source_positive(damag
         end_date="2026-01-01",
     )
     body["result"]["sections"]["game_log"] = [copy.deepcopy(original)]
+    body["result"]["sections"]["summary"][0].update(
+        {k + "_avg": 5 for k in STATS} | {k + "_sum": 5 for k in STATS}
+    )
     if damage == "false_zero":
         body["result"]["sections"]["summary"][0]["reb_avg"] = 0
     elif damage == "implicit_WAS":
@@ -180,6 +207,43 @@ def test_qualified_empty_must_remain_distinct_from_missing_source():
     )
     assert_answer(body, case)
     body["result_reason"] = "no_data"
+    with pytest.raises(AssertionError):
+        assert_answer(body, case)
+
+
+@pytest.mark.parametrize("ordinal", [24, 32, 41])
+@pytest.mark.parametrize("damage", [None, "wrong_mean", "missing_mean", "wrong_row", "missing_row"])
+def test_each_existing_summary_route_keeps_its_exact_required_public_metric_contract(
+    ordinal, damage
+):
+    body, case = _controlled_answer(ordinal)
+    summary = body["result"]["sections"]["summary"][0]
+    if damage == "wrong_mean":
+        summary["pts_avg"] = 6
+    elif damage == "missing_mean":
+        summary.pop("pts_avg")
+    elif damage == "wrong_row":
+        body["result"]["sections"]["game_log"][0]["fta"] = 6
+    elif damage == "missing_row":
+        body["result"]["sections"]["game_log"][0].pop("fgm")
+    if damage:
+        with pytest.raises(AssertionError):
+            assert_answer(body, case)
+    else:
+        assert_answer(body, case)
+        if ordinal == 24:
+            assert "fgm_avg" not in summary and not any(k.endswith("_sum") for k in summary)
+
+
+@pytest.mark.parametrize("ordinal", [32, 41])
+@pytest.mark.parametrize("damage", ["missing_sum", "wrong_sum"])
+def test_full_box_summary_routes_must_publish_correct_requested_totals(ordinal, damage):
+    body, case = _controlled_answer(ordinal)
+    summary = body["result"]["sections"]["summary"][0]
+    if damage == "missing_sum":
+        summary.pop("fta_sum")
+    else:
+        summary["fta_sum"] = 6
     with pytest.raises(AssertionError):
         assert_answer(body, case)
 
