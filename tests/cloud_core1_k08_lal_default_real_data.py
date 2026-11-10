@@ -12,6 +12,7 @@ from fastapi.testclient import TestClient
 
 from nbatools.api import app
 from nbatools.api_handlers import query_result_to_payload
+from nbatools.commands._reported_absence_reasons import coverage_note
 from nbatools.commands._seasons import default_end_season
 from nbatools.commands.natural_query import parse_query
 from nbatools.data_source import reset_data_source_cache
@@ -44,6 +45,40 @@ QUESTIONS = {
     35: "Lakers record without Reaves",
 }
 PLAYER_IDS = {16: 1629029, 18: 1629029, 35: 1630559}
+REST_COVERAGE = dict(
+    basis="officially reported Rest",
+    complete=True,
+    requested_games=82,
+    qualified_nonparticipations=18,
+    reported_rest=0,
+    reported_other=18,
+    unknown=0,
+)
+
+
+def assert_private_rest(result, expected=REST_COVERAGE):
+    assert result.result_status == "no_result" and result.result_reason == "no_match"
+    assert result.result.metadata["reported_reason_basis"] == "officially reported Rest"
+    assert result.result.metadata["reported_reason_coverage"] == expected
+
+
+def assert_public_rest(body, expected=REST_COVERAGE):
+    """Existing API publishes the complete audit note, not engine metadata."""
+    assert body["result_status"] == "no_result" and body["result_reason"] == "no_match", (
+        compact_actual(body)
+    )
+    meta = body["result"]["metadata"]
+    assert meta["without_player_reason"] == "reported_rest"
+    assert (
+        dict(
+            label="Reported absence reason",
+            value="officially reported Rest",
+            kind="reported_reason",
+        )
+        in meta["applied_filters"]
+    )
+    assert coverage_note(expected) in body["notes"]
+    assert not body["result"]["sections"]
 
 
 def full_name_key(value):
@@ -114,20 +149,7 @@ def assert_record_body(body, case, *, natural):
         meta.get(k) for k in ("opponent", "with_player", "data_quality", "unsupported_filters")
     )
     if case["ordinal"] == 18:
-        assert body["result_status"] == "no_result" and body["result_reason"] == "no_match", (
-            compact_actual(body)
-        )
-        assert not sections
-        assert meta["reported_reason_basis"] == "officially reported Rest"
-        assert meta["reported_reason_coverage"] == dict(
-            basis="officially reported Rest",
-            complete=True,
-            requested_games=82,
-            qualified_nonparticipations=18,
-            reported_rest=0,
-            reported_other=18,
-            unknown=0,
-        )
+        assert_public_rest(body)
         return
     assert body["result_status"] == "ok" and body["result_reason"] is None, compact_actual(body)
     assert not meta.get("without_player_reason")
@@ -275,11 +297,9 @@ def test_original_luka_rest_and_reaves_default_questions(tmp_path, monkeypatch):
             for channel in ("natural", "structured", "http_natural", "http_structured"):
                 natural = channel in {"natural", "http_natural"}
                 if channel == "natural":
-                    body = query_result_to_payload(execute_natural_query(case["query"]))
+                    result = execute_natural_query(case["query"])
                 elif channel == "structured":
-                    body = query_result_to_payload(
-                        execute_structured_query("team_record", **case["kwargs"])
-                    )
+                    result = execute_structured_query("team_record", **case["kwargs"])
                 else:
                     response = client.post(
                         "/query" if natural else "/structured-query",
@@ -289,6 +309,12 @@ def test_original_luka_rest_and_reaves_default_questions(tmp_path, monkeypatch):
                     )
                     body = response.json()
                     actual[channel + "_status"] = response.status_code
+                if channel in {"natural", "structured"}:
+                    if case["ordinal"] == 18:
+                        actual[channel + "_private_reason_metadata"] = dict(result.result.metadata)
+                        persist()
+                        assert_private_rest(result)
+                    body = query_result_to_payload(result)
                 actual[channel] = body
                 persist()
                 if channel.startswith("http"):
