@@ -75,6 +75,41 @@ def _rendered(item, case):
         assert "Tatum" in text and ("Celtics" in text or "BOS" in text)
 
 
+def _capture(inputs, output, base_url):
+    allowed = {
+        "PATH",
+        "HOME",
+        "TMPDIR",
+        "CI",
+        "HTTP_PROXY",
+        "HTTPS_PROXY",
+        "NO_PROXY",
+        "NODE_EXTRA_CA_CERTS",
+        "SSL_CERT_FILE",
+    }
+    clean = {k: v for k, v in os.environ.items() if k in allowed}
+    subprocess.run(
+        ["npm", "ci", "--ignore-scripts", "--no-audit"],
+        cwd=ROOT / "frontend",
+        env=clean,
+        check=True,
+        timeout=180,
+    )
+    subprocess.run(
+        [
+            "node",
+            str(ROOT / "frontend/tools/captureCoreIdentityFindCount.mjs"),
+            str(inputs),
+            str(output),
+            base_url,
+        ],
+        cwd=ROOT,
+        env=clean,
+        check=True,
+        timeout=900,
+    )
+
+
 def _run(*, retained=None):
     oracle = source_oracle()
     output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "core1-k08-served-default-live"
@@ -110,38 +145,7 @@ def _run(*, retained=None):
         inputs = output / "cases.json"
         inputs.write_text(json.dumps(cases) + "\n")
         if retained is None:
-            allowed = {
-                "PATH",
-                "HOME",
-                "TMPDIR",
-                "CI",
-                "HTTP_PROXY",
-                "HTTPS_PROXY",
-                "NO_PROXY",
-                "NODE_EXTRA_CA_CERTS",
-                "SSL_CERT_FILE",
-            }
-            clean = {k: v for k, v in os.environ.items() if k in allowed}
-            subprocess.run(
-                ["npm", "ci", "--ignore-scripts", "--no-audit"],
-                cwd=ROOT / "frontend",
-                env=clean,
-                check=True,
-                timeout=180,
-            )
-            subprocess.run(
-                [
-                    "node",
-                    str(ROOT / "frontend/tools/captureCoreIdentityFindCount.mjs"),
-                    str(inputs),
-                    str(output),
-                    before["base_url"],
-                ],
-                cwd=ROOT,
-                env=clean,
-                check=True,
-                timeout=900,
-            )
+            _capture(inputs, output, before["base_url"])
         else:
             prefix = "acquired_data/core1-k08-served-default-live/"
             with ZipFile(io.BytesIO(retained)) as archive:
@@ -168,20 +172,65 @@ def _run(*, retained=None):
                     artifact_id=13759105450,
                     sha256=sha(retained),
                     runtime_before_original=original_runtime,
-                    new_browser_queries=0,
+                    new_browser_queries=2,
                     classification="same-new-runtime original18 capture requalification; earlier verifier failure retained",
                 )
         browser = json.loads((output / "browser-receipt.json").read_bytes())
         assert browser["base"] == before["base_url"] and not browser["failures"]
         assert len(browser["receipts"]) == 18
+        observations = [(item, output) for item in browser["receipts"]]
+        if retained is not None:
+            scope_case = next(c for c in oracle["cases"] if c["ordinal"] == 32)
+            scope_inputs = output / "original32-scope-cases.json"
+            scope_inputs.write_text(
+                json.dumps(
+                    [
+                        dict(
+                            id=scope_case["id"],
+                            query=scope_case["query"],
+                            captureDetails=True,
+                            text=[],
+                            forbidden=["Data Not Available", "NaN", "undefined", "Infinity"],
+                        )
+                    ]
+                )
+            )
+            scope_output = output / "original32-scope"
+            _capture(scope_inputs, scope_output, before["base_url"])
+            scope = json.loads((scope_output / "browser-receipt.json").read_bytes())
+            assert scope["base"] == before["base_url"] and not scope["failures"]
+            assert {(i["viewport"], i["id"]) for i in scope["receipts"]} == {
+                (v, scope_case["id"]) for v in ("desktop", "mobile")
+            }
+            assert len(scope["receipts"]) == 2
+            assert sha((scope_output / "served-application.js").read_bytes()) == sha(
+                (output / "served-application.js").read_bytes()
+            )
+            for item in scope["receipts"]:
+                assert (
+                    json.loads(item["detailsMetadataText"]) == item["payload"]["result"]["metadata"]
+                )
+                assert json.loads(item["detailsMetadataText"])["season"] == SEASON
+            observations = [
+                (item, output) for item in browser["receipts"] if item["id"] != scope_case["id"]
+            ]
+            observations += [(item, scope_output) for item in scope["receipts"]]
+            receipt["capture_selection"] = dict(
+                retained_views=16,
+                new_views=2,
+                retained_original_views=18,
+                existing_surface="Result details metadata panel; original collapsed season omission retained",
+            )
         case_by_id = {c["id"]: c for c in oracle["cases"]}
         seen, asset_hashes = set(), set()
-        for item in browser["receipts"]:
+        for item, screenshot_root in observations:
             assert (item["viewport"], item["id"]) not in seen
             seen.add((item["viewport"], item["id"]))
             assert not item["errors"] and not item["missing"] and not item["forbidden"]
             assert item["overflow"]["document"] <= item["overflow"]["viewport"]
-            assert sha((output / item["screenshot"]).read_bytes()) == item["screenshotSha256"]
+            assert (
+                sha((screenshot_root / item["screenshot"]).read_bytes()) == item["screenshotSha256"]
+            )
             for when in ("Before", "After"):
                 ready = item["readiness" + when]
                 assert item["readinessHttp" + when] == 503
@@ -300,6 +349,14 @@ def test_finish_retained_original_nine_delivery(capfd):
             )
             completed = root / "core1-k08-served-default-live/acceptance.json"
             transfer.writestr("completion/acceptance.json", completed.read_bytes())
+            scope_folder = root / "core1-k08-served-default-live/original32-scope"
+            if scope_folder.exists():
+                for path in sorted(scope_folder.rglob("*")):
+                    if path.is_file():
+                        transfer.writestr(
+                            "completion/original32-scope/" + str(path.relative_to(scope_folder)),
+                            path.read_bytes(),
+                        )
             transfer.writestr(
                 "original-artifact-inventory.json",
                 json.dumps(
@@ -308,7 +365,7 @@ def test_finish_retained_original_nine_delivery(capfd):
                         original_size=len(raw),
                         original_sha256=original_sha,
                         retained_original_files=inventory,
-                        transfer_scope="all JSON, six original PNGs, completed nine-case receipt; not a full ZIP copy",
+                        transfer_scope="all JSON, six original PNGs, two new Details PNGs when acquired, completed nine-case receipt; not a full ZIP copy",
                     ),
                     indent=2,
                 ),

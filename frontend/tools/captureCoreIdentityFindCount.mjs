@@ -28,6 +28,8 @@ const historicalIntegration = cases.length === historicalIntegrationIds.length &
 // slice. No literal-current substitution and no full Core-1/readiness claim.
 const originalK08Ids = [7, 8, 23, 24, 25, 30, 31, 32, 41].map(id => `original-k08-${String(id).padStart(2, "0")}`);
 const originalK08Defaults = cases.length === originalK08Ids.length && originalK08Ids.every(id => cases.some(item => item.id === id));
+// Complete the missing original32 scope observation through existing Details.
+const originalK08Scope = cases.length === 1 && cases[0].id === "original-k08-32" && cases[0].captureDetails === true;
 // Explicit development-only rendering for the shared person/team ownership
 // repair. This provisional local bundle cannot authorize a public capture.
 const ownershipIds = ["ownership-washington-h1", "ownership-washington-q2", "ownership-explicit-was"];
@@ -35,7 +37,7 @@ const localOwnership = cases.length === ownershipIds.length && ownershipIds.ever
 if (localOwnership && base !== "http://127.0.0.1:8765") throw new Error("Provisional ownership bundle is loopback-only");
 
 const exactExistingProjectHost = /^https:\/\/nbatools-[a-z0-9]+-brents-projects-686e97fc\.vercel\.app$/.test(base);
-if (!["https://nbatools.vercel.app", "http://127.0.0.1:8765"].includes(base) && !((originalK08Defaults || historicalIntegration) && exactExistingProjectHost)) {
+if (!["https://nbatools.vercel.app", "http://127.0.0.1:8765"].includes(base) && !((originalK08Defaults || originalK08Scope || historicalIntegration) && exactExistingProjectHost)) {
   throw new Error("Only production alias, local verification, or the exact reviewed historical/K08 immutable project host allowed");
 }
 
@@ -69,7 +71,7 @@ const sharedTeamComparisonIds = ["comparison-shared-primary", "comparison-canoni
 const sharedTeamComparison = cases.length === sharedTeamComparisonIds.length && sharedTeamComparisonIds.every(id => cases.some(item => item.id === id));
 const medicalSubjectIds = ["medical-team-primary", "medical-prefix-owner", "medical-opponent-union", "medical-comparison-owner", "medical-adjective-owner", "medical-status-played-chain", "medical-played-positive", "medical-unfiltered-comparison"];
 const medicalSubjects = cases.length === medicalSubjectIds.length && medicalSubjectIds.every(id => cases.some(item => item.id === id));
-if (!historicalIntegration && !originalK08Defaults && !localOwnership && !core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes && !originalStatPair && !sharedTeamComparison && !medicalSubjects && !sequences && !playoffHistory && !populations && !delivery) throw new Error("Expected a complete reviewed browser bundle");
+if (!historicalIntegration && !originalK08Defaults && !originalK08Scope && !localOwnership && !core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes && !originalStatPair && !sharedTeamComparison && !medicalSubjects && !sequences && !playoffHistory && !populations && !delivery) throw new Error("Expected a complete reviewed browser bundle");
 await mkdir(output, { recursive: true });
 let executablePath;
 for (const file of ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"]) {
@@ -91,10 +93,10 @@ try {
       await writeFile(`${output}/deployment-access-failure.json`, JSON.stringify({ base, viewport, url: page.url(), http: navigation?.status() ?? null, classification: "Deployment access failure; no protection or credentials changed" }, null, 2));
       throw new Error("Application page unavailable; preserved deployment-access-failure.json");
     }
-    const freshness = (delivery || historicalIntegration || originalK08Defaults || localOwnership) ? await (await context.request.get(base + "/freshness")).json() : null;
+    const freshness = (delivery || historicalIntegration || originalK08Defaults || originalK08Scope || localOwnership) ? await (await context.request.get(base + "/freshness")).json() : null;
     const assets = await page.locator('script[type="module"][src]').evaluateAll(nodes => nodes.map(n => n.src));
     let servedAssetSha256 = null;
-    if (historicalIntegration || originalK08Defaults) {
+    if (historicalIntegration || originalK08Defaults || originalK08Scope) {
       if (assets.length !== 1 || !assets[0].startsWith(base + "/assets/index-")) throw new Error("Unexpected served application asset");
       const response = await context.request.get(assets[0], { maxRedirects: 0, timeout: 30000 });
       if (!response.ok()) throw new Error("Served application asset unavailable");
@@ -140,6 +142,13 @@ try {
           await page.getByRole("region", { name: title, exact: true }).getByRole("button").click();
         }
       }
+      let detailsMetadataText = null;
+      if (originalK08Scope) {
+        await page.getByRole("button", { name: "Details", exact: true }).click();
+        const details = page.getByLabel("Result details", { exact: true });
+        await details.waitFor({ state: "visible" });
+        detailsMetadataText = await details.locator("pre").innerText();
+      }
       const text = await page.locator('[data-state-surface="result"]').innerText();
       const after = await context.request.get(base + "/readiness");
       const readinessAfter = await after.json();
@@ -162,7 +171,7 @@ try {
       })));
       const forbidden = (item.forbidden ?? []).filter(value => text.includes(value));
       const missing = item.text.filter(value => !text.includes(value));
-      const deliveryEvidence = (delivery || historicalIntegration || originalK08Defaults || localOwnership) ? {
+      const deliveryEvidence = (delivery || historicalIntegration || originalK08Defaults || originalK08Scope || localOwnership) ? {
         freshness,
         capturedAt: new Date().toISOString(),
         heroText: await page.locator('[data-state-surface="result"] p[class*="sentence"]').allTextContents().then(items => items.join("\n")),
@@ -177,7 +186,7 @@ try {
       if (localOwnership && (developmentEvidence.dataQuality?.state !== "provisional" || !/^[a-f0-9]{64}$/.test(developmentEvidence.dataQuality?.manifest_sha256 ?? "") || !/provisional/i.test(text))) failures.push(`${viewport}/${item.id}/missing-provisional-identity`);
       const receipt = { ...deliveryEvidence, ...developmentEvidence, id: item.id, viewport, query: item.query, http: response.status(), elapsedMs: Date.now() - start, responseElapsedMs,
         payload, text, servedAssetSha256, readinessBefore, readinessAfter, readinessHttpBefore: before.status(), readinessHttpAfter: after.status(), overflow, errors: [...errors], missing,
-        headers, grainErrors, tables, forbidden, assets, screenshot, screenshotSha256: createHash("sha256").update(image).digest("hex") };
+        headers, grainErrors, tables, forbidden, assets, detailsMetadataText, screenshot, screenshotSha256: createHash("sha256").update(image).digest("hex") };
       receipts.push(receipt);
       if (forbidden.length || grainErrors.length || missing.length || errors.length || overflow.document > width || response.status() !== 200) failures.push(`${viewport}/${item.id}`);
     }
