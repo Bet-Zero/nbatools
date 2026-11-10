@@ -35,8 +35,8 @@ const localOwnership = cases.length === ownershipIds.length && ownershipIds.ever
 if (localOwnership && base !== "http://127.0.0.1:8765") throw new Error("Provisional ownership bundle is loopback-only");
 
 const exactExistingProjectHost = /^https:\/\/nbatools-[a-z0-9]+-brents-projects-686e97fc\.vercel\.app$/.test(base);
-if (!["https://nbatools.vercel.app", "http://127.0.0.1:8765"].includes(base) && !(originalK08Defaults && exactExistingProjectHost)) {
-  throw new Error("Only production alias, local verification, or the exact reviewed original-K08 immutable project host allowed");
+if (!["https://nbatools.vercel.app", "http://127.0.0.1:8765"].includes(base) && !((originalK08Defaults || historicalIntegration) && exactExistingProjectHost)) {
+  throw new Error("Only production alias, local verification, or the exact reviewed historical/K08 immutable project host allowed");
 }
 
 const core = cases.length === 26 && cases.every(item => /^k0[13][_-]/.test(item.id));

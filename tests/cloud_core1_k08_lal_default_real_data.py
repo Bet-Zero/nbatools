@@ -2,6 +2,7 @@
 
 import json
 import os
+import unicodedata
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -42,7 +43,24 @@ QUESTIONS = {
     18: "Lakers record when Luka Doncic rests",
     35: "Lakers record without Reaves",
 }
-NATURAL_PLAYERS = {16: "Luka Dončić", 18: "Luka Dončić", 35: "Austin Reaves"}
+PLAYER_IDS = {16: 1629029, 18: 1629029, 35: 1630559}
+
+
+def full_name_key(value):
+    assert isinstance(value, str)
+    return "".join(
+        c for c in unicodedata.normalize("NFD", value) if not unicodedata.combining(c)
+    ).casefold()
+
+
+def exact_source_player_id(players, name):
+    """Only accent-equivalent complete names; no aliases or team inference."""
+    matches = players.loc[
+        players.player_name.map(full_name_key).eq(full_name_key(name)), "player_id"
+    ]
+    ids = set(matches.astype(int))
+    assert len(ids) == 1, (name, sorted(ids))
+    return ids.pop()
 
 
 def accepted_inputs():
@@ -81,7 +99,6 @@ def accepted_inputs():
     assert population["observed_games"] == 82 and population["did_not_play"] == 18
     assert population["explicit_reported_rest"] == 0
     assert population["source_reported_other"] == 18 and population["reason_unknown"] == 0
-    assert receipts[1]["query_checks"][0]["actual"]["metadata"]["without_player"] == "Luka Dončić"
     return packages, docs, coverage
 
 
@@ -91,9 +108,8 @@ def assert_record_body(body, case, *, natural):
     assert body["query"] == (case["query"] if natural else "structured:team_record")
     meta, sections = body["result"]["metadata"], body["result"]["sections"]
     assert meta["season"] == SEASON and meta["team"] == "LAL"
-    assert meta["without_player"] == (
-        NATURAL_PLAYERS[case["ordinal"]] if natural else case["kwargs"]["without_player"]
-    )
+    assert full_name_key(meta["without_player"]) == full_name_key(case["kwargs"]["without_player"])
+    assert case["source_player_id"] == PLAYER_IDS[case["ordinal"]]
     assert not any(
         meta.get(k) for k in ("opponent", "with_player", "data_quality", "unsupported_filters")
     )
@@ -183,6 +199,7 @@ def test_original_luka_rest_and_reaves_default_questions(tmp_path, monkeypatch):
         teams = pd.read_csv(root / f"raw/team_game_stats/{SEASON}_regular_season.csv")
         teams = teams.loc[teams.team_id.eq(LAL)]
         assert len(teams) == teams.game_id.nunique() == 82
+        players = pd.read_csv(root / f"raw/player_game_stats/{SEASON}_regular_season.csv")
         reasons = pd.read_csv(root / f"raw/player_game_absence_reasons/{SEASON}_regular_season.csv")
         assert len(reasons) == reasons.game_id.nunique() == 18
         assert reasons.player_id.eq(1629029).all() and reasons.team_id.eq(LAL).all()
@@ -220,8 +237,15 @@ def test_original_luka_rest_and_reaves_default_questions(tmp_path, monkeypatch):
             kwargs = dict(team="LAL", season=SEASON, without_player=player)
             if ordinal == 18:
                 kwargs["without_player_reason"] = "reported_rest"
+            assert exact_source_player_id(players, player) == pid
             cases.append(
-                dict(ordinal=ordinal, query=QUESTIONS[ordinal], kwargs=kwargs, expected=expected)
+                dict(
+                    ordinal=ordinal,
+                    query=QUESTIONS[ordinal],
+                    kwargs=kwargs,
+                    expected=expected,
+                    source_player_id=pid,
+                )
             )
         receipt["source_oracles"] = cases
         receipt["composition_validation"] = validation
@@ -243,8 +267,11 @@ def test_original_luka_rest_and_reaves_default_questions(tmp_path, monkeypatch):
             assert compiled["route"] == "team_record"
             for key, value in case["kwargs"].items():
                 if key == "without_player":
-                    value = NATURAL_PLAYERS[case["ordinal"]]
-                assert compiled["route_kwargs"].get(key) == value, actual["compiled_scope"]
+                    subject = compiled["route_kwargs"].get(key)
+                    assert full_name_key(subject) == full_name_key(value), actual["compiled_scope"]
+                    assert exact_source_player_id(players, subject) == case["source_player_id"]
+                else:
+                    assert compiled["route_kwargs"].get(key) == value, actual["compiled_scope"]
             for channel in ("natural", "structured", "http_natural", "http_structured"):
                 natural = channel in {"natural", "http_natural"}
                 if channel == "natural":
@@ -266,6 +293,8 @@ def test_original_luka_rest_and_reaves_default_questions(tmp_path, monkeypatch):
                 persist()
                 if channel.startswith("http"):
                     assert actual[channel + "_status"] == 200, compact_actual(body)
+                subject = body["result"]["metadata"]["without_player"]
+                assert exact_source_player_id(players, subject) == case["source_player_id"]
                 assert_record_body(body, case, natural=natural)
             actual["accepted"] = True
             receipt["accepted_original_ids"].append(case["ordinal"])

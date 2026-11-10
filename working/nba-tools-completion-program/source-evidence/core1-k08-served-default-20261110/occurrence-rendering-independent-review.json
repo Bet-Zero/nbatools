@@ -1,0 +1,17 @@
+{
+  "four_screenshots_visually_inspected": true,
+  "four_png_hashes_verified": true,
+  "raw_score_reconciliation": {
+    "games": 123,
+    "team_scores": 246,
+    "players": 452,
+    "pts_unknown": 0
+  },
+  "all_four_exact_top10_counts_gp_order_passed": true,
+  "visible_chip": "30+ PTS",
+  "pinned_provisional": true,
+  "production_accepted": false,
+  "capture_receipt_sha256": "ac72c0314908202d4ec3e3d5133faad8b5eb0bb953778594af0e8dc3cf14c20b",
+  "query_service_sha256": "235e2340e11c6efb7529b5845ce4bc4b49ac4c320567aed8e8032f125db621a1",
+  "backend_model_identity": "unavailable"
+}

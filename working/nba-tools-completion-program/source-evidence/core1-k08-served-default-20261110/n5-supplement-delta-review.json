@@ -1,0 +1,65 @@
+{
+  "checks": [
+    {
+      "check": "actual_finder_positive",
+      "passed": true
+    },
+    {
+      "check": "wrong_player_id",
+      "passed": true
+    },
+    {
+      "check": "wrong_game_id",
+      "passed": true
+    },
+    {
+      "check": "wrong_date",
+      "passed": true
+    },
+    {
+      "check": "wrong_team",
+      "passed": true
+    },
+    {
+      "check": "missing_count",
+      "passed": true
+    },
+    {
+      "check": "wrong_count",
+      "passed": true
+    },
+    {
+      "check": "extra_row",
+      "passed": true
+    },
+    {
+      "check": "empty_rows",
+      "passed": true
+    },
+    {
+      "check": "false_zero",
+      "passed": true
+    },
+    {
+      "check": "no_data",
+      "passed": true
+    },
+    {
+      "check": "wrong_route",
+      "passed": true
+    },
+    {
+      "check": "corrupt_source_team_key",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "files": {
+    "tests/core1_k08_served_default_cases.py": "8ffd0c5aa587e123de5b6b7d93fbf27ac12a46e4395af5030260bf65d6bfbd6c",
+    "tests/cloud_core1_k08_served_default_real_data.py": "bc8b07303bf6bb4d171d9477f3a96c908abe08b6077d835856b9e5d05234d649",
+    "tests/test_core1_k08_served_default_contract.py": "83ea97b3b39e452c77525321994dcde6a684937e030c3a3aeb239c7c2a908938",
+    "tests/test_core1_k08_builder_contracts.py": "95787876f35cc2bc5eea16f46f971e3880f614f3d3ada9a7bada3a8a530178c9"
+  },
+  "app_source_changes": false,
+  "backend_model_identity": "unavailable"
+}

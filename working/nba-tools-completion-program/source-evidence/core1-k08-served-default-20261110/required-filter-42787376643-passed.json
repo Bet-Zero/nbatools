@@ -1,0 +1,19 @@
+{
+  "candidate_sha": "e32e2827dd5d6db5234c269f2f0c529ecb803789",
+  "generation": "availability-lebron-season-v1-20261031",
+  "scope": "targeted",
+  "required_selection": [
+    "tests/cloud_core1_filter_sweep_real_data.py::test_existing_complete_filter_execution_sweep"
+  ],
+  "required_test_limit": null,
+  "selected": 1,
+  "executed": 1,
+  "passed": 1,
+  "skipped": 0,
+  "failed": 0,
+  "errors": 0,
+  "xfailed": 0,
+  "pytest_exit": 0,
+  "conclusion": "success",
+  "problems": []
+}

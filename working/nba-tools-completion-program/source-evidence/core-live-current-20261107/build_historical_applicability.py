@@ -152,7 +152,11 @@ semantic = {
             "team; none of these 22 player requests has a team filter and team requests have "
             "no primary player. The existing comparison rule remains the same. Passing real "
             "structured kwargs preserves this same ownership condition, without changing "
-            "the original natural HTTP captures."
+            "the original natural HTTP captures. New scalar occurrence-event bound labels "
+            "are unchanged for every original capture: only k12-e1 has such an event, and "
+            "its event PTS>=80 exactly equals the existing scalar PTS>=80. The multi-condition "
+            "Brunson count uses the earlier conditions branch; both owned Boolean counts "
+            "use the expression branch. No original case ranks a scalar event count."
         ),
     ),
 }
@@ -170,6 +174,25 @@ def main():
     with ZipFile(archive) as z:
         cases_raw = z.read("acquired_data/core-historical-live/cases.json")
         cases = [{"id": c["id"], "query": c["query"]} for c in json.loads(cases_raw)]
+        captures = json.loads(z.read("acquired_data/core-historical-live/browser-receipt.json"))
+    # Review the real retained metadata, not an assumption that every new
+    # occurrence-label branch is unreachable. E1 has an identical scalar event.
+    scalar_event_cases = set()
+    for capture in captures["receipts"]:
+        meta = capture["payload"]["result"]["metadata"]
+        event = meta.get("occurrence_event")
+        if (
+            isinstance(event, dict)
+            and event.get("stat")
+            and any(event.get(bound) is not None for bound in ("min_value", "max_value"))
+            and not meta.get("conditions")
+            and not meta.get("condition_expression")
+        ):
+            assert tuple(event.get(k) for k in ("stat", "min_value", "max_value")) == tuple(
+                meta.get(k) for k in ("stat", "min_value", "max_value")
+            )
+            scalar_event_cases.add(capture["id"])
+    assert scalar_event_cases == {"k12-e1"}
     assert len(cases) == 22 and len(binding["application_file_sha256"]) == 663
     changes = []
     for path, old_hash in binding["application_file_sha256"].items():

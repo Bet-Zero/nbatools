@@ -3,6 +3,7 @@
 No source data, public queries, production requests or new captures are required.
 """
 
+import copy
 import json
 from pathlib import Path
 
@@ -109,3 +110,32 @@ def test_fresh_public_selector_keeps_original_strict_binding(tmp_path, monkeypat
     # A fresh capture cannot silently inherit the retained-applicability route.
     with pytest.raises(AssertionError):
         gate._run(tmp_path, retained=False)
+
+
+def test_retained_capture_mode_cannot_be_called_fresh_runtime(tmp_path):
+    with pytest.raises(AssertionError, match="cannot be fresh runtime evidence"):
+        gate._run(tmp_path, retained=True, current_runtime=True)
+
+
+@pytest.mark.parametrize("changed", [None, "id", "sha", "host", "tree"])
+def test_new_runtime_capture_requires_one_fixed_deployment_and_build_tree(changed):
+    before = dict(
+        deployment=dict(id=12),
+        deployed_sha="a" * 40,
+        base_url="https://nbatools-reviewed-brents-projects-686e97fc.vercel.app",
+        build_input_tree_sha256="b" * 64,
+    )
+    after = copy.deepcopy(before)
+    if changed == "id":
+        after["deployment"]["id"] = 13
+    elif changed == "sha":
+        after["deployed_sha"] = "c" * 40
+    elif changed == "host":
+        after["base_url"] = "https://nbatools-other-brents-projects-686e97fc.vercel.app"
+    elif changed == "tree":
+        after["build_input_tree_sha256"] = "d" * 64
+    if changed:
+        with pytest.raises(AssertionError):
+            gate._assert_fixed_runtime(before, after)
+    else:
+        gate._assert_fixed_runtime(before, after)

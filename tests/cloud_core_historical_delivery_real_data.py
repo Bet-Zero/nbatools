@@ -42,7 +42,7 @@ S4 = PROGRAM / "source-evidence/paired-missing-20261107/r2-final/composed-accept
 OWNED = PROGRAM / "source-evidence/distinct-player-or-20261106/independent/oracle.json"
 LEBRON = PROGRAM / "source-evidence/k08-lebron-remaining/qualification.json"
 APPLICABILITY = EVIDENCE / "historical-applicability-20261110.json"
-APPLICABILITY_SHA256 = "8c12f0c59704e878ffbde3557ce1ac21e51b838b1566f2acfdd47a8aad47fd08"
+APPLICABILITY_SHA256 = "c4d0ff5ecbf8fce83be61c785fefa731438b8edf46945713f8692808f1f2c361"
 
 
 def _sha(raw):
@@ -378,9 +378,19 @@ def _verify(item, delivery, sources, frozen, seq_sources, history_sources, lebro
         assert float(shown[0]["PPG"]) == pytest.approx(case["means"]["pts"], abs=0.051)
 
 
-def _run(tmp_path, *, retained=False):
+def _assert_fixed_runtime(before, after):
+    assert before["deployment"]["id"] == after["deployment"]["id"]
+    assert before["deployed_sha"] == after["deployed_sha"]
+    assert before["base_url"] == after["base_url"]
+    assert before["build_input_tree_sha256"] == after["build_input_tree_sha256"]
+
+
+def _run(tmp_path, *, retained=False, current_runtime=False):
+    assert not (retained and current_runtime), "Retained captures cannot be fresh runtime evidence"
     binding = json.loads((EVIDENCE / "live-code-binding.json").read_bytes())
     applicability = None
+    capture_url = URL
+    runtime_before = None
     deployment = binding["production_deployment"]
     assert deployment["id"] == "dpl_4nuGwYBav8vm6s3gfqFoGYdQgdeL"
     assert (
@@ -401,7 +411,7 @@ def _run(tmp_path, *, retained=False):
         assert datetime.fromisoformat(post["checked_at"]) > datetime.fromisoformat(
             "2026-11-07T04:21:56.249817+00:00"
         )
-    if retained:
+    if retained or current_runtime:
         applicability = _retained_applicability(binding)
     else:
         # Fresh public captures retain the original strict deployed-code binding.
@@ -429,7 +439,8 @@ def _run(tmp_path, *, retained=False):
             assert _sha(raw) == entries[path]["sha256"] and len(raw) == entries[path]["size_bytes"]
         for path, digest in s4["validation"]["base_file_hashes"].items():
             assert entries[path]["sha256"] == digest
-    output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "core-historical-live"
+    folder = "core-historical-live-new-runtime" if current_runtime else "core-historical-live"
+    output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / folder
     output.mkdir(parents=True, exist_ok=False)
     inputs = output / "cases.json"
     inputs.write_text(json.dumps(cases) + "\n")
@@ -463,6 +474,19 @@ def _run(tmp_path, *, retained=False):
         deployment_post_binding="pending independent provider observation after capture",
     )
     try:
+        if current_runtime:
+            from tests.core1_k08_runtime_binding import deployed_runtime_binding
+
+            runtime_before = deployed_runtime_binding()
+            capture_url = runtime_before["base_url"]
+            receipt.update(
+                classification="fresh_actual_original22_HTTP_UI_on_exact_reviewed_deployed_runtime",
+                runtime_before=runtime_before,
+                deployment_binding=runtime_before,
+                original_historical_source_and_capture_binding=binding,
+                historical_original_binding_preserved=True,
+                fresh_deployment_accepted=False,
+            )
         if retained:
             archive = EVIDENCE / "historical-live-original.zip"
             assert (
@@ -495,13 +519,15 @@ def _run(tmp_path, *, retained=False):
                     str(ROOT / "frontend/tools/captureCoreIdentityFindCount.mjs"),
                     str(inputs),
                     str(output),
-                    URL,
+                    capture_url,
                 ],
                 env=env,
                 check=True,
                 timeout=900,
             )
         actual = json.loads((output / "browser-receipt.json").read_bytes())
+        if current_runtime:
+            assert actual["base"] == capture_url
         assert len(actual["receipts"]) == 44
         if retained:
             # Preserve the original red run. The driver falsely required the word
@@ -550,7 +576,7 @@ def _run(tmp_path, *, retained=False):
             assert (
                 item["assets"] == assets
                 and len(assets) == 1
-                and assets[0].startswith(URL + "/assets/index-")
+                and assets[0].startswith(capture_url + "/assets/index-")
             )
             _readiness(item["readinessHttpBefore"], item["readinessBefore"])
             _readiness(item["readinessHttpAfter"], item["readinessAfter"])
@@ -558,6 +584,9 @@ def _run(tmp_path, *, retained=False):
             assert item["freshness"]["status"] == "stale"
             assert "Data through 2026-06-13" in item["freshnessText"]
             assert "awaiting refresh" in item["freshnessText"].lower()
+            if current_runtime:
+                assert "provisional" not in item["text"].lower()
+                assert not item["payload"]["result"]["metadata"].get("data_quality")
             _verify(item, delivery, sources, frozen, seq_sources, history_sources, lebron)
         asset_hashes = [item["servedAssetSha256"] for item in actual["receipts"]]
         assert len(set(asset_hashes)) == 1
@@ -579,7 +608,7 @@ def _run(tmp_path, *, retained=False):
         ):
             time.sleep(7)
             response = requests.post(
-                URL + "/query", json={"query": question}, timeout=30, allow_redirects=False
+                capture_url + "/query", json={"query": question}, timeout=30, allow_redirects=False
             )
             diagnostics.append(
                 dict(
@@ -591,10 +620,24 @@ def _run(tmp_path, *, retained=False):
                 )
             )
         receipt["unpublished_positive_observations"] = diagnostics
+        if current_runtime:
+            runtime_after = deployed_runtime_binding()
+            _assert_fixed_runtime(runtime_before, runtime_after)
+            receipt.update(
+                runtime_after=runtime_after,
+                deployment_post_binding="passed provider GitHub Production deployment/commit/immutable host/build-tree comparison",
+                fresh_deployment_accepted=True,
+                current_season_accepted=False,
+                operational_readiness_accepted=False,
+                public_UI_queries=44,
+                separate_unaccepted_source_diagnostics=2,
+            )
     except Exception as exc:
         receipt.update(
             consumer_acceptance="failed", failure=dict(type=type(exc).__name__, message=str(exc))
         )
+        if current_runtime:
+            receipt["fresh_deployment_accepted"] = False
         raise
     finally:
         receipt["capture_completed_at"] = datetime.now(UTC).isoformat()
@@ -607,3 +650,8 @@ def test_original_historical_consumers_through_live_api_and_ui(tmp_path):
 
 def test_requalify_retained_actual_historical_api_and_ui(tmp_path):
     _run(tmp_path, retained=True)
+
+
+def test_actual_new_runtime_historical_api_and_ui(tmp_path):
+    """Fresh original22/44 delivery; current readiness/source gaps stay open."""
+    _run(tmp_path, current_runtime=True)

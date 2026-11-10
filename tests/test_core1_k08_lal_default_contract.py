@@ -2,16 +2,18 @@
 
 import copy
 
+import pandas as pd
 import pytest
 
 from nbatools.commands import _seasons
-from nbatools.commands import entity_resolution as er
 from nbatools.commands.natural_query import parse_query
 from tests.cloud_core1_k08_lal_default_real_data import (
-    NATURAL_PLAYERS,
+    PLAYER_IDS,
     QUESTIONS,
     accepted_inputs,
     assert_record_body,
+    exact_source_player_id,
+    full_name_key,
 )
 from tests.test_core1_k08_served_default_contract import _controlled_answer
 
@@ -23,20 +25,17 @@ def test_retained_packages_bind_exact_originals_and_complete_accepted_population
     assert len(coverage["1629029"]["games"]) == len(coverage["1630559"]["games"]) == 82
 
 
-def test_actual_three_parses_keep_served_default_and_reason_distinction(monkeypatch, request):
-    er.reset_player_index()
-    request.addfinalizer(er.reset_player_index)
-    monkeypatch.setattr(er, "data_source_cache_key", lambda: "lal-default-three-contract")
-    monkeypatch.setattr(
-        er, "_read_player_names", lambda data_dir=None: {"Luka Dončić", "Austin Reaves"}
-    )
+def test_actual_three_parses_keep_served_default_and_reason_distinction(monkeypatch):
+    # Real current name index and parser; only the deliberate served season is fixed.
     monkeypatch.setattr(_seasons, "latest_served_season", lambda kind: "2025-26")
     for ordinal, query in QUESTIONS.items():
         parsed = parse_query(query)
         assert parsed["route"] == "team_record"
         scope = parsed["route_kwargs"]
         assert scope["season"] == "2025-26" and scope["team"] == "LAL"
-        assert scope["without_player"] == NATURAL_PLAYERS[ordinal]
+        assert full_name_key(scope["without_player"]) == full_name_key(
+            "Austin Reaves" if ordinal == 35 else "Luka Doncic"
+        )
         assert scope.get("without_player_reason") == ("reported_rest" if ordinal == 18 else None)
         assert not scope.get("with_player") and not scope.get("opponent")
 
@@ -47,6 +46,7 @@ def test_actual_three_parses_keep_served_default_and_reason_distinction(monkeypa
 def test_complete_binary_record_requires_exact_scope_rows_and_metrics(damage):
     body, case = _controlled_answer()
     case.update(ordinal=16, query=QUESTIONS[16], kwargs=dict(without_player="Luka Doncic"))
+    case["source_player_id"] = PLAYER_IDS[16]
     case["expected"]["rows"][0]["wl"] = "W"
     body["result"]["sections"]["game_log"][0]["wl"] = "W"
     for row in (case["expected"]["rows"][0], body["result"]["sections"]["game_log"][0]):
@@ -76,6 +76,7 @@ def test_complete_binary_record_requires_exact_scope_rows_and_metrics(damage):
 def test_reported_rest_zero_requires_complete_source_reason_denominator(damage):
     body, case = copy.deepcopy(_controlled_answer())
     case.update(ordinal=18, query=QUESTIONS[18], kwargs=dict(without_player="Luka Doncic"))
+    case["source_player_id"] = PLAYER_IDS[18]
     body.update(query=case["query"], result_status="no_result", result_reason="no_match")
     meta = body["result"]["metadata"]
     meta.update(
@@ -106,3 +107,24 @@ def test_reported_rest_zero_requires_complete_source_reason_denominator(damage):
             assert_record_body(body, case, natural=True)
     else:
         assert_record_body(body, case, natural=True)
+
+
+@pytest.mark.parametrize("name", ["Luka Doncic", "Luka Dončić", "Luka", "Austin Reaves"])
+def test_only_complete_accent_equivalent_subject_maps_to_exact_source_pid(name):
+    players = pd.DataFrame([dict(player_id=1629029, player_name="Luka Dončić")])
+    if name in {"Luka Doncic", "Luka Dončić"}:
+        assert exact_source_player_id(players, name) == 1629029
+    else:
+        with pytest.raises(AssertionError):
+            exact_source_player_id(players, name)
+
+
+def test_ambiguous_full_name_source_identity_is_rejected():
+    players = pd.DataFrame(
+        [
+            dict(player_id=1629029, player_name="Luka Dončić"),
+            dict(player_id=999, player_name="Luka Doncic"),
+        ]
+    )
+    with pytest.raises(AssertionError):
+        exact_source_player_id(players, "Luka Doncic")

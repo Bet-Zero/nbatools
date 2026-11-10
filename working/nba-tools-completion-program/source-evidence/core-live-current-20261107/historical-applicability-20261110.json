@@ -567,9 +567,9 @@
     {
       "path": "src/nbatools/query_service.py",
       "old_sha256": "8a9c15d23ebc0a0f7a7660789e5532f94d81956204e5eb236278fd0dc5dd3fcf",
-      "reviewed_sha256": "e285171fc726649db422605d794b919a27df7f5b83d9f16d8d8a2a5fd5c90eb7",
+      "reviewed_sha256": "235e2340e11c6efb7529b5845ce4bc4b49ac4c320567aed8e8032f125db621a1",
       "reviewed_functions": "_build_query_metadata; _build_applied_filters; structured metadata call site",
-      "semantic_reach": "Numeric bound metadata conversion requires the private natural source-rate flag. That flag is set only for period player finders, absent from all 22 queries; original whole-game labels, values and numeric metadata are unchanged. The additive Playing for label requires an actual primary player plus explicit team; none of these 22 player requests has a team filter and team requests have no primary player. The existing comparison rule remains the same. Passing real structured kwargs preserves this same ownership condition, without changing the original natural HTTP captures.",
+      "semantic_reach": "Numeric bound metadata conversion requires the private natural source-rate flag. That flag is set only for period player finders, absent from all 22 queries; original whole-game labels, values and numeric metadata are unchanged. The additive Playing for label requires an actual primary player plus explicit team; none of these 22 player requests has a team filter and team requests have no primary player. The existing comparison rule remains the same. Passing real structured kwargs preserves this same ownership condition, without changing the original natural HTTP captures. New scalar occurrence-event bound labels are unchanged for every original capture: only k12-e1 has such an event, and its event PTS>=80 exactly equals the existing scalar PTS>=80. The multi-condition Brunson count uses the earlier conditions branch; both owned Boolean counts use the expression branch. No original case ranks a scalar event count.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",

@@ -583,6 +583,16 @@ def _build_applied_filters(
         stat = route_kwargs.get("stat", source.get("stat"))
         min_value = route_kwargs.get("min_value", source.get("min_value"))
         max_value = route_kwargs.get("max_value", source.get("max_value"))
+        if (
+            isinstance(occurrence_event, dict)
+            and occurrence_event.get("stat")
+            and any(occurrence_event.get(bound) is not None for bound in ("min_value", "max_value"))
+        ):
+            # The ranked output counts qualifying games; these bounds describe
+            # the underlying per-game event, not a minimum number of occurrences.
+            stat = occurrence_event["stat"]
+            min_value = occurrence_event.get("min_value")
+            max_value = occurrence_event.get("max_value")
         equality = stat and min_value is not None and min_value == max_value
         if equality:
             applied_filters.append(
