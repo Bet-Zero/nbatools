@@ -1,0 +1,1550 @@
+[
+  {
+    "acceptance": {},
+    "answer_summary": "Top row: Luka Dončić -- 44 GAMES_30P, LAL",
+    "answer_text": null,
+    "answer_text_policy": "frontend_hero_expected",
+    "answer_text_source": null,
+    "answer_text_status": "frontend_hero_expected",
+    "applied_filters": [
+      {
+        "kind": "threshold",
+        "label": "pts min",
+        "value": "30.0"
+      }
+    ],
+    "category": "leaderboard",
+    "caveats": [],
+    "duration_seconds": 4.083469,
+    "errors": [],
+    "expectation_results": {
+      "checks": [
+        {
+          "actual": "ok",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "pass"
+        },
+        {
+          "actual": "season_leaders",
+          "expected": "season_leaders",
+          "name": "expected_route",
+          "status": "pass"
+        },
+        {
+          "actual": "leaderboard_table",
+          "expected": "leaderboard_table",
+          "name": "expected_shape",
+          "status": "pass"
+        },
+        {
+          "actual": [
+            "leaderboard"
+          ],
+          "expected": [
+            "leaderboard"
+          ],
+          "name": "expected_sections",
+          "status": "pass"
+        },
+        {
+          "actual": [
+            {
+              "kind": "threshold",
+              "label": "pts min",
+              "value": "30.0"
+            }
+          ],
+          "expected": {
+            "kind": "threshold",
+            "label": "pts min"
+          },
+          "name": "expected_filters.1",
+          "status": "pass"
+        }
+      ],
+      "fail_count": 0,
+      "pass_count": 5,
+      "status": "pass"
+    },
+    "expected": {
+      "expected_filters": [
+        {
+          "kind": "threshold",
+          "label": "pts min"
+        }
+      ],
+      "expected_route": "season_leaders",
+      "expected_sections": [
+        "leaderboard"
+      ],
+      "expected_shape": "leaderboard_table",
+      "expected_status": "ok",
+      "review_notes": "Occurrence-style player leaderboard."
+    },
+    "family": "leaderboard",
+    "id": "most_30_point_games",
+    "informational_flags": [
+      {
+        "details": {
+          "answer_text_policy": "frontend_hero_expected",
+          "query_class": "leaderboard",
+          "route": "season_leaders"
+        },
+        "id": "frontend_hero_expected",
+        "message": "Frontend result component is expected to provide the hero answer text.",
+        "severity": "informational"
+      }
+    ],
+    "intent": "leaderboard",
+    "manual_review": {
+      "notes": "Review threshold preservation for 30-point-games leaderboard.",
+      "status": "unreviewed",
+      "tags": [
+        "stat_mapping",
+        "record_when"
+      ]
+    },
+    "metadata": {
+      "applied_filters": [
+        {
+          "kind": "threshold",
+          "label": "pts min",
+          "value": "30.0"
+        }
+      ],
+      "ascending": false,
+      "available_aggregation": null,
+      "back_to_back": false,
+      "boolean_filter_branches": null,
+      "boolean_filter_mode": null,
+      "clutch": false,
+      "condition_expression": null,
+      "conditions": null,
+      "confidence": 0.87,
+      "current_through": "2026-04-12",
+      "end_date": null,
+      "end_season": null,
+      "explicit_relative_season": false,
+      "extra_conditions": [],
+      "game_dates": null,
+      "grouped_boolean_used": false,
+      "half": null,
+      "head_to_head_used": false,
+      "intent": "leaderboard",
+      "last_n": null,
+      "last_n_scope": null,
+      "lineup_members": [],
+      "max_value": null,
+      "min_streak_length": null,
+      "min_value": 30,
+      "minute_minimum": null,
+      "nationally_televised": false,
+      "notes": [
+        "default: <metric> only → league-wide leaderboard"
+      ],
+      "occurrence_event": {
+        "min_value": 30,
+        "stat": "pts"
+      },
+      "one_possession": false,
+      "opponent": null,
+      "opponent_conference": null,
+      "opponent_division": null,
+      "opponent_quality": null,
+      "opponent_team_abbrs": null,
+      "player": null,
+      "position_filter": null,
+      "presence_state": null,
+      "quarter": null,
+      "query_class": "leaderboard",
+      "query_text": "Who has the most 30 point games this season?",
+      "ranked_intent": true,
+      "ranking_key": "occurrence_count",
+      "requested_aggregation": null,
+      "requested_event_conditions": null,
+      "requested_metrics": null,
+      "requested_stat": null,
+      "rest_days": null,
+      "role": null,
+      "route": "season_leaders",
+      "scope_kind": "single_season",
+      "season": "2025-26",
+      "season_list": null,
+      "season_type": "Regular Season",
+      "series_situation": null,
+      "sort_by": null,
+      "split_type": null,
+      "start_date": null,
+      "start_season": null,
+      "stat": "games_30p",
+      "stretch_display_mode": null,
+      "stretch_metric": null,
+      "team": null,
+      "threshold_conditions": [],
+      "unit_size": null,
+      "unresolved_availability_player": null,
+      "unsupported_availability": null,
+      "unsupported_filters": null,
+      "unsupported_scope": null,
+      "window_size": null,
+      "with_player": null,
+      "without_player": null,
+      "without_player_reason": null
+    },
+    "notes": [],
+    "ok": true,
+    "priority": "p1",
+    "query": "Who has the most 30 point games this season?",
+    "query_class": "leaderboard",
+    "query_output_snapshot": {
+      "query": "Who has the most 30 point games this season?",
+      "rendered_output": {
+        "answer": {
+          "source": "ResultHero",
+          "text": "Luka Dončić led with 44 games 30p."
+        },
+        "blocks": [
+          {
+            "collapsed": false,
+            "collapsed_label": null,
+            "column_schema": "leaderboard_default",
+            "filters": [
+              "pts min: 30.0"
+            ],
+            "mode": "Leaderboard",
+            "row_count": 10,
+            "rows": [
+              [
+                "1",
+                "Luka Dončić",
+                "44",
+                "2025-26",
+                "LAL",
+                "64",
+                "Regular Season"
+              ],
+              [
+                "2",
+                "Shai Gilgeous-Alexander",
+                "43",
+                "2025-26",
+                "OKC",
+                "68",
+                "Regular Season"
+              ],
+              [
+                "3",
+                "Jaylen Brown",
+                "35",
+                "2025-26",
+                "BOS",
+                "71",
+                "Regular Season"
+              ]
+            ],
+            "section_key": "leaderboard",
+            "subject": "League",
+            "table_type": "leaderboard",
+            "title": "Leaderboard",
+            "type": "table",
+            "visible_columns": [
+              "#",
+              "Player",
+              "Games 30p",
+              "Season",
+              "TM",
+              "GP",
+              "Type"
+            ]
+          }
+        ]
+      },
+      "status": {
+        "ok": true,
+        "result_reason": null,
+        "result_status": "ok",
+        "route": "season_leaders"
+      }
+    },
+    "result_reason": null,
+    "result_status": "ok",
+    "route": "season_leaders",
+    "section_summaries": {
+      "leaderboard": {
+        "columns": [
+          "rank",
+          "player_name",
+          "player_id",
+          "team_abbr",
+          "games_played",
+          "games_30p",
+          "season",
+          "season_type"
+        ],
+        "row_count": 10,
+        "top_rows": [
+          {
+            "games_30p": 44,
+            "games_played": 64,
+            "player_id": 1629029,
+            "player_name": "Luka Dončić",
+            "rank": 1,
+            "season": "2025-26",
+            "season_type": "Regular Season",
+            "team_abbr": "LAL"
+          },
+          {
+            "games_30p": 43,
+            "games_played": 68,
+            "player_id": 1628983,
+            "player_name": "Shai Gilgeous-Alexander",
+            "rank": 2,
+            "season": "2025-26",
+            "season_type": "Regular Season",
+            "team_abbr": "OKC"
+          },
+          {
+            "games_30p": 35,
+            "games_played": 71,
+            "player_id": 1627759,
+            "player_name": "Jaylen Brown",
+            "rank": 3,
+            "season": "2025-26",
+            "season_type": "Regular Season",
+            "team_abbr": "BOS"
+          }
+        ]
+      }
+    },
+    "sections": {
+      "leaderboard": [
+        {
+          "games_30p": 44,
+          "games_played": 64,
+          "player_id": 1629029,
+          "player_name": "Luka Dončić",
+          "rank": 1,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "LAL"
+        },
+        {
+          "games_30p": 43,
+          "games_played": 68,
+          "player_id": 1628983,
+          "player_name": "Shai Gilgeous-Alexander",
+          "rank": 2,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "OKC"
+        },
+        {
+          "games_30p": 35,
+          "games_played": 71,
+          "player_id": 1627759,
+          "player_name": "Jaylen Brown",
+          "rank": 3,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "BOS"
+        },
+        {
+          "games_30p": 34,
+          "games_played": 70,
+          "player_id": 1628378,
+          "player_name": "Donovan Mitchell",
+          "rank": 4,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "CLE"
+        },
+        {
+          "games_30p": 32,
+          "games_played": 61,
+          "player_id": 1630162,
+          "player_name": "Anthony Edwards",
+          "rank": 5,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "MIN"
+        },
+        {
+          "games_30p": 29,
+          "games_played": 78,
+          "player_id": 201142,
+          "player_name": "Kevin Durant",
+          "rank": 6,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "HOU"
+        },
+        {
+          "games_30p": 28,
+          "games_played": 70,
+          "player_id": 1630178,
+          "player_name": "Tyrese Maxey",
+          "rank": 7,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "PHI"
+        },
+        {
+          "games_30p": 26,
+          "games_played": 74,
+          "player_id": 1628973,
+          "player_name": "Jalen Brunson",
+          "rank": 8,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "NYK"
+        },
+        {
+          "games_30p": 25,
+          "games_played": 65,
+          "player_id": 203999,
+          "player_name": "Nikola Jokić",
+          "rank": 9,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "DEN"
+        },
+        {
+          "games_30p": 24,
+          "games_played": 64,
+          "player_id": 1626164,
+          "player_name": "Devin Booker",
+          "rank": 10,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "PHX"
+        }
+      ]
+    },
+    "shape_hint": "leaderboard_table",
+    "shape_source": "backend_approximation",
+    "suggested_review_tags": [],
+    "suspicious_flags": [],
+    "verified_outliers": []
+  },
+  {
+    "acceptance": {},
+    "answer_summary": "Top row: Luka Dončić -- 44 GAMES_30P, LAL",
+    "answer_text": null,
+    "answer_text_policy": "frontend_hero_expected",
+    "answer_text_source": null,
+    "answer_text_status": "frontend_hero_expected",
+    "applied_filters": [
+      {
+        "kind": "threshold",
+        "label": "pts min",
+        "value": "30.0"
+      }
+    ],
+    "category": "leaderboard",
+    "caveats": [],
+    "duration_seconds": 0.277831,
+    "errors": [],
+    "expectation_results": {
+      "checks": [
+        {
+          "actual": "ok",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "pass"
+        },
+        {
+          "actual": "season_leaders",
+          "expected": "season_leaders",
+          "name": "expected_route",
+          "status": "pass"
+        },
+        {
+          "actual": "leaderboard_table",
+          "expected": "leaderboard_table",
+          "name": "expected_shape",
+          "status": "pass"
+        },
+        {
+          "actual": [
+            "leaderboard"
+          ],
+          "expected": [
+            "leaderboard"
+          ],
+          "name": "expected_sections",
+          "status": "pass"
+        },
+        {
+          "actual": 10,
+          "expected": 10,
+          "name": "expected_row_counts.leaderboard",
+          "status": "pass"
+        },
+        {
+          "actual": [
+            {
+              "kind": "threshold",
+              "label": "pts min",
+              "value": "30.0"
+            }
+          ],
+          "expected": {
+            "kind": "threshold",
+            "label": "pts min",
+            "value": "30.0"
+          },
+          "name": "expected_filters.1",
+          "status": "pass"
+        },
+        {
+          "actual": "pts",
+          "expected": "pts",
+          "name": "result.metadata.occurrence_event.stat",
+          "status": "pass"
+        },
+        {
+          "actual": 30,
+          "expected": 30,
+          "name": "result.metadata.occurrence_event.min_value",
+          "status": "pass"
+        }
+      ],
+      "fail_count": 0,
+      "pass_count": 8,
+      "status": "pass"
+    },
+    "expected": {
+      "expected_filters": [
+        {
+          "kind": "threshold",
+          "label": "pts min",
+          "value": "30.0"
+        }
+      ],
+      "expected_route": "season_leaders",
+      "expected_row_counts": {
+        "leaderboard": 10
+      },
+      "expected_sections": [
+        "leaderboard"
+      ],
+      "expected_shape": "leaderboard_table",
+      "expected_status": "ok",
+      "hard_assertions": [
+        {
+          "equals": "pts",
+          "path": "result.metadata.occurrence_event.stat"
+        },
+        {
+          "equals": 30,
+          "path": "result.metadata.occurrence_event.min_value"
+        }
+      ],
+      "review_notes": "Hyphenated 30-point phrasing should keep the occurrence threshold."
+    },
+    "family": "leaderboard",
+    "id": "thirty_point_games_hyphen_wave5",
+    "informational_flags": [
+      {
+        "details": {
+          "answer_text_policy": "frontend_hero_expected",
+          "query_class": "leaderboard",
+          "route": "season_leaders"
+        },
+        "id": "frontend_hero_expected",
+        "message": "Frontend result component is expected to provide the hero answer text.",
+        "severity": "informational"
+      }
+    ],
+    "intent": "leaderboard",
+    "manual_review": {
+      "notes": "Review threshold preservation for hyphenated occurrence wording.",
+      "status": "unreviewed",
+      "tags": [
+        "phrasing_variant",
+        "stat_alias",
+        "record_when"
+      ]
+    },
+    "metadata": {
+      "applied_filters": [
+        {
+          "kind": "threshold",
+          "label": "pts min",
+          "value": "30.0"
+        }
+      ],
+      "ascending": false,
+      "available_aggregation": null,
+      "back_to_back": false,
+      "boolean_filter_branches": null,
+      "boolean_filter_mode": null,
+      "clutch": false,
+      "condition_expression": null,
+      "conditions": null,
+      "confidence": 0.87,
+      "current_through": "2026-04-12",
+      "end_date": null,
+      "end_season": null,
+      "explicit_relative_season": false,
+      "extra_conditions": [],
+      "game_dates": null,
+      "grouped_boolean_used": false,
+      "half": null,
+      "head_to_head_used": false,
+      "intent": "leaderboard",
+      "last_n": null,
+      "last_n_scope": null,
+      "lineup_members": [],
+      "max_value": null,
+      "min_streak_length": null,
+      "min_value": 30,
+      "minute_minimum": null,
+      "nationally_televised": false,
+      "notes": [
+        "default: <metric> only → league-wide leaderboard"
+      ],
+      "occurrence_event": {
+        "min_value": 30,
+        "stat": "pts"
+      },
+      "one_possession": false,
+      "opponent": null,
+      "opponent_conference": null,
+      "opponent_division": null,
+      "opponent_quality": null,
+      "opponent_team_abbrs": null,
+      "player": null,
+      "position_filter": null,
+      "presence_state": null,
+      "quarter": null,
+      "query_class": "leaderboard",
+      "query_text": "Who has the most 30-point games this season?",
+      "ranked_intent": true,
+      "ranking_key": "occurrence_count",
+      "requested_aggregation": null,
+      "requested_event_conditions": null,
+      "requested_metrics": null,
+      "requested_stat": null,
+      "rest_days": null,
+      "role": null,
+      "route": "season_leaders",
+      "scope_kind": "single_season",
+      "season": "2025-26",
+      "season_list": null,
+      "season_type": "Regular Season",
+      "series_situation": null,
+      "sort_by": null,
+      "split_type": null,
+      "start_date": null,
+      "start_season": null,
+      "stat": "games_30p",
+      "stretch_display_mode": null,
+      "stretch_metric": null,
+      "team": null,
+      "threshold_conditions": [],
+      "unit_size": null,
+      "unresolved_availability_player": null,
+      "unsupported_availability": null,
+      "unsupported_filters": null,
+      "unsupported_scope": null,
+      "window_size": null,
+      "with_player": null,
+      "without_player": null,
+      "without_player_reason": null
+    },
+    "notes": [],
+    "ok": true,
+    "priority": "p2",
+    "query": "Who has the most 30-point games this season?",
+    "query_class": "leaderboard",
+    "query_output_snapshot": {
+      "query": "Who has the most 30-point games this season?",
+      "rendered_output": {
+        "answer": {
+          "source": "ResultHero",
+          "text": "Luka Dončić led with 44 games 30p."
+        },
+        "blocks": [
+          {
+            "collapsed": false,
+            "collapsed_label": null,
+            "column_schema": "leaderboard_default",
+            "filters": [
+              "pts min: 30.0"
+            ],
+            "mode": "Leaderboard",
+            "row_count": 10,
+            "rows": [
+              [
+                "1",
+                "Luka Dončić",
+                "44",
+                "2025-26",
+                "LAL",
+                "64",
+                "Regular Season"
+              ],
+              [
+                "2",
+                "Shai Gilgeous-Alexander",
+                "43",
+                "2025-26",
+                "OKC",
+                "68",
+                "Regular Season"
+              ],
+              [
+                "3",
+                "Jaylen Brown",
+                "35",
+                "2025-26",
+                "BOS",
+                "71",
+                "Regular Season"
+              ]
+            ],
+            "section_key": "leaderboard",
+            "subject": "League",
+            "table_type": "leaderboard",
+            "title": "Leaderboard",
+            "type": "table",
+            "visible_columns": [
+              "#",
+              "Player",
+              "Games 30p",
+              "Season",
+              "TM",
+              "GP",
+              "Type"
+            ]
+          }
+        ]
+      },
+      "status": {
+        "ok": true,
+        "result_reason": null,
+        "result_status": "ok",
+        "route": "season_leaders"
+      }
+    },
+    "result_reason": null,
+    "result_status": "ok",
+    "route": "season_leaders",
+    "section_summaries": {
+      "leaderboard": {
+        "columns": [
+          "rank",
+          "player_name",
+          "player_id",
+          "team_abbr",
+          "games_played",
+          "games_30p",
+          "season",
+          "season_type"
+        ],
+        "row_count": 10,
+        "top_rows": [
+          {
+            "games_30p": 44,
+            "games_played": 64,
+            "player_id": 1629029,
+            "player_name": "Luka Dončić",
+            "rank": 1,
+            "season": "2025-26",
+            "season_type": "Regular Season",
+            "team_abbr": "LAL"
+          },
+          {
+            "games_30p": 43,
+            "games_played": 68,
+            "player_id": 1628983,
+            "player_name": "Shai Gilgeous-Alexander",
+            "rank": 2,
+            "season": "2025-26",
+            "season_type": "Regular Season",
+            "team_abbr": "OKC"
+          },
+          {
+            "games_30p": 35,
+            "games_played": 71,
+            "player_id": 1627759,
+            "player_name": "Jaylen Brown",
+            "rank": 3,
+            "season": "2025-26",
+            "season_type": "Regular Season",
+            "team_abbr": "BOS"
+          }
+        ]
+      }
+    },
+    "sections": {
+      "leaderboard": [
+        {
+          "games_30p": 44,
+          "games_played": 64,
+          "player_id": 1629029,
+          "player_name": "Luka Dončić",
+          "rank": 1,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "LAL"
+        },
+        {
+          "games_30p": 43,
+          "games_played": 68,
+          "player_id": 1628983,
+          "player_name": "Shai Gilgeous-Alexander",
+          "rank": 2,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "OKC"
+        },
+        {
+          "games_30p": 35,
+          "games_played": 71,
+          "player_id": 1627759,
+          "player_name": "Jaylen Brown",
+          "rank": 3,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "BOS"
+        },
+        {
+          "games_30p": 34,
+          "games_played": 70,
+          "player_id": 1628378,
+          "player_name": "Donovan Mitchell",
+          "rank": 4,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "CLE"
+        },
+        {
+          "games_30p": 32,
+          "games_played": 61,
+          "player_id": 1630162,
+          "player_name": "Anthony Edwards",
+          "rank": 5,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "MIN"
+        },
+        {
+          "games_30p": 29,
+          "games_played": 78,
+          "player_id": 201142,
+          "player_name": "Kevin Durant",
+          "rank": 6,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "HOU"
+        },
+        {
+          "games_30p": 28,
+          "games_played": 70,
+          "player_id": 1630178,
+          "player_name": "Tyrese Maxey",
+          "rank": 7,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "PHI"
+        },
+        {
+          "games_30p": 26,
+          "games_played": 74,
+          "player_id": 1628973,
+          "player_name": "Jalen Brunson",
+          "rank": 8,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "NYK"
+        },
+        {
+          "games_30p": 25,
+          "games_played": 65,
+          "player_id": 203999,
+          "player_name": "Nikola Jokić",
+          "rank": 9,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "DEN"
+        },
+        {
+          "games_30p": 24,
+          "games_played": 64,
+          "player_id": 1626164,
+          "player_name": "Devin Booker",
+          "rank": 10,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "team_abbr": "PHX"
+        }
+      ]
+    },
+    "shape_hint": "leaderboard_table",
+    "shape_source": "backend_approximation",
+    "suggested_review_tags": [],
+    "suspicious_flags": [],
+    "verified_outliers": []
+  },
+  {
+    "acceptance": {},
+    "answer_summary": "Top row: Luka Dončić -- 13 GAMES_40P, DAL",
+    "answer_text": null,
+    "answer_text_policy": "frontend_hero_expected",
+    "answer_text_source": null,
+    "answer_text_status": "frontend_hero_expected",
+    "applied_filters": [
+      {
+        "kind": "threshold",
+        "label": "pts min",
+        "value": "40.0"
+      }
+    ],
+    "category": "leaderboard",
+    "caveats": [],
+    "duration_seconds": 1.125001,
+    "errors": [],
+    "expectation_results": {
+      "checks": [
+        {
+          "actual": "ok",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "pass"
+        },
+        {
+          "actual": "season_leaders",
+          "expected": "season_leaders",
+          "name": "expected_route",
+          "status": "pass"
+        },
+        {
+          "actual": [
+            "leaderboard"
+          ],
+          "expected": [
+            "leaderboard"
+          ],
+          "name": "expected_sections",
+          "status": "pass"
+        },
+        {
+          "actual": 5,
+          "expected": 5,
+          "name": "expected_row_counts.leaderboard",
+          "status": "pass"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "name": "result.sections.leaderboard.0.rank",
+          "status": "pass"
+        },
+        {
+          "actual": "Luka Dončić",
+          "expected": "Luka Dončić",
+          "name": "result.sections.leaderboard.0.player_name",
+          "status": "pass"
+        },
+        {
+          "actual": 70,
+          "expected": 70,
+          "name": "result.sections.leaderboard.0.games_played",
+          "status": "pass"
+        },
+        {
+          "actual": "2023-24",
+          "expected": "2023-24",
+          "name": "result.sections.leaderboard.0.season",
+          "status": "pass"
+        },
+        {
+          "actual": 13,
+          "expected": 13,
+          "name": "result.sections.leaderboard.0.games_40p",
+          "status": "pass"
+        },
+        {
+          "actual": 1629029,
+          "expected": 1629029,
+          "name": "result.sections.leaderboard.0.player_id",
+          "status": "pass"
+        },
+        {
+          "actual": 2,
+          "expected": 2,
+          "name": "result.sections.leaderboard.1.rank",
+          "status": "pass"
+        },
+        {
+          "actual": "Jalen Brunson",
+          "expected": "Jalen Brunson",
+          "name": "result.sections.leaderboard.1.player_name",
+          "status": "pass"
+        },
+        {
+          "actual": 77,
+          "expected": 77,
+          "name": "result.sections.leaderboard.1.games_played",
+          "status": "pass"
+        },
+        {
+          "actual": "2023-24",
+          "expected": "2023-24",
+          "name": "result.sections.leaderboard.1.season",
+          "status": "pass"
+        },
+        {
+          "actual": 11,
+          "expected": 11,
+          "name": "result.sections.leaderboard.1.games_40p",
+          "status": "pass"
+        },
+        {
+          "actual": 1628973,
+          "expected": 1628973,
+          "name": "result.sections.leaderboard.1.player_id",
+          "status": "pass"
+        },
+        {
+          "actual": 3,
+          "expected": 3,
+          "name": "result.sections.leaderboard.2.rank",
+          "status": "pass"
+        },
+        {
+          "actual": "Joel Embiid",
+          "expected": "Joel Embiid",
+          "name": "result.sections.leaderboard.2.player_name",
+          "status": "pass"
+        },
+        {
+          "actual": 39,
+          "expected": 39,
+          "name": "result.sections.leaderboard.2.games_played",
+          "status": "pass"
+        },
+        {
+          "actual": "2023-24",
+          "expected": "2023-24",
+          "name": "result.sections.leaderboard.2.season",
+          "status": "pass"
+        },
+        {
+          "actual": 9,
+          "expected": 9,
+          "name": "result.sections.leaderboard.2.games_40p",
+          "status": "pass"
+        },
+        {
+          "actual": 203954,
+          "expected": 203954,
+          "name": "result.sections.leaderboard.2.player_id",
+          "status": "pass"
+        },
+        {
+          "actual": 4,
+          "expected": 4,
+          "name": "result.sections.leaderboard.3.rank",
+          "status": "pass"
+        },
+        {
+          "actual": "De'Aaron Fox",
+          "expected": "De'Aaron Fox",
+          "name": "result.sections.leaderboard.3.player_name",
+          "status": "pass"
+        },
+        {
+          "actual": 74,
+          "expected": 74,
+          "name": "result.sections.leaderboard.3.games_played",
+          "status": "pass"
+        },
+        {
+          "actual": "2023-24",
+          "expected": "2023-24",
+          "name": "result.sections.leaderboard.3.season",
+          "status": "pass"
+        },
+        {
+          "actual": 8,
+          "expected": 8,
+          "name": "result.sections.leaderboard.3.games_40p",
+          "status": "pass"
+        },
+        {
+          "actual": 1628368,
+          "expected": 1628368,
+          "name": "result.sections.leaderboard.3.player_id",
+          "status": "pass"
+        },
+        {
+          "actual": 5,
+          "expected": 5,
+          "name": "result.sections.leaderboard.4.rank",
+          "status": "pass"
+        },
+        {
+          "actual": "Giannis Antetokounmpo",
+          "expected": "Giannis Antetokounmpo",
+          "name": "result.sections.leaderboard.4.player_name",
+          "status": "pass"
+        },
+        {
+          "actual": 73,
+          "expected": 73,
+          "name": "result.sections.leaderboard.4.games_played",
+          "status": "pass"
+        },
+        {
+          "actual": "2023-24",
+          "expected": "2023-24",
+          "name": "result.sections.leaderboard.4.season",
+          "status": "pass"
+        },
+        {
+          "actual": 8,
+          "expected": 8,
+          "name": "result.sections.leaderboard.4.games_40p",
+          "status": "pass"
+        },
+        {
+          "actual": 203507,
+          "expected": 203507,
+          "name": "result.sections.leaderboard.4.player_id",
+          "status": "pass"
+        }
+      ],
+      "fail_count": 0,
+      "pass_count": 34,
+      "status": "pass"
+    },
+    "expected": {
+      "expected_route": "season_leaders",
+      "expected_row_counts": {
+        "leaderboard": 5
+      },
+      "expected_sections": [
+        "leaderboard"
+      ],
+      "expected_status": "ok",
+      "hard_assertions": [
+        {
+          "equals": 1,
+          "path": "result.sections.leaderboard.0.rank"
+        },
+        {
+          "equals": "Luka Dončić",
+          "path": "result.sections.leaderboard.0.player_name"
+        },
+        {
+          "equals": 70,
+          "path": "result.sections.leaderboard.0.games_played"
+        },
+        {
+          "equals": "2023-24",
+          "path": "result.sections.leaderboard.0.season"
+        },
+        {
+          "equals": 13,
+          "path": "result.sections.leaderboard.0.games_40p"
+        },
+        {
+          "equals": 1629029,
+          "path": "result.sections.leaderboard.0.player_id"
+        },
+        {
+          "equals": 2,
+          "path": "result.sections.leaderboard.1.rank"
+        },
+        {
+          "equals": "Jalen Brunson",
+          "path": "result.sections.leaderboard.1.player_name"
+        },
+        {
+          "equals": 77,
+          "path": "result.sections.leaderboard.1.games_played"
+        },
+        {
+          "equals": "2023-24",
+          "path": "result.sections.leaderboard.1.season"
+        },
+        {
+          "equals": 11,
+          "path": "result.sections.leaderboard.1.games_40p"
+        },
+        {
+          "equals": 1628973,
+          "path": "result.sections.leaderboard.1.player_id"
+        },
+        {
+          "equals": 3,
+          "path": "result.sections.leaderboard.2.rank"
+        },
+        {
+          "equals": "Joel Embiid",
+          "path": "result.sections.leaderboard.2.player_name"
+        },
+        {
+          "equals": 39,
+          "path": "result.sections.leaderboard.2.games_played"
+        },
+        {
+          "equals": "2023-24",
+          "path": "result.sections.leaderboard.2.season"
+        },
+        {
+          "equals": 9,
+          "path": "result.sections.leaderboard.2.games_40p"
+        },
+        {
+          "equals": 203954,
+          "path": "result.sections.leaderboard.2.player_id"
+        },
+        {
+          "equals": 4,
+          "path": "result.sections.leaderboard.3.rank"
+        },
+        {
+          "equals": "De'Aaron Fox",
+          "path": "result.sections.leaderboard.3.player_name"
+        },
+        {
+          "equals": 74,
+          "path": "result.sections.leaderboard.3.games_played"
+        },
+        {
+          "equals": "2023-24",
+          "path": "result.sections.leaderboard.3.season"
+        },
+        {
+          "equals": 8,
+          "path": "result.sections.leaderboard.3.games_40p"
+        },
+        {
+          "equals": 1628368,
+          "path": "result.sections.leaderboard.3.player_id"
+        },
+        {
+          "equals": 5,
+          "path": "result.sections.leaderboard.4.rank"
+        },
+        {
+          "equals": "Giannis Antetokounmpo",
+          "path": "result.sections.leaderboard.4.player_name"
+        },
+        {
+          "equals": 73,
+          "path": "result.sections.leaderboard.4.games_played"
+        },
+        {
+          "equals": "2023-24",
+          "path": "result.sections.leaderboard.4.season"
+        },
+        {
+          "equals": 8,
+          "path": "result.sections.leaderboard.4.games_40p"
+        },
+        {
+          "equals": 203507,
+          "path": "result.sections.leaderboard.4.player_id"
+        }
+      ],
+      "review_notes": "Frozen K04 independent raw-row oracle; primary and held-out wording retain separate evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py. Human review and deployed rendering remain separate."
+    },
+    "family": "leaderboard",
+    "id": "k04_d1",
+    "informational_flags": [
+      {
+        "details": {
+          "answer_text_policy": "frontend_hero_expected",
+          "query_class": "leaderboard",
+          "route": "season_leaders"
+        },
+        "id": "frontend_hero_expected",
+        "message": "Frontend result component is expected to provide the hero answer text.",
+        "severity": "informational"
+      }
+    ],
+    "intent": "leaderboard",
+    "manual_review": {
+      "notes": "",
+      "status": "unreviewed",
+      "tags": []
+    },
+    "metadata": {
+      "applied_filters": [
+        {
+          "kind": "threshold",
+          "label": "pts min",
+          "value": "40.0"
+        }
+      ],
+      "ascending": false,
+      "available_aggregation": null,
+      "back_to_back": false,
+      "boolean_filter_branches": null,
+      "boolean_filter_mode": null,
+      "clutch": false,
+      "condition_expression": null,
+      "conditions": null,
+      "confidence": 0.87,
+      "current_through": "2024-04-14",
+      "end_date": null,
+      "end_season": null,
+      "explicit_relative_season": false,
+      "extra_conditions": [],
+      "game_dates": null,
+      "grouped_boolean_used": false,
+      "half": null,
+      "head_to_head_used": false,
+      "intent": "leaderboard",
+      "last_n": null,
+      "last_n_scope": null,
+      "lineup_members": [],
+      "max_value": null,
+      "min_streak_length": null,
+      "min_value": 40,
+      "minute_minimum": null,
+      "nationally_televised": false,
+      "notes": [
+        "default: <metric> only → league-wide leaderboard"
+      ],
+      "occurrence_event": {
+        "min_value": 40,
+        "stat": "pts"
+      },
+      "one_possession": false,
+      "opponent": null,
+      "opponent_conference": null,
+      "opponent_division": null,
+      "opponent_quality": null,
+      "opponent_team_abbrs": null,
+      "player": null,
+      "position_filter": null,
+      "presence_state": null,
+      "quarter": null,
+      "query_class": "leaderboard",
+      "query_text": "Top 5 players with the most 40 point games in 2023-24",
+      "ranked_intent": true,
+      "ranking_key": "occurrence_count",
+      "requested_aggregation": null,
+      "requested_event_conditions": null,
+      "requested_metrics": null,
+      "requested_stat": null,
+      "rest_days": null,
+      "role": null,
+      "route": "season_leaders",
+      "scope_kind": "single_season",
+      "season": "2023-24",
+      "season_list": null,
+      "season_type": "Regular Season",
+      "series_situation": null,
+      "sort_by": null,
+      "split_type": null,
+      "start_date": null,
+      "start_season": null,
+      "stat": "games_40p",
+      "stretch_display_mode": null,
+      "stretch_metric": null,
+      "team": null,
+      "threshold_conditions": [],
+      "unit_size": null,
+      "unresolved_availability_player": null,
+      "unsupported_availability": null,
+      "unsupported_filters": null,
+      "unsupported_scope": null,
+      "window_size": null,
+      "with_player": null,
+      "without_player": null,
+      "without_player_reason": null
+    },
+    "notes": [],
+    "ok": true,
+    "priority": "p1",
+    "query": "Top 5 players with the most 40 point games in 2023-24",
+    "query_class": "leaderboard",
+    "query_output_snapshot": {
+      "query": "Top 5 players with the most 40 point games in 2023-24",
+      "rendered_output": {
+        "answer": {
+          "source": "ResultHero",
+          "text": "Luka Dončić led with 13 games 40p."
+        },
+        "blocks": [
+          {
+            "collapsed": false,
+            "collapsed_label": null,
+            "column_schema": "leaderboard_default",
+            "filters": [
+              "pts min: 40.0"
+            ],
+            "mode": "Leaderboard",
+            "row_count": 5,
+            "rows": [
+              [
+                "1",
+                "Luka Dončić",
+                "13",
+                "2023-24",
+                "DAL",
+                "70",
+                "Regular Season"
+              ],
+              [
+                "2",
+                "Jalen Brunson",
+                "11",
+                "2023-24",
+                "NYK",
+                "77",
+                "Regular Season"
+              ],
+              [
+                "3",
+                "Joel Embiid",
+                "9",
+                "2023-24",
+                "PHI",
+                "39",
+                "Regular Season"
+              ]
+            ],
+            "section_key": "leaderboard",
+            "subject": "League",
+            "table_type": "leaderboard",
+            "title": "Leaderboard",
+            "type": "table",
+            "visible_columns": [
+              "#",
+              "Player",
+              "Games 40p",
+              "Season",
+              "TM",
+              "GP",
+              "Type"
+            ]
+          }
+        ]
+      },
+      "status": {
+        "ok": true,
+        "result_reason": null,
+        "result_status": "ok",
+        "route": "season_leaders"
+      }
+    },
+    "result_reason": null,
+    "result_status": "ok",
+    "route": "season_leaders",
+    "section_summaries": {
+      "leaderboard": {
+        "columns": [
+          "rank",
+          "player_name",
+          "player_id",
+          "team_abbr",
+          "games_played",
+          "games_40p",
+          "season",
+          "season_type"
+        ],
+        "row_count": 5,
+        "top_rows": [
+          {
+            "games_40p": 13,
+            "games_played": 70,
+            "player_id": 1629029,
+            "player_name": "Luka Dončić",
+            "rank": 1,
+            "season": "2023-24",
+            "season_type": "Regular Season",
+            "team_abbr": "DAL"
+          },
+          {
+            "games_40p": 11,
+            "games_played": 77,
+            "player_id": 1628973,
+            "player_name": "Jalen Brunson",
+            "rank": 2,
+            "season": "2023-24",
+            "season_type": "Regular Season",
+            "team_abbr": "NYK"
+          },
+          {
+            "games_40p": 9,
+            "games_played": 39,
+            "player_id": 203954,
+            "player_name": "Joel Embiid",
+            "rank": 3,
+            "season": "2023-24",
+            "season_type": "Regular Season",
+            "team_abbr": "PHI"
+          }
+        ]
+      }
+    },
+    "sections": {
+      "leaderboard": [
+        {
+          "games_40p": 13,
+          "games_played": 70,
+          "player_id": 1629029,
+          "player_name": "Luka Dončić",
+          "rank": 1,
+          "season": "2023-24",
+          "season_type": "Regular Season",
+          "team_abbr": "DAL"
+        },
+        {
+          "games_40p": 11,
+          "games_played": 77,
+          "player_id": 1628973,
+          "player_name": "Jalen Brunson",
+          "rank": 2,
+          "season": "2023-24",
+          "season_type": "Regular Season",
+          "team_abbr": "NYK"
+        },
+        {
+          "games_40p": 9,
+          "games_played": 39,
+          "player_id": 203954,
+          "player_name": "Joel Embiid",
+          "rank": 3,
+          "season": "2023-24",
+          "season_type": "Regular Season",
+          "team_abbr": "PHI"
+        },
+        {
+          "games_40p": 8,
+          "games_played": 74,
+          "player_id": 1628368,
+          "player_name": "De'Aaron Fox",
+          "rank": 4,
+          "season": "2023-24",
+          "season_type": "Regular Season",
+          "team_abbr": "SAC"
+        },
+        {
+          "games_40p": 8,
+          "games_played": 73,
+          "player_id": 203507,
+          "player_name": "Giannis Antetokounmpo",
+          "rank": 5,
+          "season": "2023-24",
+          "season_type": "Regular Season",
+          "team_abbr": "MIL"
+        }
+      ]
+    },
+    "shape_hint": "leaderboard_table",
+    "shape_source": "backend_approximation",
+    "suggested_review_tags": [],
+    "suspicious_flags": [],
+    "verified_outliers": []
+  }
+]

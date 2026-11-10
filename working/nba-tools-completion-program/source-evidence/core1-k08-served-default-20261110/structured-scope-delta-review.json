@@ -1,0 +1,28 @@
+{
+  "checks": [
+    {
+      "check": "original_7_exact_club_contract",
+      "passed": true
+    },
+    {
+      "check": "original_8_exact_club_contract",
+      "passed": true
+    },
+    {
+      "check": "typed_complete_LAL_missed_positive",
+      "passed": true
+    },
+    {
+      "check": "wrong_club_metadata_rejected",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "backend_model_identity": "unavailable",
+  "app_source_data_changed": false,
+  "files": {
+    "tests/core1_k08_served_default_cases.py": "c35498c583e93407d4fbfe46df677506577f8a09a06de4ce55b99b01473db836",
+    "tests/cloud_core1_k08_served_default_real_data.py": "c861f33ea8fce2e9fb2b6f446fc0a18ec611bcc2b4d6ae3fc718c796b6eb0eff",
+    "tests/test_core1_k08_served_default_contract.py": "ead05055f0d0a82957ab346a1d668e1df0e15c5de37b52ec44f75b115b98c9e8"
+  }
+}

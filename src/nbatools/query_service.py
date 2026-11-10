@@ -362,7 +362,11 @@ def _build_applied_filters(
 ) -> list[dict[str, str]]:
     route_kwargs = route_kwargs or {}
     applied_filters: list[dict[str, str]] = []
-    if source.get("player_a") and source.get("player_b") and not source.get("head_to_head"):
+    primary_player = route_kwargs.get("player")
+    scoped_comparison = (
+        source.get("player_a") and source.get("player_b") and not source.get("head_to_head")
+    )
+    if primary_player or scoped_comparison:
         playing_for = route_kwargs.get("team", source.get("team"))
         if playing_for:
             applied_filters.append(
@@ -579,6 +583,16 @@ def _build_applied_filters(
         stat = route_kwargs.get("stat", source.get("stat"))
         min_value = route_kwargs.get("min_value", source.get("min_value"))
         max_value = route_kwargs.get("max_value", source.get("max_value"))
+        if (
+            isinstance(occurrence_event, dict)
+            and occurrence_event.get("stat")
+            and any(occurrence_event.get(bound) is not None for bound in ("min_value", "max_value"))
+        ):
+            # The ranked output counts qualifying games; these bounds describe
+            # the underlying per-game event, not a minimum number of occurrences.
+            stat = occurrence_event["stat"]
+            min_value = occurrence_event.get("min_value")
+            max_value = occurrence_event.get("max_value")
         equality = stat and min_value is not None and min_value == max_value
         if equality:
             applied_filters.append(
@@ -3999,7 +4013,9 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         "split_type": kwargs.get("split"),
         "season_list": selected_seasons,
     }
-    applied_filters = [] if unsupported_filters else _build_applied_filters(filter_source)
+    applied_filters = (
+        [] if unsupported_filters else _build_applied_filters(filter_source, route_kwargs=kwargs)
+    )
     if applied_filters:
         metadata["applied_filters"] = applied_filters
     if isinstance(kwargs.get("opponent"), list):

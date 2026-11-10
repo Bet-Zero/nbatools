@@ -5,9 +5,6 @@ import { createHash } from "node:crypto";
 
 const [input, output, base = "https://nbatools.vercel.app"] = process.argv.slice(2);
 if (!input || !output) throw new Error("Expected case JSON and evidence directory");
-if (!["https://nbatools.vercel.app", "http://127.0.0.1:8765"].includes(base)) {
-  throw new Error("Only production alias or local verification server allowed");
-}
 const cases = JSON.parse(await readFile(input, "utf8"));
 const sequenceIds = ["k09-t1", "k09-p1", "k09-r1", "k09-r2", "k09-w1", "k09-w2", "k09-c1", "k09-c2", "k09-r2-synonym", "k09-w1-last", "k09-w2-last", "k09-c2-single"];
 const sequences = cases.length === sequenceIds.length && sequenceIds.every(id => cases.some(item => item.id === id));
@@ -27,6 +24,21 @@ const delivery = deliveryNoData || (cases.length === deliveryIds.length && deliv
 // recorded obligation. Existing complete strict P3 bundles are unchanged.
 const historicalIntegrationIds = ["k12-s1", "k12-r1", "k12-b1", "k12-c1", "k12-l1", "k12-x1", "k12-m1", "k12-z1", "k12-e1", "k12-n1", "k12-h1", "k12-r1-win-loss", "live-k05", "live-k09", "live-k10", "live-k08", "live-s4-team-with", "live-s4-team-without", "live-s4-player-with", "live-s4-player-without", "live-owned-team", "live-owned-opponent"];
 const historicalIntegration = cases.length === historicalIntegrationIds.length && historicalIntegrationIds.every(id => cases.some(item => item.id === id));
+// Nine exact original K08 obligations, qualified on the published served-default
+// slice. No literal-current substitution and no full Core-1/readiness claim.
+const originalK08Ids = [7, 8, 23, 24, 25, 30, 31, 32, 41].map(id => `original-k08-${String(id).padStart(2, "0")}`);
+const originalK08Defaults = cases.length === originalK08Ids.length && originalK08Ids.every(id => cases.some(item => item.id === id));
+// Explicit development-only rendering for the shared person/team ownership
+// repair. This provisional local bundle cannot authorize a public capture.
+const ownershipIds = ["ownership-washington-h1", "ownership-washington-q2", "ownership-explicit-was"];
+const localOwnership = cases.length === ownershipIds.length && ownershipIds.every(id => cases.some(item => item.id === id));
+if (localOwnership && base !== "http://127.0.0.1:8765") throw new Error("Provisional ownership bundle is loopback-only");
+
+const exactExistingProjectHost = /^https:\/\/nbatools-[a-z0-9]+-brents-projects-686e97fc\.vercel\.app$/.test(base);
+if (!["https://nbatools.vercel.app", "http://127.0.0.1:8765"].includes(base) && !((originalK08Defaults || historicalIntegration) && exactExistingProjectHost)) {
+  throw new Error("Only production alias, local verification, or the exact reviewed historical/K08 immutable project host allowed");
+}
+
 const core = cases.length === 26 && cases.every(item => /^k0[13][_-]/.test(item.id));
 const summaryRanking = cases.length === 33 && cases.every(item => /^k0[24][_-]/.test(item.id));
 const ownershipComparison = cases.length === 20 && cases.every(item => /^k0[56][_-]/.test(item.id));
@@ -57,7 +69,7 @@ const sharedTeamComparisonIds = ["comparison-shared-primary", "comparison-canoni
 const sharedTeamComparison = cases.length === sharedTeamComparisonIds.length && sharedTeamComparisonIds.every(id => cases.some(item => item.id === id));
 const medicalSubjectIds = ["medical-team-primary", "medical-prefix-owner", "medical-opponent-union", "medical-comparison-owner", "medical-adjective-owner", "medical-status-played-chain", "medical-played-positive", "medical-unfiltered-comparison"];
 const medicalSubjects = cases.length === medicalSubjectIds.length && medicalSubjectIds.every(id => cases.some(item => item.id === id));
-if (!historicalIntegration && !core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes && !originalStatPair && !sharedTeamComparison && !medicalSubjects && !sequences && !playoffHistory && !populations && !delivery) throw new Error("Expected a complete reviewed browser bundle");
+if (!historicalIntegration && !originalK08Defaults && !localOwnership && !core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes && !originalStatPair && !sharedTeamComparison && !medicalSubjects && !sequences && !playoffHistory && !populations && !delivery) throw new Error("Expected a complete reviewed browser bundle");
 await mkdir(output, { recursive: true });
 let executablePath;
 for (const file of ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"]) {
@@ -75,11 +87,14 @@ try {
     let errors = [];
     page.on("pageerror", error => errors.push(error.message));
     const navigation = await page.goto(base, { timeout: 30000 });
-    if (!navigation?.ok()) throw new Error("Application page unavailable");
-    const freshness = (delivery || historicalIntegration) ? await (await context.request.get(base + "/freshness")).json() : null;
+    if (!navigation?.ok()) {
+      await writeFile(`${output}/deployment-access-failure.json`, JSON.stringify({ base, viewport, url: page.url(), http: navigation?.status() ?? null, classification: "Deployment access failure; no protection or credentials changed" }, null, 2));
+      throw new Error("Application page unavailable; preserved deployment-access-failure.json");
+    }
+    const freshness = (delivery || historicalIntegration || originalK08Defaults || localOwnership) ? await (await context.request.get(base + "/freshness")).json() : null;
     const assets = await page.locator('script[type="module"][src]').evaluateAll(nodes => nodes.map(n => n.src));
     let servedAssetSha256 = null;
-    if (historicalIntegration) {
+    if (historicalIntegration || originalK08Defaults) {
       if (assets.length !== 1 || !assets[0].startsWith(base + "/assets/index-")) throw new Error("Unexpected served application asset");
       const response = await context.request.get(assets[0], { maxRedirects: 0, timeout: 30000 });
       if (!response.ok()) throw new Error("Served application asset unavailable");
@@ -147,14 +162,20 @@ try {
       })));
       const forbidden = (item.forbidden ?? []).filter(value => text.includes(value));
       const missing = item.text.filter(value => !text.includes(value));
-      const deliveryEvidence = (delivery || historicalIntegration) ? {
+      const deliveryEvidence = (delivery || historicalIntegration || originalK08Defaults || localOwnership) ? {
         freshness,
         capturedAt: new Date().toISOString(),
         heroText: await page.locator('[data-state-surface="result"] p[class*="sentence"]').allTextContents().then(items => items.join("\n")),
         freshnessText: await page.getByRole("button", { name: /^Data freshness:/ }).innerText(),
         images: await page.locator('[data-state-surface="result"] img').evaluateAll(nodes => nodes.map(node => node.src)),
       } : {};
-      const receipt = { ...deliveryEvidence, id: item.id, viewport, query: item.query, http: response.status(), elapsedMs: Date.now() - start, responseElapsedMs,
+      const developmentEvidence = localOwnership ? {
+        dataQuality: payload.result?.metadata?.data_quality ?? null,
+        provisionalBannerText: text.split("\n").filter(line => /provisional|snapshot|manifest/i.test(line)).join("\n"),
+        readinessAcceptance: "Not applied: explicitly provisional loopback demonstration; observations retained",
+      } : {};
+      if (localOwnership && (developmentEvidence.dataQuality?.state !== "provisional" || !/^[a-f0-9]{64}$/.test(developmentEvidence.dataQuality?.manifest_sha256 ?? "") || !/provisional/i.test(text))) failures.push(`${viewport}/${item.id}/missing-provisional-identity`);
+      const receipt = { ...deliveryEvidence, ...developmentEvidence, id: item.id, viewport, query: item.query, http: response.status(), elapsedMs: Date.now() - start, responseElapsedMs,
         payload, text, servedAssetSha256, readinessBefore, readinessAfter, readinessHttpBefore: before.status(), readinessHttpAfter: after.status(), overflow, errors: [...errors], missing,
         headers, grainErrors, tables, forbidden, assets, screenshot, screenshotSha256: createHash("sha256").update(image).digest("hex") };
       receipts.push(receipt);

@@ -1,0 +1,4652 @@
+{
+  "checks": [
+    {
+      "check": "How many rebounds did P.J. Washington get in first halves on 2026-11-04?",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get in first halves on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get in first halves on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": null,
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": "first",
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Half",
+                "value": "first",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 4,
+            "count_phrase": "P.J. Washington has recorded 4 rebounds in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 4
+              }
+            ],
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04 00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 17.75,
+                "pts": 13.0,
+                "reb": 4.0,
+                "ast": 1.0,
+                "stl": 0.0,
+                "blk": 0.0,
+                "fgm": 5.0,
+                "fga": 10.0,
+                "fg_pct": 0.5,
+                "fg3m": 2.0,
+                "fg3a": 4.0,
+                "fg3_pct": 0.5,
+                "ftm": 1.0,
+                "fta": 2.0,
+                "ft_pct": 0.5,
+                "tov": 1.0,
+                "plus_minus": -12.0,
+                "efg_pct": 0.6,
+                "ts_pct": 0.5974264705882353,
+                "usg_pct": 0.25,
+                "ast_pct": 0.111,
+                "reb_pct": 0.0816326530612244,
+                "tov_pct": 0.077
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "How many rebounds did PJ Washington get in first halves on 2026-11-04?",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did PJ Washington get in first halves on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did PJ Washington get in first halves on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": null,
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": "first",
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Half",
+                "value": "first",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 4,
+            "count_phrase": "P.J. Washington has recorded 4 rebounds in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 4
+              }
+            ],
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04 00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 17.75,
+                "pts": 13.0,
+                "reb": 4.0,
+                "ast": 1.0,
+                "stl": 0.0,
+                "blk": 0.0,
+                "fgm": 5.0,
+                "fga": 10.0,
+                "fg_pct": 0.5,
+                "fg3m": 2.0,
+                "fg3a": 4.0,
+                "fg3_pct": 0.5,
+                "ftm": 1.0,
+                "fta": 2.0,
+                "ft_pct": 0.5,
+                "tov": 1.0,
+                "plus_minus": -12.0,
+                "efg_pct": 0.6,
+                "ts_pct": 0.5974264705882353,
+                "usg_pct": 0.25,
+                "ast_pct": 0.111,
+                "reb_pct": 0.0816326530612244,
+                "tov_pct": 0.077
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "How many rebounds did P.J. Washington get for DAL in first halves on 2026-11-04?",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get for DAL in first halves on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get for DAL in first halves on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": "DAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": "first",
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Half",
+                "value": "first",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "team_context": {
+              "team_abbr": "DAL"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 4,
+            "count_phrase": "P.J. Washington has recorded 4 rebounds in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 4
+              }
+            ],
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04 00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 17.75,
+                "pts": 13.0,
+                "reb": 4.0,
+                "ast": 1.0,
+                "stl": 0.0,
+                "blk": 0.0,
+                "fgm": 5.0,
+                "fga": 10.0,
+                "fg_pct": 0.5,
+                "fg3m": 2.0,
+                "fg3a": 4.0,
+                "fg3_pct": 0.5,
+                "ftm": 1.0,
+                "fta": 2.0,
+                "ft_pct": 0.5,
+                "tov": 1.0,
+                "plus_minus": -12.0,
+                "efg_pct": 0.6,
+                "ts_pct": 0.5974264705882353,
+                "usg_pct": 0.25,
+                "ast_pct": 0.111,
+                "reb_pct": 0.0816326530612244,
+                "tov_pct": 0.077
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "How many rebounds did P.J. Washington get for the Dallas Mavericks in first halves on 2026-11-04?",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get for the Dallas Mavericks in first halves on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get for the Dallas Mavericks in first halves on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": "DAL",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": "first",
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Half",
+                "value": "first",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "team_context": {
+              "team_abbr": "DAL"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 4,
+            "count_phrase": "P.J. Washington has recorded 4 rebounds in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 4
+              }
+            ],
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04 00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 17.75,
+                "pts": 13.0,
+                "reb": 4.0,
+                "ast": 1.0,
+                "stl": 0.0,
+                "blk": 0.0,
+                "fgm": 5.0,
+                "fga": 10.0,
+                "fg_pct": 0.5,
+                "fg3m": 2.0,
+                "fg3a": 4.0,
+                "fg3_pct": 0.5,
+                "ftm": 1.0,
+                "fta": 2.0,
+                "ft_pct": 0.5,
+                "tov": 1.0,
+                "plus_minus": -12.0,
+                "efg_pct": 0.6,
+                "ts_pct": 0.5974264705882353,
+                "usg_pct": 0.25,
+                "ast_pct": 0.111,
+                "reb_pct": 0.0816326530612244,
+                "tov_pct": 0.077
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "How many rebounds did P.J. Washington get against SAS in first halves on 2026-11-04?",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get against SAS in first halves on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get against SAS in first halves on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": null,
+            "opponent": "SAS",
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": "first",
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Opponent",
+                "value": "SAS",
+                "kind": "team"
+              },
+              {
+                "label": "Half",
+                "value": "first",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "opponent_context": {
+              "team_abbr": "SAS"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 4,
+            "count_phrase": "P.J. Washington has recorded 4 rebounds in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 4
+              }
+            ],
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04 00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 17.75,
+                "pts": 13.0,
+                "reb": 4.0,
+                "ast": 1.0,
+                "stl": 0.0,
+                "blk": 0.0,
+                "fgm": 5.0,
+                "fga": 10.0,
+                "fg_pct": 0.5,
+                "fg3m": 2.0,
+                "fg3a": 4.0,
+                "fg3_pct": 0.5,
+                "ftm": 1.0,
+                "fta": 2.0,
+                "ft_pct": 0.5,
+                "tov": 1.0,
+                "plus_minus": -12.0,
+                "efg_pct": 0.6,
+                "ts_pct": 0.5974264705882353,
+                "usg_pct": 0.25,
+                "ast_pct": 0.111,
+                "reb_pct": 0.0816326530612244,
+                "tov_pct": 0.077
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "How many rebounds did P.J. Washington get against the San Antonio Spurs in first halves on 2026-11-04?",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get against the San Antonio Spurs in first halves on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get against the San Antonio Spurs in first halves on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": null,
+            "opponent": "SAS",
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": "first",
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Opponent",
+                "value": "SAS",
+                "kind": "team"
+              },
+              {
+                "label": "Half",
+                "value": "first",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "opponent_context": {
+              "team_abbr": "SAS"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 4,
+            "count_phrase": "P.J. Washington has recorded 4 rebounds in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 4
+              }
+            ],
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04 00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 17.75,
+                "pts": 13.0,
+                "reb": 4.0,
+                "ast": 1.0,
+                "stl": 0.0,
+                "blk": 0.0,
+                "fgm": 5.0,
+                "fga": 10.0,
+                "fg_pct": 0.5,
+                "fg3m": 2.0,
+                "fg3a": 4.0,
+                "fg3_pct": 0.5,
+                "ftm": 1.0,
+                "fta": 2.0,
+                "ft_pct": 0.5,
+                "tov": 1.0,
+                "plus_minus": -12.0,
+                "efg_pct": 0.6,
+                "ts_pct": 0.5974264705882353,
+                "usg_pct": 0.25,
+                "ast_pct": 0.111,
+                "reb_pct": 0.0816326530612244,
+                "tov_pct": 0.077
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "How many rebounds did P.J. Washington get for DAL against SAS in first halves on 2026-11-04?",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get for DAL against SAS in first halves on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get for DAL against SAS in first halves on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": "DAL",
+            "opponent": "SAS",
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": "first",
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Opponent",
+                "value": "SAS",
+                "kind": "team"
+              },
+              {
+                "label": "Half",
+                "value": "first",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "team_context": {
+              "team_abbr": "DAL"
+            },
+            "opponent_context": {
+              "team_abbr": "SAS"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 4,
+            "count_phrase": "P.J. Washington has recorded 4 rebounds in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 4
+              }
+            ],
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04 00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 17.75,
+                "pts": 13.0,
+                "reb": 4.0,
+                "ast": 1.0,
+                "stl": 0.0,
+                "blk": 0.0,
+                "fgm": 5.0,
+                "fga": 10.0,
+                "fg_pct": 0.5,
+                "fg3m": 2.0,
+                "fg3a": 4.0,
+                "fg3_pct": 0.5,
+                "ftm": 1.0,
+                "fta": 2.0,
+                "ft_pct": 0.5,
+                "tov": 1.0,
+                "plus_minus": -12.0,
+                "efg_pct": 0.6,
+                "ts_pct": 0.5974264705882353,
+                "usg_pct": 0.25,
+                "ast_pct": 0.111,
+                "reb_pct": 0.0816326530612244,
+                "tov_pct": 0.077
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "How many rebounds did P.J. Washington get for WAS in first halves on 2026-11-04?",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get for WAS in first halves on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get for WAS in first halves on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": "WAS",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": "first",
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Half",
+                "value": "first",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "team_context": {
+              "team_abbr": "WAS"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 0,
+            "count_phrase": "P.J. Washington has recorded 0 rebs in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "How many rebounds did P.J. Washington get for Washington in first halves on 2026-11-04?",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get for Washington in first halves on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get for Washington in first halves on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": "WAS",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": "first",
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Half",
+                "value": "first",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "team_context": {
+              "team_abbr": "WAS"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 0,
+            "count_phrase": "P.J. Washington has recorded 0 rebs in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "How many rebounds did P.J. Washington get against DAL in first halves on 2026-11-04?",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get against DAL in first halves on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get against DAL in first halves on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": null,
+            "opponent": "DAL",
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": "first",
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Opponent",
+                "value": "DAL",
+                "kind": "team"
+              },
+              {
+                "label": "Half",
+                "value": "first",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "opponent_context": {
+              "team_abbr": "DAL"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 0,
+            "count_phrase": "P.J. Washington has recorded 0 rebs in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "How many rebounds did P.J. Washington get against Washington in first halves on 2026-11-04?",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get against Washington in first halves on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get against Washington in first halves on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": null,
+            "opponent": "WAS",
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": "first",
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Opponent",
+                "value": "WAS",
+                "kind": "team"
+              },
+              {
+                "label": "Half",
+                "value": "first",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "opponent_context": {
+              "team_abbr": "WAS"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 0,
+            "count_phrase": "P.J. Washington has recorded 0 rebs in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "source_literal_whole",
+      "passed": false,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": null,
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": null,
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 9,
+            "count_phrase": "P.J. Washington has recorded 9 rebounds in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 9
+              }
+            ],
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04 00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 39.0,
+                "pts": 21,
+                "reb": 9,
+                "ast": 3,
+                "stl": 0,
+                "blk": 1,
+                "fgm": 7,
+                "fga": 18,
+                "fg_pct": 0.389,
+                "fg3m": 3,
+                "fg3a": 8,
+                "fg3_pct": 0.375,
+                "ftm": 4,
+                "fta": 5,
+                "ft_pct": 0.8,
+                "tov": 1,
+                "plus_minus": 0,
+                "efg_pct": 0.4722222222222222,
+                "ts_pct": 0.5198019801980198,
+                "usg_pct": 0.186,
+                "ast_pct": 0.057,
+                "reb_pct": 0.107,
+                "tov_pct": 4.716981132075472
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "structured_literal_whole",
+      "passed": false,
+      "detail": {
+        "query_class": "finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {},
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "sections": {
+          "finder": [
+            {
+              "rank": 1,
+              "game_date": "2026-11-04 00:00:00",
+              "game_id": 22600184,
+              "season": "2026-27",
+              "season_type": "Regular Season",
+              "player_name": "P.J. Washington",
+              "player_id": 1629023,
+              "team_name": "Dallas Mavericks",
+              "team_abbr": "DAL",
+              "opponent_team_name": "San Antonio Spurs",
+              "opponent_team_abbr": "SAS",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "L",
+              "minutes": 39.0,
+              "pts": 21,
+              "reb": 9,
+              "ast": 3,
+              "stl": 0,
+              "blk": 1,
+              "fgm": 7,
+              "fga": 18,
+              "fg_pct": 0.389,
+              "fg3m": 3,
+              "fg3a": 8,
+              "fg3_pct": 0.375,
+              "ftm": 4,
+              "fta": 5,
+              "ft_pct": 0.8,
+              "tov": 1,
+              "plus_minus": 0,
+              "efg_pct": 0.4722222222222222,
+              "ts_pct": 0.5198019801980198,
+              "usg_pct": 0.186,
+              "ast_pct": 0.057,
+              "reb_pct": 0.107,
+              "tov_pct": 4.716981132075472
+            }
+          ]
+        }
+      }
+    },
+    {
+      "check": "source_literal_q1",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get in first quarters on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get in first quarters on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": null,
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": "1",
+            "half": null,
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Quarter",
+                "value": "1",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 3,
+            "count_phrase": "P.J. Washington has recorded 3 rebounds in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 3
+              }
+            ],
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04 00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 8.516666666666667,
+                "pts": 8.0,
+                "reb": 3.0,
+                "ast": 1.0,
+                "stl": 0.0,
+                "blk": 0.0,
+                "fgm": 3.0,
+                "fga": 6.0,
+                "fg_pct": 0.5,
+                "fg3m": 1.0,
+                "fg3a": 3.0,
+                "fg3_pct": 0.333,
+                "ftm": 1.0,
+                "fta": 2.0,
+                "ft_pct": 0.5,
+                "tov": 1.0,
+                "plus_minus": -2.0,
+                "efg_pct": 0.5833333333333334,
+                "ts_pct": 0.5813953488372093,
+                "usg_pct": 0.308,
+                "ast_pct": 0.25,
+                "reb_pct": 0.111,
+                "tov_pct": 0.111
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "structured_literal_q1",
+      "passed": true,
+      "detail": {
+        "query_class": "finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {
+          "unknown_source_fields": []
+        },
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "sections": {
+          "finder": [
+            {
+              "rank": 1,
+              "game_date": "2026-11-04 00:00:00",
+              "game_id": 22600184,
+              "season": "2026-27",
+              "season_type": "Regular Season",
+              "player_name": "P.J. Washington",
+              "player_id": 1629023,
+              "team_name": "Dallas Mavericks",
+              "team_abbr": "DAL",
+              "opponent_team_name": "San Antonio Spurs",
+              "opponent_team_abbr": "SAS",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "L",
+              "minutes": 8.516666666666667,
+              "pts": 8.0,
+              "reb": 3.0,
+              "ast": 1.0,
+              "stl": 0.0,
+              "blk": 0.0,
+              "fgm": 3.0,
+              "fga": 6.0,
+              "fg_pct": 0.5,
+              "fg3m": 1.0,
+              "fg3a": 3.0,
+              "fg3_pct": 0.333,
+              "ftm": 1.0,
+              "fta": 2.0,
+              "ft_pct": 0.5,
+              "tov": 1.0,
+              "plus_minus": -2.0,
+              "efg_pct": 0.5833333333333334,
+              "ts_pct": 0.5813953488372093,
+              "usg_pct": 0.308,
+              "ast_pct": 0.25,
+              "reb_pct": 0.111,
+              "tov_pct": 0.111
+            }
+          ]
+        }
+      }
+    },
+    {
+      "check": "source_literal_q2",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get in second quarters on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get in second quarters on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": null,
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": "2",
+            "half": null,
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Quarter",
+                "value": "2",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 1,
+            "count_phrase": "P.J. Washington has recorded 1 rebound in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 1
+              }
+            ],
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04 00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 9.233333333333333,
+                "pts": 5.0,
+                "reb": 1.0,
+                "ast": 0.0,
+                "stl": 0.0,
+                "blk": 0.0,
+                "fgm": 2.0,
+                "fga": 4.0,
+                "fg_pct": 0.5,
+                "fg3m": 1.0,
+                "fg3a": 1.0,
+                "fg3_pct": 1.0,
+                "ftm": 0.0,
+                "fta": 0.0,
+                "ft_pct": 0.0,
+                "tov": 0.0,
+                "plus_minus": -10.0,
+                "efg_pct": 0.625,
+                "ts_pct": 0.625,
+                "usg_pct": 0.182,
+                "ast_pct": 0.0,
+                "reb_pct": 0.0454545454545454,
+                "tov_pct": 0.0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "structured_literal_q2",
+      "passed": true,
+      "detail": {
+        "query_class": "finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {
+          "unknown_source_fields": []
+        },
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "sections": {
+          "finder": [
+            {
+              "rank": 1,
+              "game_date": "2026-11-04 00:00:00",
+              "game_id": 22600184,
+              "season": "2026-27",
+              "season_type": "Regular Season",
+              "player_name": "P.J. Washington",
+              "player_id": 1629023,
+              "team_name": "Dallas Mavericks",
+              "team_abbr": "DAL",
+              "opponent_team_name": "San Antonio Spurs",
+              "opponent_team_abbr": "SAS",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "L",
+              "minutes": 9.233333333333333,
+              "pts": 5.0,
+              "reb": 1.0,
+              "ast": 0.0,
+              "stl": 0.0,
+              "blk": 0.0,
+              "fgm": 2.0,
+              "fga": 4.0,
+              "fg_pct": 0.5,
+              "fg3m": 1.0,
+              "fg3a": 1.0,
+              "fg3_pct": 1.0,
+              "ftm": 0.0,
+              "fta": 0.0,
+              "ft_pct": 0.0,
+              "tov": 0.0,
+              "plus_minus": -10.0,
+              "efg_pct": 0.625,
+              "ts_pct": 0.625,
+              "usg_pct": 0.182,
+              "ast_pct": 0.0,
+              "reb_pct": 0.0454545454545454,
+              "tov_pct": 0.0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "check": "source_literal_q3",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get in third quarters on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get in third quarters on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": null,
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": "3",
+            "half": null,
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Quarter",
+                "value": "3",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 5,
+            "count_phrase": "P.J. Washington has recorded 5 rebounds in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 5
+              }
+            ],
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04 00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 12.0,
+                "pts": 5.0,
+                "reb": 5.0,
+                "ast": 1.0,
+                "stl": 0.0,
+                "blk": 0.0,
+                "fgm": 1.0,
+                "fga": 5.0,
+                "fg_pct": 0.2,
+                "fg3m": 0.0,
+                "fg3a": 2.0,
+                "fg3_pct": 0.0,
+                "ftm": 3.0,
+                "fta": 3.0,
+                "ft_pct": 1.0,
+                "tov": 0.0,
+                "plus_minus": 7.0,
+                "efg_pct": 0.2,
+                "ts_pct": 0.39556962025316456,
+                "usg_pct": 0.2,
+                "ast_pct": 0.125,
+                "reb_pct": 0.2,
+                "tov_pct": 0.0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "structured_literal_q3",
+      "passed": true,
+      "detail": {
+        "query_class": "finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {
+          "unknown_source_fields": []
+        },
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "sections": {
+          "finder": [
+            {
+              "rank": 1,
+              "game_date": "2026-11-04 00:00:00",
+              "game_id": 22600184,
+              "season": "2026-27",
+              "season_type": "Regular Season",
+              "player_name": "P.J. Washington",
+              "player_id": 1629023,
+              "team_name": "Dallas Mavericks",
+              "team_abbr": "DAL",
+              "opponent_team_name": "San Antonio Spurs",
+              "opponent_team_abbr": "SAS",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "L",
+              "minutes": 12.0,
+              "pts": 5.0,
+              "reb": 5.0,
+              "ast": 1.0,
+              "stl": 0.0,
+              "blk": 0.0,
+              "fgm": 1.0,
+              "fga": 5.0,
+              "fg_pct": 0.2,
+              "fg3m": 0.0,
+              "fg3a": 2.0,
+              "fg3_pct": 0.0,
+              "ftm": 3.0,
+              "fta": 3.0,
+              "ft_pct": 1.0,
+              "tov": 0.0,
+              "plus_minus": 7.0,
+              "efg_pct": 0.2,
+              "ts_pct": 0.39556962025316456,
+              "usg_pct": 0.2,
+              "ast_pct": 0.125,
+              "reb_pct": 0.2,
+              "tov_pct": 0.0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "check": "source_literal_q4",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get in fourth quarters on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get in fourth quarters on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": null,
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": "4",
+            "half": null,
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Quarter",
+                "value": "4",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 1,
+            "count_phrase": "P.J. Washington has recorded 1 rebound in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 1
+              }
+            ],
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04 00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 9.25,
+                "pts": 3.0,
+                "reb": 1.0,
+                "ast": 1.0,
+                "stl": 0.0,
+                "blk": 1.0,
+                "fgm": 1.0,
+                "fga": 3.0,
+                "fg_pct": 0.333,
+                "fg3m": 1.0,
+                "fg3a": 2.0,
+                "fg3_pct": 0.5,
+                "ftm": 0.0,
+                "fta": 0.0,
+                "ft_pct": 0.0,
+                "tov": 0.0,
+                "plus_minus": 5.0,
+                "efg_pct": 0.5,
+                "ts_pct": 0.5,
+                "usg_pct": 0.13,
+                "ast_pct": 0.143,
+                "reb_pct": 0.036,
+                "tov_pct": 0.0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "structured_literal_q4",
+      "passed": true,
+      "detail": {
+        "query_class": "finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {
+          "unknown_source_fields": []
+        },
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "sections": {
+          "finder": [
+            {
+              "rank": 1,
+              "game_date": "2026-11-04 00:00:00",
+              "game_id": 22600184,
+              "season": "2026-27",
+              "season_type": "Regular Season",
+              "player_name": "P.J. Washington",
+              "player_id": 1629023,
+              "team_name": "Dallas Mavericks",
+              "team_abbr": "DAL",
+              "opponent_team_name": "San Antonio Spurs",
+              "opponent_team_abbr": "SAS",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "L",
+              "minutes": 9.25,
+              "pts": 3.0,
+              "reb": 1.0,
+              "ast": 1.0,
+              "stl": 0.0,
+              "blk": 1.0,
+              "fgm": 1.0,
+              "fga": 3.0,
+              "fg_pct": 0.333,
+              "fg3m": 1.0,
+              "fg3a": 2.0,
+              "fg3_pct": 0.5,
+              "ftm": 0.0,
+              "fta": 0.0,
+              "ft_pct": 0.0,
+              "tov": 0.0,
+              "plus_minus": 5.0,
+              "efg_pct": 0.5,
+              "ts_pct": 0.5,
+              "usg_pct": 0.13,
+              "ast_pct": 0.143,
+              "reb_pct": 0.036,
+              "tov_pct": 0.0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "check": "source_literal_h1",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get in first halves on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get in first halves on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": null,
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": "first",
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Half",
+                "value": "first",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 4,
+            "count_phrase": "P.J. Washington has recorded 4 rebounds in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 4
+              }
+            ],
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04 00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 17.75,
+                "pts": 13.0,
+                "reb": 4.0,
+                "ast": 1.0,
+                "stl": 0.0,
+                "blk": 0.0,
+                "fgm": 5.0,
+                "fga": 10.0,
+                "fg_pct": 0.5,
+                "fg3m": 2.0,
+                "fg3a": 4.0,
+                "fg3_pct": 0.5,
+                "ftm": 1.0,
+                "fta": 2.0,
+                "ft_pct": 0.5,
+                "tov": 1.0,
+                "plus_minus": -12.0,
+                "efg_pct": 0.6,
+                "ts_pct": 0.5974264705882353,
+                "usg_pct": 0.25,
+                "ast_pct": 0.111,
+                "reb_pct": 0.0816326530612244,
+                "tov_pct": 0.077
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "structured_literal_h1",
+      "passed": true,
+      "detail": {
+        "query_class": "finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {
+          "unknown_source_fields": []
+        },
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "sections": {
+          "finder": [
+            {
+              "rank": 1,
+              "game_date": "2026-11-04 00:00:00",
+              "game_id": 22600184,
+              "season": "2026-27",
+              "season_type": "Regular Season",
+              "player_name": "P.J. Washington",
+              "player_id": 1629023,
+              "team_name": "Dallas Mavericks",
+              "team_abbr": "DAL",
+              "opponent_team_name": "San Antonio Spurs",
+              "opponent_team_abbr": "SAS",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "L",
+              "minutes": 17.75,
+              "pts": 13.0,
+              "reb": 4.0,
+              "ast": 1.0,
+              "stl": 0.0,
+              "blk": 0.0,
+              "fgm": 5.0,
+              "fga": 10.0,
+              "fg_pct": 0.5,
+              "fg3m": 2.0,
+              "fg3a": 4.0,
+              "fg3_pct": 0.5,
+              "ftm": 1.0,
+              "fta": 2.0,
+              "ft_pct": 0.5,
+              "tov": 1.0,
+              "plus_minus": -12.0,
+              "efg_pct": 0.6,
+              "ts_pct": 0.5974264705882353,
+              "usg_pct": 0.25,
+              "ast_pct": 0.111,
+              "reb_pct": 0.0816326530612244,
+              "tov_pct": 0.077
+            }
+          ]
+        }
+      }
+    },
+    {
+      "check": "source_literal_h2",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get in second halves on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get in second halves on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": null,
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": "second",
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Half",
+                "value": "second",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 6,
+            "count_phrase": "P.J. Washington has recorded 6 rebounds in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 6
+              }
+            ],
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04 00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 21.25,
+                "pts": 8.0,
+                "reb": 6.0,
+                "ast": 2.0,
+                "stl": 0.0,
+                "blk": 1.0,
+                "fgm": 2.0,
+                "fga": 8.0,
+                "fg_pct": 0.25,
+                "fg3m": 1.0,
+                "fg3a": 4.0,
+                "fg3_pct": 0.25,
+                "ftm": 3.0,
+                "fta": 3.0,
+                "ft_pct": 1.0,
+                "tov": 0.0,
+                "plus_minus": 12.0,
+                "efg_pct": 0.3125,
+                "ts_pct": 0.4291845493562232,
+                "usg_pct": 0.17,
+                "ast_pct": 0.133,
+                "reb_pct": 0.113,
+                "tov_pct": 0.0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "structured_literal_h2",
+      "passed": true,
+      "detail": {
+        "query_class": "finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {
+          "unknown_source_fields": []
+        },
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "sections": {
+          "finder": [
+            {
+              "rank": 1,
+              "game_date": "2026-11-04 00:00:00",
+              "game_id": 22600184,
+              "season": "2026-27",
+              "season_type": "Regular Season",
+              "player_name": "P.J. Washington",
+              "player_id": 1629023,
+              "team_name": "Dallas Mavericks",
+              "team_abbr": "DAL",
+              "opponent_team_name": "San Antonio Spurs",
+              "opponent_team_abbr": "SAS",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "L",
+              "minutes": 21.25,
+              "pts": 8.0,
+              "reb": 6.0,
+              "ast": 2.0,
+              "stl": 0.0,
+              "blk": 1.0,
+              "fgm": 2.0,
+              "fga": 8.0,
+              "fg_pct": 0.25,
+              "fg3m": 1.0,
+              "fg3a": 4.0,
+              "fg3_pct": 0.25,
+              "ftm": 3.0,
+              "fta": 3.0,
+              "ft_pct": 1.0,
+              "tov": 0.0,
+              "plus_minus": 12.0,
+              "efg_pct": 0.3125,
+              "ts_pct": 0.4291845493562232,
+              "usg_pct": 0.17,
+              "ast_pct": 0.133,
+              "reb_pct": 0.113,
+              "tov_pct": 0.0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "check": "HTTP How many rebounds did P.J. Washington get in first halves on 2026-11-04?",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get in first halves on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get in first halves on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": null,
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": "first",
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Half",
+                "value": "first",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 4,
+            "count_phrase": "P.J. Washington has recorded 4 rebounds in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 4
+              }
+            ],
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04T00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 17.75,
+                "pts": 13.0,
+                "reb": 4.0,
+                "ast": 1.0,
+                "stl": 0.0,
+                "blk": 0.0,
+                "fgm": 5.0,
+                "fga": 10.0,
+                "fg_pct": 0.5,
+                "fg3m": 2.0,
+                "fg3a": 4.0,
+                "fg3_pct": 0.5,
+                "ftm": 1.0,
+                "fta": 2.0,
+                "ft_pct": 0.5,
+                "tov": 1.0,
+                "plus_minus": -12.0,
+                "efg_pct": 0.6,
+                "ts_pct": 0.5974264705882353,
+                "usg_pct": 0.25,
+                "ast_pct": 0.111,
+                "reb_pct": 0.0816326530612244,
+                "tov_pct": 0.077
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "HTTP How many rebounds did P.J. Washington get for DAL against SAS in first halves on 2026-11-04?",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get for DAL against SAS in first halves on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get for DAL against SAS in first halves on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": "DAL",
+            "opponent": "SAS",
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": "first",
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Opponent",
+                "value": "SAS",
+                "kind": "team"
+              },
+              {
+                "label": "Half",
+                "value": "first",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "team_context": {
+              "team_abbr": "DAL"
+            },
+            "opponent_context": {
+              "team_abbr": "SAS"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 4,
+            "count_phrase": "P.J. Washington has recorded 4 rebounds in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 4
+              }
+            ],
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04T00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 17.75,
+                "pts": 13.0,
+                "reb": 4.0,
+                "ast": 1.0,
+                "stl": 0.0,
+                "blk": 0.0,
+                "fgm": 5.0,
+                "fga": 10.0,
+                "fg_pct": 0.5,
+                "fg3m": 2.0,
+                "fg3a": 4.0,
+                "fg3_pct": 0.5,
+                "ftm": 1.0,
+                "fta": 2.0,
+                "ft_pct": 0.5,
+                "tov": 1.0,
+                "plus_minus": -12.0,
+                "efg_pct": 0.6,
+                "ts_pct": 0.5974264705882353,
+                "usg_pct": 0.25,
+                "ast_pct": 0.111,
+                "reb_pct": 0.0816326530612244,
+                "tov_pct": 0.077
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "HTTP How many rebounds did P.J. Washington get for WAS in first halves on 2026-11-04?",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "How many rebounds did P.J. Washington get for WAS in first halves on 2026-11-04?",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": 0.98,
+        "intent": "count",
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "count",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "query_text": "How many rebounds did P.J. Washington get for WAS in first halves on 2026-11-04?",
+            "route": "player_game_finder",
+            "query_class": "count",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "explicit_relative_season": false,
+            "season_type": "Regular Season",
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": "WAS",
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": [],
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "min_streak_length": null,
+            "stat": "reb",
+            "ranking_key": null,
+            "requested_stat": null,
+            "requested_metrics": null,
+            "requested_event_conditions": null,
+            "unsupported_availability": null,
+            "unsupported_scope": null,
+            "requested_aggregation": null,
+            "available_aggregation": null,
+            "min_value": null,
+            "max_value": null,
+            "sort_by": "stat",
+            "ascending": false,
+            "ranked_intent": false,
+            "threshold_conditions": [],
+            "extra_conditions": [],
+            "conditions": null,
+            "occurrence_event": null,
+            "split_type": null,
+            "season_list": null,
+            "clutch": false,
+            "back_to_back": false,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "role": null,
+            "quarter": null,
+            "half": "first",
+            "position_filter": null,
+            "grouped_boolean_used": false,
+            "boolean_filter_mode": null,
+            "condition_expression": null,
+            "boolean_filter_branches": null,
+            "head_to_head_used": false,
+            "scope_kind": "single_season",
+            "applied_filters": [
+              {
+                "label": "Half",
+                "value": "first",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "team_context": {
+              "team_abbr": "WAS"
+            },
+            "confidence": 0.98,
+            "intent": "count",
+            "primary_count": 0,
+            "count_phrase": "P.J. Washington has recorded 0 rebs in the 2026-27 regular season.",
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "count": [
+              {
+                "count": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "check": "HTTP structured H1",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "query": "structured:player_game_finder",
+        "route": "player_game_finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "current_through": null,
+        "confidence": null,
+        "intent": null,
+        "alternates": [],
+        "notes": [
+          "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+        ],
+        "caveats": [],
+        "result": {
+          "query_class": "finder",
+          "result_status": "ok",
+          "result_reason": null,
+          "metadata": {
+            "route": "player_game_finder",
+            "query_class": "finder",
+            "season": "2026-27",
+            "start_season": null,
+            "end_season": null,
+            "season_type": null,
+            "start_date": "2026-11-04",
+            "end_date": "2026-11-04",
+            "game_dates": null,
+            "last_n": null,
+            "last_n_scope": null,
+            "player": "P.J. Washington",
+            "team": null,
+            "opponent": null,
+            "opponent_conference": null,
+            "opponent_division": null,
+            "opponent_team_abbrs": null,
+            "with_player": null,
+            "without_player": null,
+            "without_player_reason": null,
+            "unresolved_availability_player": null,
+            "unsupported_filters": null,
+            "opponent_quality": null,
+            "lineup_members": null,
+            "presence_state": null,
+            "unit_size": null,
+            "minute_minimum": null,
+            "window_size": null,
+            "stretch_metric": null,
+            "stretch_display_mode": null,
+            "stat": "reb",
+            "min_value": null,
+            "max_value": null,
+            "conditions": null,
+            "condition_expression": null,
+            "sort_by": null,
+            "ascending": null,
+            "ranked_intent": false,
+            "split_type": null,
+            "season_list": null,
+            "clutch": null,
+            "back_to_back": null,
+            "series_situation": null,
+            "rest_days": null,
+            "one_possession": null,
+            "nationally_televised": null,
+            "role": null,
+            "quarter": null,
+            "half": "first",
+            "position_filter": null,
+            "head_to_head_used": false,
+            "applied_filters": [
+              {
+                "label": "Half",
+                "value": "first",
+                "kind": "period"
+              },
+              {
+                "label": "Date range",
+                "value": "2026-11-04 \u2013 2026-11-04",
+                "kind": "date"
+              }
+            ],
+            "player_context": {
+              "player_id": 1629023,
+              "player_name": "P.J. Washington"
+            },
+            "data_quality": {
+              "state": "provisional",
+              "snapshot": "current123-period-reader-development-v6",
+              "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+              "scope": "Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open",
+              "source_evidence": {
+                "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+                "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b"
+              },
+              "exceptions": [
+                "DQ-001",
+                "DQ-002",
+                "DQ-003",
+                "DQ-006"
+              ],
+              "validation_reports": [
+                {
+                  "path": "data/metadata/period-book-validation.json",
+                  "sha256": "b8df0496f48c077481de0d0e4ceabec8e593f1021b7ac2af6465be784f71715a",
+                  "state": "passed"
+                },
+                {
+                  "dataset_path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+                  "kind": "player_period_inputs",
+                  "path": "data/metadata/player-period-input-qualification.json",
+                  "sha256": "9f11f4f494073ff99681fd956d6a3f12c7aed195e9aabbc3f1ddb2ff53a382f6",
+                  "state": "qualified_inputs"
+                }
+              ],
+              "fixture": false,
+              "numerical_acceptance": false,
+              "production_accepted": false
+            }
+          },
+          "notes": [
+            "PROVISIONAL development data \u2014 current123-period-reader-development-v6; Unchanged source-qualified PR602 v5 rows; rate dependencies checked per complete query sample; old484unknowns/DQ006/freshness/publication remain open. NBA accuracy is not certified. Exceptions: DQ-001, DQ-002, DQ-003, DQ-006."
+          ],
+          "caveats": [],
+          "sections": {
+            "finder": [
+              {
+                "rank": 1,
+                "game_date": "2026-11-04T00:00:00",
+                "game_id": 22600184,
+                "season": "2026-27",
+                "season_type": "Regular Season",
+                "player_name": "P.J. Washington",
+                "player_id": 1629023,
+                "team_name": "Dallas Mavericks",
+                "team_abbr": "DAL",
+                "opponent_team_name": "San Antonio Spurs",
+                "opponent_team_abbr": "SAS",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "minutes": 17.75,
+                "pts": 13.0,
+                "reb": 4.0,
+                "ast": 1.0,
+                "stl": 0.0,
+                "blk": 0.0,
+                "fgm": 5.0,
+                "fga": 10.0,
+                "fg_pct": 0.5,
+                "fg3m": 2.0,
+                "fg3a": 4.0,
+                "fg3_pct": 0.5,
+                "ftm": 1.0,
+                "fta": 2.0,
+                "ft_pct": 0.5,
+                "tov": 1.0,
+                "plus_minus": -12.0,
+                "efg_pct": 0.6,
+                "ts_pct": 0.5974264705882353,
+                "usg_pct": 0.25,
+                "ast_pct": 0.111,
+                "reb_pct": 0.0816326530612244,
+                "tov_pct": 0.077
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "all_passed": false,
+  "backend_model_identity": "unavailable",
+  "expected_values_from": "retained original scorer rows 7d054703; frozen source-samples5fa00eea; notcandidateCSV",
+  "source_requests": 0,
+  "production_writes": 0
+}

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "ownership-washington-h1",
+    "query": "How many rebounds did P.J. Washington get in first halves on 2026-11-04?",
+    "text": [
+      "P.J. Washington",
+      "PROVISIONAL"
+    ],
+    "forbidden": [
+      "Data Not Available",
+      "NaN",
+      "undefined",
+      "Infinity"
+    ],
+    "expected_count": 4
+  },
+  {
+    "id": "ownership-washington-q2",
+    "query": "How many rebounds did P.J. Washington get in second quarters for DAL on 2026-11-04?",
+    "text": [
+      "P.J. Washington",
+      "PROVISIONAL"
+    ],
+    "forbidden": [
+      "Data Not Available",
+      "NaN",
+      "undefined",
+      "Infinity"
+    ],
+    "expected_count": 1
+  },
+  {
+    "id": "ownership-explicit-was",
+    "query": "How many rebounds did P.J. Washington get in first halves for WAS on 2026-11-04?",
+    "text": [
+      "P.J. Washington",
+      "PROVISIONAL"
+    ],
+    "forbidden": [
+      "Data Not Available",
+      "NaN",
+      "undefined",
+      "Infinity"
+    ],
+    "expected_count": 0
+  }
+]

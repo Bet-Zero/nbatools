@@ -1,0 +1,61 @@
+{
+  "accent_identity_checks": [
+    {
+      "check": "Luka Doncic",
+      "passed": true
+    },
+    {
+      "check": "LUKA DON\u010cI\u0106",
+      "passed": true
+    },
+    {
+      "check": "Luka Donc\u030cic\u0301",
+      "passed": true
+    },
+    {
+      "check": "Austin Reaves",
+      "passed": true
+    },
+    {
+      "check": "reject_Luka",
+      "passed": true
+    },
+    {
+      "check": "reject_Doncic",
+      "passed": true
+    },
+    {
+      "check": "reject_Luka Donchich",
+      "passed": true
+    },
+    {
+      "check": "reject_Luka  Doncic",
+      "passed": true
+    },
+    {
+      "check": "reject_Austin Rivers",
+      "passed": true
+    },
+    {
+      "check": "reject_ambiguous_full_name",
+      "passed": true
+    }
+  ],
+  "retained_44_labels_unchanged": true,
+  "only_scalar_event_case": [
+    "k12-e1"
+  ],
+  "counts": [
+    663,
+    647,
+    16
+  ],
+  "files": {
+    "tests/cloud_core1_k08_lal_default_real_data.py": "5ad7fe20937e798e0cadcf37469103f5e5b5078033ed3725fc344f978eb14489",
+    "tests/test_core1_k08_lal_default_contract.py": "d6abbbf51a2d357d2f593ff3fc719d4788dbfe498158957d8159efeb17a60aca",
+    "working/nba-tools-completion-program/source-evidence/core-live-current-20261107/build_historical_applicability.py": "068b0396eb9c17cfc8289e4d64c491f2223af8cfa89f0588069f1a0e5cf98856",
+    "working/nba-tools-completion-program/source-evidence/core-live-current-20261107/historical-applicability-20261110.json": "c4d0ff5ecbf8fce83be61c785fefa731438b8edf46945713f8692808f1f2c361",
+    "tests/cloud_core_historical_delivery_real_data.py": "531ed015b0942c217f5b291a8b322516269cffff8380821ee406db63c346d2c8"
+  },
+  "backend_model_identity": "unavailable"
+}

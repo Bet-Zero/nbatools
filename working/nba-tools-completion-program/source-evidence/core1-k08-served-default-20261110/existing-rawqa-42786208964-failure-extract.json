@@ -1,0 +1,624 @@
+{
+  "source_archive_sha256": "ccde9588c64de9953b8d24082fe81c0dc791f484162cc92105c1b7cf095197ff",
+  "classification": "exact existing corpus failures, not a new acceptance denominator",
+  "failures": [
+    {
+      "id": "suns_without_booker",
+      "query": "How do the Suns perform when Devin Booker didn't play?",
+      "result_status": "no_result",
+      "result_reason": "unsupported",
+      "notes": [
+        "Incomplete game-day participation coverage for Devin Booker"
+      ],
+      "failed_checks": [
+        {
+          "actual": "no_result",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "fail"
+        },
+        {
+          "actual": "no_result",
+          "expected": "game_log_team_detail",
+          "name": "expected_shape",
+          "status": "fail"
+        },
+        {
+          "actual": [],
+          "expected": [
+            "summary",
+            "game_log"
+          ],
+          "message": "Missing section(s): summary, game_log",
+          "name": "expected_sections",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 1,
+          "message": "Missing section: summary",
+          "name": "expected_row_counts.summary",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 18,
+          "message": "Missing section: game_log",
+          "name": "expected_row_counts.game_log",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 18,
+          "message": "Missing key at result.sections.summary",
+          "name": "result.sections.summary.0.games",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 8,
+          "message": "Missing key at result.sections.summary",
+          "name": "result.sections.summary.0.wins",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 10,
+          "message": "Missing key at result.sections.summary",
+          "name": "result.sections.summary.0.losses",
+          "status": "fail"
+        }
+      ]
+    },
+    {
+      "id": "suns_without_booker_shorthand",
+      "query": "Suns without Booker",
+      "result_status": "no_result",
+      "result_reason": "unsupported",
+      "notes": [
+        "Incomplete game-day participation coverage for Devin Booker"
+      ],
+      "failed_checks": [
+        {
+          "actual": "no_result",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "fail"
+        },
+        {
+          "actual": "no_result",
+          "expected": "team_record",
+          "name": "expected_shape",
+          "status": "fail"
+        },
+        {
+          "actual": [],
+          "expected": [
+            "summary",
+            "game_log"
+          ],
+          "message": "Missing section(s): summary, game_log",
+          "name": "expected_sections",
+          "status": "fail"
+        }
+      ]
+    },
+    {
+      "id": "bucks_without_giannis",
+      "query": "What is the Bucks record when Giannis Antetokounmpo was out?",
+      "result_status": "no_result",
+      "result_reason": "unsupported",
+      "notes": [
+        "Incomplete game-day participation coverage for Giannis Antetokounmpo"
+      ],
+      "failed_checks": [
+        {
+          "actual": "no_result",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "fail"
+        },
+        {
+          "actual": "no_result",
+          "expected": "team_record",
+          "name": "expected_shape",
+          "status": "fail"
+        },
+        {
+          "actual": [],
+          "expected": [
+            "summary",
+            "game_log"
+          ],
+          "message": "Missing section(s): summary, game_log",
+          "name": "expected_sections",
+          "status": "fail"
+        }
+      ]
+    },
+    {
+      "id": "knicks_without_brunson",
+      "query": "What is the Knicks record when Jalen Brunson does not play?",
+      "result_status": "no_result",
+      "result_reason": "unsupported",
+      "notes": [
+        "Incomplete game-day participation coverage for Jalen Brunson"
+      ],
+      "failed_checks": [
+        {
+          "actual": "no_result",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "fail"
+        },
+        {
+          "actual": "no_result",
+          "expected": "team_record",
+          "name": "expected_shape",
+          "status": "fail"
+        },
+        {
+          "actual": [],
+          "expected": [
+            "summary",
+            "game_log"
+          ],
+          "message": "Missing section(s): summary, game_log",
+          "name": "expected_sections",
+          "status": "fail"
+        }
+      ]
+    },
+    {
+      "id": "lakers_record_without_luka_public_sweep",
+      "query": "Lakers record without Luka",
+      "result_status": "no_result",
+      "result_reason": "unsupported",
+      "notes": [
+        "Incomplete game-day participation coverage for Luka Don\u010di\u0107"
+      ],
+      "failed_checks": [
+        {
+          "actual": "no_result",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "fail"
+        },
+        {
+          "actual": "no_result",
+          "expected": "team_record",
+          "name": "expected_shape",
+          "status": "fail"
+        },
+        {
+          "actual": [],
+          "expected": [
+            "summary",
+            "game_log"
+          ],
+          "message": "Missing section(s): summary, game_log",
+          "name": "expected_sections",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": "Los Angeles Lakers",
+          "message": "Missing key at result.sections.summary",
+          "name": "result.sections.summary.0.team_name",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 18,
+          "message": "Missing key at result.sections.summary",
+          "name": "result.sections.summary.0.games",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 10,
+          "message": "Missing key at result.sections.summary",
+          "name": "result.sections.summary.0.wins",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 8,
+          "message": "Missing key at result.sections.summary",
+          "name": "result.sections.summary.0.losses",
+          "status": "fail"
+        }
+      ]
+    },
+    {
+      "id": "pqa_availability_synonym_reaves_available",
+      "query": "How many games did the Lakers win with Reaves available?",
+      "result_status": "no_result",
+      "result_reason": "filter_not_supported",
+      "notes": [
+        "The requested injury, health or availability status needs qualified status data. Game participation does not establish that status or the reason for an absence."
+      ],
+      "failed_checks": [
+        {
+          "actual": "no_result",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "fail"
+        },
+        {
+          "actual": "no_result",
+          "expected": "team_record",
+          "name": "expected_shape",
+          "status": "fail"
+        },
+        {
+          "actual": [],
+          "expected": [
+            "summary",
+            "game_log"
+          ],
+          "message": "Missing section(s): summary, game_log",
+          "name": "expected_sections",
+          "status": "fail"
+        },
+        {
+          "actual": [],
+          "expected": {
+            "kind": "player",
+            "label": "With player",
+            "value": "Austin Reaves"
+          },
+          "message": "No matching applied filter found.",
+          "name": "expected_filters.1",
+          "status": "fail"
+        },
+        {
+          "actual": [],
+          "expected": {
+            "kind": "outcome",
+            "label": "Outcome",
+            "value": "Wins"
+          },
+          "message": "No matching applied filter found.",
+          "name": "expected_filters.2",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": "Austin Reaves",
+          "name": "result.metadata.with_player",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": "Los Angeles Lakers",
+          "message": "Missing key at result.sections.summary",
+          "name": "result.sections.summary.0.team_name",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 36,
+          "message": "Missing key at result.sections.summary",
+          "name": "result.sections.summary.0.games",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 36,
+          "message": "Missing key at result.sections.summary",
+          "name": "result.sections.summary.0.wins",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 0,
+          "message": "Missing key at result.sections.summary",
+          "name": "result.sections.summary.0.losses",
+          "status": "fail"
+        }
+      ]
+    },
+    {
+      "id": "warriors_wins_without_curry",
+      "query": "Warriors wins without Stephen Curry",
+      "result_status": "no_result",
+      "result_reason": "unsupported",
+      "notes": [
+        "Incomplete game-day participation coverage for Stephen Curry"
+      ],
+      "failed_checks": [
+        {
+          "actual": "no_result",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "fail"
+        },
+        {
+          "actual": "no_result",
+          "expected": "team_record",
+          "name": "expected_shape",
+          "status": "fail"
+        },
+        {
+          "actual": [],
+          "expected": [
+            "summary",
+            "game_log"
+          ],
+          "message": "Missing section(s): summary, game_log",
+          "name": "expected_sections",
+          "status": "fail"
+        }
+      ]
+    },
+    {
+      "id": "most_30_point_games",
+      "query": "Who has the most 30 point games this season?",
+      "result_status": "ok",
+      "result_reason": null,
+      "notes": [],
+      "failed_checks": [
+        {
+          "actual": [
+            {
+              "kind": "threshold",
+              "label": "games_30p min",
+              "value": "30.0"
+            }
+          ],
+          "expected": {
+            "kind": "threshold",
+            "label": "pts min"
+          },
+          "message": "No matching applied filter found.",
+          "name": "expected_filters.1",
+          "status": "fail"
+        }
+      ]
+    },
+    {
+      "id": "anthony_davis_without_lebron_summary",
+      "query": "How has Anthony Davis rebounded when LeBron James didn't play?",
+      "result_status": "no_result",
+      "result_reason": "unsupported",
+      "notes": [
+        "Incomplete game-day participation coverage for LeBron James"
+      ],
+      "failed_checks": [
+        {
+          "actual": "no_result",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "fail"
+        },
+        {
+          "actual": "no_result",
+          "expected": "entity_summary",
+          "name": "expected_shape",
+          "status": "fail"
+        },
+        {
+          "actual": [],
+          "expected": [
+            "summary",
+            "game_log"
+          ],
+          "message": "Missing section(s): summary, game_log",
+          "name": "expected_sections",
+          "status": "fail"
+        }
+      ]
+    },
+    {
+      "id": "maxey_without_embiid_summary",
+      "query": "How has Tyrese Maxey played when Joel Embiid was out this season?",
+      "result_status": "no_result",
+      "result_reason": "unsupported",
+      "notes": [
+        "Incomplete game-day participation coverage for Joel Embiid"
+      ],
+      "failed_checks": [
+        {
+          "actual": "no_result",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "fail"
+        },
+        {
+          "actual": "no_result",
+          "expected": "entity_summary",
+          "name": "expected_shape",
+          "status": "fail"
+        },
+        {
+          "actual": [],
+          "expected": [
+            "summary",
+            "game_log"
+          ],
+          "message": "Missing section(s): summary, game_log",
+          "name": "expected_sections",
+          "status": "fail"
+        }
+      ]
+    },
+    {
+      "id": "thirty_point_games_hyphen_wave5",
+      "query": "Who has the most 30-point games this season?",
+      "result_status": "ok",
+      "result_reason": null,
+      "notes": [],
+      "failed_checks": [
+        {
+          "actual": [
+            {
+              "kind": "threshold",
+              "label": "games_30p min",
+              "value": "30.0"
+            }
+          ],
+          "expected": {
+            "kind": "threshold",
+            "label": "pts min",
+            "value": "30.0"
+          },
+          "message": "No matching applied filter found.",
+          "name": "expected_filters.1",
+          "status": "fail"
+        }
+      ]
+    },
+    {
+      "id": "pqa_availability_sentence_luka_plays",
+      "query": "What is the Lakers record when Luka Doncic plays?",
+      "result_status": "ok",
+      "result_reason": null,
+      "notes": [],
+      "failed_checks": [
+        {
+          "actual": [
+            {
+              "kind": "player",
+              "label": "With player",
+              "value": "Luka Doncic"
+            }
+          ],
+          "expected": {
+            "kind": "player",
+            "label": "With player",
+            "value": "Luka Don\u010di\u0107"
+          },
+          "message": "No matching applied filter found.",
+          "name": "expected_filters.1",
+          "status": "fail"
+        },
+        {
+          "actual": "Luka Doncic",
+          "expected": "Luka Don\u010di\u0107",
+          "name": "result.metadata.with_player",
+          "status": "fail"
+        }
+      ]
+    },
+    {
+      "id": "k08_pair_missing_nonempty",
+      "query": "Celtics record with Tatum and Brown missing in 2025-26",
+      "result_status": "no_result",
+      "result_reason": "unsupported",
+      "notes": [
+        "Incomplete game-day participation coverage for Jayson Tatum"
+      ],
+      "failed_checks": [
+        {
+          "actual": "no_result",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "fail"
+        },
+        {
+          "actual": [],
+          "expected": [
+            "summary",
+            "game_log"
+          ],
+          "message": "Missing section(s): summary, game_log",
+          "name": "expected_sections",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 1,
+          "message": "Missing section: summary",
+          "name": "expected_row_counts.summary",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 8,
+          "message": "Missing section: game_log",
+          "name": "expected_row_counts.game_log",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 8,
+          "message": "Missing key at result.sections.summary",
+          "name": "result.sections.summary.0.games",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 7,
+          "message": "Missing key at result.sections.summary",
+          "name": "result.sections.summary.0.wins",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 1,
+          "message": "Missing key at result.sections.summary",
+          "name": "result.sections.summary.0.losses",
+          "status": "fail"
+        }
+      ]
+    },
+    {
+      "id": "k08_pair_missing_zero",
+      "query": "Lakers record with Davis and Reaves missing in 2023-24",
+      "result_status": "no_result",
+      "result_reason": "unsupported",
+      "notes": [
+        "Incomplete game-day participation coverage for Anthony Davis"
+      ],
+      "failed_checks": [
+        {
+          "actual": "unsupported",
+          "expected": "no_match",
+          "name": "expected_reason",
+          "status": "fail"
+        }
+      ]
+    },
+    {
+      "id": "k08_pair_missing_zero_count",
+      "query": "How many Lakers games with Davis and Reaves missing in 2023-24?",
+      "result_status": "no_result",
+      "result_reason": "unsupported",
+      "notes": [
+        "Incomplete game-day participation coverage for Anthony Davis"
+      ],
+      "failed_checks": [
+        {
+          "actual": "no_result",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "fail"
+        },
+        {
+          "actual": [],
+          "expected": [
+            "count"
+          ],
+          "message": "Missing section(s): count",
+          "name": "expected_sections",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 1,
+          "message": "Missing section: count",
+          "name": "expected_row_counts.count",
+          "status": "fail"
+        },
+        {
+          "actual": null,
+          "expected": 0,
+          "message": "Missing key at result.sections.count",
+          "name": "result.sections.count.0.count",
+          "status": "fail"
+        }
+      ]
+    }
+  ]
+}

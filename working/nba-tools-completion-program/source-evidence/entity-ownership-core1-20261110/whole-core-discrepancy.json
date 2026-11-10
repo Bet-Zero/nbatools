@@ -1,0 +1,139 @@
+{
+  "kind": "newly observed immutable canonical core divergence from already qualified retained scorer facts; not parser arithmetic",
+  "source_csv_path": "data/raw/player_game_stats/2026-27_regular_season.csv",
+  "source_csv_sha256": "334476753a8e3d34e260cdc230c67331a0dac892e8da1e26e1d9edb607bc070d",
+  "literal_csv_line_number": 2668,
+  "literal_csv_record": "0022600184,2026-27,Regular Season,2026-11-04,1610612742,DAL,Dallas Mavericks,1610612759,SAS,San Antonio Spurs,0,1,1629023,P.J. Washington,0,,39.0,21,7,18,0.389,3,8,0.375,4,5,0.8,4,5,9,3,0,1,1,2,0,",
+  "manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+  "unchanged_v4_v5_v6_core_sha256": "334476753a8e3d34e260cdc230c67331a0dac892e8da1e26e1d9edb607bc070d",
+  "book_oracle_sha256": "7d054703091f5f0334d2b01dd7bd978e619d2e36a11eead390fdb23cf0646698",
+  "book_pdf_sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b",
+  "scorer_scope": {
+    "window": "whole",
+    "team_id": 1610612742,
+    "player_id": 1629023,
+    "minutes": "2340",
+    "oreb": 4,
+    "dreb": 6,
+    "reb": 10,
+    "fieldGoalsMade": 7,
+    "fieldGoalsAttempted": 18,
+    "threePointersMade": 3,
+    "threePointersAttempted": 8,
+    "freeThrowsMade": 4,
+    "freeThrowsAttempted": 5,
+    "reboundsOffensive": 4,
+    "reboundsDefensive": 6,
+    "reboundsTotal": 10,
+    "assists": 3,
+    "foulsPersonal": 2,
+    "steals": 0,
+    "turnovers": 1,
+    "blocks": 1,
+    "plusMinusPoints": 0,
+    "points": 21,
+    "raw_line": "25  P.J. Washington                               F     39:00     7    18     3     8     4      5     4     6    10    3    2    0   1    1     0      21"
+  },
+  "complete_16_count_comparison": {
+    "pts": {
+      "canonical_core": 21,
+      "retained_scorer": 21
+    },
+    "fgm": {
+      "canonical_core": 7,
+      "retained_scorer": 7
+    },
+    "fga": {
+      "canonical_core": 18,
+      "retained_scorer": 18
+    },
+    "fg3m": {
+      "canonical_core": 3,
+      "retained_scorer": 3
+    },
+    "fg3a": {
+      "canonical_core": 8,
+      "retained_scorer": 8
+    },
+    "ftm": {
+      "canonical_core": 4,
+      "retained_scorer": 4
+    },
+    "fta": {
+      "canonical_core": 5,
+      "retained_scorer": 5
+    },
+    "oreb": {
+      "canonical_core": 4,
+      "retained_scorer": 4
+    },
+    "dreb": {
+      "canonical_core": 5,
+      "retained_scorer": 6
+    },
+    "reb": {
+      "canonical_core": 9,
+      "retained_scorer": 10
+    },
+    "ast": {
+      "canonical_core": 3,
+      "retained_scorer": 3
+    },
+    "stl": {
+      "canonical_core": 0,
+      "retained_scorer": 0
+    },
+    "blk": {
+      "canonical_core": 1,
+      "retained_scorer": 1
+    },
+    "tov": {
+      "canonical_core": 1,
+      "retained_scorer": 1
+    },
+    "pf": {
+      "canonical_core": 2,
+      "retained_scorer": 2
+    },
+    "plus_minus": {
+      "canonical_core": 0,
+      "retained_scorer": 0
+    }
+  },
+  "differing_cells": {
+    "dreb": {
+      "canonical_core": 5,
+      "retained_scorer": 6
+    },
+    "reb": {
+      "canonical_core": 9,
+      "retained_scorer": 10
+    }
+  },
+  "team_core": {
+    "sha256": "97acc3c2e2d3808f9938fdbc88983ab3b2baa0be744fe65dbe92b0cf41f723bb",
+    "game_id": 22600184,
+    "team_id": 1610612742,
+    "oreb": 18,
+    "dreb": 32,
+    "reb": 50,
+    "matches_book": true
+  },
+  "period_scope": {
+    "q2_reb": 1,
+    "h1_reb": 4,
+    "all_quarter_rebounds_sum": 10,
+    "all_halves_rebounds_sum": 10,
+    "qualified_v5_period_facts_preserved": true
+  },
+  "existing_record": {
+    "id": "DQ-auto-4294464123002d61e11cd59f7cdebfd1690b172d28b608f26d934e725ecc6c7a",
+    "status": "resolved",
+    "scope": "player_and_team_game_period_stats; eight period count corrections/38 REB% cells",
+    "does_not_cover_canonical_core9": true
+  },
+  "existing_report_scope": "PR602 independent-book-review says retained whole source and scorer agree6/10; v5 review compares corrected period sums to scorer whole totals. It explicitly preserves whole/core files; it does not compare this canonical core row9 to source whole10. No canonical-core divergence was found recorded in the reviewed PR602/data-quality records.",
+  "source_requests": 0,
+  "production_writes": 0,
+  "backend_model_identity": "unavailable"
+}

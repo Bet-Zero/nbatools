@@ -1,0 +1,50 @@
+=================================== FAILURES ===================================
+__________________ test_original_nine_on_published_generation __________________
+
+    def test_original_nine_on_published_generation():
+>       oracle = source_oracle()
+                 ^^^^^^^^^^^^^^^
+
+tests/cloud_core1_k08_served_default_real_data.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/core1_k08_served_default_cases.py:286: in source_oracle
+    expected=_sample(washington, player=True),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+frame =      game_id   season     season_type  ...  pf  plus_minus  comment
+66  22500004  2025-26  Regular Season  ...   4         -20      NaN
+
+[1 rows x 37 columns]
+player = True
+
+    def _sample(frame, *, player=False):
+        columns = [
+            "game_id",
+            "team_id",
+            "game_date",
+            "season",
+            "season_type",
+            "team_abbr",
+            "opponent_team_id",
+            "opponent_team_abbr",
+            "wl",
+            *STATS,
+        ]
+        if player:
+            columns += ["player_id", "player_name"]
+>       assert set(columns).issubset(frame)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError
+
+tests/core1_k08_served_default_cases.py:158: AssertionError
+=============================== warnings summary ===============================
+../../../../../opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages/fastapi/testclient.py:1
+  /opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/cloud_core1_k08_served_default_real_data.py::test_original_nine_on_published_generation - AssertionError
+1 failed, 2 passed, 1 warning in 16.50s
+

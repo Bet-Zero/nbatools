@@ -1,0 +1,20 @@
+{
+  "classification": "All actual answer sections unchanged on the same qualified immutable generation; event labels corrected",
+  "cases": [
+    "most_30_point_games",
+    "thirty_point_games_hyphen_wave5",
+    "k04_d1"
+  ],
+  "sections_identical": true,
+  "source_generation": "availability-lebron-season-v1-20261031",
+  "broad_original_expectations": {
+    "passed": 606,
+    "failed": 15
+  },
+  "composed_expectations": {
+    "passed": 608,
+    "failed": 13
+  },
+  "not_a_positive_NBA_completion_denominator": true,
+  "full_core1_accepted": false
+}

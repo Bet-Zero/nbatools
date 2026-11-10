@@ -1,0 +1,48 @@
+{
+  "independent_source_expectations": [
+    {
+      "original_id": 16,
+      "query": "Lakers record when Luka Doncic sits",
+      "independent_source_games_wins_losses": [
+        18,
+        10,
+        8
+      ],
+      "complete_team_denominator": 82
+    },
+    {
+      "original_id": 35,
+      "query": "Lakers record without Reaves",
+      "independent_source_games_wins_losses": [
+        31,
+        17,
+        14
+      ],
+      "complete_team_denominator": 82
+    },
+    {
+      "original_id": 18,
+      "query": "Lakers record when Luka Doncic rests",
+      "complete_team_denominator": 82,
+      "qualified_nonparticipations": 18,
+      "reported_other": 18,
+      "source_reported_rest": 0,
+      "reason_unknown": 0
+    }
+  ],
+  "all_passed": true,
+  "files": {
+    "tests/cloud_core1_k08_lal_default_real_data.py": "b99355b81dc0af195d3ee57cba7f01e9587659d58949f60f50a02e4fcd3dcda1",
+    "tests/test_core1_k08_lal_default_contract.py": "5041f2bce417808a5238b7e1ccbc3e8cf5bd2d6f07ea3a9ac78d6b07bdec8748"
+  },
+  "new_sources": 0,
+  "app_source_changes": false,
+  "backend_model_identity": "unavailable",
+  "additional_public_sample_guards": {
+    "complete_exact_sample": true,
+    "wrong_opponent_id": true,
+    "wrong_opponent_abbr": true,
+    "wrong_date": true,
+    "wrong_outcome": true
+  }
+}

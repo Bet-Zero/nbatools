@@ -18,6 +18,7 @@ import re
 import unicodedata
 from collections.abc import Iterable
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 
 import pandas as pd
@@ -1309,6 +1310,8 @@ def resolve_player_in_query(text: str) -> ResolutionResult:
 
     def add_full_name_matches(full_name_index: dict[str, str]) -> None:
         for key in _get_player_full_name_keys():
+            if key not in q:
+                continue
             match = re.search(rf"(?<!\w){re.escape(key)}(?!\w)", q)
             if not match:
                 continue
@@ -1326,7 +1329,10 @@ def resolve_player_in_query(text: str) -> ResolutionResult:
     # start at the same position, full-name/data-backed matches beat broad
     # single-token aliases inside that same span.
     add_matches(_NORMALIZED_FULL_NAME_ALIASES, "full_name_alias", 0)
-    if len(candidate_words) >= 2:
+    # Team-like words still belong to an explicit full person name. The
+    # last-name candidate heuristic deliberately excludes team words, so it
+    # cannot decide whether a complete indexed name deserves a lookup.
+    if len(q.split()) >= 2 and (candidate_words or _TEAM_WORDS_PATTERN.search(q)):
         full_name_index = _get_player_full_name_index()
         add_full_name_matches(full_name_index)
         add_matches(_CURATED_PLAYER_NAMES, "full_name_alias", 0)
@@ -1515,12 +1521,74 @@ def mask_copula_team_lookalikes(text: str) -> str:
     return _COPULA_WAS.sub("   ", text)
 
 
+_TEAM_WORDS_PATTERN = re.compile(
+    r"(?<!\w)(?:" + "|".join(re.escape(k) for k in TEAM_ALIASES_EXPANDED) + r")(?!\w)"
+)
+
+
+@lru_cache(maxsize=8)
+def _player_team_collision_pattern(full_names: tuple[str, ...]):
+    names = {
+        key
+        for key in (*full_names, *_NORMALIZED_FULL_NAME_ALIASES, *_CURATED_PLAYER_NAMES)
+        if " " in key and _TEAM_WORDS_PATTERN.search(key)
+    }
+    if not names:
+        return None
+    return re.compile(
+        r"(?<!\w)(?:"
+        + "|".join(re.escape(k) for k in sorted(names, key=lambda k: (-len(k), k)))
+        + r")(?!\w)"
+    )
+
+
+def mask_player_owned_team_words(text: str) -> str:
+    """Protect explicit known person spans from team scans, preserving offsets.
+
+    Full names own their internal team-like words. A separate team mention,
+    including the same word or an abbreviation, remains available to the caller.
+    Single-word player aliases never erase an independently requested team.
+    """
+    normalized = _normalize_for_matching(text)
+    if len(normalized.split()) < 2 or not _TEAM_WORDS_PATTERN.search(normalized):
+        return text
+    pattern = _player_team_collision_pattern(_get_player_full_name_keys())
+    matches = list(pattern.finditer(normalized)) if pattern else []
+    if not matches:
+        return text
+    # Apply exactly the existing name normalization while retaining raw offsets
+    # (initial periods, accents and hyphens can change normalized length).
+    expanded = [
+        (c, i) for i, raw in enumerate(text) for c in _strip_accents(raw).lower().replace("-", " ")
+    ]
+    chars, offsets = [], []
+    for j, (char, offset) in enumerate(expanded):
+        if char == "." and j and "a" <= expanded[j - 1][0] <= "z":
+            continue
+        if char.isspace():
+            if not chars or chars[-1] == " ":
+                continue
+            char = " "
+        chars.append(char)
+        offsets.append(offset)
+    if chars and chars[-1] == " ":
+        chars.pop()
+        offsets.pop()
+    masked = list(text)
+    for match in matches:
+        start, end = offsets[match.start()], offsets[match.end() - 1] + 1
+        masked[start:end] = " " * (end - start)
+    return "".join(masked)
+
+
 def resolve_team_in_query(text: str) -> ResolutionResult:
     """Resolve a team from a full query string.
 
     Scans for team aliases longest-first to avoid partial matches.
     """
-    q = " ".join(mask_copula_team_lookalikes(text.lower()).strip().split())
+    q = " ".join(
+        mask_player_owned_team_words(mask_copula_team_lookalikes(text.lower())).strip().split()
+    )
     if not q:
         return _no_match()
 
