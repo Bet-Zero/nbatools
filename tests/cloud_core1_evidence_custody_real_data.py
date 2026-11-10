@@ -13,7 +13,7 @@ import requests
 pytestmark = [pytest.mark.needs_data, pytest.mark.query]
 
 
-def _retain_exact(capfd, artifact_id, expected_size, expected_sha, label):
+def _fetch_exact(artifact_id, expected_size, expected_sha):
     url = f"https://api.github.com/repos/Bet-Zero/nbatools/actions/artifacts/{artifact_id}/zip"
     # requests removes Authorization on the cross-host artifact redirect.
     with requests.get(
@@ -36,6 +36,11 @@ def _retain_exact(capfd, artifact_id, expected_size, expected_sha, label):
             not Path(n).is_absolute() and ".." not in Path(n).parts for n in archive.namelist()
         )
         assert archive.testzip() is None
+    return raw
+
+
+def _retain_exact(capfd, artifact_id, expected_size, expected_sha, label):
+    raw = _fetch_exact(artifact_id, expected_size, expected_sha)
     output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / f"core1-existing-{label}-custody"
     output.mkdir(parents=True, exist_ok=False)
     (output / f"original-{label}-artifact.zip").write_bytes(raw)

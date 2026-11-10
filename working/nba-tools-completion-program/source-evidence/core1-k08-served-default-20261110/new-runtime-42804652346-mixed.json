@@ -1,0 +1,24 @@
+{
+  "candidate_sha": "e8ec82e767dd3c762338a234d5f2e0f4747983b7",
+  "generation": "availability-lebron-season-v1-20261031",
+  "scope": "targeted",
+  "required_selection": [
+    "tests/cloud_core1_k08_served_default_deployed_real_data.py::test_actual_new_runtime_original_nine_desktop_and_mobile",
+    "tests/cloud_core_historical_delivery_real_data.py::test_actual_new_runtime_historical_api_and_ui"
+  ],
+  "required_test_limit": 100,
+  "selected": 2,
+  "executed": 2,
+  "passed": 1,
+  "skipped": 0,
+  "failed": 1,
+  "errors": 0,
+  "xfailed": 0,
+  "pytest_exit": 1,
+  "conclusion": "failure",
+  "problems": [
+    "pytest did not succeed (exit=1)",
+    "Every selected required test must execute and pass",
+    "Required tests contain skips, failures, errors, or expected failures"
+  ]
+}

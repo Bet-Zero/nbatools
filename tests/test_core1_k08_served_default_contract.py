@@ -310,3 +310,41 @@ def test_new_runtime_binding_rejects_old_or_untrusted_execution(monkeypatch, dam
         proof = runtime.deployed_runtime_binding()
         assert proof["compared_build_files"] == 1 and proof["deployed_sha"] == "c" * 40
         assert proof["production_writes"] == proof["access_changes"] == 0
+
+
+@pytest.mark.parametrize("shown", ["LAL", "Lakers", "WAS", "CALAL"])
+def test_complete_empty_render_requires_correct_team_identity_not_one_display_spelling(shown):
+    body, case = _controlled_answer(30)
+    case["expected"].update(games=0, rows=[])
+    body.update(result_status="no_result", result_reason="no_match")
+    body["result"]["metadata"].update(stat="pts", min_value=120)
+    body["result"]["sections"] = {}
+    item = dict(
+        query=case["query"],
+        http=200,
+        payload=body,
+        text=f"No Matching Results TEAM {shown} SEASON 2025-26 OPPONENT BOS Without Jayson Tatum PTS min120",
+        tables=[],
+    )
+    if shown in {"LAL", "Lakers"}:
+        _rendered(item, case)
+    else:
+        with pytest.raises(AssertionError):
+            _rendered(item, case)
+
+
+def test_empty_abbreviation_does_not_allow_no_data_to_satisfy_positive():
+    body, case = _controlled_answer(30)
+    case["expected"].update(games=0, rows=[])
+    body.update(result_status="no_result", result_reason="no_data")
+    body["result"]["metadata"].update(stat="pts", min_value=120)
+    body["result"]["sections"] = {}
+    item = dict(
+        query=case["query"],
+        http=200,
+        payload=body,
+        text="No Matching Results LAL 2025-26 BOS Jayson Tatum 120",
+        tables=[],
+    )
+    with pytest.raises(AssertionError):
+        _rendered(item, case)

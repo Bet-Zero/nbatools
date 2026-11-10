@@ -1,0 +1,11 @@
+{
+  "pr": 604,
+  "reviewed_final_head": "9c17a8df997cdbcebeeb26c34a078988ea2b20aa",
+  "merge_sha": "22bd1d7f455b2a4b6950822b5bfc191ee89c07cd",
+  "merged_at": "2026-11-10T10:59:48Z",
+  "ci": 42802932593,
+  "blocking_ci": "passed",
+  "advisory": "frontend-security-dev failure remains informational; shipped audit passes",
+  "production_data_writes": 0,
+  "pointer_changes": 0
+}

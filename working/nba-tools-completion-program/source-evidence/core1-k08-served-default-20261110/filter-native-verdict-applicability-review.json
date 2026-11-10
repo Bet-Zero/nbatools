@@ -1,0 +1,821 @@
+{
+  "classification": "native521verdict_applicability_only_not_fresh_metadata_or_fullCore1",
+  "configured_pairs": 521,
+  "metadata_sides": 1042,
+  "configured_badges": [
+    "Back-to-back",
+    "Clutch",
+    "Date range",
+    "Half",
+    "Last N games",
+    "Location",
+    "Nationally televised",
+    "Opponent",
+    "Opponent conference",
+    "Opponent division",
+    "Opponent quality",
+    "Outcome",
+    "Position",
+    "Quarter",
+    "Rest days",
+    "Role",
+    "Special Event",
+    "With player",
+    "Without player",
+    "margin max"
+  ],
+  "all_configured_claims_invariant": true,
+  "other_metadata_equal": true,
+  "changed_threshold_label_sides": [
+    {
+      "seed": "player_occurrence",
+      "filter": "home_only",
+      "side": "filtered",
+      "old": [
+        {
+          "label": "Location",
+          "value": "Home",
+          "kind": "location"
+        },
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "Location",
+          "value": "Home",
+          "kind": "location"
+        },
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "home_only",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "wins_only",
+      "side": "filtered",
+      "old": [
+        {
+          "label": "Outcome",
+          "value": "Wins",
+          "kind": "outcome"
+        },
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "Outcome",
+          "value": "Wins",
+          "kind": "outcome"
+        },
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "wins_only",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "opponent",
+      "side": "filtered",
+      "old": [
+        {
+          "label": "Opponent",
+          "value": "BOS",
+          "kind": "team"
+        },
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "Opponent",
+          "value": "BOS",
+          "kind": "team"
+        },
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "opponent",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "opponent_quality",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "opponent_conference",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "opponent_division",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "clutch",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "quarter",
+      "side": "filtered",
+      "old": [
+        {
+          "label": "Quarter",
+          "value": "1",
+          "kind": "period"
+        },
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "Quarter",
+          "value": "1",
+          "kind": "period"
+        },
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "quarter",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "half",
+      "side": "filtered",
+      "old": [
+        {
+          "label": "Half",
+          "value": "first",
+          "kind": "period"
+        },
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "Half",
+          "value": "first",
+          "kind": "period"
+        },
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "half",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "role_starter",
+      "side": "filtered",
+      "old": [
+        {
+          "label": "Role",
+          "value": "starter",
+          "kind": "role"
+        },
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "Role",
+          "value": "starter",
+          "kind": "role"
+        },
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "role_starter",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "role_bench",
+      "side": "filtered",
+      "old": [
+        {
+          "label": "Role",
+          "value": "bench",
+          "kind": "role"
+        },
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "Role",
+          "value": "bench",
+          "kind": "role"
+        },
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "role_bench",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "back_to_back",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "rest_days",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "one_possession",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "nationally_televised",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "position_guards",
+      "side": "filtered",
+      "old": [
+        {
+          "label": "Position",
+          "value": "guards",
+          "kind": "position"
+        },
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "Position",
+          "value": "guards",
+          "kind": "position"
+        },
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "position_guards",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "position_centers",
+      "side": "filtered",
+      "old": [
+        {
+          "label": "Position",
+          "value": "centers",
+          "kind": "position"
+        },
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "Position",
+          "value": "centers",
+          "kind": "position"
+        },
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "position_centers",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "last_n",
+      "side": "filtered",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        },
+        {
+          "label": "Last N games",
+          "value": "10",
+          "kind": "window"
+        },
+        {
+          "label": "Sample selection",
+          "value": "Check conditions within the last 10 games",
+          "kind": "window"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        },
+        {
+          "label": "Last N games",
+          "value": "10",
+          "kind": "window"
+        },
+        {
+          "label": "Sample selection",
+          "value": "Check conditions within the last 10 games",
+          "kind": "window"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "last_n",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "without_player",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "with_player",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "date_window",
+      "side": "filtered",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        },
+        {
+          "label": "Date range",
+          "value": "2024-01-01 \u2013 2024-01-31",
+          "kind": "date"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        },
+        {
+          "label": "Date range",
+          "value": "2024-01-01 \u2013 2024-01-31",
+          "kind": "date"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "date_window",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "special_event",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "min_games",
+      "side": "filtered",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    },
+    {
+      "seed": "player_occurrence",
+      "filter": "min_games",
+      "side": "control",
+      "old": [
+        {
+          "label": "games_30p min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ],
+      "new": [
+        {
+          "label": "pts min",
+          "value": "30.0",
+          "kind": "threshold"
+        }
+      ]
+    }
+  ],
+  "source_or_answer_execution": false,
+  "tool_sha256": "7bc9b605d169c973117d681c149e7ff6df3a5bfa126d9f189491a50024e57052",
+  "config_sha256": "4201f3875a8dfc551a2c307e7058903c3f9b0926253d67d8535f6a8b3ada0653",
+  "query_service_sha256": "235e2340e11c6efb7529b5845ce4bc4b49ac4c320567aed8e8032f125db621a1",
+  "backend_model_identity": "unavailable"
+}
