@@ -502,7 +502,7 @@ def wants_occurrence_leaderboard(text: str) -> bool:
         re.search(
             # "at most 1 turnover" is a bound, not a ranking.
             r"\b((?<!\bat )(?<!\bno )most|leaders?|top(?:\s+\d+)?|rank|ranked|ranking"
-            r"|who\s+leads?|(?:largest|highest|most)\s+counts?)\b",
+            r"|who\s+(?:leads?|led)|(?:largest|highest|most)\s+counts?)\b",
             text,
         )
     )
@@ -768,9 +768,12 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
                 "end_date": end_date,
                 "limit": top_n or 10,
             }
+        # A named own team restricts the board to its players; it is never
+        # dropped ("most double doubles 2026-27 Mavericks").
         if "special_event" in occurrence_event:
             return "player_occurrence_leaders", {
                 "special_event": occurrence_event["special_event"],
+                "team": team,
                 "season": occ_season,
                 "start_season": occ_start,
                 "end_season": occ_end,
@@ -788,6 +791,7 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
             "stat": occurrence_event.get("stat"),
             "min_value": occurrence_event.get("min_value"),
             "max_value": occurrence_event.get("max_value"),
+            "team": team,
             "season": occ_season,
             "start_season": occ_start,
             "end_season": occ_end,

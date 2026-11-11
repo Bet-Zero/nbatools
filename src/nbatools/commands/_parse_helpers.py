@@ -4181,6 +4181,9 @@ def extract_min_value(text: str, stat: str | None) -> float | None:
     # Guard against matching count/limit numbers that happen to precede
     # a stat word (e.g. "last 10 scoring" where 10 is last_n, not a threshold).
     _CG = r"(?<!last )(?<!past )(?<!top )(?<!first )(?<!bottom )"
+    # "LeBron 2015-16 points": the season's closing year is not a "16 points"
+    # floor.
+    _CG += r"(?<!\d-)(?<!\d–)"
     bare_patterns = [
         rf"{_CG}\b(\d+)\s+{STAT_PATTERN}\s+games?\b",  # "30 point games"
         rf"{_CG}\b(\d+)-{STAT_PATTERN}\s+games?\b",  # "30-point games"
@@ -5051,6 +5054,21 @@ def wants_summary(text: str) -> bool:
     # Per-game-average phrasing ("points per game", "Jokic ppg") asks for
     # averages, not a game list.
     if re.search(r"\bper\s+game\b|\bppg\b|\brpg\b|\bapg\b", text):
+        return True
+    # "Washington defensive rebounds 2026-27 total": the sample's aggregate, not
+    # a list of its games. A ranked total ("most total rebounds"), a game or
+    # season threshold ("130 total points", "players with ... total") and a
+    # two-subject combined total keep their own readings.
+    if re.search(r"\btotals?\b", text) and not re.search(
+        r"\btotal\s+(?:number|count|games?)\b|\bcombined\b|\btogether\b"
+        r"|\b(?:most|fewest|least|highest|lowest|top|leaders?|leading|leads?|led|best|worst"
+        r"|rank|ranks|ranked|ranking)\b"
+        r"|(?<![\d\-–])(?<!last )(?<!past )(?<!previous )(?!(?:19|20)\d\d\b)\d+(?:\.\d+)?\+?\s+"
+        r"(?:\w+\s+){0,2}totals?\b"
+        r"|\btotals?\s+(?:of\s+)?(?!(?:19|20)\d\d\b|\d\d(?:\d\d)?[-–]\d\d\b)\d"
+        r"|\b(?:players?|teams?|games?)\s+(?:with|where|when|in\s+which)\b",
+        text,
+    ):
         return True
     return False
 

@@ -7,7 +7,7 @@
   "original_capture_sha256": "a5c718c7498f24d787866ff4e3d53220363e00588a045607e92f5947ac2074a5",
   "original_case_manifest_sha256": "096f093c24df872fca3107a1d4a23b19fc98e549b86aecfdc9df3b538ca1382a",
   "original_bound_file_count": 663,
-  "unchanged_bound_file_count": 647,
+  "unchanged_bound_file_count": 646,
   "cases": [
     {
       "id": "k12-s1",
@@ -193,11 +193,42 @@
       ]
     },
     {
+      "path": "src/nbatools/commands/_occurrence_route_utils.py",
+      "old_sha256": "e4bf0f4d3a91f65e2dce24bb6185826e4b2591e7ec196554e2a525986d84a163",
+      "reviewed_sha256": "8c73468525715bd8f26f92dc92b4f6ed282d824e571340ac51961b0b022d1526",
+      "reviewed_functions": "wants_occurrence_leaderboard; single-occurrence player_occurrence_leaders kwargs",
+      "semantic_reach": "PR607 adds 'who led' to the occurrence-board cue and passes a named own team to player_occurrence_leaders. None of the original 22 asks who led/leads. k12-c1, live-owned-team and live-owned-opponent route to player_occurrence_leaders, but none gains the new team kwarg: every original route and route_kwargs is byte-identical to main 8a390f70 (checked by parse_query on both trees).",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ]
+    },
+    {
       "path": "src/nbatools/commands/_parse_helpers.py",
       "old_sha256": "f6bf722bb2223a8ff09e68bced4799dd030043a637f6831ba5570ef4347e0171",
-      "reviewed_sha256": "8e776dda196d2346a4dca8f40b5bb69dc7b21803c190249036b0f32cedb26582",
-      "reviewed_functions": "opponent-list/period detection",
-      "semantic_reach": "All original 22 inputs have identical old/current regex matches; all quarter/half predicates are None, no vs/against either phrase.",
+      "reviewed_sha256": "34e0e3a5bc91ba5c754628ef5cde89da02bfcff9a8a8fa9b4431420583eb55dd",
+      "reviewed_functions": "opponent-list/period detection; wants_summary total; extract_min_value season guard",
+      "semantic_reach": "All original 22 inputs have identical old/current regex matches; all quarter/half predicates are None, no vs/against either phrase. PR607's requested-total summary needs the word total, absent from all 22, and its season-token floor guard leaves every original 22 route and route_kwargs byte-identical to main 8a390f70 (checked by parse_query on both trees).",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
