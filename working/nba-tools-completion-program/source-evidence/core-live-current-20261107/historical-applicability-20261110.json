@@ -197,7 +197,7 @@
       "old_sha256": "e4bf0f4d3a91f65e2dce24bb6185826e4b2591e7ec196554e2a525986d84a163",
       "reviewed_sha256": "8c73468525715bd8f26f92dc92b4f6ed282d824e571340ac51961b0b022d1526",
       "reviewed_functions": "wants_occurrence_leaderboard; single-occurrence player_occurrence_leaders kwargs",
-      "semantic_reach": "PR607 adds 'who led' to the occurrence-board cue and passes a named own team to player_occurrence_leaders. None of the original 22 asks who led/leads or routes to player_occurrence_leaders; every original route and route_kwargs is byte-identical to main 8a390f70 (checked by parse_query on both trees).",
+      "semantic_reach": "PR607 adds 'who led' to the occurrence-board cue and passes a named own team to player_occurrence_leaders. None of the original 22 asks who led/leads. k12-c1, live-owned-team and live-owned-opponent route to player_occurrence_leaders, but none gains the new team kwarg: every original route and route_kwargs is byte-identical to main 8a390f70 (checked by parse_query on both trees).",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",

@@ -41,9 +41,11 @@ semantic = {
         "wants_occurrence_leaderboard; single-occurrence player_occurrence_leaders kwargs",
         (
             "PR607 adds 'who led' to the occurrence-board cue and passes a named own team "
-            "to player_occurrence_leaders. None of the original 22 asks who led/leads or "
-            "routes to player_occurrence_leaders; every original route and route_kwargs is "
-            "byte-identical to main 8a390f70 (checked by parse_query on both trees)."
+            "to player_occurrence_leaders. None of the original 22 asks who led/leads. "
+            "k12-c1, live-owned-team and live-owned-opponent route to "
+            "player_occurrence_leaders, but none gains the new team kwarg: every original "
+            "route and route_kwargs is byte-identical to main 8a390f70 (checked by "
+            "parse_query on both trees)."
         ),
     ),
     "src/nbatools/commands/_reported_absence_reasons.py": (
