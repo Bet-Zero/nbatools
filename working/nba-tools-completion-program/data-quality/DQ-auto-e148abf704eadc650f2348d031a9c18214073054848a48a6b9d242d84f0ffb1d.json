@@ -1,6 +1,9 @@
 {
   "check": "canonical whole player defensive/total rebounds against retained qualified scorer and whole source",
-  "claim": null,
+  "claim": {
+    "claimed_at": "2026-11-11T10:00:00+00:00",
+    "owner": "Agent1 (temporary Claude lead)"
+  },
   "created_at": "2026-11-10T08:04:31.057085+00:00",
   "dataset": "player_game_stats",
   "evidence": {
@@ -17,7 +20,13 @@
   "fingerprint": "e148abf704eadc650f2348d031a9c18214073054848a48a6b9d242d84f0ffb1d",
   "id": "DQ-auto-e148abf704eadc650f2348d031a9c18214073054848a48a6b9d242d84f0ffb1d",
   "impact": "Whole-player DREB/REB totals, averages, filters, ranks, splits/comparisons/streaks/leaders and dependent rebound-derived metrics/occurrence predicates remain unqualified for game184; specifically21PTS/9REB misses the scorer-qualified21PTS/10REB double-double. Corrected periodQ2REB1/H1REB4 and current team whole32DREB/50REB remain qualified; unrelated PTS/AST/score/record inputs are not changed.",
-  "independent_review": null,
+  "independent_review": {
+    "blocking_findings": 0,
+    "reference": "working/nba-tools-completion-program/source-evidence/whole-rebound-correction-20261111/independent-review.md",
+    "reviewed_sha": "ea23447686b7ff45eea178e6efcb9976c8b9dda6",
+    "reviewer": "separate Claude checker agent (isolated context; not the author)",
+    "verdict": "approve"
+  },
   "integration_owner": "Agent1; unclaimed data preparation, Agent2 stays stopped",
   "kind": "data_quality_work_item",
   "last_attempt": {
@@ -53,7 +62,32 @@
   "related_ids": [
     "DQ-auto-4294464123002d61e11cd59f7cdebfd1690b172d28b608f26d934e725ecc6c7a"
   ],
-  "resolution": null,
+  "resolution": {
+    "archive_sha256": "b4efbd3495edbce0739847587f06797efcaebb5c3948a82884696e7406d8164d",
+    "book_sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b",
+    "changed_cells": [
+      {
+        "after": 6,
+        "before": 5,
+        "field": "dreb"
+      },
+      {
+        "after": 10,
+        "before": 9,
+        "field": "reb"
+      }
+    ],
+    "dependent_processed_changes": 0,
+    "full_snapshot_accepted": false,
+    "manifest_sha256": "ba6e74e551990c72b17c226a5b935973706b5b6509e67dee765cddb486dc1d22",
+    "old484_unknowns_unchanged": true,
+    "parent_manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+    "production_writes": 0,
+    "reference": "working/nba-tools-completion-program/source-evidence/whole-rebound-correction-20261111/README.md",
+    "season_team_rebound_reconciliation": "246/246 (v6 245/246)",
+    "source_oracle_sha256": "7d054703091f5f0334d2b01dd7bd978e619d2e36a11eead390fdb23cf0646698",
+    "version": "current123-whole-rebound-development-v7"
+  },
   "schema_version": 1,
   "scope": {
     "game_date": "2026-11-04",
@@ -65,5 +99,5 @@
   },
   "snapshot": "current123-period-reader-development-v6",
   "source_sha256": "334476753a8e3d34e260cdc230c67331a0dac892e8da1e26e1d9edb607bc070d",
-  "status": "open"
+  "status": "resolved"
 }

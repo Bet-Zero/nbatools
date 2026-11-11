@@ -1,0 +1,12 @@
+{
+  "archive": "current123-whole-rebound-v7.zip",
+  "archive_sha256": "b4efbd3495edbce0739847587f06797efcaebb5c3948a82884696e7406d8164d",
+  "changed_cells": 2,
+  "exception_id": "DQ-auto-e148abf704eadc650f2348d031a9c18214073054848a48a6b9d242d84f0ffb1d",
+  "manifest_sha256": "ba6e74e551990c72b17c226a5b935973706b5b6509e67dee765cddb486dc1d22",
+  "new_source_requests": 0,
+  "parent_archive_sha256": "b2c34ea7603662c191fa0e3dcf8518478563e003ece9f068161eebe0ebae4d7d",
+  "parent_manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+  "production_writes": 0,
+  "source_originals_changed": false
+}

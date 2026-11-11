@@ -1,0 +1,80 @@
+{
+  "base_archive_sha256": "b2c34ea7603662c191fa0e3dcf8518478563e003ece9f068161eebe0ebae4d7d",
+  "base_manifest_sha256": "e46b6748887d263a342b44dd896e6f4cd2619fd824428f4842dda5be0ac380b7",
+  "base_version": "current123-period-reader-development-v6",
+  "changes": [
+    {
+      "after": 6,
+      "after_token": "6",
+      "before": 5,
+      "before_token": "5",
+      "evidence": {
+        "literal_line": "25  P.J. Washington                               F     39:00     7    18     3     8     4      5     4     6    10    3    2    0   1    1     0      21",
+        "oracle_sha256": "7d054703091f5f0334d2b01dd7bd978e619d2e36a11eead390fdb23cf0646698",
+        "page_heading": "OFFICIAL SCORER'S REPORT FINAL BOX",
+        "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+        "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b",
+        "zero_based_page": 0
+      },
+      "field": "dreb",
+      "key": {
+        "game_id": "0022600184",
+        "player_id": "1629023",
+        "team_id": "1610612742"
+      }
+    },
+    {
+      "after": 10,
+      "after_token": "10",
+      "before": 9,
+      "before_token": "9",
+      "evidence": {
+        "literal_line": "25  P.J. Washington                               F     39:00     7    18     3     8     4      5     4     6    10    3    2    0   1    1     0      21",
+        "oracle_sha256": "7d054703091f5f0334d2b01dd7bd978e619d2e36a11eead390fdb23cf0646698",
+        "page_heading": "OFFICIAL SCORER'S REPORT FINAL BOX",
+        "reference": "working/nba-tools-completion-program/source-evidence/current123-periods-20261107/hosted-initial/acquired_data/current123-game184-book/5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b.pdf",
+        "sha256": "5d11d1974ca1426afda19575cc9a8af316d5a9471f26ced48f8470bbaf830b2b",
+        "zero_based_page": 0
+      },
+      "field": "reb",
+      "key": {
+        "game_id": "0022600184",
+        "player_id": "1629023",
+        "team_id": "1610612742"
+      }
+    }
+  ],
+  "corrected_sha256": "9584ead949a53c1bb863905fe0dccf49d01a7814d174ec5833e75d5381553f0f",
+  "csv_line_number": 2668,
+  "dataset_path": "data/raw/player_game_stats/2026-27_regular_season.csv",
+  "exception_id": "DQ-auto-e148abf704eadc650f2348d031a9c18214073054848a48a6b9d242d84f0ffb1d",
+  "full_snapshot_accepted": false,
+  "kind": "whole_game_player_count_correction",
+  "new_source_requests": 0,
+  "old484_rate_unknowns_preserved": true,
+  "player_quarter_sum_matches_whole": true,
+  "processed_rebuild_invariant": [
+    "data/processed/player_game_features/2026-27_regular_season.csv"
+  ],
+  "production_writes": 0,
+  "schema_version": 1,
+  "season_team_rebound_sums_match": 246,
+  "source_originals_changed": false,
+  "source_sha256": "334476753a8e3d34e260cdc230c67331a0dac892e8da1e26e1d9edb607bc070d",
+  "unchanged_row_counts_verified": [
+    "ast",
+    "blk",
+    "fg3a",
+    "fg3m",
+    "fga",
+    "fgm",
+    "fta",
+    "ftm",
+    "oreb",
+    "pf",
+    "plus_minus",
+    "pts",
+    "stl",
+    "tov"
+  ]
+}
