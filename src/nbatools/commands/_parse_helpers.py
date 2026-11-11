@@ -5063,7 +5063,9 @@ def wants_summary(text: str) -> bool:
         r"\btotal\s+(?:number|count|games?)\b|\bcombined\b|\btogether\b"
         r"|\b(?:most|fewest|least|highest|lowest|top|leaders?|leading|leads?|led|best|worst"
         r"|rank|ranks|ranked|ranking)\b"
-        r"|(?<![\d-])\d+(?:\.\d+)?\+?\s+(?:\w+\s+){0,2}totals?\b|\btotals?\s+(?:of\s+)?\d"
+        r"|(?<![\d\-–])(?<!last )(?<!past )(?<!previous )(?!(?:19|20)\d\d\b)\d+(?:\.\d+)?\+?\s+"
+        r"(?:\w+\s+){0,2}totals?\b"
+        r"|\btotals?\s+(?:of\s+)?(?!(?:19|20)\d\d\b|\d\d(?:\d\d)?[-–]\d\d\b)\d"
         r"|\b(?:players?|teams?|games?)\s+(?:with|where|when|in\s+which)\b",
         text,
     ):

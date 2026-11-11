@@ -42,6 +42,7 @@ def _answer(snapshot, query):
         ("P.J. Washington total defensive rebounds in 2026-27", "dreb"),
         ("PJ Washington 2026-27 rebound totals", "reb"),
         ("what were P.J. Washington's total assists for 2026-27", "ast"),
+        ("PJ Washington defensive rebounds total 2026-27", "dreb"),
     ],
 )
 def test_requested_player_total_is_the_season_aggregate(v7, query, stat):
@@ -54,10 +55,13 @@ def test_requested_player_total_is_the_season_aggregate(v7, query, stat):
     assert "finder" not in result["sections"]
 
 
-def test_requested_team_total_is_the_team_aggregate(v7):
+@pytest.mark.parametrize(
+    "query", ["Mavericks total rebounds 2026-27", "Mavericks rebounds total 2026-27"]
+)
+def test_requested_team_total_is_the_team_aggregate(v7, query):
     teams = pd.read_csv(v7[0] / "data/raw/team_game_stats/2026-27_regular_season.csv")
     dal = teams[teams.team_abbr.eq("DAL")]
-    (summary,) = _answer(v7, "Mavericks total rebounds 2026-27")["sections"]["summary"]
+    (summary,) = _answer(v7, query)["sections"]["summary"]
     assert summary["games"] == len(dal) and summary["reb_sum"] == dal.reb.sum()
 
 
@@ -69,6 +73,8 @@ def test_requested_team_total_is_the_team_aggregate(v7):
         "Mavericks games with 130 total points",
         "LeBron and Davis combined total points",
         "total number of LeBron 30 point games",
+        "Mavericks total of 130 points",
+        "Tatum 30 points total",
     ],
 )
 def test_ranked_threshold_and_combined_totals_keep_other_readings(query):
@@ -133,6 +139,16 @@ def test_season_closing_year_is_not_a_stat_floor(query, season, stat, floor):
         stat,
         floor,
     )
+
+
+@pytest.mark.parametrize(
+    "query", ["Tatum points last 10 games total", "Tatum points total in his last 10 games"]
+)
+def test_last_n_total_is_a_window_summary(query):
+    parsed = parse_query(query)
+    assert parsed["route"] == "player_game_summary"
+    assert parsed["route_kwargs"].get("last_n") == 10
+    assert parsed["route_kwargs"].get("min_value") is None
 
 
 def test_season_before_stat_summary_keeps_every_game(v7):
