@@ -28,10 +28,22 @@ semantic = {
         "No runtime execution; source definitions remain independently checked.",
     ),
     "src/nbatools/commands/_parse_helpers.py": (
-        "opponent-list/period detection",
+        "opponent-list/period detection; wants_summary total; extract_min_value season guard",
         (
             "All original 22 inputs have identical old/current regex matches; all "
-            "quarter/half predicates are None, no vs/against either phrase."
+            "quarter/half predicates are None, no vs/against either phrase. PR607's "
+            "requested-total summary needs the word total, absent from all 22, and its "
+            "season-token floor guard leaves every original 22 route and route_kwargs "
+            "byte-identical to main 8a390f70 (checked by parse_query on both trees)."
+        ),
+    ),
+    "src/nbatools/commands/_occurrence_route_utils.py": (
+        "wants_occurrence_leaderboard; single-occurrence player_occurrence_leaders kwargs",
+        (
+            "PR607 adds 'who led' to the occurrence-board cue and passes a named own team "
+            "to player_occurrence_leaders. None of the original 22 asks who led/leads or "
+            "routes to player_occurrence_leaders; every original route and route_kwargs is "
+            "byte-identical to main 8a390f70 (checked by parse_query on both trees)."
         ),
     ),
     "src/nbatools/commands/_reported_absence_reasons.py": (
