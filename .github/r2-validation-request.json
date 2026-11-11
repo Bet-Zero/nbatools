@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "ea23447686b7ff45eea178e6efcb9976c8b9dda6",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/cloud_whole_rebound_correction_real_data.py::test_scorer_qualified_whole_game_rebound_correction"
+  ],
+  "raw_qa_cases": []
+}
