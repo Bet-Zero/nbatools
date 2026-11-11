@@ -36,7 +36,8 @@ versions stay in the repository and still load with their original values.
 ## Dependent values
 
 - Query-time consumers read the corrected row: game totals, season sums/averages,
-  thresholds/filters, rankings, streaks and double-double classification.
+  thresholds/filters, rankings, streaks, double-double classification and the query-time
+  game-log REB% (season 12.363 → 12.559; game 184 now 11.134).
 - Stored derived inputs: the only processed consumer of player REB is
   `player_game_features.reb_last_5`, built from *prior* games. Game 184 is
   Washington's last game at the fixed 123-game cutoff. The script rebuilds with the
@@ -64,4 +65,4 @@ on both v6 and v7:
 | Season total-rebound and double-double leaderboards (value, tie-consistent rank) | 63 / 1 | 64 / 2 |
 
 Hosted required numerical wrapper: `tests/cloud_whole_rebound_correction_real_data.py`.
-The PR records the review, CI and R2 receipts.
+The PR records CI and R2 receipts; see [independent-review.md](independent-review.md).
