@@ -87,6 +87,10 @@ Standing limits until B changes them:
   requirement or confirmed defect it serves. Other discoveries go in the
   checkpoint's carry-forward list, not a new tracker or ticket.
 - Never merge a known wrong answer, or failing runtime just to land a handoff.
+- Report executed, skipped and unavailable tests honestly. A red advisory job
+  is reported as advisory, not hidden or treated as blocking.
+- Before an unavoidable stop, record why (task done, missing source, access,
+  runtime error, usage limit) and what can proceed without B.
 - If a requirement is blocked by missing source data, record the exact missing
   evidence once and move to independent work. Don't rerun the same failing
   checks or pile unrelated work onto a red branch.
@@ -160,11 +164,11 @@ good sample. Most past verifier rework came from skipping this.
   statistical scope and explicit unknowns. Never fabricate a passed manifest or
   substitute different data. Don't retry a diagnosed blocked source without new
   evidence.
+  Corrections create new immutable versions; never mutate data a test is using.
+  Fixtures are never published as real data. Never relabel old data as fresh.
 - Provisional development data must stay opt-in and isolated, carry a visible
   provisional status through the API and exports, and never reach public or
   production behavior. It is not a validator bypass.
-  Corrections create new immutable versions; never mutate data a test is using.
-  Fixtures are never published as real data. Never relabel old data as fresh.
 - Useful commands: `make test-parser`, `test-query`, `test-engine`, `test-api`,
   `test-output` while editing; `make test-preflight` or `make test` for high
   fan-in changes; `make raw-query-answer-qa` is a failing gate.
