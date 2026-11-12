@@ -2,8 +2,8 @@
 
 Rules for coding agents in `Bet-Zero/nbatools` (NBA Tools, not ScoutZero).
 This file holds only current rules. Older dated layers were removed on 2026-11-12;
-their full text is in Git history (`git show 95cb705:AGENTS.md`). Nothing below
-weakens a safeguard that existed before.
+their full text is in Git history (`git show 95cb705:AGENTS.md`). Shorter wording
+is not permission: where this file is silent, the older safeguard still applies.
 
 ## Start of a session
 
@@ -33,8 +33,12 @@ Data scope is the 1996-97 season onward.
 - **Participation is not injury, status or on-court presence.** A missing game
   row does not prove a player was injured or out; a played row does not prove
   healthy or available. Never infer team nonmembership or a DNP from missing
-  rows, a roster snapshot or another game on the same date. Do not encode
+  rows, a roster snapshot or another game on the same date. Qualify absence
+  against team membership and complete participation coverage; games before a
+  player joined, and unknown data, are not verified missed games. Do not encode
   `available = played` in code or tests.
+- **Keep safety regressions** until verified positive support deliberately
+  replaces them.
 - **Meaning before numbers.** Check that the answer kept the subject, team,
   season, conditions and grain before checking values. Expected NBA values come
   from qualified source rows or controlled fixtures, never from the app's own
@@ -65,7 +69,9 @@ Standing limits until B changes them:
 - Don't change Vercel settings, secrets, deployment protection, branch
   protection or R2 publication gates. Public query-feedback persistence stays
   disabled. No new paid service, model access or hosting migration.
-- Launch and branding are B's decisions.
+- Launch and branding are B's decisions. No commercial data-provider
+  investigation. The acquisition laptop is for acquisition and transfer only,
+  never a development dependency.
 - Agent 2 (data-quality worker) is stopped. DQ-005 and K12 cold-start chasing are
   parked. The exhausted 484-rate investigations stay closed without new evidence.
 
@@ -80,6 +86,7 @@ Standing limits until B changes them:
 - Before starting optional work, write one line in the PR saying which Core-1
   requirement or confirmed defect it serves. Other discoveries go in the
   checkpoint's carry-forward list, not a new tracker or ticket.
+- Never merge a known wrong answer, or failing runtime just to land a handoff.
 - If a requirement is blocked by missing source data, record the exact missing
   evidence once and move to independent work. Don't rerun the same failing
   checks or pile unrelated work onto a red branch.
@@ -97,13 +104,27 @@ Standing limits until B changes them:
 Broad replays and deployed desktop/mobile captures run **once per release
 candidate**, not per PR. Each PR still checks the behavior it changed.
 
+Freeze the candidate before broad validation or final independent review. Use an
+isolated checkout if another writer could move it, and don't edit, rebase or
+merge it while checks run. If a fix changes reviewed meaning or risk, repeat the
+affected checks and a focused delta review, plus the exact-head gates.
+
+Before merging, recheck the current head and base. GitHub letting you merge is
+not permission: all blocking CI, required numerical results and required review
+must be in place. Missing pre-merge coverage can't be supplied by a later
+main or nightly run. Fast or data-free CI is not equivalent to preflight or
+authenticated numerical validation. After merge, check post-merge CI and the
+deployed behavior when it's affected.
+
 **Independent review** means a separate agent session, not self-review. Record
 the reviewer, the reviewed revision and any open findings in the PR. Green CI
 alone is not review. A bot comment is not review.
 
 **Reuse passing evidence** when the code, data and conditions it covered are
-unchanged. Say which revision it came from. Don't rerun a passing check without
-a reason to expect a different result.
+unchanged, the required checks really ran and passed, and no open finding
+contradicts it. Say which revision it came from. Never claim an old run happened
+on a new head, or that another PR's green run with the same workflow name
+applies. Don't rerun a passing check without a reason to expect a different result.
 
 **Before writing new verification code,** check it against the real source
 schema, an actual native API response, the existing test contract and a known
@@ -123,11 +144,25 @@ good sample. Most past verifier rework came from skipping this.
 - Real-data validation uses the existing R2 workflow and its `r2-validation`
   environment. After independent review, agents may start a targeted run by
   pushing a manifest-only request commit to a fresh `r2-validation/**` branch,
-  as described in `docs/operations/deployment.md`. Ordinary CI stays secret-free.
+  as described in `docs/operations/deployment.md`. The request's SHA checks bind
+  source identity, not review approval. No secret printing, duplicate workflows
+  or broader permissions. Ordinary CI stays secret-free.
+- Only the paths listed in `tools/delivery_scope.mjs` take CI's light path.
+  Extend that list only after checking that no test, build or runtime reads or
+  hashes the files; never broaden it by file suffix alone.
+- Publication follows `docs/operations/deployment.md`: same-base protection,
+  last-good generation and rollback, and deployed checks.
 - Keep raw, processed and derived layers and each dataset's grain. New data
   needs source, row meaning, keys, coverage rules and missing-data behavior in
   `docs/reference/data_contracts.md`. Before data work, follow
   `docs/operations/data_availability.md` and reuse qualified retained data.
+  Qualify new data with source URLs, original bodies, hashes, capture times,
+  statistical scope and explicit unknowns. Never fabricate a passed manifest or
+  substitute different data. Don't retry a diagnosed blocked source without new
+  evidence.
+- Provisional development data must stay opt-in and isolated, carry a visible
+  provisional status through the API and exports, and never reach public or
+  production behavior. It is not a validator bypass.
   Corrections create new immutable versions; never mutate data a test is using.
   Fixtures are never published as real data. Never relabel old data as fresh.
 - Useful commands: `make test-parser`, `test-query`, `test-engine`, `test-api`,

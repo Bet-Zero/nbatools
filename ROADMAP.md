@@ -24,7 +24,7 @@ Salary and trade-rule engines are a different project.
 | --- | --- | --- |
 | **Core-1 (snapshot release)** | The twelve K01-K12 capability groups answer correctly on the data already held: published history plus the fixed 123-game 2026-27 cutoff. Verified numerically against independent expectations and checked once on the deployed site (desktop and mobile) for a frozen release candidate. Unknown values stay unknown and are labeled. | Active. Owner scope decision 2026-11-11. |
 | **Live** | Literal "this season" questions, 24-hour freshness and readiness, current cross-club membership, current-season publication, and any requirement B moves here from Core-1. | Deferred, not deleted. Needs a working refresh route, which is parked. |
-| **P2 language comparison** | Compare the current parser with one bounded alternative (for example a constrained AI translator into the existing structured request) on an already verified subset, with a fixed budget and a clear stop point. | After Core-1, or earlier only if it doesn't delay it. Paid access needs B's approval. |
+| **P2 language comparison** | Compare the current parser with one bounded alternative (for example a constrained AI translator into the existing structured request) on an already verified subset, with a fixed budget and a clear stop point. | After Core-1, or earlier only if it doesn't delay it. Paid access and any production adoption need B's approval. |
 | **D: extend** | More combinations, source-dependent stats and later guided surfaces, picked from the carry-forward list. | After Core-1. |
 | **O: runtime** | Measured latency and cost work on existing data. | Interleave when it doesn't block Core-1. |
 
@@ -33,9 +33,10 @@ Salary and trade-rule engines are a different project.
 - **Core-1 is finite.** Its requirements are the twelve K01-K12 rows and the 46
   original K08 participation positives, preserved byte-for-byte in
   `working/nba-tools-completion-program/acceptance-baseline-pr582.md`. Each
-  requirement ends in one of three states: passing, moved to Live by B's
-  decision, or explicitly deferred with its missing evidence named. Nothing is
-  silently dropped and no refusal counts as passing.
+  requirement must answer correctly, unless B explicitly moves it out of Core-1
+  (as on 2026-11-11 for literal-current and freshness). Agents can't defer a
+  requirement themselves; a blocked one stays in the denominator with its missing
+  evidence named. No refusal counts as passing.
 - **Four separate proofs.** A capability is complete when it is implemented,
   numerically verified (fixture versus real data stated), checked with
   unfamiliar wording, and verified on the deployed site. A green test total, a

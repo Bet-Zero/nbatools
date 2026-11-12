@@ -7,8 +7,8 @@ name: CI
 #   push to main  → frontend-verify + three-version test-full when app impact is possible
 #   nightly/manual → frontend-verify + three-version test-full unconditionally
 #
-# Only CLAUDE.md, the three planning files and Markdown under working/ can omit
-# application jobs (tools/delivery_scope.mjs). Nothing in tests or runtime reads them.
+# Only the three planning files and Markdown under working/ can omit application
+# jobs (tools/delivery_scope.mjs explains why each qualifies).
 # No workflow-level path filters: every invocation reports its selection. Missing
 # or failed scope output selects the conservative path and cannot make CI green.
 #

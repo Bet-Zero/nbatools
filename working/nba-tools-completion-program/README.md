@@ -18,11 +18,15 @@ evidence; don't extend it.
 
 - **The app works on history.** Ten of the twelve Core-1 capability groups
   (K01-K07, K09-K11) are built and numerically rechecked on a pinned candidate
-  (PR595). What they still need is the single deployed desktop/mobile check on a
-  frozen release candidate.
+  (PR595). They still need served-generation proof and the deployed
+  desktop/mobile check on a frozen release candidate. K03 and K05 also need fresh
+  numerical, language and rendering evidence for their paths changed since
+  their bindings.
 - **Participation questions (K08) are the main unfinished group.** Of the 46
   original questions, IDs 7, 8, 23-25, 30-32 and 41 pass numerically on published
-  data. IDs 6, 16, 18, 35 and 44 pass on qualified data that isn't published yet.
+  data, and also passed new-runtime desktop/mobile checks (PR605). IDs 16, 18
+  and 35 pass numerically on qualified data that isn't published yet. IDs 6
+  (Tatum 2024) and 44 (Durant 2007) have qualified, unpublished source data.
   A few are blocked on missing evidence, and five are "this season" questions
   that move to Live. A per-ID table for all 46 is the first next action.
 - **K12 (delivery)** works functionally. Its cold-start timing checks are parked.
@@ -34,19 +38,21 @@ evidence; don't extend it.
   literal "this season" questions move to the Live milestone. They're deferred,
   not deleted.
 
-### Open questions for B (yes/no, asked by Agent 1)
+### Open questions for B (yes/no)
 
-1. Move K12 cold-start timing out of Core-1 into Live?
+1. Move K12 cold-start timing out of Core-1 into Live? (recorded 2026-11-11)
 2. Show the 484 unknown USG%/TOV% values as labeled "unavailable" instead of
-   letting them block the release?
+   letting them block the release? (recorded 2026-11-11)
 3. Publish the already-qualified staged historical cohorts (LAL 16/18/35,
-   Tatum 2024, Durant 2007, historical Davis)? This needs B's publication approval.
+   Tatum 2024, Durant 2007, historical Davis)? This needs B's publication
+   approval. (asked by Agent 1 after PR609)
 
 ### What's left for Core-1
 
 | Item | Kind | What closes it |
 | --- | --- | --- |
-| Deployed check of K01-K12 | Release step | One desktop/mobile run on a frozen release candidate |
+| Deployed check of K01-K12 | Release step | Served-generation proof and one desktop/mobile run on a frozen release candidate |
+| K03/K05 changed paths | Software evidence | Numerical, language and rendering checks for paths changed since the bindings |
 | K08 staged cohorts (16/18/35, 6 Tatum 2024, 44 Durant 2007) | Needs B approval | Publish (open question 3), then the deployed check |
 | K08 Davis default-season group (incl. 12 and both 40 questions, 2025-26) | Missing data | Dated official Davis club membership, or official per-game inactive lists, for every selected 2025-26 Lakers date. Not inferred from absent rows. |
 | K08 ID26 (Lakers vs Celtics and Knicks without Tatum) | Missing data | Dated Knicks-side membership or nonmembership on every selected date |
@@ -63,7 +69,8 @@ evidence; don't extend it.
    cases and the deployed wrappers). It should print each K01-K12 row and each
    of the 46 K08 IDs as passing / software failure / missing data / needs
    publish / Live, from one command. No new framework.
-2. Fix any software failures it shows, in shared logic.
+2. Fix any software failures it shows, in shared logic, and run deployed checks
+   on the existing published generation where they apply.
 3. When B answers the open questions, freeze a release candidate and run the
    broad checks once.
 
