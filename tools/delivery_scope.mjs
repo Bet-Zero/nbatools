@@ -10,6 +10,17 @@ const PLANNING_DOCUMENTS = new Set([
   "working/nba-tools-completion-program/README.md",
 ]);
 
+// Markdown that no test, build or runtime reads: application checks can be
+// skipped. Other working/ files (JSON evidence, scripts) are read by tests and
+// keep the full path. docs/ Markdown is read by tests and stays full too.
+function lightCheckInput(path) {
+  return (
+    PLANNING_DOCUMENTS.has(path) ||
+    path === "CLAUDE.md" ||
+    (path.startsWith("working/") && path.endsWith(".md"))
+  );
+}
+
 function nonBuildInput(path) {
   return (
     PLANNING_DOCUMENTS.has(path) ||
@@ -31,7 +42,7 @@ export function classify(changes) {
         ["000000", "100644"].includes(newMode),
     );
   return {
-    application: !ordinary || !changes.every(({ path }) => PLANNING_DOCUMENTS.has(path)),
+    application: !ordinary || !changes.every(({ path }) => lightCheckInput(path)),
     deploy: !ordinary || !changes.every(({ path }) => nonBuildInput(path)),
   };
 }
@@ -86,7 +97,7 @@ export function main(mode, env = process.env) {
   if (env.GITHUB_STEP_SUMMARY) {
     appendFileSync(env.GITHUB_STEP_SUMMARY,
       `Application checks: **${decision.application ? "selected" : "not selected"}**. ${decision.reason}.\n\n` +
-      "Only the three reviewed planning documents qualify for the reduced path. Governance, policy, lint and both security verdicts still run. Unselected checks are not executed acceptance.\n");
+      "Only CLAUDE.md, the three planning documents and Markdown under working/ qualify for the reduced path. Governance, policy, lint and both security verdicts still run. Unselected checks are not executed acceptance.\n");
   }
   return 0;
 }
