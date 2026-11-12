@@ -1,173 +1,52 @@
-# NBA Tools delivery strategy
+# NBA Tools roadmap
 
-Owner-approved process revision: **2026-11-05**. Preserve the product, working
-infrastructure, strict data verification and all existing acceptance obligations.
-Separate product development from asynchronous data-quality cleanup. This
-supersedes readiness-only sequencing and the blanket K08 development pause,
-not production safeguards or previous evidence. K12 cold chasing remains parked.
+Where the project is going, in order. Current rules are in `AGENTS.md`; live
+status and the next action are in the Resume checkpoint of
+`working/nba-tools-completion-program/README.md`. The pre-2026-11-12 roadmap
+text is in Git history (`git show 95cb705:ROADMAP.md`).
 
-## Current delivery approach
+## Destination
 
-**Agent 1 builds the app**, owns systematic bounded acquisition when needed, runs
-initial validation and creates durable exception records. It can continue against
-safe, explicitly provisional development data and independently verified fixtures.
-**Agent 2 is launched separately when useful** to investigate flagged groups and
-produce reviewed, versioned data corrections. It can run concurrently or later;
-Agent 1 does not wait for its queue to empty. No running worker is implied here.
+A person asks an ordinary, reasonably specific NBA statistics question and gets
+the correct answer, with the subject, conditions, sample and metric they asked
+for. Natural search is the front door; the same engine serves the API and CLI.
+Nobody should have to learn special wording.
 
-The first product milestone is a minimal, tested development-only data path and
-deduplicated failure intake, followed by a named unfinished Core-1/K08 app behavior.
-Use existing loaders/reports/cache and a small repository worklist, not a new
-orchestration platform or wholesale data-pipeline rewrite. See the
-[operating policy](docs/operations/product_data_workflow.md) and
-[current product checkpoint](working/nba-tools-completion-program/README.md).
+Scope is 1996-97 onward, prioritizing the 21st century. The destination covers
+summaries, records, finders and counts, rankings, comparisons, splits, streaks,
+stretches, playoff history and qualified specialized stats. Guided builders and
+profiles come later (`docs/reference/natural_search_and_deep_tools_boundary.md`).
+Salary and trade-rule engines are a different project.
 
-Plan known data requirements by source family, season/type and grain before
-collection; do not repeatedly rediscover predictable quarters/halves/OT needs.
-Preserve immutable originals, portable normalized data and separate correction/
-provenance records. The output is reusable outside NBA Tools. Historical mistakes
-must not become per-game application runtime logic. Expensive anomalies become
-scoped exceptions, not a reason to stop unrelated acquisition or app development.
+## Milestones
 
-A provisional answer demonstrates operation, not NBA truth. Software semantics and
-arithmetic still need independent fixtures/qualified cases. Full source/numerical
-qualification, freshness, R2/release checks and separately approved production
-publication remain mandatory for final acceptance. No validator is relaxed, no
-unknown silently becomes zero and no failing numerical gate is called passed.
-
-PR582 closes staged0142 and reaches647/647historical windows. Its484remaining rate
-unknowns are data-quality work, not the sole product agenda. It does not establish
-current freshness or production readiness. Preserve all its accepted evidence and
-its distinction between scorer authority and unproven independent upstream origin.
-
-## Destination and preserved scope
-
-A person asks an ordinary, reasonably specific NBA-statistics question and gets
-the correct answer, with the requested subject, conditions, sample and metric
-basis preserved. Natural search is the front door; the same statistical service
-also serves the API and CLI. Users should not need to learn preferred sentences.
-
-Working historical scope remains 1996-97 onward, prioritizing the 21st century.
-Earlier history is optional and never a blocker. Keep existing earlier data;
-label partial careers honestly. The destination includes summaries, records,
-finders/counts, rankings, comparisons, splits, streaks, stretches, playoff/history
-and qualified specialized statistics. Guided builders and profiles remain later
-surfaces in `docs/reference/natural_search_and_deep_tools_boundary.md`.
-Salary/trade-rule engines are not this project. Branding/public launch decisions
-remain separate owner choices.
-
-## Preserved interpretation strategy
-
-Recent feature work is valuable, but repeated subject swaps, dropped clauses,
-operation-dependent filters and reparsing are evidence to address shared request
-meaning. More individual phrase repairs are not the default strategy. A full
-application rewrite is not justified either.
-
-Keep the shared Python service, proven calculations, result contracts, React
-interface, data lifecycle, immutable generations and useful tests. Make bounded
-improvements to interpretation and its connection to execution while delivering
-real answers. Moving code to new files alone is not a delivered capability.
-
-The product/integration queue remains `working/nba-tools-completion-program/README.md`.
-Its data-quality worklist holds separate worker claims and exceptions, not a
-competing product roadmap. Complete Core-1 acceptance obligations are preserved
-byte-for-byte in the linked PR582 baseline. Read `AGENTS.md` first. Historical task records
-are evidence, not competing instructions or proof of current deployment.
-
-## Preserved product milestones (not a data-cleanup serial gate)
-
-| Package | Outcome | Dependency and stop condition |
+| Milestone | What "done" means | Status |
 | --- | --- | --- |
-| P0. Secure existing work | Participation is not mislabeled injury/status; required numerical validation really blocks; useful pending PRs are safely integrated | Reproduce on live heads; repair only actual gaps. Preserve existing work. Required failures/skips cannot pass acceptance |
-| P1. Shared interpretation, delivered | Records, summaries and season splits preserve the same subjects, samples and conditions through existing computations | Start with the bounded cases in the queue, not a universal engine. Finish with positive answers and independent row/value checks |
-| P2. Bounded language comparison | Choose the next input-layer approach from measured behavior on P1's verified capabilities | Run as soon as that subset is ready, not after the whole engine. Compare unfamiliar wording, clause preservation, false answers, coverage, latency and authorized cost |
-| P3. Accept a usable Core-1 | A finite group of capabilities works together through the deployed interface | Required cases must answer correctly; check actual data/version, rendering and performance. Reuse valid evidence without treating historical passes as current proof |
-| O. Independent snapshot/runtime work | Reduce measured deployment cost/latency and use qualified existing data | Interleave or use the second non-overlapping lane. Fresh NBA acquisition is not a prerequisite for metadata derivation or existing-snapshot work |
-| D. Extend the accepted product | Additional combinations, source-dependent statistics and later guided surfaces | Select the next dependency-backed group after Core-1. Unfinished scope remains visible; no silent deletion at a milestone |
+| **Core-1 (snapshot release)** | The twelve K01-K12 capability groups answer correctly on the data already held: published history plus the fixed 123-game 2026-27 cutoff. Verified numerically against independent expectations and checked once on the deployed site (desktop and mobile) for a frozen release candidate. Unknown values stay unknown and are labeled. | Active. Owner scope decision 2026-11-11. |
+| **Live** | Literal "this season" questions, 24-hour freshness and readiness, current cross-club membership, current-season publication, and any requirement B moves here from Core-1. | Deferred, not deleted. Needs a working refresh route, which is parked. |
+| **P2 language comparison** | Compare the current parser with one bounded alternative (for example a constrained AI translator into the existing structured request) on an already verified subset, with a fixed budget and a clear stop point. | After Core-1, or earlier only if it doesn't delay it. Paid access and any production adoption need B's approval. |
+| **D: extend** | More combinations, source-dependent stats and later guided surfaces, picked from the carry-forward list. | After Core-1. |
+| **O: runtime** | Measured latency and cost work on existing data. | Interleave when it doesn't block Core-1. |
 
-P0 may contain separate coherent PRs. P0's validation work can run independently
-of the participation repair. P1 work need not wait idle for unrelated blockers,
-but no dependent capability can be accepted with unresolved correctness or
-required evidence. Avoid an indefinite stabilization phase.
+## Rules that shape the plan
 
-## Core-1 is a checkpoint, not a reduced destination
-
-Core-1 is the finite existing-snapshot milestone defined by the acceptance table
-in the queue. It is a subset of the broader A/B/C/D/O/E completion program, not a
-claim that all original core combinations or the whole product are finished.
-Freeze its actual case IDs and expected semantics before tuning each selected
-row. Retain unanswered required cases in the denominator; keep safety tests
-separate. New discoveries are either defects of those requirements or explicit
-follow-on work, not grounds for endless unrecorded scope expansion.
-
-Advance existing evidence into four distinct states: implementation/merge,
-independent numerical verification (fixture versus real data identified),
-held-out language verification, and deployed/API/rendered verification. A route,
-a test total, a refusal, or two agreeing engine paths cannot substitute for these.
-A schema-valid request can still ask the wrong question. Inspect meaning before
-calculating expectations.
-
-## Language decision boundaries
-
-P2 compares the incumbent with a bounded improved interpreter for an already
-verified capability subset. A constrained AI translator may be evaluated when
-existing access and cost authorization permit; production adoption is not
-pre-approved. It must target validated requests, not fabricate NBA answers or
-execute unrestricted generated code/SQL. Do not assume an LLM will win, and do
-not let the incumbent win merely because it exists.
-
-Without approved model access, measure the baseline and a feasible deterministic
-alternative, record the untested alternative honestly, and continue useful work.
-Do not turn an inaccessible optional experiment into a whole-project stop or
-claim a benchmark that was not run. A bounded replacement is allowed when its
-benefit and safe integration are demonstrated; no giant parallel engine.
-
-## Historical snapshot versus unattended freshness
-
-Owner direction updated **2026-11-01**: agents may routinely collect and stage
-bounded public NBA inputs using existing approved sources, tools, credentials and
-cost limits, including the reviewed 2026-27 Regular Season request. Agents own
-collection, validation, implementation and testing without per-batch approval.
-Use qualified retained data first, then the smallest justified new source scope
-through existing reviewed archive/Actions or acquisition-laptop routes. Codex
-development stays in the cloud; the laptop handles acquisition/transfer only.
-Read the active inventory, retain original bytes/provenance and actual coverage,
-and keep independent numerical/source checking and normal review/merge gates.
-
-Separate approval is still required for production publication, substantial bulk
-backfills, new costs/credentials, expanded permissions, destructive operations or
-weakened safeguards. Read-only runtime/validation and protected publication stay
-separate; collection does not authorize a pointer change. No unattended refresh,
-new service or commercial provider investigation is enabled. Preserve fixed-plan
-limits/$0 metered overage and last-good generations. Historical per-batch or
-laptop-only collection limits are superseded within the standing approved scope;
-current bounded work and exact continuation remain in the single Resume checkpoint.
-
-Independently inspect existing-snapshot derivations and publication, including
-compact identity metadata, before proposing a hosting/database migration.
-Preserve original data dates when republishing derived metadata. A passing
-availability monitor is not numerical or whole-product acceptance. Measure a
-representative deployment sample; retain cold/warm distinctions and existing
-latency goals rather than raising thresholds to get green checks.
-
-## Ownership, continuity and authority
-
-One integration lead owns prioritization and the current checkpoint. At most
-two genuinely non-overlapping implementation lanes, plus an independent checker;
-only one active writer owns shared interpretation/parser/service changes.
-Logical responsibility areas do not imply separate simultaneous writers. Use
-one lane and interleave when actual execution capacity is limited.
-
-Agents own implementation, source research, numerical checking, review
-coordination, authorized merges and resumable handoffs. They continue within
-active authorized sessions, not imaginary background execution. A successor
-reads the checkpoint, verifies live state, and resumes the next incomplete action
-instead of restarting discovery or requesting owner-written query batteries.
-
-Keep existing fixed-plan spending boundaries and $0 permitted metered overage,
-read-only runtime/validation credentials, separate publication authority, disabled
-public feedback persistence, and applicable merge/security gates. No new paid
-model service, host migration, credential expansion, public logging, or automatic
-refresh is authorized by this plan. Ask the owner only for a real product choice,
-necessary consent/access, material new spending, or a consequential action beyond
-existing authority, with a recommendation and the smallest exact action.
+- **Core-1 is finite.** Its requirements are the twelve K01-K12 rows and the 46
+  original K08 participation positives, preserved byte-for-byte in
+  `working/nba-tools-completion-program/acceptance-baseline-pr582.md`. Each
+  requirement must answer correctly, unless B explicitly moves it out of Core-1
+  (as on 2026-11-11 for literal-current and freshness). Agents can't defer a
+  requirement themselves; a blocked one stays in the denominator with its missing
+  evidence named. No refusal counts as passing.
+- **Four separate proofs.** A capability is complete when it is implemented,
+  numerically verified (fixture versus real data stated), checked with
+  unfamiliar wording, and verified on the deployed site. A green test total, a
+  route, or a refusal is not any of these.
+- **Fix interpretation in shared logic.** Repeated subject swaps, dropped
+  clauses and reparsing are shared-meaning defects, not phrase patches. No
+  universal-engine prerequisite and no rewrite.
+- **Data quality runs beside product work.** Flagged data becomes a scoped
+  exception record (`working/nba-tools-completion-program/data-quality/`), not a
+  reason to stop unrelated work. Provisional data can exercise a feature but is
+  never proof of the real NBA answer.
+- **AI models never supply NBA values** or run unrestricted generated code or
+  SQL. A translator may only produce validated structured requests.

@@ -162,12 +162,14 @@ CI runs on GitHub Actions (`.github/workflows/ci.yml`).
 | Manual (`workflow_dispatch`) | ✓    | ✓               | ✓                                 | ✓                                | ✓ (reports)                  |                  | ✓           |
 
 **Impact** means all changes except an exclusively non-executable, regular-file
-diff of `AGENTS.md`, `ROADMAP.md` and/or
-`working/nba-tools-completion-program/README.md`. These are reviewed instructions
-and handoffs, not runtime/build inputs. Apply AGENTS.md's review criteria: material
+diff of `AGENTS.md`, `ROADMAP.md` and/or Markdown files under `working/` (the
+checkpoint and evidence notes). No test, build or runtime reads or hashes these
+files; `tools/delivery_scope.mjs` records why. Apply AGENTS.md's review criteria: material
 meaning/authority/verification-policy changes need independent review; ordinary
-prose/cosmetic edits do not acquire a separate review gate just from their path;
-a Markdown suffix alone does not qualify. Root `README.md` is packaging metadata;
+prose/cosmetic edits do not acquire a separate review gate just from their path.
+Elsewhere a Markdown suffix alone does not qualify: `docs/` Markdown is read by
+tests, `CLAUDE.md` is hashed by a retained deployment binding, and non-Markdown
+files under `working/` are read by tests, so all keep application checks. Root `README.md` is packaging metadata;
 other docs, tests/helpers, generated inputs, dependencies, configuration and the
 selection mechanism itself conservatively select application checks.
 

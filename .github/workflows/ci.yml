@@ -7,7 +7,8 @@ name: CI
 #   push to main  → frontend-verify + three-version test-full when app impact is possible
 #   nightly/manual → frontend-verify + three-version test-full unconditionally
 #
-# Only the three explicitly reviewed planning files can omit application jobs.
+# Only the three planning files and Markdown under working/ can omit application
+# jobs (tools/delivery_scope.mjs explains why each qualifies).
 # No workflow-level path filters: every invocation reports its selection. Missing
 # or failed scope output selects the conservative path and cannot make CI green.
 #
@@ -20,7 +21,7 @@ name: CI
 # mode this split exists to prevent.
 #
 # All test jobs call Makefile targets so the repo owns the pytest
-# flags.  See AGENTS.md § "CI testing policy" and CONTRIBUTING.md
+# flags.  See AGENTS.md ("CI, validation and data safeguards") and CONTRIBUTING.md
 # § "Continuous Integration" for the full rationale.
 
 on:

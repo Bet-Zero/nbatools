@@ -23,6 +23,31 @@ def sha(raw):
 
 
 semantic = {
+    "CLAUDE.md": (
+        "agent startup instructions",
+        "Agent-facing prose only; never imported, packaged, built or served. No query execution.",
+    ),
+    "CONTRIBUTING.md": (
+        "contributor documentation",
+        "Documentation of CI selection only; never imported, packaged, built or served.",
+    ),
+    ".github/workflows/ci.yml": (
+        "workflow comments",
+        (
+            "Only YAML comments change (the selection description); jobs, steps, triggers, "
+            "commands and conditions are byte-identical in meaning. Not part of the deployed "
+            "application or any of the original 22 query executions."
+        ),
+    ),
+    "tools/delivery_scope.mjs": (
+        "classify/lightCheckInput; CI step summary text",
+        (
+            "Changes only which PRs run application CI jobs (Markdown under working/ now "
+            "takes the reduced path). nonBuildInput and therefore Vercel deploy selection "
+            "are unchanged; the deployed bundle and the original 22 query routes, "
+            "computations and rendering are unaffected."
+        ),
+    ),
     "docs/reference/data_contracts.md": (
         "documentation",
         "No runtime execution; source definitions remain independently checked.",
