@@ -190,12 +190,14 @@ unresolved" (`cmsg_01ABTwDaHncgP7nUEgUSYNtv7ejNNCtvNVUUz6uQnrFKf4`).
 ### Carry-forward from PR607 (not Core-1 blockers unless an original case needs them)
 
 Two named teams on an event board narrow to one. "Who led <team> in games
-with X and Y" returns team grain. Fixed in PR618: "130 total points" (the
-team's own score), "25-30 points" ranges, two-digit and dashed seasons
-("15-16", "2026–27", "2015/16"), "a total of 2000 points" and one player's
-seasons over a total ("LeBron seasons with 1500 points"). Still open: a game
-total of both teams' points ("games with 250 total points") refuses honestly;
-a range of season totals or averages ("players averaging 25-30") refuses.
+with X and Y" returns team grain. Fixed in PR618: "games with 230 total
+points" / "combined points" (both teams' score, on team game lists, records
+and summaries), "25-30 points" ranges, two-digit and dashed seasons ("15-16",
+"2026–27", "2015/16"), "a total of 2000 points" and one player's seasons over
+a total ("LeBron seasons with 1500 points"). Still open: a player's games by
+the combined score ("LeBron games with 230 total points") and league-wide game
+lists without a team refuse; a range of season totals or averages ("players
+averaging 25-30") refuses; "1-2 point games" is not read as a close finish.
 
 ## Preserved scope
 

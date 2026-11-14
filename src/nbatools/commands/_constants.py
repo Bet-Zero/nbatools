@@ -295,6 +295,10 @@ STAT_ALIASES: dict[str, str] = {
     # fewer game margin").
     "game margin": "margin",
     "win margin": "win_margin",
+    # Both teams' points in a game; "130 total points" in a game is rewritten
+    # to this form ("games with 230 combined points").
+    "combined points": "game_total_pts",
+    "combined score": "game_total_pts",
     "loss margin": "loss_margin",
     # Usage rate
     "usage rate": "usg_pct",

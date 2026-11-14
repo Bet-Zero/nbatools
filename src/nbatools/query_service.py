@@ -1753,6 +1753,8 @@ def _add_season_total_answer_metadata(metadata: dict[str, Any], result: Any) -> 
         # "LeBron James has 3 seasons with 1,000+ points from 1996-97 to 2025-26".
         seasons = len(rows)
         span = f"from {start} to {end}" if start and end else context
+        if filters:
+            span = " ".join(filters) + " " + span
         if seasons == 0:
             metadata["answer_phrase"] = f"{named.group(1)} has no seasons with {line} {span}."
         else:
@@ -3087,6 +3089,8 @@ def _filter_stat_label(stat: str) -> str:
     """Filter-chip label: "OPP PTS", "OPP FG3M", or the stat id."""
     if stat.startswith("opponent_"):
         return f"OPP {stat[len('opponent_') :].upper()}"
+    if stat == "game_total_pts":
+        return "COMBINED PTS"
     return stat
 
 
@@ -3106,6 +3110,7 @@ def stat_phrase_label(stat: str) -> str:
         "fta": "free throw attempts",
         "oreb": "offensive rebounds",
         "dreb": "defensive rebounds",
+        "game_total_pts": "combined points",
     }
     key = stat.lower()
     if key.startswith("opponent_") and key[len("opponent_") :] in labels:

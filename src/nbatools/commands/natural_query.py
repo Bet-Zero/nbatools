@@ -120,7 +120,6 @@ from nbatools.commands._parse_helpers import (
     ONE_POSSESSION_TERM_PRESENT,
     _team_at,
     extract_min_attempts,
-    names_two_team_game_total,
     opponent_lists,
     text_without_min_attempts,
 )
@@ -542,12 +541,6 @@ def _unsupported_boundary_note(
         return boundary_note
     if attempt_note := _unexecuted_attempt_qualifier_note(q, route, route_kwargs):
         return attempt_note
-    if route not in ("season_leaders", "season_team_leaders") and names_two_team_game_total(q):
-        return (
-            "unsupported_boundary: a game total of both teams' points (more than one team "
-            "has scored in a game) is not supported yet; ask for one team's points "
-            '("Lakers games with 130 points")'
-        )
 
     if route == "season_team_leaders":
         stat = requested_stat or route_kwargs.get("stat")
@@ -2079,7 +2072,11 @@ _SHORT_SEASON_NOT_SEASON_BEFORE = re.compile(
 )
 _SHORT_SEASON_NOT_SEASON_AFTER = re.compile(
     r"\s*(?:starts?|finish|marks?|runs?|stretch|series|lead|deficit|"
-    r"(?:in|over)\s+(?:their|the|his|its)\s+(?:last|first|next))\b"
+    r"(?:in|over)\s+(?:their|the|his|its)\s+(?:last|first|next)|"
+    # "10-11 in close games": a record in those games.
+    r"in\s+(?:close|one[-\s]possession|road|home|those|these|such)\b|in\s+games\b|"
+    # "10/11 from the line", "11-12 shooting": makes and attempts.
+    r"shooting|from\s+(?:the\s+)?(?:line|field|floor|stripe|three|deep|3)|fg|ft|3pt)\b"
 )
 
 

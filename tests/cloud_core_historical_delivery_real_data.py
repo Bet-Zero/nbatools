@@ -47,7 +47,7 @@ S4 = PROGRAM / "source-evidence/paired-missing-20261107/r2-final/composed-accept
 OWNED = PROGRAM / "source-evidence/distinct-player-or-20261106/independent/oracle.json"
 LEBRON = PROGRAM / "source-evidence/k08-lebron-remaining/qualification.json"
 APPLICABILITY = EVIDENCE / "historical-applicability-20261110.json"
-APPLICABILITY_SHA256 = "81c252f1303d39e9ebcb89edd15aec5857a21d1e986d3e34e7312688a3c8fdfc"
+APPLICABILITY_SHA256 = "c5735de79d0779cbd29bea345e933191c30db7b1dfd8bd36d4af2ca04fa1e298"
 
 
 def _sha(raw):
@@ -103,7 +103,7 @@ def _retained_applicability(binding, *, path=APPLICABILITY, expected_sha=APPLICA
         "data_quality" not in c["payload"]["result"]["metadata"] for c in captures["receipts"]
     )
     reviewed = {change["path"]: change for change in proof["changes"]}
-    assert len(reviewed) == len(proof["changes"]) == 24
+    assert len(reviewed) == len(proof["changes"]) == 27
     changed = {}
     for relative, old_digest in binding["application_file_sha256"].items():
         actual = _sha((ROOT / relative).read_bytes())

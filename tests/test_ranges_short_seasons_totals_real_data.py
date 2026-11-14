@@ -58,19 +58,28 @@ def test_curry_short_season_summary():
     assert summary["pts_avg"] == pytest.approx(curry["pts"].mean(), abs=0.05)
 
 
-def test_mavericks_130_total_point_games():
+def test_mavericks_combined_score_games():
     teams = _teams("2023-24")
-    dal = teams[teams["team_abbr"].eq("DAL") & teams["pts"].ge(130)]
+    # Both teams' rows of the same game, summed: independent of plus-minus.
+    combined = teams.groupby("game_id")["pts"].sum()
+    dal = teams[teams["team_abbr"].eq("DAL")]
+    dal = dal[dal["game_id"].map(combined).ge(250)]
     assert 0 < len(dal) <= 25
-    rows = _sections("Mavericks games with 130 total points in 2023-24")["finder"]
+    rows = _sections("Mavericks games with 250 total points in 2023-24")["finder"]
     assert {int(r["game_id"]) for r in rows} == {int(g) for g in dal["game_id"]}
 
 
-def test_two_team_game_total_refuses():
+def test_combined_score_matches_both_team_rows():
+    teams = _teams("2023-24")
+    pairs = teams.groupby("game_id")["pts"].sum()
+    totals = teams.assign(total=2 * teams["pts"] - teams["plus_minus"]).set_index("game_id")
+    lal = totals[totals["team_abbr"].eq("LAL")]
+    assert (lal["total"] == pairs.reindex(lal.index)).all()
+    expected = set(lal.index[lal["total"] < 210])
     from nbatools.query_service import execute_natural_query
 
-    result = execute_natural_query("Lakers games with 250 total points in 2023-24")
-    assert (result.result_status, result.result_reason) == ("no_result", "filter_not_supported")
+    result = execute_natural_query("how many Lakers games had under 210 total points in 2023-24")
+    assert result.result.to_dict()["sections"]["count"] == [{"count": len(expected)}]
 
 
 def test_players_with_a_total_of_2000_points():
