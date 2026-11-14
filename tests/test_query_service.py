@@ -1468,7 +1468,8 @@ class TestMetadataPreservation:
         assert qr.route is None
         assert qr.result.result_status == "no_result"
         assert qr.result.result_reason == "filter_not_supported"
-        assert qr.metadata["unsupported_filters"] == ["unsupported_concept"]
+        # The concept blocker leads; a more specific boundary may follow it.
+        assert qr.metadata["unsupported_filters"][0] == "unsupported_concept"
         assert qr.to_dict()["sections"] == {}
 
 

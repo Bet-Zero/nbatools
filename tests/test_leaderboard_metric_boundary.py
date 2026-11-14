@@ -323,15 +323,17 @@ EXPLICIT_THREE_POINT = [
     ("most threes made", "fg3m"),
     ("three point percentage leaders", "fg3_pct"),
     ("best 3P%", "fg3_pct"),
+    # PR555 reads "shooters" as the shooting rate, the same reading as
+    # "Lakers best three point shooters": a qualified 3P% board, never points.
+    ("top three point shooters", "fg3_pct"),
+    ("top three-point shooters by percentage", "fg3_pct"),
 ]
 
 AMBIGUOUS_THREE_POINT = [
+    # Made threes or percentage? Refusing is correct; mapping it to points
+    # would be the original defect.
     "NBA three point leaders",
-    "top three point shooters",
-    # Explicit about percentage, but the current metric vocabulary does not
-    # resolve this construction. Refusing is correct until it does; mapping it
-    # to points would be the original defect. Recorded as a focused follow-up.
-    "top three-point shooters by percentage",
+    "three point leaders this season",
 ]
 
 
@@ -1106,7 +1108,6 @@ REFUSAL_METADATA_CONTRACT = [
     ("best offense and defense this season", UNCLEAR_REQUEST, None, None),
     ("field goals made and attempted leaders", UNCLEAR_REQUEST, None, None),
     ("NBA three point leaders this season", UNCLEAR_REQUEST, None, None),
-    ("top three point shooters this season", UNCLEAR_REQUEST, None, None),
     ("true shooting percentage per game leaders", UNSUPPORTED_AGGREGATION, "ts_pct", None),
     (
         "best offensive teams from 2022-23 to 2024-25",
@@ -1197,12 +1198,12 @@ def test_several_requested_metrics_are_published_whole_or_not_at_all():
 def test_unclear_request_publishes_no_metric_at_all():
     """`metric` is set for an unclear request, but it is a partial reading.
 
-    `top three point shooters` resolves `pts` internally because "point" is a
+    `NBA three point leaders` resolves `pts` internally because "point" is a
     points alias. Publishing that as the requested metric would answer for the
     user; the honest report is that the question could not be read in full.
     """
     eligibility = assess_leaderboard_request(
-        _build_parse_state("top three point shooters this season")
+        _build_parse_state("NBA three point leaders this season")
     )
 
     assert eligibility.reason == UNCLEAR_REQUEST
@@ -1536,7 +1537,7 @@ def test_average_three_point_attempts_never_returns_the_total_board():
         "total true shooting percentage leaders",
         "true shooting percentage per game leaders",
         "best offensive teams from 2022-23 to 2024-25",
-        "top three point shooters this season",
+        "NBA three point leaders this season",
     ],
 )
 def test_serialized_refusal_never_publishes_an_executed_stat(query):

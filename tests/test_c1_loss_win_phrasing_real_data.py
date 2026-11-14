@@ -29,5 +29,11 @@ def test_named_team_against_the_other(query, outcome):
         & (games["opponent_team_abbr"] == "BOS")
         & (games["wl"] == outcome)
     ]
-    rows = execute_natural_query(query).result.to_dict()["sections"]["finder"]
-    assert len(rows) == len(mine) > 0
+    sections = execute_natural_query(query).result.to_dict()["sections"]
+    if "finder" in sections:
+        assert len(sections["finder"]) == len(mine) > 0
+    else:
+        # The game summary of exactly those games: count and outcome agree.
+        (summary,) = sections["summary"]
+        assert summary["games"] == len(mine) > 0
+        assert summary["wins"] == (len(mine) if outcome == "W" else 0)

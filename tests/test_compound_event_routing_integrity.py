@@ -316,7 +316,8 @@ POSITIVE_CONTROLS = [
     ("points leaders", "season_leaders", "pts"),
     ("rebounds leaders", "season_leaders", "reb"),
     ("most points in a game", "top_player_games", "pts"),
-    ("most 30 point games", "season_leaders", "pts"),
+    # The published stat is the ranked count column, not the bound stat.
+    ("most 30 point games", "season_leaders", "games_30p"),
     ("teams with most 120 point games", "team_occurrence_leaders", "pts"),
     ("team points leaders", "season_team_leaders", "pts"),
     ("points leaders 2023-24", "season_leaders", "pts"),
