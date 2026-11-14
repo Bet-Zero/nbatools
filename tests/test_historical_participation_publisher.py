@@ -1,5 +1,6 @@
 """The fixed historical wrapper preserves the reviewed publication scope before delegation."""
 
+import hashlib
 import importlib.util
 import json
 import shutil
@@ -45,6 +46,7 @@ def wrapper(tmp_path):
                 *module.APPEND_PATHS,
                 *module.CREATED_PATHS,
                 "raw/player_game_availability_sources/" + "c" * 64 + ".json",
+                "validation.json",
             )
         ],
     )
@@ -121,6 +123,8 @@ def test_fixed_wrapper_delegates_to_unchanged_publisher_with_bound_scope(wrapper
         "created_games",
         "missing_creation",
         "foreign_file",
+        "missing_validation",
+        "foreign_root_file",
     ],
 )
 def test_changed_or_partial_publication_metadata_stops_before_delegation(wrapper, damage):
@@ -159,9 +163,48 @@ def test_changed_or_partial_publication_metadata_stops_before_delegation(wrapper
         del inventory["manifest_absent_creations"][module.CREATED_PATHS[1]]
     elif damage == "foreign_file":
         inventory["files"].append(dict(path="raw/player_game_stats/2023-24_regular_season.csv"))
+    elif damage == "missing_validation":
+        inventory["files"].remove(dict(path="validation.json"))
+    elif damage == "foreign_root_file":
+        inventory["files"].append(dict(path="consumer-acceptance.json"))
     if damage != "missing_inventory":
         path.write_text(json.dumps(inventory))
     # No delegated script exists. A valid wrapper would reach FileNotFoundError
     # there; all malformed inputs must fail their own scope check first.
     with pytest.raises(FileNotFoundError if damage == "missing_inventory" else ValueError):
         module.main()
+
+
+def test_producer_transport_layout_passes_the_real_overlay_check(wrapper, tmp_path):
+    """The producer exports raw/ plus validation.json; the delegated check accepts it."""
+    module = wrapper[0]
+    spec = importlib.util.spec_from_file_location(
+        "reviewed_publisher", PROGRAM / "publish-opening-availability.py"
+    )
+    publisher = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(publisher)
+    root = tmp_path / "acquired_data"
+    paths = [*module.APPEND_PATHS, *module.CREATED_PATHS]
+    paths.append("raw/player_game_availability_sources/" + "c" * 64 + ".json")
+    for relative in paths:
+        (root / relative).parent.mkdir(parents=True, exist_ok=True)
+        (root / relative).write_text(relative)
+    request = "d" * 40
+    (root / "validation.json").write_text(
+        json.dumps(dict(candidate_sha=request, base_generation=module.BASE_GENERATION))
+    )
+    files = [
+        dict(
+            path=p.relative_to(root).as_posix(),
+            size_bytes=p.stat().st_size,
+            sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
+        )
+        for p in sorted(root.rglob("*"))
+        if p.is_file()
+    ]
+    inventory = dict(request_sha=request, base_generation=module.BASE_GENERATION, files=files)
+    items = publisher.verify_overlay(root, inventory)
+    assert sorted(item["path"] for item in items) == sorted(paths)
+    # The wrapper's file-scope rule accepts exactly this listing.
+    listed = {item["path"] for item in files}
+    assert listed - {"validation.json"} == set(paths) and "validation.json" in listed

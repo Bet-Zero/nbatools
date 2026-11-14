@@ -108,8 +108,15 @@ def main() -> None:
             raise ValueError("Historical creation binding/game/record scope changed")
     files = {item.get("path") for item in inventory.get("files", [])}
     tables = {p for p in files if p.startswith("raw/player_game_availability/")}
-    if tables != set(APPEND_PATHS) | set(CREATED_PATHS) or not all(
-        isinstance(p, str) and p.startswith("raw/player_game_availability") for p in files
+    # validation.json is the stage provenance the delegated publisher reads; it
+    # is not copied as data because only raw/ items are published.
+    data = files - {"validation.json"}
+    if (
+        "validation.json" not in files
+        or tables != set(APPEND_PATHS) | set(CREATED_PATHS)
+        or not all(
+            isinstance(p, str) and p.startswith("raw/player_game_availability") for p in data
+        )
     ):
         raise ValueError("Historical overlay contains files outside the reviewed scope")
     spec = importlib.util.spec_from_file_location(

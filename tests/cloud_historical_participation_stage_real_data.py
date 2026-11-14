@@ -725,7 +725,9 @@ def test_retained_historical_sources_expand_direct_absence_consumers(tmp_path, m
         receipt.update(consumer_acceptance="passed", incomplete_other_scope=unknown)
         # The protected publisher consumes acquired_data/raw/... . Export the
         # unchanged overlay bytes there only after every consumer has passed.
+        # validation.json carries the provenance the publisher checks.
         transport = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"])
+        assert not transport.exists() or not any(transport.iterdir())
         for item in validation["overlay_files"]:
             target = transport / item["path"]
             assert item["path"].startswith("raw/") and not target.exists()
@@ -733,6 +735,7 @@ def test_retained_historical_sources_expand_direct_absence_consumers(tmp_path, m
             raw = (destination / item["path"]).read_bytes()
             assert _sha(raw) == item["sha256"]
             target.write_bytes(raw)
+        (transport / "validation.json").write_bytes((destination / "validation.json").read_bytes())
     except Exception as exc:
         receipt.update(
             consumer_acceptance="failed",
