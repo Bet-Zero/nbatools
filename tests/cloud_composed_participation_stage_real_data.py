@@ -138,6 +138,11 @@ def test_accepted_cohorts_work_together_without_discarded_coverage(tmp_path, mon
         target = root / path
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(body)
+    verify_composed_root(root, output, validation, oracles, records, before, changed, monkeypatch)
+
+
+def verify_composed_root(root, output, validation, oracles, records, before, changed, monkeypatch):
+    """Consumer acceptance of one composed root; reused by stages rebased onto later bases."""
     # One combined source-root validation. Original per-package qualification is
     # already accepted; this verifies preservation and cross-package consistency.
     validate_publication(root)

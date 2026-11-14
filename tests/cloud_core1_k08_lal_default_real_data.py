@@ -218,120 +218,7 @@ def test_original_luka_rest_and_reaves_default_questions(tmp_path, monkeypatch):
             target = root / entry["path"]
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(body)
-        teams = pd.read_csv(root / f"raw/team_game_stats/{SEASON}_regular_season.csv")
-        teams = teams.loc[teams.team_id.eq(LAL)]
-        assert len(teams) == teams.game_id.nunique() == 82
-        players = pd.read_csv(root / f"raw/player_game_stats/{SEASON}_regular_season.csv")
-        reasons = pd.read_csv(root / f"raw/player_game_absence_reasons/{SEASON}_regular_season.csv")
-        assert len(reasons) == reasons.game_id.nunique() == 18
-        assert reasons.player_id.eq(1629029).all() and reasons.team_id.eq(LAL).all()
-        assert reasons.reported_reason.eq("reported_other").all()
-        cases = []
-        for ordinal, pid, player, games, wins, losses in [
-            (16, 1629029, "Luka Doncic", 18, 10, 8),
-            (18, 1629029, "Luka Doncic", 0, 0, 0),
-            (35, 1630559, "Austin Reaves", 31, 17, 14),
-        ]:
-            states = coverage[str(pid)]["games"]
-            assert {int(g["game_id"]) for g in states} == set(teams.game_id.astype(int))
-            for fact in states:
-                source = teams.loc[teams.game_id.eq(int(fact["game_id"]))].iloc[0]
-                assert fact["team_id"] == LAL and fact["player_id"] == pid
-                assert fact["game_date"] == str(source.game_date)[:10]
-                assert fact["state"] in {"played", "did_not_play"}
-            ids = {int(g["game_id"]) for g in states if g["state"] == "did_not_play"}
-            if pid == 1629029:
-                assert set(reasons.game_id.astype(int)) == ids
-            # Zero Rest is an already independently qualified source population,
-            # distinct from the eighteen source-listed generic nonparticipants.
-            selected_ids = (
-                set(reasons.loc[reasons.reported_reason.eq("reported_rest"), "game_id"].astype(int))
-                if ordinal == 18
-                else ids
-            )
-            selected = teams.loc[teams.game_id.isin(selected_ids)].copy()
-            expected = _sample(selected)
-            assert (expected["games"], expected["wins"], expected["losses"]) == (
-                games,
-                wins,
-                losses,
-            )
-            kwargs = dict(team="LAL", season=SEASON, without_player=player)
-            if ordinal == 18:
-                kwargs["without_player_reason"] = "reported_rest"
-            assert exact_source_player_id(players, player) == pid
-            cases.append(
-                dict(
-                    ordinal=ordinal,
-                    query=QUESTIONS[ordinal],
-                    kwargs=kwargs,
-                    expected=expected,
-                    source_player_id=pid,
-                )
-            )
-        receipt["source_oracles"] = cases
-        receipt["composition_validation"] = validation
-        persist()
-        _write_inventory(root)
-        monkeypatch.setenv("DATA_SOURCE", "local")
-        monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(root.parent))
-        monkeypatch.setenv("NBATOOLS_DATA_GENERATION", "legacy")
-        reset_data_source_cache()
-        clear_frame_cache()
-        assert default_end_season("Regular Season") == SEASON
-        client = TestClient(app)
-        for case in cases:
-            actual = dict(original_id=case["ordinal"], query=case["query"], accepted=False)
-            receipt["answers"].append(actual)
-            compiled = parse_query(case["query"])
-            actual["compiled_scope"] = compiled["route_kwargs"]
-            persist()
-            assert compiled["route"] == "team_record"
-            for key, value in case["kwargs"].items():
-                if key == "without_player":
-                    subject = compiled["route_kwargs"].get(key)
-                    assert full_name_key(subject) == full_name_key(value), actual["compiled_scope"]
-                    assert exact_source_player_id(players, subject) == case["source_player_id"]
-                else:
-                    assert compiled["route_kwargs"].get(key) == value, actual["compiled_scope"]
-            for channel in ("natural", "structured", "http_natural", "http_structured"):
-                natural = channel in {"natural", "http_natural"}
-                if channel == "natural":
-                    result = execute_natural_query(case["query"])
-                elif channel == "structured":
-                    result = execute_structured_query("team_record", **case["kwargs"])
-                else:
-                    response = client.post(
-                        "/query" if natural else "/structured-query",
-                        json={"query": case["query"]}
-                        if natural
-                        else dict(route="team_record", kwargs=case["kwargs"]),
-                    )
-                    body = response.json()
-                    actual[channel + "_status"] = response.status_code
-                if channel in {"natural", "structured"}:
-                    if case["ordinal"] == 18:
-                        actual[channel + "_private_reason_metadata"] = dict(result.result.metadata)
-                        persist()
-                        assert_private_rest(result)
-                    body = query_result_to_payload(result)
-                actual[channel] = body
-                persist()
-                if channel.startswith("http"):
-                    assert actual[channel + "_status"] == 200, compact_actual(body)
-                subject = body["result"]["metadata"]["without_player"]
-                assert exact_source_player_id(players, subject) == case["source_player_id"]
-                assert_record_body(body, case, natural=natural)
-            actual["accepted"] = True
-            receipt["accepted_original_ids"].append(case["ordinal"])
-            persist()
-        receipt["consumer_acceptance"] = "passed"
-        persist()
-        print(
-            json.dumps(
-                dict(accepted_original_ids=receipt["accepted_original_ids"], executed_channels=12)
-            )
-        )
+        verify_original_defaults(root, coverage, validation, receipt, persist, monkeypatch)
     except Exception as exc:
         receipt.update(consumer_acceptance="failed", failure=f"{type(exc).__name__}: {exc}")
         persist()
@@ -339,3 +226,121 @@ def test_original_luka_rest_and_reaves_default_questions(tmp_path, monkeypatch):
     finally:
         reset_data_source_cache()
         clear_frame_cache()
+
+
+def verify_original_defaults(root, coverage, validation, receipt, persist, monkeypatch):
+    """IDs 16/18/35 on one composed root; reused by stages rebased onto later bases."""
+    teams = pd.read_csv(root / f"raw/team_game_stats/{SEASON}_regular_season.csv")
+    teams = teams.loc[teams.team_id.eq(LAL)]
+    assert len(teams) == teams.game_id.nunique() == 82
+    players = pd.read_csv(root / f"raw/player_game_stats/{SEASON}_regular_season.csv")
+    reasons = pd.read_csv(root / f"raw/player_game_absence_reasons/{SEASON}_regular_season.csv")
+    assert len(reasons) == reasons.game_id.nunique() == 18
+    assert reasons.player_id.eq(1629029).all() and reasons.team_id.eq(LAL).all()
+    assert reasons.reported_reason.eq("reported_other").all()
+    cases = []
+    for ordinal, pid, player, games, wins, losses in [
+        (16, 1629029, "Luka Doncic", 18, 10, 8),
+        (18, 1629029, "Luka Doncic", 0, 0, 0),
+        (35, 1630559, "Austin Reaves", 31, 17, 14),
+    ]:
+        states = coverage[str(pid)]["games"]
+        assert {int(g["game_id"]) for g in states} == set(teams.game_id.astype(int))
+        for fact in states:
+            source = teams.loc[teams.game_id.eq(int(fact["game_id"]))].iloc[0]
+            assert fact["team_id"] == LAL and fact["player_id"] == pid
+            assert fact["game_date"] == str(source.game_date)[:10]
+            assert fact["state"] in {"played", "did_not_play"}
+        ids = {int(g["game_id"]) for g in states if g["state"] == "did_not_play"}
+        if pid == 1629029:
+            assert set(reasons.game_id.astype(int)) == ids
+        # Zero Rest is an already independently qualified source population,
+        # distinct from the eighteen source-listed generic nonparticipants.
+        selected_ids = (
+            set(reasons.loc[reasons.reported_reason.eq("reported_rest"), "game_id"].astype(int))
+            if ordinal == 18
+            else ids
+        )
+        selected = teams.loc[teams.game_id.isin(selected_ids)].copy()
+        expected = _sample(selected)
+        assert (expected["games"], expected["wins"], expected["losses"]) == (
+            games,
+            wins,
+            losses,
+        )
+        kwargs = dict(team="LAL", season=SEASON, without_player=player)
+        if ordinal == 18:
+            kwargs["without_player_reason"] = "reported_rest"
+        assert exact_source_player_id(players, player) == pid
+        cases.append(
+            dict(
+                ordinal=ordinal,
+                query=QUESTIONS[ordinal],
+                kwargs=kwargs,
+                expected=expected,
+                source_player_id=pid,
+            )
+        )
+    receipt["source_oracles"] = cases
+    receipt["composition_validation"] = validation
+    persist()
+    _write_inventory(root)
+    monkeypatch.setenv("DATA_SOURCE", "local")
+    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(root.parent))
+    monkeypatch.setenv("NBATOOLS_DATA_GENERATION", "legacy")
+    reset_data_source_cache()
+    clear_frame_cache()
+    assert default_end_season("Regular Season") == SEASON
+    client = TestClient(app)
+    for case in cases:
+        actual = dict(original_id=case["ordinal"], query=case["query"], accepted=False)
+        receipt["answers"].append(actual)
+        compiled = parse_query(case["query"])
+        actual["compiled_scope"] = compiled["route_kwargs"]
+        persist()
+        assert compiled["route"] == "team_record"
+        for key, value in case["kwargs"].items():
+            if key == "without_player":
+                subject = compiled["route_kwargs"].get(key)
+                assert full_name_key(subject) == full_name_key(value), actual["compiled_scope"]
+                assert exact_source_player_id(players, subject) == case["source_player_id"]
+            else:
+                assert compiled["route_kwargs"].get(key) == value, actual["compiled_scope"]
+        for channel in ("natural", "structured", "http_natural", "http_structured"):
+            natural = channel in {"natural", "http_natural"}
+            if channel == "natural":
+                result = execute_natural_query(case["query"])
+            elif channel == "structured":
+                result = execute_structured_query("team_record", **case["kwargs"])
+            else:
+                response = client.post(
+                    "/query" if natural else "/structured-query",
+                    json={"query": case["query"]}
+                    if natural
+                    else dict(route="team_record", kwargs=case["kwargs"]),
+                )
+                body = response.json()
+                actual[channel + "_status"] = response.status_code
+            if channel in {"natural", "structured"}:
+                if case["ordinal"] == 18:
+                    actual[channel + "_private_reason_metadata"] = dict(result.result.metadata)
+                    persist()
+                    assert_private_rest(result)
+                body = query_result_to_payload(result)
+            actual[channel] = body
+            persist()
+            if channel.startswith("http"):
+                assert actual[channel + "_status"] == 200, compact_actual(body)
+            subject = body["result"]["metadata"]["without_player"]
+            assert exact_source_player_id(players, subject) == case["source_player_id"]
+            assert_record_body(body, case, natural=natural)
+        actual["accepted"] = True
+        receipt["accepted_original_ids"].append(case["ordinal"])
+        persist()
+    receipt["consumer_acceptance"] = "passed"
+    persist()
+    print(
+        json.dumps(
+            dict(accepted_original_ids=receipt["accepted_original_ids"], executed_channels=12)
+        )
+    )
