@@ -7,7 +7,7 @@
   "original_capture_sha256": "a5c718c7498f24d787866ff4e3d53220363e00588a045607e92f5947ac2074a5",
   "original_case_manifest_sha256": "096f093c24df872fca3107a1d4a23b19fc98e549b86aecfdc9df3b538ca1382a",
   "original_bound_file_count": 663,
-  "unchanged_bound_file_count": 640,
+  "unchanged_bound_file_count": 639,
   "cases": [
     {
       "id": "k12-s1",
@@ -255,6 +255,37 @@
       ]
     },
     {
+      "path": "src/nbatools/commands/_constants.py",
+      "old_sha256": "a54cdff9179552ab032d741703fd1c7f4670b5aa1858aad2f2333bb003b5e2f3",
+      "reviewed_sha256": "017518ae5f31291b2c312cc07adc1ded4c8a7f9264d320d0a2171338583a8138",
+      "reviewed_functions": "normalize_text",
+      "semantic_reach": "PR618: an en/em dash between two digits becomes a hyphen. None of the original 22 queries contains an en or em dash, so normalized text is unchanged.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ]
+    },
+    {
       "path": "src/nbatools/commands/_matchup_utils.py",
       "old_sha256": "6e80099003348060ce3d4fd6db3f62053a7b070099ffcbe73cd56197d44ed143",
       "reviewed_sha256": "485bd20fda37c0c5b8a28b99594bad3d40ccdcae748ba2fa45c75b23ea810661",
@@ -350,9 +381,9 @@
     {
       "path": "src/nbatools/commands/_parse_helpers.py",
       "old_sha256": "f6bf722bb2223a8ff09e68bced4799dd030043a637f6831ba5570ef4347e0171",
-      "reviewed_sha256": "34e0e3a5bc91ba5c754628ef5cde89da02bfcff9a8a8fa9b4431420583eb55dd",
-      "reviewed_functions": "opponent-list/period detection; wants_summary total; extract_min_value season guard",
-      "semantic_reach": "All original 22 inputs have identical old/current regex matches; all quarter/half predicates are None, no vs/against either phrase. PR607's requested-total summary needs the word total, absent from all 22, and its season-token floor guard leaves every original 22 route and route_kwargs byte-identical to main 8a390f70 (checked by parse_query on both trees).",
+      "reviewed_sha256": "8fd6636ebe051d35e8e6db9a04785e0712aa183889452b7aa1dc9459b850aa97",
+      "reviewed_functions": "opponent-list/period detection; wants_summary total; extract_min_value season guard; canonicalize_stat_ranges, canonicalize_total_counts, names_two_team_game_total",
+      "semantic_reach": "All original 22 inputs have identical old/current regex matches; all quarter/half predicates are None, no vs/against either phrase. PR607's requested-total summary needs the word total, absent from all 22, and its season-token floor guard leaves every original 22 route and route_kwargs byte-identical to main 8a390f70 (checked by parse_query on both trees). PR618: stat ranges ('25-30 points'), 'N total <stat>' and 'a total of N' rewrites need a number range or the word total beside a stat; none of the original 22 has either, and their route, route_kwargs and notes are byte-identical to main 07b865e (parse_query on both trees).",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -536,9 +567,9 @@
     {
       "path": "src/nbatools/commands/natural_query.py",
       "old_sha256": "8f98d100b63240b8e97419bf3fd198d3e3279812d4e286ce057535351377c275",
-      "reviewed_sha256": "dce7dd18fc550bf25af2c13c1238a407d835c6ae8f7dc26ab6148ba3ab549173",
-      "reviewed_functions": "_finalize_route; _teams_in_order; _team_mentions",
-      "semantic_reach": "The new private natural source-rate unit flag requires player_game_finder plus a quarter or half. Original 22 queries have neither period predicate, so their route kwargs remain unchanged and no bound conversion is selected. New team-mention masking only hides complete person spans with internal team words; none of the original 22 names contains one, so team lists and comparison subjects remain identical.",
+      "reviewed_sha256": "868f34fd108e09adf87519a8cad5820216abbccbcf2dce8b0cf6bc80131ebc3a",
+      "reviewed_functions": "_finalize_route; _teams_in_order; _team_mentions; _expand_bare_short_season, _unsupported_boundary_note, _season_total_threshold_board",
+      "semantic_reach": "The new private natural source-rate unit flag requires player_game_finder plus a quarter or half. Original 22 queries have neither period predicate, so their route kwargs remain unchanged and no bound conversion is selected. New team-mention masking only hides complete person spans with internal team words; none of the original 22 names contains one, so team lists and comparison subjects remain identical. PR618: bare two-digit seasons need a consecutive NN-NN or NN/NN pair (the original 22 use four-digit seasons and ISO dates, which the pattern skips); the two-team game-total refusal needs 'N total <stat>' above one team's game ceiling; the named-player season-total list needs a season-total number. Route, route_kwargs and notes for all 22 are byte-identical to main 07b865e.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -753,9 +784,9 @@
     {
       "path": "src/nbatools/query_service.py",
       "old_sha256": "8a9c15d23ebc0a0f7a7660789e5532f94d81956204e5eb236278fd0dc5dd3fcf",
-      "reviewed_sha256": "235e2340e11c6efb7529b5845ce4bc4b49ac4c320567aed8e8032f125db621a1",
-      "reviewed_functions": "_build_query_metadata; _build_applied_filters; structured metadata call site",
-      "semantic_reach": "Numeric bound metadata conversion requires the private natural source-rate flag. That flag is set only for period player finders, absent from all 22 queries; original whole-game labels, values and numeric metadata are unchanged. The additive Playing for label requires an actual primary player plus explicit team; none of these 22 player requests has a team filter and team requests have no primary player. The existing comparison rule remains the same. Passing real structured kwargs preserves this same ownership condition, without changing the original natural HTTP captures. New scalar occurrence-event bound labels are unchanged for every original capture: only k12-e1 has such an event, and its event PTS>=80 exactly equals the existing scalar PTS>=80. The multi-condition Brunson count uses the earlier conditions branch; both owned Boolean counts use the expression branch. No original case ranks a scalar event count.",
+      "reviewed_sha256": "c671f2a8bb9c310c62d5bd97e3c13143a46e0e87c3e8ca153bb7742494d973da",
+      "reviewed_functions": "_build_query_metadata; _build_applied_filters; structured metadata call site; count conversion for season_leaders min_total, _add_season_total_answer_metadata",
+      "semantic_reach": "Numeric bound metadata conversion requires the private natural source-rate flag. That flag is set only for period player finders, absent from all 22 queries; original whole-game labels, values and numeric metadata are unchanged. The additive Playing for label requires an actual primary player plus explicit team; none of these 22 player requests has a team filter and team requests have no primary player. The existing comparison rule remains the same. Passing real structured kwargs preserves this same ownership condition, without changing the original natural HTTP captures. New scalar occurrence-event bound labels are unchanged for every original capture: only k12-e1 has such an event, and its event PTS>=80 exactly equals the existing scalar PTS>=80. The multi-condition Brunson count uses the earlier conditions branch; both owned Boolean counts use the expression branch. No original case ranks a scalar event count. PR618: the seasons count and sentence apply only with route_kwargs player plus per_season and a 'season_total_list: <player> seasons with' note; no original 22 case routes to a season-total list, so their payloads are unchanged.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
