@@ -110,8 +110,27 @@ answering the plain-language questions in `cmsg_01ABTwDaHncgP7nUEgUSYNtvP2G6Z7Br
 2. No software failures to fix. Carry-forward phrasing gap found while probing:
    a bare trailing season after two names ("Lakers record without Davis and
    Reaves 2023-24") hits the multi-player block, while "... in 2023-24" works.
-3. Every approved historical cohort is now published. Freeze a release candidate and
-   run the broad checks once.
+3. **Broad check run once (2026-11-14)** on frozen candidate main `0216ded6` and the
+   live generation ([R2 full 43582932175](https://github.com/Bet-Zero/nbatools/actions/runs/43582932175)):
+   - Raw QA 612 pass / 9 fail. All 9 are participation-coverage gaps (Booker,
+     Giannis, Brunson, Curry, Embiid, LeBron-for-Davis, Reaves/Luka "available"
+     wording). That is 4 fewer than before the publications.
+   - Filter sweep passed.
+   - needs_data: 1,723 pass / 160 fail. No full run had happened since 2026-10-13.
+     - About 125 are evidence tests pinned by design to the older generation or
+       manifest they qualified (including all deployed desktop/mobile wrappers).
+     - 10 are deployed-site calls that get the known readiness 503.
+     - Stage, prepare and package tests are bound to their old bases; their
+       output is now published.
+     - 13 failed identically on the old base and were stale expectations. They
+       were updated to current safe behavior in PR615 and pass on the live
+       generation ([R2 43586876226](https://github.com/Bet-Zero/nbatools/actions/runs/43586876226),
+       627/627).
+     - Open: the source-acquisition tests in
+       `test_pipeline_player_game_availability_real_data.py` (3 on R2) still need
+       triage.
+   - Not yet repinned: rerunning the deployed desktop/mobile wrappers on the new
+     generation.
 
 ### Carry-forward from PR607 (not Core-1 blockers unless an original case needs them)
 
