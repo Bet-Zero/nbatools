@@ -11,7 +11,7 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**As of 2026-11-14, main `87d352a` (after PR610).** Lead: temporary Claude Agent 1
+**As of 2026-11-14, main `fab9a57` (after PR612) plus the historical publication audit.** Lead: temporary Claude Agent 1
 (Codex unavailable). Agent 2 stopped. DQ-005 parked. K12 cold-start moved to Live.
 
 ### Where things stand, in plain English
@@ -29,6 +29,22 @@ evidence; don't extend it.
   (Tatum 2024) and 44 (Durant 2007) have qualified, unpublished source data.
   A few are blocked on missing evidence, and five are "this season" questions
   that move to Live. A per-ID table for all 46 is the first next action.
+- **First approved publication is live (2026-11-14).** Package
+  `historical-participation-v1` adds 2023-24 Lakers participation for Davis,
+  LeBron and Reaves, and 2024-25 Tatum participation. It is the active generation
+  `availability-historical-participation-v1-20261114` (manifest `be094017…`,
+  852 objects, 404,817,823 bytes).
+  - B approved [run 43569028151](https://github.com/Bet-Zero/nbatools/actions/runs/43569028151),
+    which wrote and byte-verified every object.
+  - Like the LeBron publication, its verify job then failed only at the readiness
+    gate, which still reports `new_season_not_loaded` (freshness, moved to Live).
+  - The read-only audit `tools/audit_historical_publication.py`
+    ([R2 43573241422](https://github.com/Bet-Zero/nbatools/actions/runs/43573241422),
+    1/1 passed) then checked all 22 registered live answers. The pointer was
+    unchanged before and after.
+  - The 2025-26 LAL/BOS stages (IDs 16/18/35) and Durant 2007 (ID44) are still
+    bound to the old base. They need a rebuild on this generation before their
+    own packages.
 - **K12 (delivery)** works functionally. Its cold-start timing checks moved to Live (B, 2026-11-14).
 - **Recent fixes:** PR606 corrected P.J. Washington's rebounds (data v7). PR607
   fixed "total" questions, team-restricted double-double boards, "who led…"
@@ -57,7 +73,8 @@ answering the plain-language questions in `cmsg_01ABTwDaHncgP7nUEgUSYNtvP2G6Z7Br
 | --- | --- | --- |
 | Deployed check of K01-K12 | Release step | Served-generation proof and one desktop/mobile run on a frozen release candidate |
 | K03/K05 changed paths | Software evidence | Numerical, language and rendering checks for paths changed since the bindings |
-| K08 staged cohorts (16/18/35, 6 Tatum 2024, 44 Durant 2007) | Approved to publish (B, 2026-11-14) | Reviewed package, no-write validation, protected publish, then the deployed check |
+| K08 historical Davis/LeBron/Reaves 2023-24 + Tatum 2024-25 | **Published 2026-11-14** (run 43569028151; 22 live answers audited, R2 43573241422) | Map the IDs this closes in the acceptance view |
+| K08 staged cohorts still to publish (2025-26 LAL/BOS for 16/18/35, 44 Durant 2007) | Approved to publish (B, 2026-11-14) | Rebuild each stage on the new base, then reviewed package, no-write validation, protected publish and audit |
 | K08 Davis default-season group (incl. 12 and both 40 questions, 2025-26) | Missing data | Dated official Davis club membership, or official per-game inactive lists, for every selected 2025-26 Lakers date. Not inferred from absent rows. |
 | K08 ID26 (Lakers vs Celtics and Knicks without Tatum) | Missing data | Dated Knicks-side membership or nonmembership on every selected date |
 | K08 IDs 4, 5, 19, 38 and the "current" 40 | Live (B, 2026-11-11) | Need real current-season inputs |
@@ -75,7 +92,8 @@ answering the plain-language questions in `cmsg_01ABTwDaHncgP7nUEgUSYNtvP2G6Z7Br
    publish / Live, from one command. No new framework.
 2. Fix any software failures it shows, in shared logic, and run deployed checks
    on the existing published generation where they apply.
-3. Publish the approved staged cohorts (decision 3), then freeze a release
+3. Rebuild and publish the remaining approved cohorts (2025-26 LAL/BOS, Durant
+   2007) the same way as `historical-participation-v1`. Then freeze a release
    candidate and run the broad checks once.
 
 ### Carry-forward from PR607 (not Core-1 blockers unless an original case needs them)
