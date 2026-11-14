@@ -173,7 +173,13 @@ unresolved" (`cmsg_01ABTwDaHncgP7nUEgUSYNtv7ejNNCtvNVUUz6uQnrFKf4`).
          list. His row is already published, from the same official report.
          These tests stay red until fetching works again (Live/data refresh,
          parked). Loosening the identity check is not an option.
-   - Deployed desktop/mobile rerun on the live generation:
+   - **Done (2026-11-14): deployed desktop/mobile check on the live generation.**
+     [R2 43602584850](https://github.com/Bet-Zero/nbatools/actions/runs/43602584850)
+     (K08, 50 questions × 2 viewports; also the ESPN refusal test) and
+     [R2 43602403345](https://github.com/Bet-Zero/nbatools/actions/runs/43602403345)
+     (original 22 K01-K12 cases × 2 viewports) both passed against the exact
+     production deployment.
+   - What those checks do:
      `tests/cloud_core1_deployed_view_real_data.py` asks every K08 question
      through the real interface on both viewports and must match the candidate
      in process and the acceptance map. The original 22 K01-K12 historical cases
