@@ -1,0 +1,1 @@
+{"schema_version":1,"reviewed_sha":"d6309e0f6790ea70ebdffe6ca82df1495f6b5a0e","generation":"availability-lebron-season-v1-20261031","tests":["tests/cloud_historical_participation_stage_real_data.py::test_retained_historical_sources_expand_direct_absence_consumers"],"raw_qa_cases":[]}
