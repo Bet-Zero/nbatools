@@ -845,7 +845,8 @@ class TestWithoutPlayer:
         parsed = parse_query("How does Jamal Murray score when Nikola Jokić is out?")
         assert parsed["route"] == "player_game_summary"
         assert parsed["player"] == "Jamal Murray"
-        assert parsed["without_player"] == "Nikola Jokić"
+        # Accents follow the served name catalog ("Jokić" or "Jokic").
+        assert parsed["without_player"] in {"Nikola Jokić", "Nikola Jokic"}
         assert parsed["stat"] == "pts"
 
     @pytest.mark.parametrize(
@@ -963,25 +964,17 @@ class TestWithoutPlayer:
         assert len(sections["game_log"]) == summary["games"]
 
     @pytest.mark.needs_data
-    def test_single_player_available_win_count_executes_with_team_subject(self):
+    def test_single_player_available_win_count_refuses_without_status_data(self):
+        # "Available" is a status claim. Playing in a game does not establish
+        # it, so without qualified status data the app refuses rather than
+        # answering "played" as "available".
         qr = execute_natural_query("How many games did the Lakers win with Reaves available?")
 
         assert qr.route == "team_record"
-        assert qr.result.result_status == "ok"
-        assert qr.metadata["with_player"] == "Austin Reaves"
-        assert qr.metadata["player"] is None
-        assert {
-            "label": "Outcome",
-            "value": "Wins",
-            "kind": "outcome",
-        } in qr.metadata["applied_filters"]
-        sections = qr.to_dict()["sections"]
-        summary = sections["summary"][0]
-        assert summary["team_name"] == "Los Angeles Lakers"
-        assert summary["games"] == 36
-        assert summary["wins"] == 36
-        assert summary["losses"] == 0
-        assert len(sections["game_log"]) == summary["games"]
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["unsupported_filters"] == ["availability_status"]
+        assert qr.to_dict()["sections"] == {}
 
     @pytest.mark.needs_data
     def test_mixed_presence_absence_record_returns_unsupported_not_player_summary(self):
@@ -1005,26 +998,27 @@ class TestWithoutPlayer:
         assert qr.to_dict()["sections"] == {}
 
     @pytest.mark.needs_data
-    def test_record_without_player_wrong_team_returns_no_match(self):
+    def test_record_without_player_wrong_team_refuses_without_participation(self):
+        # Absence is never inferred from missing rows, so a player with no
+        # qualified participation records gets an honest refusal.
         qr = execute_natural_query("Celtics record when Giannis out")
         assert qr.route == "team_record"
-        assert qr.result.result_reason == "no_match"
-        assert qr.result.notes == ["No games matched the specified filters"]
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "unsupported"
+        assert qr.result.notes == [
+            "Incomplete game-day participation coverage for Giannis Antetokounmpo"
+        ]
+        assert qr.to_dict()["sections"] == {}
 
     @pytest.mark.needs_data
-    def test_record_when_player_does_not_play_answers_team_record_with_game_log(self):
+    def test_record_when_player_does_not_play_refuses_without_participation(self):
         qr = execute_natural_query("What is the Knicks' record when Jalen Brunson doesn't play?")
         assert qr.route == "team_record"
-        assert qr.result.result_status == "ok"
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "unsupported"
         assert qr.metadata["without_player"] == "Jalen Brunson"
-
-        sections = qr.to_dict()["sections"]
-        summary = sections["summary"][0]
-        assert summary["team_name"] == "New York Knicks"
-        assert summary["wins"] == 3
-        assert summary["losses"] == 5
-        assert len(sections["game_log"]) == 8
-        assert all(row["team_abbr"] == "NYK" for row in sections["game_log"])
+        assert qr.result.notes == ["Incomplete game-day participation coverage for Jalen Brunson"]
+        assert qr.to_dict()["sections"] == {}
 
     @pytest.mark.needs_data
     def test_record_when_player_special_event_filters_summary_and_game_log(self):

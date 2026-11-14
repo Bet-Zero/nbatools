@@ -98,14 +98,43 @@ answering the plain-language questions in `cmsg_01ABTwDaHncgP7nUEgUSYNtvP2G6Z7Br
 
 ### Next action
 
-1. Build one acceptance view on the existing runners (Raw QA, the K08 shared
-   cases and the deployed wrappers). It should print each K01-K12 row and each
-   of the 46 K08 IDs as passing / software failure / missing data / needs
-   publish / Live, from one command. No new framework.
-2. Fix any software failures it shows, in shared logic, and run deployed checks
-   on the existing published generation where they apply.
-3. Every approved historical cohort is now published. Freeze a release candidate and
-   run the broad checks once.
+1. **Done (2026-11-14):** `python tools/core1_acceptance_view.py` prints each
+   K01-K12 row and each of the 46 K08 IDs as PASS / SOFTWARE FAILURE / MISSING
+   DATA / LIVE. Its expectations are fixed in `core1-acceptance-map.json`, taken
+   from the independent nine-ID oracle and the audited publication checks.
+   On the live generation ([R2 43582685873](https://github.com/Bet-Zero/nbatools/actions/runs/43582685873),
+   artifact zip `c8af58d6…e28fff`), K01-K07 and K09-K12 pass all 126 real-data
+   checks. K08 has no software failures: 16 pass (6, 7, 8, 16, 18, 23-25,
+   30-32, 35, 41, 44, 45, 46), 26 are missing data (the Davis default-season
+   group and ID26), and 4 are Live (4, 5, 19, 38).
+2. The view covers only the K verifiers and the 46 K08 IDs, and it showed no
+   software failures. The full suite was run separately (step 3).
+   Open product question: "Lakers losses to the Celtics since 2020" answers as a
+   summary only (no game list when there are more than 5 games), while "wins
+   over" lists them. Carry-forward phrasing gap found while probing:
+   a bare trailing season after two names ("Lakers record without Davis and
+   Reaves 2023-24") hits the multi-player block, while "... in 2023-24" works.
+3. **Broad check run once (2026-11-14)** on frozen candidate main `0216ded6` and the
+   live generation ([R2 full 43582932175](https://github.com/Bet-Zero/nbatools/actions/runs/43582932175)):
+   - Raw QA 612 pass / 9 fail. All 9 are participation-coverage gaps (Booker,
+     Giannis, Brunson, Curry, Embiid, LeBron-for-Davis, Reaves/Luka "available"
+     wording). That is 4 fewer than before the publications.
+   - Filter sweep passed.
+   - needs_data: 1,723 pass / 160 fail. No full run had happened since 2026-10-13.
+     - About 125 are evidence tests pinned by design to the older generation or
+       manifest they qualified (including all deployed desktop/mobile wrappers).
+     - 10 are deployed-site calls that get the known readiness 503.
+     - Stage, prepare and package tests are bound to their old bases; their
+       output is now published.
+     - 13 failed identically on the old base and were stale expectations. They
+       were updated to current safe behavior in PR615 and pass on the live
+       generation ([R2 43586876226](https://github.com/Bet-Zero/nbatools/actions/runs/43586876226),
+       627/627).
+     - Open: the source-acquisition tests in
+       `test_pipeline_player_game_availability_real_data.py` (3 on R2) still need
+       triage.
+   - Not yet repinned: rerunning the deployed desktop/mobile wrappers on the new
+     generation.
 
 ### Carry-forward from PR607 (not Core-1 blockers unless an original case needs them)
 

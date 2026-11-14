@@ -1,0 +1,657 @@
+{
+  "schema_version": 1,
+  "description": "Core-1 acceptance map read by tools/core1_acceptance_view.py. Expectations come from independent oracles or qualified stages, never from the run being scored.",
+  "original46_source": "working/nba-tools-completion-program/source-evidence/owned-boolean-20261106/independent/k08-original-46.json",
+  "independent_oracle": {
+    "path": "working/nba-tools-completion-program/source-evidence/core1-k08-served-default-20261110/nine-42789965605-original.zip",
+    "sha256": "2837c571c1655468d23c8c8152584e58bd12c7b31a6981c697d312fa15f177b9",
+    "member": "acquired_data/core1-k08-served-default/independent-raw-oracle.json"
+  },
+  "groups": {
+    "K01": {
+      "name": "Find a player or team by name",
+      "tests": [
+        "tests/test_k01_identity_real_data.py"
+      ]
+    },
+    "K02": {
+      "name": "Stats for an explicit season or date range",
+      "tests": [
+        "tests/test_k02_explicit_season_real_data.py"
+      ]
+    },
+    "K03": {
+      "name": "Find and count games matching conditions",
+      "tests": [
+        "tests/test_k03_find_count_real_data.py"
+      ],
+      "note": "Paths changed since the binding still need fresh language and rendering checks."
+    },
+    "K04": {
+      "name": "Rankings and leaderboards",
+      "tests": [
+        "tests/test_k04_ranking_real_data.py"
+      ]
+    },
+    "K05": {
+      "name": "Stats for a player or team as owned by a subject",
+      "tests": [
+        "tests/test_k05_subject_ownership_real_data.py"
+      ],
+      "note": "Paths changed since the binding still need fresh language and rendering checks."
+    },
+    "K06": {
+      "name": "Compare players or teams",
+      "tests": [
+        "tests/test_k06_comparison_real_data.py"
+      ]
+    },
+    "K07": {
+      "name": "Splits (home/away, wins/losses, opponents)",
+      "tests": [
+        "tests/test_k07_split_real_data.py"
+      ]
+    },
+    "K08": {
+      "name": "With/without a player (participation)",
+      "tests": [],
+      "note": "Scored from the 46 original questions below."
+    },
+    "K09": {
+      "name": "Streaks and sequences",
+      "tests": [
+        "tests/test_k09_sequences_real_data.py"
+      ]
+    },
+    "K10": {
+      "name": "Team and franchise history",
+      "tests": [
+        "tests/test_k10_history_real_data.py"
+      ]
+    },
+    "K11": {
+      "name": "League-wide population questions",
+      "tests": [
+        "tests/test_k11_population_real_data.py"
+      ]
+    },
+    "K12": {
+      "name": "Delivery: the answer reaches the page",
+      "tests": [
+        "tests/test_k12_delivery_real_data.py"
+      ],
+      "note": "Cold-start timing moved to Live (B, 2026-11-14)."
+    }
+  },
+  "k08": [
+    {
+      "id": 1,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis out-names0-False]",
+      "queries": [
+        "Lakers record with Davis out"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 2,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Anthony Davis out-names1-False]",
+      "queries": [
+        "Lakers record with Anthony Davis out"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 3,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis not playing-names2-False]",
+      "queries": [
+        "Lakers record with Davis not playing"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 4,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis sitting this season-names3-False]",
+      "queries": [
+        "Lakers record with Davis sitting this season"
+      ],
+      "expect": "live",
+      "reason": "Live: asks about the literal current season, moved to the Live milestone (B, 2026-11-11)."
+    },
+    {
+      "id": 5,
+      "original_node_id": "tests/test_c1_missed_games.py::test_missed_games_are_team_games_without_him[how many games has LeBron missed this season-LAL-LeBron James]",
+      "queries": [
+        "how many games has LeBron missed this season"
+      ],
+      "expect": "live",
+      "reason": "Live: asks about the literal current season, moved to the Live milestone (B, 2026-11-11)."
+    },
+    {
+      "id": 6,
+      "original_node_id": "tests/test_c1_missed_games.py::test_missed_games_are_team_games_without_him[how many games did Tatum miss in 2024-25-BOS-Jayson Tatum]",
+      "queries": [
+        "how many games did Tatum miss in 2024-25"
+      ],
+      "expect": "pass",
+      "reason": "Published Tatum 2024-25 participation; value from the qualified stage.",
+      "check": {
+        "kind": "answers",
+        "cases": [
+          {
+            "query": "how many games did Tatum miss in 2024-25",
+            "expected_route": "game_finder",
+            "sections": {
+              "count": [
+                {
+                  "count": 10
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "original_node_id": "tests/test_c1_missed_games.py::test_missed_games_are_team_games_without_him[games LeBron missed-LAL-LeBron James]",
+      "queries": [
+        "games LeBron missed"
+      ],
+      "expect": "pass",
+      "reason": "Independent raw-data oracle (run 42789965605), natural-language answer over HTTP.",
+      "check": {
+        "kind": "independent_oracle"
+      }
+    },
+    {
+      "id": 8,
+      "original_node_id": "tests/test_c1_missed_games.py::test_missed_games_are_team_games_without_him[how many home games did LeBron miss-LAL-LeBron James]",
+      "queries": [
+        "how many home games did LeBron miss"
+      ],
+      "expect": "pass",
+      "reason": "Independent raw-data oracle (run 42789965605), natural-language answer over HTTP.",
+      "check": {
+        "kind": "independent_oracle"
+      }
+    },
+    {
+      "id": 9,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves both out-names5-False]",
+      "queries": [
+        "Lakers record with Davis and Reaves both out"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 10,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves DNP-names6-False]",
+      "queries": [
+        "Lakers record with Davis and Reaves DNP"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 11,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves out-names7-False]",
+      "queries": [
+        "Lakers record with Davis and Reaves out"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 12,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves missing-names8-False]",
+      "queries": [
+        "Lakers record with Davis and Reaves missing"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 13,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record with Davis and Reaves not playing-names9-False]",
+      "queries": [
+        "Lakers record with Davis and Reaves not playing"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 14,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_absence_words[Lakers record without Davis and Reaves playing-names10-False]",
+      "queries": [
+        "Lakers record without Davis and Reaves playing"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 15,
+      "original_node_id": "tests/test_c1_availability_words.py::test_player_stats_with_absence_words[LeBron James stats with Davis out-names0-False]",
+      "queries": [
+        "LeBron James stats with Davis out"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 16,
+      "original_node_id": "tests/test_c1_player_clause_samples.py::test_sits_is_absence[Lakers record when Luka Doncic sits]",
+      "queries": [
+        "Lakers record when Luka Doncic sits"
+      ],
+      "expect": "pass",
+      "reason": "Published 2025-26 LAL participation; value from the qualified stage (18 games, 10-8).",
+      "check": {
+        "kind": "answers",
+        "cases": [
+          {
+            "query": "Lakers record when Luka Doncic sits",
+            "summary": {
+              "team_name": "Los Angeles Lakers",
+              "season_start": "2025-26",
+              "season_end": "2025-26",
+              "season_type": "Regular Season",
+              "games": 18,
+              "wins": 10,
+              "losses": 8,
+              "pts_avg": 114.389
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "original_node_id": "tests/test_c1_availability_words.py::test_player_stats_with_absence_words[LeBron James stats with Anthony Davis out-names1-False]",
+      "queries": [
+        "LeBron James stats with Anthony Davis out"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 18,
+      "original_node_id": "tests/test_c1_player_clause_samples.py::test_sits_is_absence[Lakers record when Luka Doncic rests]",
+      "queries": [
+        "Lakers record when Luka Doncic rests"
+      ],
+      "expect": "pass",
+      "reason": "Published reported-rest reasons: zero official rest games, so no match is the correct answer.",
+      "check": {
+        "kind": "no_match",
+        "route": "team_record",
+        "without_player": "Luka Doncic",
+        "rest_count_case": {
+          "query": "How many games did Luka Doncic rest in 2025-26?",
+          "expected_route": "game_finder",
+          "sections": {
+            "count": [
+              {
+                "count": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 19,
+      "original_node_id": "tests/test_c1_availability_words.py::test_player_stats_with_absence_words[LeBron James stats with Davis out this season-names2-False]",
+      "queries": [
+        "LeBron James stats with Davis out this season"
+      ],
+      "expect": "live",
+      "reason": "Live: asks about the literal current season, moved to the Live milestone (B, 2026-11-11)."
+    },
+    {
+      "id": 20,
+      "original_node_id": "tests/test_c1_availability_words.py::test_player_stats_with_absence_words[LeBron James stats with Davis and Reaves out-names3-False]",
+      "queries": [
+        "LeBron James stats with Davis and Reaves out"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 21,
+      "original_node_id": "tests/test_c1_availability_words.py::test_player_stats_with_absence_words[LeBron James stats with Davis and Reaves not playing-names4-False]",
+      "queries": [
+        "LeBron James stats with Davis and Reaves not playing"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 22,
+      "original_node_id": "tests/test_c1_availability_words.py::test_a_teammate_pair_after_a_bound[LeBron James games with 20 points without Davis and Reaves-20-False]",
+      "queries": [
+        "LeBron James games with 20 points without Davis and Reaves"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 23,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_an_opposing_player_out[Lakers record vs Celtics with Tatum out-opponents0]",
+      "queries": [
+        "Lakers record vs Celtics with Tatum out"
+      ],
+      "expect": "pass",
+      "reason": "Independent raw-data oracle (run 42789965605), natural-language answer over HTTP.",
+      "check": {
+        "kind": "independent_oracle"
+      }
+    },
+    {
+      "id": 24,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_an_opposing_player_out[Lakers record vs Celtics without Tatum-opponents1]",
+      "queries": [
+        "Lakers record vs Celtics without Tatum"
+      ],
+      "expect": "pass",
+      "reason": "Independent raw-data oracle (run 42789965605), natural-language answer over HTTP.",
+      "check": {
+        "kind": "independent_oracle"
+      }
+    },
+    {
+      "id": 25,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_an_opposing_player_out[Lakers record vs Celtics when Tatum sits-opponents2]",
+      "queries": [
+        "Lakers record vs Celtics when Tatum sits"
+      ],
+      "expect": "pass",
+      "reason": "Independent raw-data oracle (run 42789965605), natural-language answer over HTTP.",
+      "check": {
+        "kind": "independent_oracle"
+      }
+    },
+    {
+      "id": 26,
+      "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_an_opposing_player_out[Lakers record vs Celtics and Knicks without Tatum-opponents3]",
+      "queries": [
+        "Lakers record vs Celtics and Knicks without Tatum"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated Knicks-side membership or nonmembership for Tatum on every selected date."
+    },
+    {
+      "id": 27,
+      "original_node_id": "tests/test_c1_availability_words.py::test_absence_then_a_bound[LeBron James games with Davis out and 30 points]",
+      "queries": [
+        "LeBron James games with Davis out and 30 points"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 28,
+      "original_node_id": "tests/test_c1_availability_words.py::test_absence_then_a_bound[LeBron James games with Davis out with 30 points]",
+      "queries": [
+        "LeBron James games with Davis out with 30 points"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 29,
+      "original_node_id": "tests/test_c1_availability_words.py::test_absence_then_a_bound[LeBron James 30 point games with Davis out]",
+      "queries": [
+        "LeBron James 30 point games with Davis out"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 30,
+      "original_node_id": "tests/test_c1_availability_words.py::test_game_summary_with_an_opposing_player_out[Lakers 120 point games vs Celtics with Tatum out-120]",
+      "queries": [
+        "Lakers 120 point games vs Celtics with Tatum out"
+      ],
+      "expect": "pass",
+      "reason": "Independent raw-data oracle (run 42789965605), natural-language answer over HTTP.",
+      "check": {
+        "kind": "independent_oracle"
+      }
+    },
+    {
+      "id": 31,
+      "original_node_id": "tests/test_c1_availability_words.py::test_game_summary_with_an_opposing_player_out[Lakers 120 point games vs Celtics without Tatum-120]",
+      "queries": [
+        "Lakers 120 point games vs Celtics without Tatum"
+      ],
+      "expect": "pass",
+      "reason": "Independent raw-data oracle (run 42789965605), natural-language answer over HTTP.",
+      "check": {
+        "kind": "independent_oracle"
+      }
+    },
+    {
+      "id": 32,
+      "original_node_id": "tests/test_c1_availability_words.py::test_game_summary_with_an_opposing_player_out[Lakers points per game vs Celtics without Tatum-None]",
+      "queries": [
+        "Lakers points per game vs Celtics without Tatum"
+      ],
+      "expect": "pass",
+      "reason": "Independent raw-data oracle (run 42789965605), natural-language answer over HTTP.",
+      "check": {
+        "kind": "independent_oracle"
+      }
+    },
+    {
+      "id": 33,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_team_record_with_a_one_word_teammate[Lakers record without Davis-Anthony Davis-False]",
+      "queries": [
+        "Lakers record without Davis"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 34,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_team_record_with_a_one_word_teammate[Lakers record when Davis sits-Anthony Davis-False]",
+      "queries": [
+        "Lakers record when Davis sits"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 35,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_team_record_with_a_one_word_teammate[Lakers record without Reaves-Austin Reaves-False]",
+      "queries": [
+        "Lakers record without Reaves"
+      ],
+      "expect": "pass",
+      "reason": "Published 2025-26 LAL participation; value from the qualified stage (31 games, 17-14).",
+      "check": {
+        "kind": "answers",
+        "cases": [
+          {
+            "query": "Lakers record without Reaves",
+            "summary": {
+              "team_name": "Los Angeles Lakers",
+              "season_start": "2025-26",
+              "season_end": "2025-26",
+              "season_type": "Regular Season",
+              "games": 31,
+              "wins": 17,
+              "losses": 14,
+              "pts_avg": 114.419
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 36,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_player_games_with_or_without_a_teammate[LeBron James stats without Davis-Anthony Davis-False]",
+      "queries": [
+        "LeBron James stats without Davis"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 37,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_player_games_with_or_without_a_teammate[LeBron stats when Davis sits-Anthony Davis-False]",
+      "queries": [
+        "LeBron stats when Davis sits"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 38,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_player_games_with_or_without_a_teammate[LeBron James stats without Davis this season-Anthony Davis-False]",
+      "queries": [
+        "LeBron James stats without Davis this season"
+      ],
+      "expect": "live",
+      "reason": "Live: asks about the literal current season, moved to the Live milestone (B, 2026-11-11)."
+    },
+    {
+      "id": 39,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_player_game_list_with_a_teammate",
+      "queries": [
+        "LeBron James 30 point games without Davis",
+        "LeBron James 30 point games when Davis sits",
+        "LeBron James 30 point games with Davis"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 40,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_team_record_with_scope_after_the_name",
+      "queries": [
+        "Lakers record without Davis this season",
+        "Lakers record without Davis vs Celtics"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows. Its 'this season' wording is also Live."
+    },
+    {
+      "id": 41,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_an_opponent_sitting",
+      "queries": [
+        "LeBron James stats vs Celtics without Jayson Tatum"
+      ],
+      "expect": "pass",
+      "reason": "Independent raw-data oracle (run 42789965605), natural-language answer over HTTP.",
+      "check": {
+        "kind": "independent_oracle"
+      }
+    },
+    {
+      "id": 42,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_team_record_with_two_teammates[Lakers record without Davis and Reaves-False]",
+      "queries": [
+        "Lakers record without Davis and Reaves"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 43,
+      "original_node_id": "tests/test_c1_teammate_names.py::test_player_games_with_two_teammates[LeBron stats without Davis and Reaves-False]",
+      "queries": [
+        "LeBron stats without Davis and Reaves"
+      ],
+      "expect": "missing_data",
+      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+    },
+    {
+      "id": 44,
+      "original_node_id": "tests/test_c2_franchise_identity.py::test_with_and_without_a_player_keep_his_earlier_franchise_games",
+      "queries": [
+        "Thunder record without Durant in 2007-08",
+        "Seattle SuperSonics record without Kevin Durant in 2007-08",
+        "Thunder record in 2007-08 with Kevin Durant playing"
+      ],
+      "expect": "pass",
+      "reason": "Published Durant 2007-08 participation; the franchise keeps its Seattle games. The original is a synthetic unit test with no natural-language query, so these queries are the audited deployed checks; the 'Thunder ... without Durant' wording reuses the Seattle check's expected values.",
+      "check": {
+        "kind": "answers",
+        "cases": [
+          {
+            "query": "Thunder record without Durant in 2007-08",
+            "summary": {
+              "team_name": "Seattle SuperSonics",
+              "season_start": "2007-08",
+              "season_end": "2007-08",
+              "season_type": "Regular Season",
+              "games": 2,
+              "wins": 1,
+              "losses": 1,
+              "pts_avg": 99.0
+            }
+          },
+          {
+            "query": "Seattle SuperSonics record without Kevin Durant in 2007-08",
+            "summary": {
+              "team_name": "Seattle SuperSonics",
+              "season_start": "2007-08",
+              "season_end": "2007-08",
+              "season_type": "Regular Season",
+              "games": 2,
+              "wins": 1,
+              "losses": 1,
+              "pts_avg": 99.0
+            }
+          },
+          {
+            "query": "Thunder record in 2007-08 with Kevin Durant playing",
+            "summary": {
+              "team_name": "Seattle SuperSonics",
+              "season_start": "2007-08",
+              "season_end": "2007-08",
+              "season_type": "Regular Season",
+              "games": 80,
+              "wins": 19,
+              "losses": 61,
+              "pts_avg": 97.512
+            }
+          }
+        ],
+        "pytest": [
+          "tests/test_c2_franchise_identity.py::test_with_and_without_a_player_keep_his_earlier_franchise_games"
+        ]
+      }
+    },
+    {
+      "id": 45,
+      "original_node_id": "tests/test_record_queries.py::TestBuildTeamRecordResult::test_record_without_player_filters_sample",
+      "queries": [],
+      "expect": "pass",
+      "reason": "Kept in controlled structured form (the original is a structured-route test).",
+      "check": {
+        "kind": "pytest",
+        "pytest": [
+          "tests/test_record_queries.py::TestBuildTeamRecordResult::test_record_without_player_filters_sample"
+        ]
+      }
+    },
+    {
+      "id": 46,
+      "original_node_id": "tests/test_record_queries.py::TestBuildTeamRecordResult::test_record_without_player_on_other_team_returns_no_match",
+      "queries": [],
+      "expect": "pass",
+      "reason": "Kept in controlled structured form (the original is a structured-route test).",
+      "check": {
+        "kind": "pytest",
+        "pytest": [
+          "tests/test_record_queries.py::TestBuildTeamRecordResult::test_record_without_player_on_other_team_returns_no_match"
+        ]
+      }
+    }
+  ]
+}

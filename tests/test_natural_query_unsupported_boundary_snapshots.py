@@ -114,7 +114,8 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "query": "How many games did LeBron and Curry both play?",
             "route": None,
             "reason": "filter_not_supported",
-            "unsupported_filters": ["unsupported_concept"],
+            # Also names the specific multi-player availability boundary.
+            "unsupported_filters": ["unsupported_concept", "multi_player_availability"],
         },
         {
             "query": "Who is the best duo this season?",
