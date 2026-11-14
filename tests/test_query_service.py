@@ -1468,8 +1468,11 @@ class TestMetadataPreservation:
         assert qr.route is None
         assert qr.result.result_status == "no_result"
         assert qr.result.result_reason == "filter_not_supported"
-        # The concept blocker leads; a more specific boundary may follow it.
-        assert qr.metadata["unsupported_filters"][0] == "unsupported_concept"
+        # "both play" also names the specific multi-player availability boundary.
+        expected = ["unsupported_concept"]
+        if "both play" in query:
+            expected.append("multi_player_availability")
+        assert qr.metadata["unsupported_filters"] == expected
         assert qr.to_dict()["sections"] == {}
 
 

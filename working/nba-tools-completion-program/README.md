@@ -107,7 +107,11 @@ answering the plain-language questions in `cmsg_01ABTwDaHncgP7nUEgUSYNtvP2G6Z7Br
    checks. K08 has no software failures: 16 pass (6, 7, 8, 16, 18, 23-25,
    30-32, 35, 41, 44, 45, 46), 26 are missing data (the Davis default-season
    group and ID26), and 4 are Live (4, 5, 19, 38).
-2. No software failures to fix. Carry-forward phrasing gap found while probing:
+2. The view covers only the K verifiers and the 46 K08 IDs, and it showed no
+   software failures. The full suite was run separately (step 3).
+   Open product question: "Lakers losses to the Celtics since 2020" answers as a
+   summary only (no game list when there are more than 5 games), while "wins
+   over" lists them. Carry-forward phrasing gap found while probing:
    a bare trailing season after two names ("Lakers record without Davis and
    Reaves 2023-24") hits the multi-player block, while "... in 2023-24" works.
 3. **Broad check run once (2026-11-14)** on frozen candidate main `0216ded6` and the

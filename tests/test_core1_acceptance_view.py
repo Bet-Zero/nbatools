@@ -24,15 +24,30 @@ def test_map_covers_all_46_original_questions_once():
 
 
 def test_answer_expectations_are_the_audited_live_checks():
-    live = REGISTRY["packages"]["participation-2025-durant-v1"]["deployed_checks"]
-    fields = [{k: v for k, v in c.items() if k != "query"} for c in live]
+    live = {
+        c["query"]: c
+        for c in REGISTRY["packages"]["participation-2025-durant-v1"]["deployed_checks"]
+    }
+    # Original wordings that reuse one specific audited live check.
+    aliases = {
+        "how many games did Tatum miss in 2024-25": (
+            "how many games did Jayson Tatum miss in 2024-25"
+        ),
+        "Thunder record without Durant in 2007-08": (
+            "Seattle SuperSonics record without Kevin Durant in 2007-08"
+        ),
+    }
+    used = 0
     for entry in SPEC["k08"]:
         check = entry.get("check", {})
         for case in check.get("cases", []):
             assert case["query"] in entry["queries"]
-            assert {k: v for k, v in case.items() if k != "query"} in fields
+            source = live[aliases.get(case["query"], case["query"])]
+            assert dict(case, query=source["query"]) == source
+            used += 1
         if "rest_count_case" in check:
-            assert check["rest_count_case"] in live
+            assert live[check["rest_count_case"]["query"]] == check["rest_count_case"]
+    assert used == 6
 
 
 def test_independent_oracle_is_pinned():
@@ -101,6 +116,12 @@ def test_refusal_is_missing_data_but_a_numeric_answer_is_a_failure():
     )
     invented = _Client({"Lakers record without Davis": _record(5, 3, 2, 110.0)})
     assert view._k08(entry, invented, {}, [])["verdict"] == view.FAIL
+    # "No games" is also a claim about absence, so it is not an honest refusal.
+    empty = dict(result_status="no_result", result_reason="no_match", result={})
+    assert (
+        view._k08(entry, _Client({"Lakers record without Davis": empty}), {}, [])["verdict"]
+        == view.FAIL
+    )
 
 
 def test_a_skipped_or_absent_verifier_never_counts_as_passing():
@@ -109,3 +130,20 @@ def test_a_skipped_or_absent_verifier_never_counts_as_passing():
     assert view._verdict_from_counts(dict(passed=0, failed=0, skipped=0)) == view.FAIL
     entry = _entry(45)
     assert view._k08(entry, _Client({}), {}, [])["verdict"] == view.FAIL
+
+
+def test_junit_matching_is_exact_per_module_and_node():
+    results = [
+        ("", "tests.test_c2_franchise_identity_real_data", "test_x", "failed"),
+        ("", "tests.test_c2_franchise_identity", "test_x", "passed"),
+        ("", "tests.test_record_queries.TestBuildTeamRecordResult", "test_y", "passed"),
+        ("", "tests.test_record_queries.Other", "test_y", "failed"),
+    ]
+    assert view._tally(results, "tests/test_c2_franchise_identity.py::test_x") == dict(
+        passed=1, failed=0, skipped=0
+    )
+    assert view._tally(results, "tests/test_c2_franchise_identity.py") == dict(
+        passed=1, failed=0, skipped=0
+    )
+    node = "tests/test_record_queries.py::TestBuildTeamRecordResult::test_y"
+    assert view._tally(results, node) == dict(passed=1, failed=0, skipped=0)

@@ -523,7 +523,8 @@
       "original_node_id": "tests/test_c1_teammate_names.py::test_player_game_list_with_a_teammate",
       "queries": [
         "LeBron James 30 point games without Davis",
-        "LeBron James 30 point games when Davis sits"
+        "LeBron James 30 point games when Davis sits",
+        "LeBron James 30 point games with Davis"
       ],
       "expect": "missing_data",
       "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
@@ -577,7 +578,7 @@
         "Thunder record in 2007-08 with Kevin Durant playing"
       ],
       "expect": "pass",
-      "reason": "Published Durant 2007-08 participation; the franchise keeps its Seattle games.",
+      "reason": "Published Durant 2007-08 participation; the franchise keeps its Seattle games. The original is a synthetic unit test with no natural-language query, so these queries are the audited deployed checks; the 'Thunder ... without Durant' wording reuses the Seattle check's expected values.",
       "check": {
         "kind": "answers",
         "cases": [

@@ -70,13 +70,15 @@ def _pytest(nodes, *, synthetic=False):
 
 
 def _tally(results, wanted):
-    """Counts for one test file or one node id from the junit results."""
-    if "::" in wanted:
-        path, rest = wanted.split("::", 1)
-        name = rest.split("::")[-1]
-        hits = [r for r in results if r[2] == name and Path(path).stem in r[1]]
+    """Counts for one test file or one node id, matched exactly on junit names."""
+    path, _, rest = wanted.partition("::")
+    module = path[: -len(".py")].replace("/", ".")
+    parts = rest.split("::") if rest else []
+    if parts:
+        classname = ".".join([module, *parts[:-1]])
+        hits = [r for r in results if r[1] == classname and r[2] == parts[-1]]
     else:
-        hits = [r for r in results if Path(wanted).stem in r[0] or Path(wanted).stem in r[1]]
+        hits = [r for r in results if r[1] == module or r[1].startswith(module + ".")]
     counts = {k: sum(r[3] == k for r in hits) for k in ("passed", "failed", "skipped")}
     return counts
 
@@ -106,6 +108,17 @@ def _short(body):
     return dict(status=body.get("result_status"), reason=body.get("result_reason"), first_row=row)
 
 
+REFUSALS = {"filter_not_supported", "unsupported"}
+
+
+def _honest_refusal(body):
+    return (
+        body.get("result_status") == "no_result"
+        and body.get("result_reason") in REFUSALS
+        and not ((body.get("result") or {}).get("sections") or {})
+    )
+
+
 def _k08(entry, client, oracle, results):
     from tools.r2_publication import verify_answer
 
@@ -113,10 +126,11 @@ def _k08(entry, client, oracle, results):
     for query in entry.get("queries", []):
         body = client.post("/query", json={"query": query}).json()
         observed.append(dict(query=query, **_short(body)))
-        answered = body.get("result_status") == "ok"
         expect, check = entry["expect"], entry.get("check", {})
-        if expect == "missing_data" and answered:
-            problems.append(f"answered without qualified data: {query!r}")
+        if expect == "missing_data" and not _honest_refusal(body):
+            # An answer, or an empty "no match" (zero games), could only come
+            # from inferring absence from rows that are not there.
+            problems.append(f"not an honest refusal without qualified data: {query!r}")
         if expect != "pass":
             continue
         try:
@@ -137,7 +151,7 @@ def _k08(entry, client, oracle, results):
                 assert metadata.get("without_player") == check["without_player"], metadata
                 rest = client.post("/query", json={"query": check["rest_count_case"]["query"]})
                 verify_answer(check["rest_count_case"], rest.json())
-        except (AssertionError, ValueError, KeyError, StopIteration) as exc:
+        except Exception as exc:  # any failure to verify is a failure, never a pass
             problems.append(f"{query!r}: {type(exc).__name__}: {str(exc)[:300]}")
     for node in entry.get("check", {}).get("pytest", []):
         counts = _tally(results, node)
@@ -153,6 +167,9 @@ def _k08(entry, client, oracle, results):
 
 
 def build_view(*, run_pytest=True):
+    if not __debug__:
+        # The oracle and no-match checks use assert; -O would skip them all.
+        raise SystemExit("core1_acceptance_view must not run with python -O")
     spec = json.loads(MAP.read_bytes())
     real = [t for group in spec["groups"].values() for t in group["tests"]]
     unit = [n for e in spec["k08"] for n in e.get("check", {}).get("pytest", [])]
@@ -197,7 +214,9 @@ def render(view):
     lines += ["", "K08 original questions:"]
     for row in view["k08"]:
         first = row["observed"][0]["query"] if row["observed"] else "(structured-route test)"
-        lines.append(f"  {row['id']:>2}  {row['verdict']:<16} {first}")
+        seen = row["observed"][0] if row["observed"] else {}
+        status = f"  [{seen.get('status')}/{seen.get('reason')}]" if seen else ""
+        lines.append(f"  {row['id']:>2}  {row['verdict']:<16} {first}{status}")
         for problem in row["problems"]:
             lines.append(f"        problem: {problem}")
     return "\n".join(lines)
