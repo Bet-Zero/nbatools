@@ -11,7 +11,7 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**As of 2026-11-14, main `fab9a57` (after PR612) plus the historical publication audit.** Lead: temporary Claude Agent 1
+**As of 2026-11-14, main `45be77f` (after PR613) plus the second publication's audit.** Lead: temporary Claude Agent 1
 (Codex unavailable). Agent 2 stopped. DQ-005 parked. K12 cold-start moved to Live.
 
 ### Where things stand, in plain English
@@ -42,15 +42,21 @@ evidence; don't extend it.
     ([R2 43573241422](https://github.com/Bet-Zero/nbatools/actions/runs/43573241422),
     1/1 passed) then checked all 22 registered live answers (16 carried over from LeBron, 6 new). The pointer was
     unchanged before and after.
-- **Next package: `participation-2025-durant-v1`.** The 2025-26 LAL/BOS stages
-  (IDs 16/18/35) and Durant 2007 (ID44) are rebuilt on the live base by
-  `tests/cloud_participation_2025_stage_real_data.py`. It proves the live base is
-  the old base plus exactly the published package, and that the remaining stages
-  touch none of those paths. It reruns the original consumers, including IDs
-  16/18/35 and the Durant consumers ([R2 43575535897](https://github.com/Bet-Zero/nbatools/actions/runs/43575535897),
-  1/1 passed). The package has 336 data files and 31 live answer checks (22 kept, 9 new),
-  all passing on a local simulation of the new generation. Next: no-write validation,
-  then B's Approve click, then the audit.
+- **Second publication live (2026-11-14): `participation-2025-durant-v1`.** It adds the
+  2025-26 LAL/BOS participation (IDs 16/18/35, plus the reported-rest reasons) and
+  Durant 2007-08 (ID44). It is the active generation
+  `availability-participation-2025-durant-v1-20261114` (manifest `cde98408…`, 1,186
+  objects, 410,181,610 bytes).
+  - The stages were rebased onto the first publication by
+    `tests/cloud_participation_2025_stage_real_data.py`. It proves the live base is the
+    old base plus exactly the published files, and that the stages are disjoint from
+    them. It reruns the original consumers ([R2 43575535897](https://github.com/Bet-Zero/nbatools/actions/runs/43575535897)).
+  - B approved [publish run 43578345136](https://github.com/Bet-Zero/nbatools/actions/runs/43578345136).
+    Again, verify failed only at the `new_season_not_loaded` readiness gate.
+  - The read-only audit `tools/audit_participation_2025_publication.py`
+    ([R2 43581023642](https://github.com/Bet-Zero/nbatools/actions/runs/43581023642))
+    passed all 31 live answers (22 kept, 9 new, including the original 16 and 35
+    defaults). The pointer was unchanged.
 - **K12 (delivery)** works functionally. Its cold-start timing checks moved to Live (B, 2026-11-14).
 - **Recent fixes:** PR606 corrected P.J. Washington's rebounds (data v7). PR607
   fixed "total" questions, team-restricted double-double boards, "who led…"
@@ -80,7 +86,7 @@ answering the plain-language questions in `cmsg_01ABTwDaHncgP7nUEgUSYNtvP2G6Z7Br
 | Deployed check of K01-K12 | Release step | Served-generation proof and one desktop/mobile run on a frozen release candidate |
 | K03/K05 changed paths | Software evidence | Numerical, language and rendering checks for paths changed since the bindings |
 | K08 historical Davis/LeBron/Reaves 2023-24 + Tatum 2024-25 | **Published 2026-11-14** (run 43569028151; 22 live answers audited, R2 43573241422) | Map the IDs this closes in the acceptance view |
-| K08 staged cohorts still to publish (2025-26 LAL/BOS for 16/18/35, 44 Durant 2007) | Approved (B, 2026-11-14); rebuilt and packaged as `participation-2025-durant-v1` | No-write validation, protected publish and audit |
+| K08 2025-26 LAL/BOS (16/18/35) + Durant 2007 (44) | **Published 2026-11-14** (run 43578345136; 31 live answers audited, R2 43581023642) | Map the IDs this closes in the acceptance view |
 | K08 Davis default-season group (incl. 12 and both 40 questions, 2025-26) | Missing data | Dated official Davis club membership, or official per-game inactive lists, for every selected 2025-26 Lakers date. Not inferred from absent rows. |
 | K08 ID26 (Lakers vs Celtics and Knicks without Tatum) | Missing data | Dated Knicks-side membership or nonmembership on every selected date |
 | K08 IDs 4, 5, 19, 38 and the "current" 40 | Live (B, 2026-11-11) | Need real current-season inputs |
@@ -98,9 +104,8 @@ answering the plain-language questions in `cmsg_01ABTwDaHncgP7nUEgUSYNtvP2G6Z7Br
    publish / Live, from one command. No new framework.
 2. Fix any software failures it shows, in shared logic, and run deployed checks
    on the existing published generation where they apply.
-3. Validate and publish `participation-2025-durant-v1` (2025-26 LAL/BOS, Durant
-   2007) the same way as `historical-participation-v1`. Then freeze a release
-   candidate and run the broad checks once.
+3. Every approved historical cohort is now published. Freeze a release candidate and
+   run the broad checks once.
 
 ### Carry-forward from PR607 (not Core-1 blockers unless an original case needs them)
 
