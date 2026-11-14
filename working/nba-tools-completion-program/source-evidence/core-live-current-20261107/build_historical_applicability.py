@@ -51,7 +51,8 @@ semantic = {
     ".github/data-publication-packages.json": (
         "protected publication registry",
         (
-            "Adds the historical-participation-v1 package entry; existing packages are "
+            "Adds the historical-participation-v1 and participation-2025-durant-v1 "
+            "package entries; existing packages are "
             "byte-identical. Read only by the owner-approved publication workflow, never "
             "by the deployed application or any of the original 22 query executions."
         ),

@@ -102,9 +102,9 @@
     {
       "path": ".github/data-publication-packages.json",
       "old_sha256": "cc2042c866c201a9d764865ab3961f38ef878ea217f35b439d06cff605670c55",
-      "reviewed_sha256": "20e32dc1104b0ac4a50fa2223b103b1117030945ef955b453f82c647aa8aede0",
+      "reviewed_sha256": "9a80e5c390a617966dcc05352d04bcf7e6c14db952345daf407a3842a2c50b5c",
       "reviewed_functions": "protected publication registry",
-      "semantic_reach": "Adds the historical-participation-v1 package entry; existing packages are byte-identical. Read only by the owner-approved publication workflow, never by the deployed application or any of the original 22 query executions.",
+      "semantic_reach": "Adds the historical-participation-v1 and participation-2025-durant-v1 package entries; existing packages are byte-identical. Read only by the owner-approved publication workflow, never by the deployed application or any of the original 22 query executions.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
