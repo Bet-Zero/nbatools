@@ -29,6 +29,9 @@ const historicalIntegration = cases.length === historicalIntegrationIds.length &
 const originalK08Ids = [7, 8, 23, 24, 25, 30, 31, 32, 41].map(id => `original-k08-${String(id).padStart(2, "0")}`);
 const originalK08Defaults = cases.length === originalK08Ids.length && originalK08Ids.every(id => cases.some(item => item.id === id));
 // Complete the missing original32 scope observation through existing Details.
+// Core-1 deployed view: every original K08 question from the acceptance map,
+// on the reviewed immutable host. Missing-data refusals are captured too.
+const core1K08 = cases.length > 0 && cases.every(item => /^core1-k08-\d{2}-\d+$/.test(item.id));
 const originalK08Scope = cases.length === 1 && cases[0].id === "original-k08-32" && cases[0].captureDetails === true;
 // Explicit development-only rendering for the shared person/team ownership
 // repair. This provisional local bundle cannot authorize a public capture.
@@ -37,7 +40,7 @@ const localOwnership = cases.length === ownershipIds.length && ownershipIds.ever
 if (localOwnership && base !== "http://127.0.0.1:8765") throw new Error("Provisional ownership bundle is loopback-only");
 
 const exactExistingProjectHost = /^https:\/\/nbatools-[a-z0-9]+-brents-projects-686e97fc\.vercel\.app$/.test(base);
-if (!["https://nbatools.vercel.app", "http://127.0.0.1:8765"].includes(base) && !((originalK08Defaults || originalK08Scope || historicalIntegration) && exactExistingProjectHost)) {
+if (!["https://nbatools.vercel.app", "http://127.0.0.1:8765"].includes(base) && !((originalK08Defaults || originalK08Scope || historicalIntegration || core1K08) && exactExistingProjectHost)) {
   throw new Error("Only production alias, local verification, or the exact reviewed historical/K08 immutable project host allowed");
 }
 
@@ -71,7 +74,7 @@ const sharedTeamComparisonIds = ["comparison-shared-primary", "comparison-canoni
 const sharedTeamComparison = cases.length === sharedTeamComparisonIds.length && sharedTeamComparisonIds.every(id => cases.some(item => item.id === id));
 const medicalSubjectIds = ["medical-team-primary", "medical-prefix-owner", "medical-opponent-union", "medical-comparison-owner", "medical-adjective-owner", "medical-status-played-chain", "medical-played-positive", "medical-unfiltered-comparison"];
 const medicalSubjects = cases.length === medicalSubjectIds.length && medicalSubjectIds.every(id => cases.some(item => item.id === id));
-if (!historicalIntegration && !originalK08Defaults && !originalK08Scope && !localOwnership && !core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes && !originalStatPair && !sharedTeamComparison && !medicalSubjects && !sequences && !playoffHistory && !populations && !delivery) throw new Error("Expected a complete reviewed browser bundle");
+if (!historicalIntegration && !originalK08Defaults && !core1K08 && !originalK08Scope && !localOwnership && !core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes && !originalStatPair && !sharedTeamComparison && !medicalSubjects && !sequences && !playoffHistory && !populations && !delivery) throw new Error("Expected a complete reviewed browser bundle");
 await mkdir(output, { recursive: true });
 let executablePath;
 for (const file of ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"]) {
@@ -93,10 +96,10 @@ try {
       await writeFile(`${output}/deployment-access-failure.json`, JSON.stringify({ base, viewport, url: page.url(), http: navigation?.status() ?? null, classification: "Deployment access failure; no protection or credentials changed" }, null, 2));
       throw new Error("Application page unavailable; preserved deployment-access-failure.json");
     }
-    const freshness = (delivery || historicalIntegration || originalK08Defaults || originalK08Scope || localOwnership) ? await (await context.request.get(base + "/freshness")).json() : null;
+    const freshness = (delivery || historicalIntegration || originalK08Defaults || originalK08Scope || core1K08 || localOwnership) ? await (await context.request.get(base + "/freshness")).json() : null;
     const assets = await page.locator('script[type="module"][src]').evaluateAll(nodes => nodes.map(n => n.src));
     let servedAssetSha256 = null;
-    if (historicalIntegration || originalK08Defaults || originalK08Scope) {
+    if (historicalIntegration || originalK08Defaults || originalK08Scope || core1K08) {
       if (assets.length !== 1 || !assets[0].startsWith(base + "/assets/index-")) throw new Error("Unexpected served application asset");
       const response = await context.request.get(assets[0], { maxRedirects: 0, timeout: 30000 });
       if (!response.ok()) throw new Error("Served application asset unavailable");
@@ -171,7 +174,7 @@ try {
       })));
       const forbidden = (item.forbidden ?? []).filter(value => text.includes(value));
       const missing = item.text.filter(value => !text.includes(value));
-      const deliveryEvidence = (delivery || historicalIntegration || originalK08Defaults || originalK08Scope || localOwnership) ? {
+      const deliveryEvidence = (delivery || historicalIntegration || originalK08Defaults || originalK08Scope || core1K08 || localOwnership) ? {
         freshness,
         capturedAt: new Date().toISOString(),
         heroText: await page.locator('[data-state-surface="result"] p[class*="sentence"]').allTextContents().then(items => items.join("\n")),

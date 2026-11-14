@@ -28,6 +28,10 @@ Salary and trade-rule engines are a different project.
 | **D: extend** | More combinations, source-dependent stats and later guided surfaces, picked from the carry-forward list. | After Core-1. |
 | **O: runtime** | Measured latency and cost work on existing data. | Interleave when it doesn't block Core-1. |
 
+**Unresolved (B, 2026-11-14):** league-wide "with/without player" and "games
+missed" for players outside the published cohorts. Options and measured
+accuracy are in the Resume checkpoint (`working/nba-tools-completion-program/README.md`).
+
 ## Rules that shape the plan
 
 - **Core-1 is finite.** Its requirements are the twelve K01-K12 rows and the 46

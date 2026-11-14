@@ -75,7 +75,10 @@ def _stage_opening_game(tmp_path):
 def test_2025_opening_lakers_warriors_explicit_dnp_and_nba_id_match(tmp_path):
     root, game_id = _stage_opening_game(tmp_path)
     rows = backfill("2025-26", root=root, source="espn", game_ids=[game_id])
-    validate_publication(root)
+    # Since PR555 only official report or reviewed structured imports can be
+    # published; ESPN rows are an observation, never a publishable source.
+    with pytest.raises(ValueError, match="lacks source provenance"):
+        validate_publication(root)
     assert rows.game_id.eq(f"{game_id:010d}").all()
     assert rows.source.eq("espn_game_summary:401809244").all()
     assert rows.coverage_scope.eq("listed_player_rows_only").all()
