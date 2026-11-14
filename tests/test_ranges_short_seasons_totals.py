@@ -269,3 +269,48 @@ def test_named_player_game_threshold_is_unchanged():
     kwargs = _kwargs("LeBron 30 point games")
     assert parse_query("LeBron 30 point games")["route"] == "player_game_finder"
     assert kwargs["min_value"] == 30
+
+
+def test_combined_score_joins_a_second_condition():
+    teams = _teams("2025-26")
+    combined = teams.groupby("game_id")["pts"].sum()
+    lal = teams[teams["team_abbr"].eq("LAL")]
+    opp = lal["game_id"].map(combined) - lal["pts"]
+    expected = lal[lal["game_id"].map(combined).ge(230) & opp.ge(120)]
+    assert _finder_ids("Lakers games with 230 total points where they allowed 120 points") == set(
+        expected["game_id"]
+    )
+    (summary,) = _sections(
+        "Lakers record when they allowed 120 points in games with 230 total points"
+    )["summary"]
+    assert (summary["wins"], summary["losses"]) == (
+        int(expected["wl"].eq("W").sum()),
+        int(expected["wl"].eq("L").sum()),
+    )
+
+
+def test_or_more_total_points():
+    teams = _teams("2025-26")
+    combined = teams.groupby("game_id")["pts"].sum()
+    lal = teams[teams["team_abbr"].eq("LAL")]
+    expected = lal[lal["game_id"].map(combined).ge(230)]
+    assert _finder_ids("Lakers games with 230 or more total points") == set(expected["game_id"])
+
+
+@pytest.mark.parametrize(
+    "query", ["Lakers 6000 total points", "did the Lakers score 6000 total points this season"]
+)
+def test_team_season_total_refuses_instead_of_answering_no(query):
+    result = execute_natural_query(query)
+    assert (result.result_status, result.result_reason) == ("no_result", "filter_not_supported")
+
+
+@pytest.mark.parametrize(
+    ("query", "season"),
+    [
+        ("Lakers 20-21 in games vs the west", "2020-21"),
+        ("LeBron 24-25 in games he started", "2024-25"),
+    ],
+)
+def test_season_before_in_games_is_kept(query, season):
+    assert _kwargs(query)["season"] == season

@@ -1441,8 +1441,21 @@ _TOTAL_OF = re.compile(
     r"\b(?:an?\s+)?totals?\s+of\s+(\d+)\s+(" + "|".join(_TOTAL_STAT_WORDS.values()) + r")\b"
 )
 _NUMBER_TOTAL = re.compile(
-    r"(?<![\w.%/-])(\d+)\s+total\s+(" + "|".join(_TOTAL_STAT_WORDS.values()) + r")\b"
+    r"(?<![\w.%/-])(\d+)(?P<bound>\s+or\s+(?:more|fewer|less))?\s+total\s+("
+    + "|".join(_TOTAL_STAT_WORDS.values())
+    + r")\b"
 )
+
+
+def names_unread_team_total(text: str) -> bool:
+    """ "Lakers 6000 total points": more than any game's combined score, so a
+    team's season total, which game lists and records cannot apply."""
+    if _PLAYER_POPULATION.search(text):
+        return False
+    return any(
+        _total_stat_key(m.group(3)) == "pts" and int(m.group(1)) > _COMBINED_SCORE_CEILING
+        for m in _NUMBER_TOTAL.finditer(canonicalize_total_counts(text))
+    )
 
 
 def _total_stat_key(word: str) -> str:
@@ -1460,14 +1473,28 @@ def canonicalize_total_counts(text: str) -> str:
     population = bool(_PLAYER_POPULATION.search(text))
 
     def number_total(match: re.Match) -> str:
-        stat = _total_stat_key(match.group(2))
-        if int(match.group(1)) <= _ONE_SIDE_GAME_CEILING[stat]:
-            return f"{match.group(1)} {match.group(2)}"
-        if stat == "pts" and not population:
-            return f"{match.group(1)} combined points"
+        word = match.group(3)
+        stat = _total_stat_key(word)
+        value = int(match.group(1))
+        bound = match.group("bound") or ""
+        if value <= _ONE_SIDE_GAME_CEILING[stat]:
+            return f"{value}{bound} {word}"
+        if stat == "pts" and not population and value <= _COMBINED_SCORE_CEILING:
+            # A bare number is a floor ("230+"), read by the shared condition
+            # list so a second condition ("where they allowed 120") joins it.
+            bare = not bound and not _BOUND_BEFORE.search(match.string[: match.start()])
+            return f"{value}{'+' if bare else bound} combined points"
         return match.group(0)
 
     return _NUMBER_TOTAL.sub(number_total, text)
+
+
+# No NBA game has had 400 combined points; "Lakers 6000 total points" is a
+# season total, not a game's score.
+_COMBINED_SCORE_CEILING = 400
+_BOUND_BEFORE = re.compile(
+    r"\b(?:over|under|above|below|than|least|most|exactly|between|and|to|from)\s*$"
+)
 
 
 def canonicalize_bound_phrases(text: str) -> str:
