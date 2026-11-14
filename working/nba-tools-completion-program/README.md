@@ -107,23 +107,25 @@ unresolved" (`cmsg_01ABTwDaHncgP7nUEgUSYNtv7ejNNCtvNVUUz6uQnrFKf4`).
 - **Why box scores alone aren't enough:** a box score lists only who played.
   A missing line could mean he sat out, hadn't joined yet, or had been traded.
   The roster file lists who was on a team each season, with no dates.
-- **Options tested against 5,155 official records (7 seasons):**
-  - **A. Count only between a player's first and last game for the team.**
+- **Options tested against 5,155 official records (7 seasons)** with
+  `source-evidence/boxscore-participation-20261114/measure.py` (run it on a local
+  copy of the live generation's `raw/` folder):
+  - **Option 1. Count only between a player's first and last game for the team.**
     Inside that window it was exact: 3,275 of 3,275 played games right, and
     every in-window gap was a real miss. But about a third of real misses
     (602 of 1,880) fall outside the window, for example season-opening or
     season-ending injuries and two-way players. Those would have to be refused
     or caveated.
-  - **B. Treat the whole season as the window for single-team roster players.**
+  - **Option 2. Treat the whole season as the window for single-team roster players.**
     This catches those misses. But in 296 fully listed team-games, 198 of its
     1,693 "missed" calls (about 1 in 8) were games the player wasn't on the
     team yet, e.g. Steven Adams (traded to HOU in 2023-24) and Seth Curry (signed
     by GSW mid-season in 2025-26).
-  - **C. Load official who-played records league-wide, 1996-97 onward.** Exact.
+  - **Option 3. Load official who-played records league-wide, 1996-97 onward.** Exact.
     It needs a source that can be fetched (data refresh is parked) and one
     protected publish.
-- Both A and B relax the standing rule "never infer a missed game from a
-  missing row", so they need B's yes first. Recommendation on record: A,
+- Options 1 and 2 relax the standing rule "never infer a missed game from a
+  missing row", so they need B's yes first. Recommendation on record: option 1,
   labeled "counted between his first and last games with the team".
 
 ### Next action
@@ -177,6 +179,7 @@ unresolved" (`cmsg_01ABTwDaHncgP7nUEgUSYNtv7ejNNCtvNVUUz6uQnrFKf4`).
      in process and the acceptance map. The original 22 K01-K12 historical cases
      rerun through
      `cloud_core_historical_delivery_real_data.py::test_actual_new_runtime_historical_api_and_ui_on_live_generation`.
+     IDs 45/46 (structured routes) and ID 44's unit node stay with the local view.
 
 ### Carry-forward from PR607 (not Core-1 blockers unless an original case needs them)
 

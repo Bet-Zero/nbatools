@@ -31,7 +31,7 @@ const originalK08Defaults = cases.length === originalK08Ids.length && originalK0
 // Complete the missing original32 scope observation through existing Details.
 // Core-1 deployed view: every original K08 question from the acceptance map,
 // on the reviewed immutable host. Missing-data refusals are captured too.
-const core1K08 = cases.length > 0 && cases.every(item => /^core1-k08-\d{2}-\d+$/.test(item.id));
+const core1K08 = cases.length === 50 && cases.every(item => /^core1-k08-\d{2}-\d+$/.test(item.id));
 const originalK08Scope = cases.length === 1 && cases[0].id === "original-k08-32" && cases[0].captureDetails === true;
 // Explicit development-only rendering for the shared person/team ownership
 // repair. This provisional local bundle cannot authorize a public capture.

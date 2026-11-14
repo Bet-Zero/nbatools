@@ -132,13 +132,14 @@ def test_core1_k08_deployed_view_matches_candidate():
     with data_generation_context() as generation:
         assert generation == LIVE
         assert _sha(data_path("metadata/generation_manifest.json").read_bytes()) == LIVE_MANIFEST
-    spec = json.loads(MAP.read_bytes())
-    oracle = _oracle_cases(spec["independent_oracle"])
-    cases = _cases(spec)
-    local = TestClient(app)
-    expected_answers = {
-        c["query"]: _answer(local.post("/query", json={"query": c["query"]}).json()) for c in cases
-    }
+        spec = json.loads(MAP.read_bytes())
+        oracle = _oracle_cases(spec["independent_oracle"])
+        cases = _cases(spec)
+        local = TestClient(app)
+        expected_answers = {
+            c["query"]: _answer(local.post("/query", json={"query": c["query"]}).json())
+            for c in cases
+        }
 
     output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "core1-deployed-view"
     output.mkdir(parents=True, exist_ok=False)
@@ -194,6 +195,11 @@ def test_core1_k08_deployed_view_matches_candidate():
         for item in receipts:
             assert item["http"] == 200 and item["payload"]["query"] == item["query"]
             assert not any(item[k] for k in ("errors", "missing", "forbidden", "grainErrors"))
+            # The answer was rendered, not just fetched: a result surface with text,
+            # and a table whenever the payload has row sections.
+            assert item["text"].strip(), (item["viewport"], item["query"])
+            if (item["payload"].get("result") or {}).get("sections"):
+                assert item["tables"] or item["heroText"].strip(), item["query"]
             assert item["overflow"]["document"] <= item["overflow"]["viewport"]
             assert _sha((output / item["screenshot"]).read_bytes()) == item["screenshotSha256"]
             assert item["assets"] == assets and len(assets) == 1
@@ -210,6 +216,11 @@ def test_core1_k08_deployed_view_matches_candidate():
         # stay with the local view and are never counted as deployed passes.
         receipt["local_only_ids"] = [e["id"] for e in spec["k08"] if not e.get("queries")]
         assert receipt["local_only_ids"] == [45, 46]
+        # ID 44's deployed answers are checked here; its synthetic unit node
+        # (franchise-identity) stays with the local view.
+        receipt["local_unit_nodes_not_rerun"] = [
+            n for e in spec["k08"] for n in e.get("check", {}).get("pytest", [])
+        ]
         rows = [_k08(_deployed_entry(e), replay, oracle, []) for e in asked]
         assert replay.asked == set(by_query)
         verdicts = {row["id"]: row["verdict"] for row in rows}
