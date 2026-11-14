@@ -11,8 +11,8 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**As of 2026-11-12, main `95cb705` (after PR609).** Lead: temporary Claude Agent 1
-(Codex unavailable). Agent 2 stopped. DQ-005 and K12 cold-start chasing parked.
+**As of 2026-11-14, main `87d352a` (after PR610).** Lead: temporary Claude Agent 1
+(Codex unavailable). Agent 2 stopped. DQ-005 parked. K12 cold-start moved to Live.
 
 ### Where things stand, in plain English
 
@@ -29,7 +29,7 @@ evidence; don't extend it.
   (Tatum 2024) and 44 (Durant 2007) have qualified, unpublished source data.
   A few are blocked on missing evidence, and five are "this season" questions
   that move to Live. A per-ID table for all 46 is the first next action.
-- **K12 (delivery)** works functionally. Its cold-start timing checks are parked.
+- **K12 (delivery)** works functionally. Its cold-start timing checks moved to Live (B, 2026-11-14).
 - **Recent fixes:** PR606 corrected P.J. Washington's rebounds (data v7). PR607
   fixed "total" questions, team-restricted double-double boards, "who led…"
   questions and a season-year bug.
@@ -38,14 +38,18 @@ evidence; don't extend it.
   literal "this season" questions move to the Live milestone. They're deferred,
   not deleted.
 
-### Open questions for B (yes/no)
+### B's decisions (2026-11-14, "yes yes and yes")
 
-1. Move K12 cold-start timing out of Core-1 into Live? (recorded 2026-11-11)
-2. Show the 484 unknown USG%/TOV% values as labeled "unavailable" instead of
-   letting them block the release? (recorded 2026-11-11)
-3. Publish the already-qualified staged historical cohorts (LAL 16/18/35,
-   Tatum 2024, Durant 2007, historical Davis)? This needs B's publication
-   approval. (asked by Agent 1 after PR609)
+Source: B, 2026-11-14 06:07 UTC (`cmsg_01ABTwDaHncgP7nUEgUSYNtvUp9CnT8J6gygVaXisAB7fm`),
+answering the plain-language questions in `cmsg_01ABTwDaHncgP7nUEgUSYNtvP2G6Z7BrxJ6Eue7UrM1sBB`.
+
+1. **K12 cold-start timing moves to Live.** It is no longer a Core-1 blocker.
+2. **The 484 unknown USG%/TOV% values show as labeled "unavailable"** and do not
+   block the release. They are never shown as numbers.
+3. **Publication approved** for the already-qualified staged historical cohorts
+   (LAL 16/18/35, Tatum 2024, Durant 2007, historical Davis), through the existing
+   protected publication workflow only. This covers no current 2026-27 data, and
+   the existing no-write validation, review and environment gates still apply.
 
 ### What's left for Core-1
 
@@ -53,13 +57,13 @@ evidence; don't extend it.
 | --- | --- | --- |
 | Deployed check of K01-K12 | Release step | Served-generation proof and one desktop/mobile run on a frozen release candidate |
 | K03/K05 changed paths | Software evidence | Numerical, language and rendering checks for paths changed since the bindings |
-| K08 staged cohorts (16/18/35, 6 Tatum 2024, 44 Durant 2007) | Needs B approval | Publish (open question 3), then the deployed check |
+| K08 staged cohorts (16/18/35, 6 Tatum 2024, 44 Durant 2007) | Approved to publish (B, 2026-11-14) | Reviewed package, no-write validation, protected publish, then the deployed check |
 | K08 Davis default-season group (incl. 12 and both 40 questions, 2025-26) | Missing data | Dated official Davis club membership, or official per-game inactive lists, for every selected 2025-26 Lakers date. Not inferred from absent rows. |
 | K08 ID26 (Lakers vs Celtics and Knicks without Tatum) | Missing data | Dated Knicks-side membership or nonmembership on every selected date |
 | K08 IDs 4, 5, 19, 38 and the "current" 40 | Live (B, 2026-11-11) | Need real current-season inputs |
 | K08 IDs 45, 46 | Kept in controlled structured form, per the mapping | Confirm in the acceptance view |
-| K12 cold-start B1/M1/H1 | Parked | Open question 1 |
-| 484 USG%/TOV% unknowns | Data gap | Open question 2 |
+| K12 cold-start B1/M1/H1 | Live (B, 2026-11-14) | Not a Core-1 blocker |
+| 484 USG%/TOV% unknowns | Labeled unavailable (B, 2026-11-14) | Confirm they render as unavailable in the acceptance view |
 | Raw QA: 13 open failures (608 pass on reuse) | Mapped | 11 are participation-coverage gaps covered by the K08 rows above. 1 is an unsafe `available = played` expectation (fix the expectation through independent review; don't implement it). 1 is an accent-format expectation. |
 | Filter sweep PASS_WITH_GAPS (39 dropped, 44 no-signal) | Not yet mapped | Map each relevant gap to a K row or to carry-forward. Gaps are never counted as passes. |
 
@@ -71,8 +75,8 @@ evidence; don't extend it.
    publish / Live, from one command. No new framework.
 2. Fix any software failures it shows, in shared logic, and run deployed checks
    on the existing published generation where they apply.
-3. When B answers the open questions, freeze a release candidate and run the
-   broad checks once.
+3. Publish the approved staged cohorts (decision 3), then freeze a release
+   candidate and run the broad checks once.
 
 ### Carry-forward from PR607 (not Core-1 blockers unless an original case needs them)
 
