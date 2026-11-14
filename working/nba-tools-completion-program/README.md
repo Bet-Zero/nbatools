@@ -40,7 +40,7 @@ evidence; don't extend it.
     gate, which still reports `new_season_not_loaded` (freshness, moved to Live).
   - The read-only audit `tools/audit_historical_publication.py`
     ([R2 43573241422](https://github.com/Bet-Zero/nbatools/actions/runs/43573241422),
-    1/1 passed) then checked all 22 registered live answers. The pointer was
+    1/1 passed) then checked all 22 registered live answers (16 carried over from LeBron, 6 new). The pointer was
     unchanged before and after.
   - The 2025-26 LAL/BOS stages (IDs 16/18/35) and Durant 2007 (ID44) are still
     bound to the old base. They need a rebuild on this generation before their
