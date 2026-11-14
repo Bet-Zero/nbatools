@@ -1,0 +1,1 @@
+{"schema_version":1,"reviewed_sha":"","generation":"availability-participation-2025-durant-v1-20261114","tests":["tests/cloud_participation_2025_publication_audit_real_data.py::test_audit_published_participation_2025_durant_without_readiness_waiver"],"raw_qa_cases":[]}
