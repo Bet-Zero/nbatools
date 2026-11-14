@@ -7,6 +7,10 @@ plus exactly the published ``historical-participation-v1`` overlay. This test
 proves that, proves the remaining packages read and write none of the paths that
 publication changed, composes them on their reviewed base with every original
 check, and then rebuilds and accepts the same stage on real live-base bytes.
+
+The already-approved Durant 2007-08 (original ID44) stage is qualified the same
+way: its own accepted producer and consumers run on the reviewed base, and its
+paths must be disjoint from both the published package and the 2025-26 stage.
 """
 
 import json
@@ -35,6 +39,9 @@ from tests.cloud_composed_participation_stage_real_data import (
 from tests.cloud_core1_k08_lal_default_real_data import (
     accepted_inputs,
     verify_original_defaults,
+)
+from tests.cloud_durant_franchise_stage_real_data import (
+    test_durant_full_population_and_original_franchise_consumers as _durant_stage,
 )
 from tools.availability_overlay import verify_append
 from tools.compose_participation_overlays import compose_overlays
@@ -91,6 +98,18 @@ def test_rebase_2025_participation_onto_live_historical_base(tmp_path, monkeypat
         candidate_sha=candidate,
     )
     assert len(composed["overlay_files"]) == OVERLAY_FILES
+    # The accepted Durant producer and its original consumers, unchanged.
+    durant_output = diagnostics / "durant-acquisition"
+    with monkeypatch.context() as isolated:
+        isolated.setenv("NBATOOLS_ACQUISITION_OUTPUT", str(durant_output))
+        (tmp_path / "durant").mkdir()
+        _durant_stage(tmp_path / "durant", monkeypatch)
+    durant_dir = durant_output / "durant-franchise-stage"
+    durant = json.loads((durant_dir / "validation.json").read_bytes())
+    assert durant["base_generation"] == OLD and durant["base_manifest_sha256"] == OLD_MANIFEST
+    assert json.loads((durant_dir / "acceptance.json").read_bytes())["consumer_acceptance"] == (
+        "passed"
+    )
 
     # 2. The live base is exactly the reviewed base plus the published package.
     _pin(monkeypatch, NEW)
@@ -116,15 +135,20 @@ def test_rebase_2025_participation_onto_live_historical_base(tmp_path, monkeypat
         assert _key(new_entries[path]) == _key(published[path])
 
     # 3. Nothing the remaining stage reads or writes was touched by that package.
-    touched = {item["path"] for item in composed["overlay_files"]}
-    touched |= set(composed["base_file_hashes"])
+    durant_paths = {item["path"] for item in durant["overlay_files"]}
+    assert not durant_paths & {item["path"] for item in composed["overlay_files"]}
+    assert not set(durant.get("append_only", {}))
+    touched = {item["path"] for item in composed["overlay_files"]} | durant_paths
+    touched |= set(composed["base_file_hashes"]) | set(durant["base_file_hashes"])
     for doc in remaining_docs:
         for bound in [doc, *doc.get("season_stage_validations", [])]:
             touched |= set(bound.get("base_file_hashes", {}))
         touched |= {item["path"] for item in doc["overlay_files"]}
     assert not touched & changed
-    for path, digest in composed["base_file_hashes"].items():
+    for path, digest in {**composed["base_file_hashes"], **durant["base_file_hashes"]}.items():
         assert new_entries[path]["sha256"] == old_entries[path]["sha256"] == digest
+    for path in durant["manifest_absent_creations"]:
+        assert path not in new_entries
 
     # 4. Rebuild the dependency root from real live-base bytes. It includes the
     # published 2023-24/2024-25 tables the original composition carried itself.
@@ -166,8 +190,25 @@ def test_rebase_2025_participation_onto_live_historical_base(tmp_path, monkeypat
         for target in (output / path, root / path):
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(body)
+    for item in durant["overlay_files"]:
+        path = item["path"]
+        assert path.startswith("raw/") and path not in new_entries
+        body = (durant_dir / path).read_bytes()
+        assert (_sha(body), len(body)) == _key(item)
+        target = output / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(body)
+    assert not composed["manifest_absent_creations"].keys() & durant["manifest_absent_creations"]
     validation = dict(
         composed,
+        overlay_files=sorted(
+            composed["overlay_files"] + durant["overlay_files"], key=lambda item: item["path"]
+        ),
+        manifest_absent_creations={
+            **composed["manifest_absent_creations"],
+            **durant["manifest_absent_creations"],
+        },
+        season_stage_validations=[durant],
         candidate_sha=candidate,
         base_generation=NEW,
         base_manifest_sha256=NEW_MANIFEST,
@@ -180,13 +221,14 @@ def test_rebase_2025_participation_onto_live_historical_base(tmp_path, monkeypat
             published_package="historical-participation-v1",
             published_overlay_paths=sorted(changed),
             stage_paths_disjoint_from_published=True,
+            durant_paths_disjoint_from_2025_stage=True,
         ),
     )
     (output / "validation.json").write_text(json.dumps(validation, indent=2, sort_keys=True) + "\n")
     shutil.copytree(output, diagnostics / "overlay")
 
     # 6. The full original consumer acceptance, then the original IDs 16/18/35.
-    changed_stage = {item["path"] for item in validation["overlay_files"]}
+    changed_stage = {item["path"] for item in composed["overlay_files"]}
     verify_composed_root(
         root, diagnostics, validation, oracles, records, before, changed_stage, monkeypatch
     )
