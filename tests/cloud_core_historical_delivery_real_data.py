@@ -266,6 +266,12 @@ def _assert_s4(body, case):
     )
 
 
+def _assert_team(cell, abbreviation, name):
+    # The 2026-11-07 interface rendered the abbreviation as cell text; the
+    # current one shows only the full name. The name must match exactly.
+    assert cell in (abbreviation + name, name), cell
+
+
 def _shown(item, label):
     tables = [t for t in item["tables"] if t["label"] == label]
     assert len(tables) == 1
@@ -305,7 +311,7 @@ def _verify(item, delivery, sources, frozen, seq_sources, history_sources, lebro
         actual = body["result"]["sections"]["streak"]
         assert len(shown) == len(actual)
         for row, value in zip(shown, actual, strict=True):
-            assert row["Team"] == "MIAHeat"
+            _assert_team(row["Team"], "MIA", "Heat")
             assert row["Length"] == f"{value['streak_length']} games"
             assert int(row["Games"]) == value["games"]
             assert row["Record"] == f"{value['wins']}-{value['losses']}"
@@ -321,7 +327,7 @@ def _verify(item, delivery, sources, frozen, seq_sources, history_sources, lebro
         rows = _shown(item, "Team record")
         assert len(rows) == 1
         row = rows[0]
-        assert row["Team"] == "GSWGolden State Warriors"
+        _assert_team(row["Team"], "GSW", "Golden State Warriors")
         assert row["W-L"] == f"{expected['wins']}-{expected['losses']}"
         assert int(row["Games"]) == expected["games"]
         for label, value in (
@@ -377,7 +383,8 @@ def _verify(item, delivery, sources, frozen, seq_sources, history_sources, lebro
         for phrase in ("Home", "110+ PTS", "Opp PTS < 110"):
             assert phrase in item["text"]
         shown = _shown(item, "Team record")
-        assert len(shown) == 1 and shown[0]["Team"] == "LALLos Angeles Lakers"
+        assert len(shown) == 1
+        _assert_team(shown[0]["Team"], "LAL", "Los Angeles Lakers")
         assert shown[0]["W-L"] == f"{case['wins']}-{case['losses']}"
         assert int(shown[0]["Games"]) == case["games"]
         assert float(shown[0]["PPG"]) == pytest.approx(case["means"]["pts"], abs=0.051)
