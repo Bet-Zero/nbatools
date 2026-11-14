@@ -190,6 +190,18 @@ semantic = {
             "context; no production fallback."
         ),
     ),
+    "src/nbatools/commands/game_summary.py": (
+        "build_result include_game_log",
+        (
+            "A team game summary filtered to an opponent with wins-only or losses-only now "
+            "also returns its game log and top performers. Sample selection, summary and "
+            "by-season values are unchanged. None of the original 22 queries routes to "
+            "game_summary (their routes are player/team summaries, team_record, "
+            "team_split_summary, finders, leaders and compare); team_record and "
+            "team_split_summary import only the unchanged _build_game_log_section and "
+            "select_team_summary_sample."
+        ),
+    ),
     "src/nbatools/query_service.py": (
         "_build_query_metadata; _build_applied_filters; structured metadata call site",
         (

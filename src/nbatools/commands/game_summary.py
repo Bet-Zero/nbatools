@@ -605,6 +605,8 @@ def build_result(
         or without_player is not None
         or with_player is not None
         or total_games <= 5
+        # "Wins over" / "losses to" an opponent list the games themselves.
+        or (bool(opponent) and (wins_only or losses_only))
     )
     game_log = _build_game_log_section(df) if include_game_log else None
     top_performers: pd.DataFrame | None = None
