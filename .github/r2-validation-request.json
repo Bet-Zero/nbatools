@@ -1,0 +1,1 @@
+{"schema_version":1,"reviewed_sha":"26c2a58a6b64675742eac4faad82a1872f33ece1","generation":"availability-historical-participation-v1-20261114","tests":["tests/cloud_historical_publication_audit_real_data.py::test_audit_published_historical_participation_without_readiness_waiver"],"raw_qa_cases":[]}
