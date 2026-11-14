@@ -1,0 +1,2057 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "d25e8a10738e7d02f6a4697da6cd212aef6b91b6",
+  "request_sha": "75d2318ea78042dd471ace1b6a98a8de19d2dba4",
+  "base_generation": "availability-historical-participation-v1-20261114",
+  "base_manifest_sha256": "be0940172453b76cd81f636d3f27c8bd3e0f428dcb35be5c1b01c4aa6af74a58",
+  "run_id": 43575535897,
+  "artifact_id": 14106044100,
+  "artifact_zip_sha256": "52b4f48a81c62bb5779ee70321c2f445bd684ef88c867c5e02031d8f2b967295",
+  "append_only": {
+    "raw/player_game_availability/2025-26_regular_season.csv": {
+      "added_game_ids": [
+        "0022500017",
+        "0022500018",
+        "0022500021",
+        "0022500028",
+        "0022500049",
+        "0022500060",
+        "0022500083",
+        "0022500106",
+        "0022500117",
+        "0022500128",
+        "0022500146",
+        "0022500158",
+        "0022500174",
+        "0022500193",
+        "0022500209",
+        "0022500216",
+        "0022500233",
+        "0022500250",
+        "0022500277",
+        "0022500293",
+        "0022500302",
+        "0022500320",
+        "0022500334",
+        "0022500336",
+        "0022500358",
+        "0022500379",
+        "0022500381",
+        "0022500388",
+        "0022500395",
+        "0022500403",
+        "0022500418",
+        "0022500426",
+        "0022500444",
+        "0022500446",
+        "0022500459",
+        "0022500460",
+        "0022500474",
+        "0022500485",
+        "0022500493",
+        "0022500501",
+        "0022500503",
+        "0022500514",
+        "0022500520",
+        "0022500532",
+        "0022500541",
+        "0022500545",
+        "0022500559",
+        "0022500562",
+        "0022500569",
+        "0022500580",
+        "0022500586",
+        "0022500594",
+        "0022500601",
+        "0022500607",
+        "0022500617",
+        "0022500621",
+        "0022500633",
+        "0022500637",
+        "0022500647",
+        "0022500648",
+        "0022500660",
+        "0022500661",
+        "0022500671",
+        "0022500673",
+        "0022500688",
+        "0022500689",
+        "0022500702",
+        "0022500708",
+        "0022500721",
+        "0022500728",
+        "0022500741",
+        "0022500753",
+        "0022500757",
+        "0022500769",
+        "0022500778",
+        "0022500791",
+        "0022500799",
+        "0022500839",
+        "0022500847",
+        "0022500859",
+        "0022500874",
+        "0022500880",
+        "0022500894",
+        "0022500959",
+        "0022501067",
+        "0022501085",
+        "0022501092",
+        "0022501098",
+        "0022501140",
+        "0022501168",
+        "0022501170",
+        "0022501174",
+        "0022501185",
+        "0022501186",
+        "0022501198",
+        "0022501206",
+        "0022501222",
+        "0022501228"
+      ],
+      "added_records": 3272,
+      "base_sha256": "3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33",
+      "base_size_bytes": 223000
+    },
+    "raw/player_game_availability/2025-26_regular_season.imports.json": {
+      "added_game_ids": [
+        "0022500017",
+        "0022500018",
+        "0022500021",
+        "0022500028",
+        "0022500049",
+        "0022500060",
+        "0022500083",
+        "0022500106",
+        "0022500117",
+        "0022500128",
+        "0022500146",
+        "0022500158",
+        "0022500174",
+        "0022500193",
+        "0022500209",
+        "0022500216",
+        "0022500233",
+        "0022500250",
+        "0022500277",
+        "0022500293",
+        "0022500302",
+        "0022500320",
+        "0022500334",
+        "0022500336",
+        "0022500358",
+        "0022500379",
+        "0022500381",
+        "0022500388",
+        "0022500395",
+        "0022500403",
+        "0022500418",
+        "0022500426",
+        "0022500444",
+        "0022500446",
+        "0022500459",
+        "0022500460",
+        "0022500474",
+        "0022500485",
+        "0022500493",
+        "0022500501",
+        "0022500503",
+        "0022500514",
+        "0022500520",
+        "0022500532",
+        "0022500541",
+        "0022500545",
+        "0022500559",
+        "0022500562",
+        "0022500569",
+        "0022500580",
+        "0022500586",
+        "0022500594",
+        "0022500601",
+        "0022500607",
+        "0022500617",
+        "0022500621",
+        "0022500633",
+        "0022500637",
+        "0022500647",
+        "0022500648",
+        "0022500660",
+        "0022500661",
+        "0022500671",
+        "0022500673",
+        "0022500688",
+        "0022500689",
+        "0022500702",
+        "0022500708",
+        "0022500721",
+        "0022500728",
+        "0022500741",
+        "0022500753",
+        "0022500757",
+        "0022500769",
+        "0022500778",
+        "0022500791",
+        "0022500799",
+        "0022500839",
+        "0022500847",
+        "0022500859",
+        "0022500874",
+        "0022500880",
+        "0022500894",
+        "0022500959",
+        "0022501067",
+        "0022501085",
+        "0022501092",
+        "0022501098",
+        "0022501140",
+        "0022501168",
+        "0022501170",
+        "0022501174",
+        "0022501185",
+        "0022501186",
+        "0022501198",
+        "0022501206",
+        "0022501222",
+        "0022501228"
+      ],
+      "added_records": 98,
+      "base_sha256": "f34b9a1b97cf71fb69ce389bc67fe7ea1bd33550eaee000199b34e82d3969adf",
+      "base_size_bytes": 2645
+    }
+  },
+  "manifest_absent_creations": {
+    "raw/player_game_absence_reasons/2025-26_regular_season.csv": {
+      "added_observation_keys": [
+        "22500113:1610612747:1629029",
+        "22500122:1610612747:1629029",
+        "22500136:1610612747:1629029",
+        "22500163:1610612747:1629029",
+        "22500336:1610612747:1629029",
+        "22500338:1610612747:1629029",
+        "22500418:1610612747:1629029",
+        "22500601:1610612747:1629029",
+        "22500753:1610612747:1629029",
+        "22500769:1610612747:1629029",
+        "22500774:1610612747:1629029",
+        "22500791:1610612747:1629029",
+        "22501098:1610612747:1629029",
+        "22501140:1610612747:1629029",
+        "22501155:1610612747:1629029",
+        "22501170:1610612747:1629029",
+        "22501185:1610612747:1629029",
+        "22501198:1610612747:1629029"
+      ],
+      "added_records": 18,
+      "base_presence": "manifest_absent"
+    },
+    "raw/player_game_absence_reasons/2025-26_regular_season.imports.json": {
+      "added_observation_keys": [
+        "22500113:1610612747:1629029",
+        "22500122:1610612747:1629029",
+        "22500136:1610612747:1629029",
+        "22500163:1610612747:1629029",
+        "22500336:1610612747:1629029",
+        "22500338:1610612747:1629029",
+        "22500418:1610612747:1629029",
+        "22500601:1610612747:1629029",
+        "22500753:1610612747:1629029",
+        "22500769:1610612747:1629029",
+        "22500774:1610612747:1629029",
+        "22500791:1610612747:1629029",
+        "22501098:1610612747:1629029",
+        "22501140:1610612747:1629029",
+        "22501155:1610612747:1629029",
+        "22501170:1610612747:1629029",
+        "22501185:1610612747:1629029",
+        "22501198:1610612747:1629029"
+      ],
+      "added_records": 18,
+      "base_presence": "manifest_absent"
+    },
+    "raw/player_game_availability/2007-08_regular_season.csv": {
+      "added_game_ids": [
+        "0020700456",
+        "0020700788"
+      ],
+      "added_records": 57,
+      "base_presence": "manifest_absent"
+    },
+    "raw/player_game_availability/2007-08_regular_season.imports.json": {
+      "added_game_ids": [
+        "0020700456",
+        "0020700788"
+      ],
+      "added_records": 2,
+      "base_presence": "manifest_absent"
+    }
+  },
+  "files": [
+    {
+      "path": "raw/player_game_absence_reason_sources/08a2edf19d51aa9d36b8155b8c5373cde9b5891030f03ca4db64ee06af2c02dd.pdf",
+      "size_bytes": 27968,
+      "sha256": "08a2edf19d51aa9d36b8155b8c5373cde9b5891030f03ca4db64ee06af2c02dd"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/098da56cb22b98b9592cdc0c4baa84242f11e918f9339cc70414256fbd112326.receipt.json",
+      "size_bytes": 312,
+      "sha256": "098da56cb22b98b9592cdc0c4baa84242f11e918f9339cc70414256fbd112326"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/0c960b5c3b8902912d3b1991bc193395656a741327abd37cbc9e596b8db1636f.pdf",
+      "size_bytes": 26430,
+      "sha256": "0c960b5c3b8902912d3b1991bc193395656a741327abd37cbc9e596b8db1636f"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/224c2708025b5755e30b3b75a7e303778d99a7065d58256b886e40b2ad28d1bf.receipt.json",
+      "size_bytes": 312,
+      "sha256": "224c2708025b5755e30b3b75a7e303778d99a7065d58256b886e40b2ad28d1bf"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/3063f9397d61cc34930bd4194a26675625eadb98792f9761dfce274614f0e60e.receipt.json",
+      "size_bytes": 312,
+      "sha256": "3063f9397d61cc34930bd4194a26675625eadb98792f9761dfce274614f0e60e"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/4eb4f0a4c567a0cb5f594a087da54338695b97fb421cdc41cc24793e8f23ed6d.receipt.json",
+      "size_bytes": 312,
+      "sha256": "4eb4f0a4c567a0cb5f594a087da54338695b97fb421cdc41cc24793e8f23ed6d"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/4f3d1961f46fe1d2c8fb91fdb23e4fbcd8691802c86b40d80e09ed3c522cbb06.pdf",
+      "size_bytes": 26990,
+      "sha256": "4f3d1961f46fe1d2c8fb91fdb23e4fbcd8691802c86b40d80e09ed3c522cbb06"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/5944340c8398f8476ff5f5e1bdc96771bc72dff05a347a37cbf30e03cb6688b5.pdf",
+      "size_bytes": 27688,
+      "sha256": "5944340c8398f8476ff5f5e1bdc96771bc72dff05a347a37cbf30e03cb6688b5"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/59832b03398523762330f5628ea8b4d622f4af77d562a0e7ce8ef9599d6616ee.pdf",
+      "size_bytes": 27203,
+      "sha256": "59832b03398523762330f5628ea8b4d622f4af77d562a0e7ce8ef9599d6616ee"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/5e1acb7fbab01d77f0468d86c9f88b3194bd39f406ab5763d2c06b8d582d9892.receipt.json",
+      "size_bytes": 312,
+      "sha256": "5e1acb7fbab01d77f0468d86c9f88b3194bd39f406ab5763d2c06b8d582d9892"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/66b92a0220ef1a54e88cd6fee5db450efac73eab76938c9c8092b1bcceed10fb.receipt.json",
+      "size_bytes": 312,
+      "sha256": "66b92a0220ef1a54e88cd6fee5db450efac73eab76938c9c8092b1bcceed10fb"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/6a948528837b6998e7d9542f4809f026296a8bc186558b1c034baaa897f43aed.receipt.json",
+      "size_bytes": 312,
+      "sha256": "6a948528837b6998e7d9542f4809f026296a8bc186558b1c034baaa897f43aed"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/6cf925d8db47fd91e579b90570af9ca3c5201f0284c0a926158aeb901e4172c2.pdf",
+      "size_bytes": 27122,
+      "sha256": "6cf925d8db47fd91e579b90570af9ca3c5201f0284c0a926158aeb901e4172c2"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94.receipt.json",
+      "size_bytes": 43039,
+      "sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153.pdf",
+      "size_bytes": 27308,
+      "sha256": "7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/8d3ac3ac1025fff1406cd3e2f5ecccbce3ad839f249260c5eced3be19be58748.pdf",
+      "size_bytes": 26885,
+      "sha256": "8d3ac3ac1025fff1406cd3e2f5ecccbce3ad839f249260c5eced3be19be58748"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/9a9395dfa72307b2e0333805893cb9207d501c5cf8fc0d1f4461deb4a1165b40.json",
+      "size_bytes": 19678,
+      "sha256": "9a9395dfa72307b2e0333805893cb9207d501c5cf8fc0d1f4461deb4a1165b40"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/a0958501d5aebd1562bafd929971a71bfb3ad8cdcd64cd1637c45f4f0acaf014.pdf",
+      "size_bytes": 27579,
+      "sha256": "a0958501d5aebd1562bafd929971a71bfb3ad8cdcd64cd1637c45f4f0acaf014"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/a2b30080831d99df66bad6784c95bd3f4e2bcd566813e5a092d919cb74a28b5a.receipt.json",
+      "size_bytes": 312,
+      "sha256": "a2b30080831d99df66bad6784c95bd3f4e2bcd566813e5a092d919cb74a28b5a"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/a40f7e804be235923ccd910915b7c4a664ddc1d959e4805d8e4617ccb2b3ff28.pdf",
+      "size_bytes": 27320,
+      "sha256": "a40f7e804be235923ccd910915b7c4a664ddc1d959e4805d8e4617ccb2b3ff28"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/ac6e56318e5142fc411ed14c7521989644746a8a332dffdfef02341886f10c18.receipt.json",
+      "size_bytes": 312,
+      "sha256": "ac6e56318e5142fc411ed14c7521989644746a8a332dffdfef02341886f10c18"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/ad17abe4aa50f0bf7eee92559612740484cc532d5aa364e9a6a9ab42822cf9bf.receipt.json",
+      "size_bytes": 312,
+      "sha256": "ad17abe4aa50f0bf7eee92559612740484cc532d5aa364e9a6a9ab42822cf9bf"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/b47c8cff76e0eea33a1fd28e54ab803340da7acf11b9120a40462e76b2a78486.receipt.json",
+      "size_bytes": 312,
+      "sha256": "b47c8cff76e0eea33a1fd28e54ab803340da7acf11b9120a40462e76b2a78486"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55.pdf",
+      "size_bytes": 26433,
+      "sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/c51e02d8781c7311d661f496fbab62f539dbd4099fb2905ea55b297302704e4c.receipt.json",
+      "size_bytes": 312,
+      "sha256": "c51e02d8781c7311d661f496fbab62f539dbd4099fb2905ea55b297302704e4c"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/c88e4c671c7d100cabaa4b2cc1b36379fb51e7fe0829000e881e1fe028989430.receipt.json",
+      "size_bytes": 312,
+      "sha256": "c88e4c671c7d100cabaa4b2cc1b36379fb51e7fe0829000e881e1fe028989430"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/c8af7bae7995d818db5aab42206b6529b21f59978c65146dfb1c74020a0e8310.pdf",
+      "size_bytes": 27765,
+      "sha256": "c8af7bae7995d818db5aab42206b6529b21f59978c65146dfb1c74020a0e8310"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/cb4f0673c10831e9ff9b2fa1dd69f6f5e60ac5e8970a6529b527498145306080.pdf",
+      "size_bytes": 27782,
+      "sha256": "cb4f0673c10831e9ff9b2fa1dd69f6f5e60ac5e8970a6529b527498145306080"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/d20265335e07f76fa588e5602b84aa219936d4210b1f085aa88efa85cdb05d99.receipt.json",
+      "size_bytes": 312,
+      "sha256": "d20265335e07f76fa588e5602b84aa219936d4210b1f085aa88efa85cdb05d99"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/d404ec4184aff095c66f8ed67f592f7a7eee75352bd81eb0e51c7f1a7fcd2771.pdf",
+      "size_bytes": 26556,
+      "sha256": "d404ec4184aff095c66f8ed67f592f7a7eee75352bd81eb0e51c7f1a7fcd2771"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/d4e4fe5244c9f09fff65d1fe9282ea8c72424cd5b0f776c2f5764eef5b647195.receipt.json",
+      "size_bytes": 312,
+      "sha256": "d4e4fe5244c9f09fff65d1fe9282ea8c72424cd5b0f776c2f5764eef5b647195"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/db22892cdab7999670af8b530af75548112d6b2c2f89df207cc3bf0070106291.pdf",
+      "size_bytes": 27072,
+      "sha256": "db22892cdab7999670af8b530af75548112d6b2c2f89df207cc3bf0070106291"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/db4e5eff11dc8719ec539c0ca472e03eb5506bbbdb143197051a12d298dbb4d1.receipt.json",
+      "size_bytes": 312,
+      "sha256": "db4e5eff11dc8719ec539c0ca472e03eb5506bbbdb143197051a12d298dbb4d1"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/e7cfe96f3183b18151455a69e8977915781818c603f4ea3161046502423ff288.pdf",
+      "size_bytes": 27499,
+      "sha256": "e7cfe96f3183b18151455a69e8977915781818c603f4ea3161046502423ff288"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/e8eb6f2018a7dd904276eb654904ad2d68e34c72232b0f5fe9627311c0a6450d.pdf",
+      "size_bytes": 27847,
+      "sha256": "e8eb6f2018a7dd904276eb654904ad2d68e34c72232b0f5fe9627311c0a6450d"
+    },
+    {
+      "path": "raw/player_game_absence_reason_sources/fd3e9fec6b589577d15d9eca73b5e0f409a52840a216e1517c6b2b10939a1b86.receipt.json",
+      "size_bytes": 312,
+      "sha256": "fd3e9fec6b589577d15d9eca73b5e0f409a52840a216e1517c6b2b10939a1b86"
+    },
+    {
+      "path": "raw/player_game_absence_reasons/2025-26_regular_season.csv",
+      "size_bytes": 8611,
+      "sha256": "5e22142bd0b06456102e570f18c9005e9cae31f2f832e421e38c0c81b3962570"
+    },
+    {
+      "path": "raw/player_game_absence_reasons/2025-26_regular_season.imports.json",
+      "size_bytes": 14502,
+      "sha256": "dd8ff0bb812586801f5775abb728a57b687e0c2c9fc75d528e497be6581559d8"
+    },
+    {
+      "path": "raw/player_game_availability/2007-08_regular_season.csv",
+      "size_bytes": 16111,
+      "sha256": "aafc1464167b6ca9e1802ddc62fb9b75bc5a701b4dacca8bd6fd752ff7cc366d"
+    },
+    {
+      "path": "raw/player_game_availability/2007-08_regular_season.imports.json",
+      "size_bytes": 233,
+      "sha256": "28e15beef697b7b70e7314ffaa35b5070c90459adbf126c85e9201c3824c4ed0"
+    },
+    {
+      "path": "raw/player_game_availability/2025-26_regular_season.csv",
+      "size_bytes": 1156483,
+      "sha256": "1f7e22b46be07bf2303a5203541e31c997df10e83659e09c973611017a1a4efc"
+    },
+    {
+      "path": "raw/player_game_availability/2025-26_regular_season.imports.json",
+      "size_bytes": 15991,
+      "sha256": "7a7f8415e139947d17ce7c8bd5c953ef41e5316e38e93f6fe8edffd58e0f8587"
+    },
+    {
+      "path": "raw/player_game_availability_sources/000ddf5a92bcf807477ee5267475be551ef7b9c56517f2e2b451fc9db0459565.json",
+      "size_bytes": 15761,
+      "sha256": "000ddf5a92bcf807477ee5267475be551ef7b9c56517f2e2b451fc9db0459565"
+    },
+    {
+      "path": "raw/player_game_availability_sources/00c2562fb4a1c8c0f461e284bf8d1c36383c7f789d58f955e8081cc1e7ae3645.structured.json",
+      "size_bytes": 1118,
+      "sha256": "00c2562fb4a1c8c0f461e284bf8d1c36383c7f789d58f955e8081cc1e7ae3645"
+    },
+    {
+      "path": "raw/player_game_availability_sources/026817e84bce2bb9298335237e3d7c7c0d905a52f577132976ba747f808a89ac.json",
+      "size_bytes": 20362,
+      "sha256": "026817e84bce2bb9298335237e3d7c7c0d905a52f577132976ba747f808a89ac"
+    },
+    {
+      "path": "raw/player_game_availability_sources/02a6010a4028eaf2c363b91c1d7ed87f11366aa1e2078abb366eae360f7335a2.structured.json",
+      "size_bytes": 1118,
+      "sha256": "02a6010a4028eaf2c363b91c1d7ed87f11366aa1e2078abb366eae360f7335a2"
+    },
+    {
+      "path": "raw/player_game_availability_sources/03216251d750269f8e0392c549135417abcc9257c9e9ae44023af7b502beb5b6.structured.json",
+      "size_bytes": 1118,
+      "sha256": "03216251d750269f8e0392c549135417abcc9257c9e9ae44023af7b502beb5b6"
+    },
+    {
+      "path": "raw/player_game_availability_sources/03e99d86092b4eb26d72fb3e9963e19946d2a913370296850c09ad76754a029f.structured.json",
+      "size_bytes": 1118,
+      "sha256": "03e99d86092b4eb26d72fb3e9963e19946d2a913370296850c09ad76754a029f"
+    },
+    {
+      "path": "raw/player_game_availability_sources/040f76a0ab273eeeb8e4ebb8b80bc69c89bc37ec86dc33f520154f6f5e351c80.json",
+      "size_bytes": 19605,
+      "sha256": "040f76a0ab273eeeb8e4ebb8b80bc69c89bc37ec86dc33f520154f6f5e351c80"
+    },
+    {
+      "path": "raw/player_game_availability_sources/07421243e73cd3114dbb5c42cbf181041b052862c9dfdb5b11320550853f06a3.json",
+      "size_bytes": 15735,
+      "sha256": "07421243e73cd3114dbb5c42cbf181041b052862c9dfdb5b11320550853f06a3"
+    },
+    {
+      "path": "raw/player_game_availability_sources/0745f1a9471d55d25328725a3fd74ec8e58b332eee543086d8e7acb0dfb4a44c.structured.json",
+      "size_bytes": 1118,
+      "sha256": "0745f1a9471d55d25328725a3fd74ec8e58b332eee543086d8e7acb0dfb4a44c"
+    },
+    {
+      "path": "raw/player_game_availability_sources/08592c2618ead4a13e30e3348acacc0468f4eab878436995bc7f1326e3267cd8.structured.json",
+      "size_bytes": 1118,
+      "sha256": "08592c2618ead4a13e30e3348acacc0468f4eab878436995bc7f1326e3267cd8"
+    },
+    {
+      "path": "raw/player_game_availability_sources/08e9c44d77ec2efe62df493dda125e5e1b322a8910a3e144bf4f6ee7650952c9.json",
+      "size_bytes": 19026,
+      "sha256": "08e9c44d77ec2efe62df493dda125e5e1b322a8910a3e144bf4f6ee7650952c9"
+    },
+    {
+      "path": "raw/player_game_availability_sources/0945bfffd01e8faf2ad2077d77b68b9ed2e7ba03d75e04994fdaadca3c704fc4.structured.json",
+      "size_bytes": 1118,
+      "sha256": "0945bfffd01e8faf2ad2077d77b68b9ed2e7ba03d75e04994fdaadca3c704fc4"
+    },
+    {
+      "path": "raw/player_game_availability_sources/09a917cbccbb9ce837d373b1a030b1b814e7c324657dda49c9afe83e0b0f3d0f.json",
+      "size_bytes": 20355,
+      "sha256": "09a917cbccbb9ce837d373b1a030b1b814e7c324657dda49c9afe83e0b0f3d0f"
+    },
+    {
+      "path": "raw/player_game_availability_sources/0b4577bfdafdb21e6e032ceb173577c648c987c3f700f879a08eb5f908428334.json",
+      "size_bytes": 19041,
+      "sha256": "0b4577bfdafdb21e6e032ceb173577c648c987c3f700f879a08eb5f908428334"
+    },
+    {
+      "path": "raw/player_game_availability_sources/0c0c0b9779bafd523f494e60ab013bed45d525ce1905b8e36ff1589370b14b35.json",
+      "size_bytes": 17591,
+      "sha256": "0c0c0b9779bafd523f494e60ab013bed45d525ce1905b8e36ff1589370b14b35"
+    },
+    {
+      "path": "raw/player_game_availability_sources/0ea93294d0e7db7c002f3e6afd6bbc51fdc0412006c7f0b208815e180c4162a6.json",
+      "size_bytes": 21674,
+      "sha256": "0ea93294d0e7db7c002f3e6afd6bbc51fdc0412006c7f0b208815e180c4162a6"
+    },
+    {
+      "path": "raw/player_game_availability_sources/10229f992b87d955681afbf123e1338756d00e484e85cea1aba77fdfe49533b3.structured.json",
+      "size_bytes": 1118,
+      "sha256": "10229f992b87d955681afbf123e1338756d00e484e85cea1aba77fdfe49533b3"
+    },
+    {
+      "path": "raw/player_game_availability_sources/10319650e16e98a5abf47534d733d6ab23b053e51922fc40f91b2010cf1dc737.json",
+      "size_bytes": 17351,
+      "sha256": "10319650e16e98a5abf47534d733d6ab23b053e51922fc40f91b2010cf1dc737"
+    },
+    {
+      "path": "raw/player_game_availability_sources/10ab9b41f31bdc996a5c3a2a71cc8754304af5012b0076925b655721095e4e68.json",
+      "size_bytes": 18975,
+      "sha256": "10ab9b41f31bdc996a5c3a2a71cc8754304af5012b0076925b655721095e4e68"
+    },
+    {
+      "path": "raw/player_game_availability_sources/11e6a96a1c4ecfb9e9ce5044bff77e733d1bdeebaaa5e4c8407ee41c5f7dfda5.structured.json",
+      "size_bytes": 1118,
+      "sha256": "11e6a96a1c4ecfb9e9ce5044bff77e733d1bdeebaaa5e4c8407ee41c5f7dfda5"
+    },
+    {
+      "path": "raw/player_game_availability_sources/1205ffbdc09fa24251f693edb9359b0f526469b64372d91b2e3057c6cae37084.json",
+      "size_bytes": 20954,
+      "sha256": "1205ffbdc09fa24251f693edb9359b0f526469b64372d91b2e3057c6cae37084"
+    },
+    {
+      "path": "raw/player_game_availability_sources/1283bfd76c4abedb1331bcaa57d5d222249228d798774bfb902d6d91611433d0.json",
+      "size_bytes": 19078,
+      "sha256": "1283bfd76c4abedb1331bcaa57d5d222249228d798774bfb902d6d91611433d0"
+    },
+    {
+      "path": "raw/player_game_availability_sources/1285beb8458f2fb6075b831b75f51db843ce04127893064ea10f5c1aeabfeb7a.json",
+      "size_bytes": 21198,
+      "sha256": "1285beb8458f2fb6075b831b75f51db843ce04127893064ea10f5c1aeabfeb7a"
+    },
+    {
+      "path": "raw/player_game_availability_sources/1455c116996b08a90d17a07789fc032aa7120b75d5105d2bb47b9ef58caab86e.json",
+      "size_bytes": 21112,
+      "sha256": "1455c116996b08a90d17a07789fc032aa7120b75d5105d2bb47b9ef58caab86e"
+    },
+    {
+      "path": "raw/player_game_availability_sources/15d5f16e3d3aed94b8e4eea0c37f0770524aedc034f22f79c5311ed02ed581ad.json",
+      "size_bytes": 20965,
+      "sha256": "15d5f16e3d3aed94b8e4eea0c37f0770524aedc034f22f79c5311ed02ed581ad"
+    },
+    {
+      "path": "raw/player_game_availability_sources/168939bb7cc75c267b8f1666dd368b2ef41e1576e5e44b7eef07fceb2e1c54d7.json",
+      "size_bytes": 16107,
+      "sha256": "168939bb7cc75c267b8f1666dd368b2ef41e1576e5e44b7eef07fceb2e1c54d7"
+    },
+    {
+      "path": "raw/player_game_availability_sources/17056f2dbe4f9e5344bef8a3feea8e1f02d166a4f8e97c7d9b70af27cd10e002.structured.json",
+      "size_bytes": 1118,
+      "sha256": "17056f2dbe4f9e5344bef8a3feea8e1f02d166a4f8e97c7d9b70af27cd10e002"
+    },
+    {
+      "path": "raw/player_game_availability_sources/188d69bd67d2085d9ed9903b0555f04e4c9b17229c022bf283397ae68c588460.structured.json",
+      "size_bytes": 1118,
+      "sha256": "188d69bd67d2085d9ed9903b0555f04e4c9b17229c022bf283397ae68c588460"
+    },
+    {
+      "path": "raw/player_game_availability_sources/199149bb869cfada4e5afa7c97e975b6286b44ec93fe8c25880cd59870e0e989.structured.json",
+      "size_bytes": 1118,
+      "sha256": "199149bb869cfada4e5afa7c97e975b6286b44ec93fe8c25880cd59870e0e989"
+    },
+    {
+      "path": "raw/player_game_availability_sources/19f128da153815e7152e5b3784b1a668eb911532fb294c6c730abf45fce521fa.pdf",
+      "size_bytes": 27371,
+      "sha256": "19f128da153815e7152e5b3784b1a668eb911532fb294c6c730abf45fce521fa"
+    },
+    {
+      "path": "raw/player_game_availability_sources/1a261bfd9ab241091044983a7e1136e381c76f6050c3252de4ec63965e8c4387.json",
+      "size_bytes": 21693,
+      "sha256": "1a261bfd9ab241091044983a7e1136e381c76f6050c3252de4ec63965e8c4387"
+    },
+    {
+      "path": "raw/player_game_availability_sources/1af761a6dc6b36742450ce7abf4310b173b2a9d645f5ab2e0b9003e22aaa4f6f.json",
+      "size_bytes": 16135,
+      "sha256": "1af761a6dc6b36742450ce7abf4310b173b2a9d645f5ab2e0b9003e22aaa4f6f"
+    },
+    {
+      "path": "raw/player_game_availability_sources/1d236a2f65f5a2877b56ae61038ae51d68522734fda59fa5d097727efb2f4d48.json",
+      "size_bytes": 19068,
+      "sha256": "1d236a2f65f5a2877b56ae61038ae51d68522734fda59fa5d097727efb2f4d48"
+    },
+    {
+      "path": "raw/player_game_availability_sources/1fabdbc6f8bed9c338b88269ceb8d3e042aece2ffd2d9ee328699e869c24b930.structured.json",
+      "size_bytes": 1118,
+      "sha256": "1fabdbc6f8bed9c338b88269ceb8d3e042aece2ffd2d9ee328699e869c24b930"
+    },
+    {
+      "path": "raw/player_game_availability_sources/20251118_BOSBKN.json",
+      "size_bytes": 312,
+      "sha256": "7745df5f66c49a56be8fc71a3a1b22f62f122450619ea8431e61cc64780ae61f"
+    },
+    {
+      "path": "raw/player_game_availability_sources/20260115_BOSMIA.json",
+      "size_bytes": 312,
+      "sha256": "51756de78bfd746ec6885a2d6ab880853a86933267d43e60929c8555f0f270b1"
+    },
+    {
+      "path": "raw/player_game_availability_sources/20260126_PORBOS.json",
+      "size_bytes": 312,
+      "sha256": "57bfc57c384bb0075019ccf5b3258ecb8bd611920f475358434073391b3e69b9"
+    },
+    {
+      "path": "raw/player_game_availability_sources/20260201_LALNYK.json",
+      "size_bytes": 312,
+      "sha256": "5c4780c25a27bfd4377ed552ac8900ab5eaf08ccdb81879bf63f519bf644026b"
+    },
+    {
+      "path": "raw/player_game_availability_sources/20260201_MILBOS.json",
+      "size_bytes": 312,
+      "sha256": "1bce94ac67a17baa5ff99873040ad60f5bd289d530ded4a42bd73a48feba6ea7"
+    },
+    {
+      "path": "raw/player_game_availability_sources/20260203_BOSDAL.json",
+      "size_bytes": 312,
+      "sha256": "aeffe1a39b2e101a276ff21f12bec9900490e8ac6a8d51d46d2e59042ccfed1d"
+    },
+    {
+      "path": "raw/player_game_availability_sources/21cf7567d30d7d6ac75257f566749bc40d02e2b8ec575fb40d57006b080b28f6.json",
+      "size_bytes": 16337,
+      "sha256": "21cf7567d30d7d6ac75257f566749bc40d02e2b8ec575fb40d57006b080b28f6"
+    },
+    {
+      "path": "raw/player_game_availability_sources/21fd06f4ae3f5df712aa3bafa0de11673cc9e9e907c6f6129bf469ed610da04e.structured.json",
+      "size_bytes": 1118,
+      "sha256": "21fd06f4ae3f5df712aa3bafa0de11673cc9e9e907c6f6129bf469ed610da04e"
+    },
+    {
+      "path": "raw/player_game_availability_sources/227a72fc22b8334d120ff7edd62b461fc6986f17b47d3ad93d832003d3d1f40e.structured.json",
+      "size_bytes": 1118,
+      "sha256": "227a72fc22b8334d120ff7edd62b461fc6986f17b47d3ad93d832003d3d1f40e"
+    },
+    {
+      "path": "raw/player_game_availability_sources/2287e2a51d809582aab7c44ed07b75831d4176d307183d78e299d85f27d5995e.json",
+      "size_bytes": 15486,
+      "sha256": "2287e2a51d809582aab7c44ed07b75831d4176d307183d78e299d85f27d5995e"
+    },
+    {
+      "path": "raw/player_game_availability_sources/23664dc36e8bcaa890d8e9a5b3fcced33149bea929fceebde4bf73b6d94eabe1.structured.json",
+      "size_bytes": 1118,
+      "sha256": "23664dc36e8bcaa890d8e9a5b3fcced33149bea929fceebde4bf73b6d94eabe1"
+    },
+    {
+      "path": "raw/player_game_availability_sources/237c1fb2e6a6c21268fe30893de7d7c7a447eecf3d122c892c93575fa79cc6d1.json",
+      "size_bytes": 20794,
+      "sha256": "237c1fb2e6a6c21268fe30893de7d7c7a447eecf3d122c892c93575fa79cc6d1"
+    },
+    {
+      "path": "raw/player_game_availability_sources/239698f25b4e0b215726088b435bba233cb5f6e3b7d167c51f1464d406a5a1fb.json",
+      "size_bytes": 19122,
+      "sha256": "239698f25b4e0b215726088b435bba233cb5f6e3b7d167c51f1464d406a5a1fb"
+    },
+    {
+      "path": "raw/player_game_availability_sources/23bd3b9851324a71091c8e4f3541cb78658e486b3c641e84754a1d3489046712.json",
+      "size_bytes": 18454,
+      "sha256": "23bd3b9851324a71091c8e4f3541cb78658e486b3c641e84754a1d3489046712"
+    },
+    {
+      "path": "raw/player_game_availability_sources/23c34c73abfe5545ce81123ad43a0392c39075cda42cb6fb268f64b3751a2f9c.structured.json",
+      "size_bytes": 1118,
+      "sha256": "23c34c73abfe5545ce81123ad43a0392c39075cda42cb6fb268f64b3751a2f9c"
+    },
+    {
+      "path": "raw/player_game_availability_sources/25b518a198d77d0991177aaf0127cd7de6a4b84fccdddf7df8e318814f745196.json",
+      "size_bytes": 18465,
+      "sha256": "25b518a198d77d0991177aaf0127cd7de6a4b84fccdddf7df8e318814f745196"
+    },
+    {
+      "path": "raw/player_game_availability_sources/26032a23a998de186fcfb31e59011c517c2c054aa81e4105bc86c5d5bff4a6ce.json",
+      "size_bytes": 16262,
+      "sha256": "26032a23a998de186fcfb31e59011c517c2c054aa81e4105bc86c5d5bff4a6ce"
+    },
+    {
+      "path": "raw/player_game_availability_sources/29564ff7e6aeee5e2a607ff3f05b3b546f0d1db43d1fb9f5a7bf9e5cfa7416ad.json",
+      "size_bytes": 21022,
+      "sha256": "29564ff7e6aeee5e2a607ff3f05b3b546f0d1db43d1fb9f5a7bf9e5cfa7416ad"
+    },
+    {
+      "path": "raw/player_game_availability_sources/2a24fdee4976b88df54e3ec5d273acc3bc3c3251145fdb8cad85c29439c753ed.json",
+      "size_bytes": 15720,
+      "sha256": "2a24fdee4976b88df54e3ec5d273acc3bc3c3251145fdb8cad85c29439c753ed"
+    },
+    {
+      "path": "raw/player_game_availability_sources/2b704f40fb2ebad654cb6d4135c42a67db8288c2cd9e0d0d2455dd81ed1ebc13.json",
+      "size_bytes": 18971,
+      "sha256": "2b704f40fb2ebad654cb6d4135c42a67db8288c2cd9e0d0d2455dd81ed1ebc13"
+    },
+    {
+      "path": "raw/player_game_availability_sources/2d40c6e8fc8a5bdbbd4f7324211457a397b4de6c57f6b911fd9a318437ee90e2.structured.json",
+      "size_bytes": 1118,
+      "sha256": "2d40c6e8fc8a5bdbbd4f7324211457a397b4de6c57f6b911fd9a318437ee90e2"
+    },
+    {
+      "path": "raw/player_game_availability_sources/2f7e94e8c831e62697a2337fe72b1bc3b0939eb292e7f725bec31117a93f7d83.json",
+      "size_bytes": 19749,
+      "sha256": "2f7e94e8c831e62697a2337fe72b1bc3b0939eb292e7f725bec31117a93f7d83"
+    },
+    {
+      "path": "raw/player_game_availability_sources/301087e7c80acbd309e54e67a7a520d92be0bebfa692c696c095d81d8683bbb9.json",
+      "size_bytes": 16799,
+      "sha256": "301087e7c80acbd309e54e67a7a520d92be0bebfa692c696c095d81d8683bbb9"
+    },
+    {
+      "path": "raw/player_game_availability_sources/301846773cd7ac8d4f9be33fbabaa27942d3602e866b4432bc32c5a165d3c8a0.structured.json",
+      "size_bytes": 1118,
+      "sha256": "301846773cd7ac8d4f9be33fbabaa27942d3602e866b4432bc32c5a165d3c8a0"
+    },
+    {
+      "path": "raw/player_game_availability_sources/307ce8ee69c8ad35a50fbd72ee36e6662f53c8832891f063cd8de453a70a7606.json",
+      "size_bytes": 15388,
+      "sha256": "307ce8ee69c8ad35a50fbd72ee36e6662f53c8832891f063cd8de453a70a7606"
+    },
+    {
+      "path": "raw/player_game_availability_sources/33dfd7c3925968bd9a7865986471958cde19bf48c2dcdc9a80b1cf21b7aec1b1.json",
+      "size_bytes": 21614,
+      "sha256": "33dfd7c3925968bd9a7865986471958cde19bf48c2dcdc9a80b1cf21b7aec1b1"
+    },
+    {
+      "path": "raw/player_game_availability_sources/36105b87db945b381ac4fbda2c92b85254d25f58126ee77dd64d8184c16c7347.json",
+      "size_bytes": 15753,
+      "sha256": "36105b87db945b381ac4fbda2c92b85254d25f58126ee77dd64d8184c16c7347"
+    },
+    {
+      "path": "raw/player_game_availability_sources/368e263d535fb22d7d0415573f29ca7a8ffc3680f4f0fc7283dbc5de80ff778f.json",
+      "size_bytes": 20358,
+      "sha256": "368e263d535fb22d7d0415573f29ca7a8ffc3680f4f0fc7283dbc5de80ff778f"
+    },
+    {
+      "path": "raw/player_game_availability_sources/36b355e2a0e0e6956d52deeb1443aac510ddb5cf72f929bc94fdb104641ea3f8.structured.json",
+      "size_bytes": 1118,
+      "sha256": "36b355e2a0e0e6956d52deeb1443aac510ddb5cf72f929bc94fdb104641ea3f8"
+    },
+    {
+      "path": "raw/player_game_availability_sources/375a07746769889cfebb23b55b222625955a79d93e64474d4e3f3c7481da4dc1.json",
+      "size_bytes": 22281,
+      "sha256": "375a07746769889cfebb23b55b222625955a79d93e64474d4e3f3c7481da4dc1"
+    },
+    {
+      "path": "raw/player_game_availability_sources/37a113c79dc358a2fda4e74b37d6f6b1746518dd0aa8619d5297f6cded0b8f57.structured.json",
+      "size_bytes": 1118,
+      "sha256": "37a113c79dc358a2fda4e74b37d6f6b1746518dd0aa8619d5297f6cded0b8f57"
+    },
+    {
+      "path": "raw/player_game_availability_sources/37c3aab8be477c541bbd1ef98b0dd722edf59e6fb86fb1260a6e9ca072f0d7e6.json",
+      "size_bytes": 21687,
+      "sha256": "37c3aab8be477c541bbd1ef98b0dd722edf59e6fb86fb1260a6e9ca072f0d7e6"
+    },
+    {
+      "path": "raw/player_game_availability_sources/38270d79471e73eaf093713bb9be272ba5c484758ae9ab5a8f569720d75237d6.json",
+      "size_bytes": 21654,
+      "sha256": "38270d79471e73eaf093713bb9be272ba5c484758ae9ab5a8f569720d75237d6"
+    },
+    {
+      "path": "raw/player_game_availability_sources/3990fa70cd5b16c84da115d93553856a9baa076418b248975811919631c94a07.json",
+      "size_bytes": 20333,
+      "sha256": "3990fa70cd5b16c84da115d93553856a9baa076418b248975811919631c94a07"
+    },
+    {
+      "path": "raw/player_game_availability_sources/3acc451e1f4845e0f87dcc93d01b78aa55eb6958c80b372f8218635809901012.structured.json",
+      "size_bytes": 1118,
+      "sha256": "3acc451e1f4845e0f87dcc93d01b78aa55eb6958c80b372f8218635809901012"
+    },
+    {
+      "path": "raw/player_game_availability_sources/3bcaa6b98d6b4984cbcb33eac582dfe60c6ca5e537dc32cd30a30ce715ea4690.json",
+      "size_bytes": 20259,
+      "sha256": "3bcaa6b98d6b4984cbcb33eac582dfe60c6ca5e537dc32cd30a30ce715ea4690"
+    },
+    {
+      "path": "raw/player_game_availability_sources/3c56524f58b47a841f21c8080f9bc12077ee5659b33eb5f363383e4612430a40.structured.json",
+      "size_bytes": 1118,
+      "sha256": "3c56524f58b47a841f21c8080f9bc12077ee5659b33eb5f363383e4612430a40"
+    },
+    {
+      "path": "raw/player_game_availability_sources/3debb73be1cc0f5bea678c918cb1a7cb5ce33c7f58ef710574b19cfc6f475ecd.json",
+      "size_bytes": 15601,
+      "sha256": "3debb73be1cc0f5bea678c918cb1a7cb5ce33c7f58ef710574b19cfc6f475ecd"
+    },
+    {
+      "path": "raw/player_game_availability_sources/3ed4d8ecf348dd764522e2ef6f2b663647dc23cf2a3fc30acec346cae1f0dff5.structured.json",
+      "size_bytes": 1118,
+      "sha256": "3ed4d8ecf348dd764522e2ef6f2b663647dc23cf2a3fc30acec346cae1f0dff5"
+    },
+    {
+      "path": "raw/player_game_availability_sources/3eda9556c4e0eadbf51fcc0fbee3803c76b5c336e7c2db4f1901f3ad188b6364.structured.json",
+      "size_bytes": 1118,
+      "sha256": "3eda9556c4e0eadbf51fcc0fbee3803c76b5c336e7c2db4f1901f3ad188b6364"
+    },
+    {
+      "path": "raw/player_game_availability_sources/40ea690ea9a817ae3822cc0e33d2f6b230f937474256f4ecd4478f354b86cc00.json",
+      "size_bytes": 20283,
+      "sha256": "40ea690ea9a817ae3822cc0e33d2f6b230f937474256f4ecd4478f354b86cc00"
+    },
+    {
+      "path": "raw/player_game_availability_sources/4119463575ba873d2adb9d826bd28cc65c91b012fddf7e82f516e25ea77a159e.json",
+      "size_bytes": 19697,
+      "sha256": "4119463575ba873d2adb9d826bd28cc65c91b012fddf7e82f516e25ea77a159e"
+    },
+    {
+      "path": "raw/player_game_availability_sources/41902b8d52030f898573b2d81a91d9b4f4d60cdb99059702d17f4edbecc0753f.json",
+      "size_bytes": 18434,
+      "sha256": "41902b8d52030f898573b2d81a91d9b4f4d60cdb99059702d17f4edbecc0753f"
+    },
+    {
+      "path": "raw/player_game_availability_sources/41eb0a5908ac9b7298645996855f3df1f88e9cb640d62d415e7be4649178bad8.json",
+      "size_bytes": 21004,
+      "sha256": "41eb0a5908ac9b7298645996855f3df1f88e9cb640d62d415e7be4649178bad8"
+    },
+    {
+      "path": "raw/player_game_availability_sources/42f53a435b37093b20d3d6e6cdc24d52d11b1b80b724cf25ca379a8a8572aab0.json",
+      "size_bytes": 21026,
+      "sha256": "42f53a435b37093b20d3d6e6cdc24d52d11b1b80b724cf25ca379a8a8572aab0"
+    },
+    {
+      "path": "raw/player_game_availability_sources/431757be270ed86cd2909491f093b240383e3166129bc4a0c113cc07927368ee.structured.json",
+      "size_bytes": 1118,
+      "sha256": "431757be270ed86cd2909491f093b240383e3166129bc4a0c113cc07927368ee"
+    },
+    {
+      "path": "raw/player_game_availability_sources/4371ebc6a54a46c1cf7d604b5210085727daa4706daed78a067dc7c6cfba31f2.json",
+      "size_bytes": 18056,
+      "sha256": "4371ebc6a54a46c1cf7d604b5210085727daa4706daed78a067dc7c6cfba31f2"
+    },
+    {
+      "path": "raw/player_game_availability_sources/440ac9807ea38f6691e503255075e95319ed824b5cb08be01c973e2b45e2d4fb.structured.json",
+      "size_bytes": 1118,
+      "sha256": "440ac9807ea38f6691e503255075e95319ed824b5cb08be01c973e2b45e2d4fb"
+    },
+    {
+      "path": "raw/player_game_availability_sources/45d4c11aff76a92fddaea8eff5eb68bef1b580afeae5e9d9b45a52c8543f6e27.json",
+      "size_bytes": 19080,
+      "sha256": "45d4c11aff76a92fddaea8eff5eb68bef1b580afeae5e9d9b45a52c8543f6e27"
+    },
+    {
+      "path": "raw/player_game_availability_sources/476187c0e6f654c798ebfab313b301e79d376850a7a441a44506d94ee9d9465b.json",
+      "size_bytes": 19128,
+      "sha256": "476187c0e6f654c798ebfab313b301e79d376850a7a441a44506d94ee9d9465b"
+    },
+    {
+      "path": "raw/player_game_availability_sources/479def67c69f10aa52d96659561336b2cbef8dd4593ba9662ad6753e388f0054.structured.json",
+      "size_bytes": 1118,
+      "sha256": "479def67c69f10aa52d96659561336b2cbef8dd4593ba9662ad6753e388f0054"
+    },
+    {
+      "path": "raw/player_game_availability_sources/48f19974b5842bf9c45331fd08fe4080bee2c1743b6222a60eded567885e639d.json",
+      "size_bytes": 18977,
+      "sha256": "48f19974b5842bf9c45331fd08fe4080bee2c1743b6222a60eded567885e639d"
+    },
+    {
+      "path": "raw/player_game_availability_sources/4913de938f7b37cad14cc72d0738b7e1a02fa5a82b3908eb1b3fd64a24305c83.json",
+      "size_bytes": 19000,
+      "sha256": "4913de938f7b37cad14cc72d0738b7e1a02fa5a82b3908eb1b3fd64a24305c83"
+    },
+    {
+      "path": "raw/player_game_availability_sources/4927e554320b8a73cf81038ff17fc8dde7a07d9489b2c50e4dd3faad12b448de.json",
+      "size_bytes": 19079,
+      "sha256": "4927e554320b8a73cf81038ff17fc8dde7a07d9489b2c50e4dd3faad12b448de"
+    },
+    {
+      "path": "raw/player_game_availability_sources/49a9198024a66ed628ed70f5e06ece39f513adffe9e2f68600962110b09ee161.structured.json",
+      "size_bytes": 1118,
+      "sha256": "49a9198024a66ed628ed70f5e06ece39f513adffe9e2f68600962110b09ee161"
+    },
+    {
+      "path": "raw/player_game_availability_sources/4a563c8944dc5cdf7933c4e19bdb00916113779499800791c25c524cbfe70a4e.structured.json",
+      "size_bytes": 1118,
+      "sha256": "4a563c8944dc5cdf7933c4e19bdb00916113779499800791c25c524cbfe70a4e"
+    },
+    {
+      "path": "raw/player_game_availability_sources/4ad2603183a17d24bc8189831544962c03489d4779b8e5d8cc080548102ac513.structured.json",
+      "size_bytes": 1118,
+      "sha256": "4ad2603183a17d24bc8189831544962c03489d4779b8e5d8cc080548102ac513"
+    },
+    {
+      "path": "raw/player_game_availability_sources/4c1eaee819f691c76484d47370b6222d1f0fb481237341651b20be970978e8a2.json",
+      "size_bytes": 15938,
+      "sha256": "4c1eaee819f691c76484d47370b6222d1f0fb481237341651b20be970978e8a2"
+    },
+    {
+      "path": "raw/player_game_availability_sources/4e0a4925e96cb148bf48cf16cf8d5bb47cbe3f4b4605e6dfd94e82bfc1907742.json",
+      "size_bytes": 24166,
+      "sha256": "4e0a4925e96cb148bf48cf16cf8d5bb47cbe3f4b4605e6dfd94e82bfc1907742"
+    },
+    {
+      "path": "raw/player_game_availability_sources/4f0f89745c056d7c7948d1935409f630314a98335da77c41ca654935c0101abe.structured.json",
+      "size_bytes": 1118,
+      "sha256": "4f0f89745c056d7c7948d1935409f630314a98335da77c41ca654935c0101abe"
+    },
+    {
+      "path": "raw/player_game_availability_sources/4fa81e8d74863b2cdda23c9ff08489306b2d2d446b8854c153a2cef6e79d6e9a.json",
+      "size_bytes": 19675,
+      "sha256": "4fa81e8d74863b2cdda23c9ff08489306b2d2d446b8854c153a2cef6e79d6e9a"
+    },
+    {
+      "path": "raw/player_game_availability_sources/501a4c08c600f709641eda1866b9d894dd9c7d39917a2b649e6f9ed1583c04a8.json",
+      "size_bytes": 20350,
+      "sha256": "501a4c08c600f709641eda1866b9d894dd9c7d39917a2b649e6f9ed1583c04a8"
+    },
+    {
+      "path": "raw/player_game_availability_sources/50f68382594127f6a26be6d6625f7894023738fe0375e4f844151b41e4c8cf1d.json",
+      "size_bytes": 19732,
+      "sha256": "50f68382594127f6a26be6d6625f7894023738fe0375e4f844151b41e4c8cf1d"
+    },
+    {
+      "path": "raw/player_game_availability_sources/52bfd42f998512ca5178f66d7e5b051fe234ed6ba16d3c1103ea2e279e32f1ce.structured.json",
+      "size_bytes": 1118,
+      "sha256": "52bfd42f998512ca5178f66d7e5b051fe234ed6ba16d3c1103ea2e279e32f1ce"
+    },
+    {
+      "path": "raw/player_game_availability_sources/52f453fdc115214c080a07172a2a9a610fbb2105a885cf8f524d67080e3a4409.json",
+      "size_bytes": 17256,
+      "sha256": "52f453fdc115214c080a07172a2a9a610fbb2105a885cf8f524d67080e3a4409"
+    },
+    {
+      "path": "raw/player_game_availability_sources/5471794776cfd243eb63befe49ed41b3880c2ff5d63400699eafc2c3e9332e1d.json",
+      "size_bytes": 15607,
+      "sha256": "5471794776cfd243eb63befe49ed41b3880c2ff5d63400699eafc2c3e9332e1d"
+    },
+    {
+      "path": "raw/player_game_availability_sources/54ce09975860a723d44b03b241690def51889d01d1e1b5656ce5a0edebf80e78.json",
+      "size_bytes": 19030,
+      "sha256": "54ce09975860a723d44b03b241690def51889d01d1e1b5656ce5a0edebf80e78"
+    },
+    {
+      "path": "raw/player_game_availability_sources/55540ca9eafe35e53fa22820e45e2c5f3c0f0e009ea719d9a281c739c82bc119.pdf",
+      "size_bytes": 27011,
+      "sha256": "55540ca9eafe35e53fa22820e45e2c5f3c0f0e009ea719d9a281c739c82bc119"
+    },
+    {
+      "path": "raw/player_game_availability_sources/56f0cc0df190b3723d0231e4c08f161630ae0308faf4b82bbb6c88ca5be11786.json",
+      "size_bytes": 20651,
+      "sha256": "56f0cc0df190b3723d0231e4c08f161630ae0308faf4b82bbb6c88ca5be11786"
+    },
+    {
+      "path": "raw/player_game_availability_sources/5855d313bb3cda22cad68529b7faf04e26c4369ec91663bfc009d100ade6b131.structured.json",
+      "size_bytes": 1118,
+      "sha256": "5855d313bb3cda22cad68529b7faf04e26c4369ec91663bfc009d100ade6b131"
+    },
+    {
+      "path": "raw/player_game_availability_sources/5890f7373610c9e2fbf9b7359719942a2af3222aacc6f89145ced906c6db81ae.json",
+      "size_bytes": 17694,
+      "sha256": "5890f7373610c9e2fbf9b7359719942a2af3222aacc6f89145ced906c6db81ae"
+    },
+    {
+      "path": "raw/player_game_availability_sources/5b63c0a3bf3439a03b0c54b77eede7552138ed8b63ce4bf14bd04227bffd7888.json",
+      "size_bytes": 19130,
+      "sha256": "5b63c0a3bf3439a03b0c54b77eede7552138ed8b63ce4bf14bd04227bffd7888"
+    },
+    {
+      "path": "raw/player_game_availability_sources/5b7d717865a06ece65619663ff69225a203757e6656897b9083faf5463930edf.json",
+      "size_bytes": 16241,
+      "sha256": "5b7d717865a06ece65619663ff69225a203757e6656897b9083faf5463930edf"
+    },
+    {
+      "path": "raw/player_game_availability_sources/5bd7809070a577ec101b3252aa34eb5cb15d6c0cd71e8008c39e726d20d64b0b.structured.json",
+      "size_bytes": 1117,
+      "sha256": "5bd7809070a577ec101b3252aa34eb5cb15d6c0cd71e8008c39e726d20d64b0b"
+    },
+    {
+      "path": "raw/player_game_availability_sources/5c0c7452a631384316aca58ec2bed17fe2ddf00fece90bc98b9ea8b4d350c3ef.json",
+      "size_bytes": 21729,
+      "sha256": "5c0c7452a631384316aca58ec2bed17fe2ddf00fece90bc98b9ea8b4d350c3ef"
+    },
+    {
+      "path": "raw/player_game_availability_sources/5c8f956e9e74a18d811ac0bc189d2cee72b1c754edc34921a85961bf02cad356.structured.json",
+      "size_bytes": 1118,
+      "sha256": "5c8f956e9e74a18d811ac0bc189d2cee72b1c754edc34921a85961bf02cad356"
+    },
+    {
+      "path": "raw/player_game_availability_sources/5e2b0cfd3b6d09073b0f5b70ccffd66ba5d41ebd2a43099dc414ba91e42289be.structured.json",
+      "size_bytes": 1118,
+      "sha256": "5e2b0cfd3b6d09073b0f5b70ccffd66ba5d41ebd2a43099dc414ba91e42289be"
+    },
+    {
+      "path": "raw/player_game_availability_sources/5ee29434ccfd0d63e8d286308688f865e4a85b2511dbf732cb38c540ab5ce688.json",
+      "size_bytes": 22907,
+      "sha256": "5ee29434ccfd0d63e8d286308688f865e4a85b2511dbf732cb38c540ab5ce688"
+    },
+    {
+      "path": "raw/player_game_availability_sources/5f089a7fbc3d6ef13f4ea53b8bc4e83ba90fe6c9562b4422b2f2c8722c6470d3.json",
+      "size_bytes": 19666,
+      "sha256": "5f089a7fbc3d6ef13f4ea53b8bc4e83ba90fe6c9562b4422b2f2c8722c6470d3"
+    },
+    {
+      "path": "raw/player_game_availability_sources/61ac8ecaae09f15e1e11123bd9ec09711dfdb92a462d9ba61935d27432446563.json",
+      "size_bytes": 16300,
+      "sha256": "61ac8ecaae09f15e1e11123bd9ec09711dfdb92a462d9ba61935d27432446563"
+    },
+    {
+      "path": "raw/player_game_availability_sources/633180255d34c5a4096a35e1df3854980c654b7962f47bac34225ae999455b96.structured.json",
+      "size_bytes": 1118,
+      "sha256": "633180255d34c5a4096a35e1df3854980c654b7962f47bac34225ae999455b96"
+    },
+    {
+      "path": "raw/player_game_availability_sources/648878eb95b0c5cd91a3943c04a6f87fc224754444eada180e863a673b1f1488.json",
+      "size_bytes": 20311,
+      "sha256": "648878eb95b0c5cd91a3943c04a6f87fc224754444eada180e863a673b1f1488"
+    },
+    {
+      "path": "raw/player_game_availability_sources/65753dac15a52416e139afc353272ac61b3bea1e606c8de68cfef89d8f89a16d.json",
+      "size_bytes": 19671,
+      "sha256": "65753dac15a52416e139afc353272ac61b3bea1e606c8de68cfef89d8f89a16d"
+    },
+    {
+      "path": "raw/player_game_availability_sources/65fe372c2f12ea537106c535042345b855d4e13b90bb4b77c9eede70aac03ccf.json",
+      "size_bytes": 19912,
+      "sha256": "65fe372c2f12ea537106c535042345b855d4e13b90bb4b77c9eede70aac03ccf"
+    },
+    {
+      "path": "raw/player_game_availability_sources/6666a5f549ef6cbf9b606f8378f2e99306d1771845893906a21d3ac2db1e381d.json",
+      "size_bytes": 18595,
+      "sha256": "6666a5f549ef6cbf9b606f8378f2e99306d1771845893906a21d3ac2db1e381d"
+    },
+    {
+      "path": "raw/player_game_availability_sources/69ec417999a89f7f6101a60bc270f75ef6593ad9eba34dac2dc4c059d5b9a3c2.structured.json",
+      "size_bytes": 1118,
+      "sha256": "69ec417999a89f7f6101a60bc270f75ef6593ad9eba34dac2dc4c059d5b9a3c2"
+    },
+    {
+      "path": "raw/player_game_availability_sources/6a5e1d306d5a92923327e9cb06c8d2da726198ba9a12aa03a1eca236ab5706b8.json",
+      "size_bytes": 18417,
+      "sha256": "6a5e1d306d5a92923327e9cb06c8d2da726198ba9a12aa03a1eca236ab5706b8"
+    },
+    {
+      "path": "raw/player_game_availability_sources/6e0d532ac662ce710a7bdfcf69057773355c7bb01313dfc9d28a642a59a0e7dc.json",
+      "size_bytes": 19058,
+      "sha256": "6e0d532ac662ce710a7bdfcf69057773355c7bb01313dfc9d28a642a59a0e7dc"
+    },
+    {
+      "path": "raw/player_game_availability_sources/6f34f8a0beecd0b801a656a036fbb4a2c0bca8f99f888ef691162766c2234eaf.json",
+      "size_bytes": 20298,
+      "sha256": "6f34f8a0beecd0b801a656a036fbb4a2c0bca8f99f888ef691162766c2234eaf"
+    },
+    {
+      "path": "raw/player_game_availability_sources/6f6e87a547c6cfe83fa4f535be70d75ad30ef1078e820b6c05ffa0b8402289b3.structured.json",
+      "size_bytes": 1118,
+      "sha256": "6f6e87a547c6cfe83fa4f535be70d75ad30ef1078e820b6c05ffa0b8402289b3"
+    },
+    {
+      "path": "raw/player_game_availability_sources/6fd1d076c8abcd50caf0c0d6a18d3b21925fd16ae5f9b3f5e91d44ea0a016646.structured.json",
+      "size_bytes": 1118,
+      "sha256": "6fd1d076c8abcd50caf0c0d6a18d3b21925fd16ae5f9b3f5e91d44ea0a016646"
+    },
+    {
+      "path": "raw/player_game_availability_sources/710913db9904fb4e615153b9397ab5c563295ca20182ab1ada77981fa6becf26.json",
+      "size_bytes": 20906,
+      "sha256": "710913db9904fb4e615153b9397ab5c563295ca20182ab1ada77981fa6becf26"
+    },
+    {
+      "path": "raw/player_game_availability_sources/71417401d927b55eef5314d4dd22f0bcc2d9b85f5eb972edc91fa4b2b0052f75.json",
+      "size_bytes": 19022,
+      "sha256": "71417401d927b55eef5314d4dd22f0bcc2d9b85f5eb972edc91fa4b2b0052f75"
+    },
+    {
+      "path": "raw/player_game_availability_sources/7236e98329156a06d7a0555c2b3c26bf1ea1579183216d157d89f2d09c794b09.structured.json",
+      "size_bytes": 1118,
+      "sha256": "7236e98329156a06d7a0555c2b3c26bf1ea1579183216d157d89f2d09c794b09"
+    },
+    {
+      "path": "raw/player_game_availability_sources/73029166911f5aa428170abef3e20d562e6381118a58f619ded17c0aebcbf472.json",
+      "size_bytes": 19716,
+      "sha256": "73029166911f5aa428170abef3e20d562e6381118a58f619ded17c0aebcbf472"
+    },
+    {
+      "path": "raw/player_game_availability_sources/7493a95a531fba53dbe05190ccb2ff577b8b39069f468e8500a99d8bf4ab4871.json",
+      "size_bytes": 18389,
+      "sha256": "7493a95a531fba53dbe05190ccb2ff577b8b39069f468e8500a99d8bf4ab4871"
+    },
+    {
+      "path": "raw/player_game_availability_sources/75903d00a7a1ca41cebeebc7c2853a235709bc18388b9ba3a17d5da131fddfd3.structured.json",
+      "size_bytes": 1118,
+      "sha256": "75903d00a7a1ca41cebeebc7c2853a235709bc18388b9ba3a17d5da131fddfd3"
+    },
+    {
+      "path": "raw/player_game_availability_sources/76d07afbe8ab48e8a62121db829d62c87089bff44fc1fa3d3e9caf009a70ceb3.json",
+      "size_bytes": 19716,
+      "sha256": "76d07afbe8ab48e8a62121db829d62c87089bff44fc1fa3d3e9caf009a70ceb3"
+    },
+    {
+      "path": "raw/player_game_availability_sources/7bdf3c3b39acfde5eafc7ed51d666ba297e600306e65e4ecb5ff6da37d9ea26e.json",
+      "size_bytes": 20311,
+      "sha256": "7bdf3c3b39acfde5eafc7ed51d666ba297e600306e65e4ecb5ff6da37d9ea26e"
+    },
+    {
+      "path": "raw/player_game_availability_sources/7cbe5f5f40816020358a635de1826808a1bfbc23c819b17ffe27466ba2f2b7a0.json",
+      "size_bytes": 19731,
+      "sha256": "7cbe5f5f40816020358a635de1826808a1bfbc23c819b17ffe27466ba2f2b7a0"
+    },
+    {
+      "path": "raw/player_game_availability_sources/7e5f6f8853bd346d2c149bb11f7c33b46cabc1c28ea3baaf6715cc5df801fab7.structured.json",
+      "size_bytes": 1118,
+      "sha256": "7e5f6f8853bd346d2c149bb11f7c33b46cabc1c28ea3baaf6715cc5df801fab7"
+    },
+    {
+      "path": "raw/player_game_availability_sources/7f0c88930c3504d5fbbe2c1df3201b74ef39aca1ef8ac4c13436a9861e97e2c0.json",
+      "size_bytes": 21572,
+      "sha256": "7f0c88930c3504d5fbbe2c1df3201b74ef39aca1ef8ac4c13436a9861e97e2c0"
+    },
+    {
+      "path": "raw/player_game_availability_sources/7fcd838d20319d10dd94f634111f21515a11d34324cebfc49b2e9d3df282322f.structured.json",
+      "size_bytes": 1118,
+      "sha256": "7fcd838d20319d10dd94f634111f21515a11d34324cebfc49b2e9d3df282322f"
+    },
+    {
+      "path": "raw/player_game_availability_sources/7fe8a6d5c18102f62ab5c47502c574d11bbcfa6446163e8058458109aa22618a.json",
+      "size_bytes": 21989,
+      "sha256": "7fe8a6d5c18102f62ab5c47502c574d11bbcfa6446163e8058458109aa22618a"
+    },
+    {
+      "path": "raw/player_game_availability_sources/816ec6a0f3ee95e3fa1b74e7b613c2714cfcd0dcb9e590728ead8cc85e829ba0.json",
+      "size_bytes": 16184,
+      "sha256": "816ec6a0f3ee95e3fa1b74e7b613c2714cfcd0dcb9e590728ead8cc85e829ba0"
+    },
+    {
+      "path": "raw/player_game_availability_sources/820a6763aba496acc979b7daef22d0f8601d1343cc865e49e8dbc974634a1196.json",
+      "size_bytes": 17947,
+      "sha256": "820a6763aba496acc979b7daef22d0f8601d1343cc865e49e8dbc974634a1196"
+    },
+    {
+      "path": "raw/player_game_availability_sources/82c15297d97feea05ae4651e3ecac32e1d30fffcdbf8ae815138483407fbba4e.structured.json",
+      "size_bytes": 1118,
+      "sha256": "82c15297d97feea05ae4651e3ecac32e1d30fffcdbf8ae815138483407fbba4e"
+    },
+    {
+      "path": "raw/player_game_availability_sources/83b1aec4c8044fc421e2059c91c35d3b3f1493209b2f82552efd0ff660ebf7e8.json",
+      "size_bytes": 21021,
+      "sha256": "83b1aec4c8044fc421e2059c91c35d3b3f1493209b2f82552efd0ff660ebf7e8"
+    },
+    {
+      "path": "raw/player_game_availability_sources/84152b9d37863bbc9fde67badaa954589d4d5ef89ef7434b550f8ca148c8b7d4.json",
+      "size_bytes": 20350,
+      "sha256": "84152b9d37863bbc9fde67badaa954589d4d5ef89ef7434b550f8ca148c8b7d4"
+    },
+    {
+      "path": "raw/player_game_availability_sources/8603b086c95020cda06e1e85eb095bf9a8204847f78cb072808759249d070bf3.json",
+      "size_bytes": 16574,
+      "sha256": "8603b086c95020cda06e1e85eb095bf9a8204847f78cb072808759249d070bf3"
+    },
+    {
+      "path": "raw/player_game_availability_sources/864f23d77045e3ec12c5ce8bc441776f958ed448f77abdc465cc7532f1523630.json",
+      "size_bytes": 20393,
+      "sha256": "864f23d77045e3ec12c5ce8bc441776f958ed448f77abdc465cc7532f1523630"
+    },
+    {
+      "path": "raw/player_game_availability_sources/87e10d6b81120d43c35339ba20933d5f954baaabb4f6d69af56b913367c87a03.json",
+      "size_bytes": 20325,
+      "sha256": "87e10d6b81120d43c35339ba20933d5f954baaabb4f6d69af56b913367c87a03"
+    },
+    {
+      "path": "raw/player_game_availability_sources/885c8a5c2fef6c585598dd162fa634a10173abe5f24fe8b24a8aff9fa8d89a75.json",
+      "size_bytes": 19665,
+      "sha256": "885c8a5c2fef6c585598dd162fa634a10173abe5f24fe8b24a8aff9fa8d89a75"
+    },
+    {
+      "path": "raw/player_game_availability_sources/88889053f3a0336cf622e5becba33675d651173887da22b88bd8bf4df48c18b9.json",
+      "size_bytes": 16214,
+      "sha256": "88889053f3a0336cf622e5becba33675d651173887da22b88bd8bf4df48c18b9"
+    },
+    {
+      "path": "raw/player_game_availability_sources/89a57e6bf5ea74a4c2be1e3320f08d2a05cac53aa4bb8f58d8796bbacfe87916.structured.json",
+      "size_bytes": 1118,
+      "sha256": "89a57e6bf5ea74a4c2be1e3320f08d2a05cac53aa4bb8f58d8796bbacfe87916"
+    },
+    {
+      "path": "raw/player_game_availability_sources/89afae4fd9400dd59b1d1bd5ed444b91d6e2603712975e52fd099c96eef05741.structured.json",
+      "size_bytes": 1118,
+      "sha256": "89afae4fd9400dd59b1d1bd5ed444b91d6e2603712975e52fd099c96eef05741"
+    },
+    {
+      "path": "raw/player_game_availability_sources/8a209d18c4e88ef0b1128dce36329880ae1e71b93202af6d784c6f2af5f18bef.json",
+      "size_bytes": 18334,
+      "sha256": "8a209d18c4e88ef0b1128dce36329880ae1e71b93202af6d784c6f2af5f18bef"
+    },
+    {
+      "path": "raw/player_game_availability_sources/8b6e9cb14213ecb46aef70cf82ea645e377dfaa90d4d9c2d05eb548046c9918f.json",
+      "size_bytes": 17505,
+      "sha256": "8b6e9cb14213ecb46aef70cf82ea645e377dfaa90d4d9c2d05eb548046c9918f"
+    },
+    {
+      "path": "raw/player_game_availability_sources/8d8ef6235c34598cf7c7ae3de04504af05d586d498ca36061bc75231fe1d125d.json",
+      "size_bytes": 22571,
+      "sha256": "8d8ef6235c34598cf7c7ae3de04504af05d586d498ca36061bc75231fe1d125d"
+    },
+    {
+      "path": "raw/player_game_availability_sources/8ddd4f23fade4eb2502e57beb196ade008ee325ce0e91ae34b080ed18ecb5a3b.json",
+      "size_bytes": 15662,
+      "sha256": "8ddd4f23fade4eb2502e57beb196ade008ee325ce0e91ae34b080ed18ecb5a3b"
+    },
+    {
+      "path": "raw/player_game_availability_sources/8dfedc4cdbe1fb941f9b7038aef687beced504c5d8f566cf5c75be73054fdfb0.json",
+      "size_bytes": 19069,
+      "sha256": "8dfedc4cdbe1fb941f9b7038aef687beced504c5d8f566cf5c75be73054fdfb0"
+    },
+    {
+      "path": "raw/player_game_availability_sources/8e5ec5fa94b04c75ee46685126e64fca9adb6db39f22d1f80ee34fcb2a8d5ff5.structured.json",
+      "size_bytes": 1118,
+      "sha256": "8e5ec5fa94b04c75ee46685126e64fca9adb6db39f22d1f80ee34fcb2a8d5ff5"
+    },
+    {
+      "path": "raw/player_game_availability_sources/8ef34b2f50aa26b7f76686fee4c7782a69860da626939174e9fd1bca98d870f5.json",
+      "size_bytes": 19616,
+      "sha256": "8ef34b2f50aa26b7f76686fee4c7782a69860da626939174e9fd1bca98d870f5"
+    },
+    {
+      "path": "raw/player_game_availability_sources/8f378fed59268a66a6542cb90433734b3aa5af56e2554f458e7dbf0a7614083b.json",
+      "size_bytes": 18977,
+      "sha256": "8f378fed59268a66a6542cb90433734b3aa5af56e2554f458e7dbf0a7614083b"
+    },
+    {
+      "path": "raw/player_game_availability_sources/900f54a7d6dc80193f21d089a231ea743b2dc4408e7e3da617db3b010dc1052d.json",
+      "size_bytes": 16078,
+      "sha256": "900f54a7d6dc80193f21d089a231ea743b2dc4408e7e3da617db3b010dc1052d"
+    },
+    {
+      "path": "raw/player_game_availability_sources/9021dcf015bad4d75132988ea995fa5d2f389932b11b20b9bb26069f25fb3889.json",
+      "size_bytes": 20983,
+      "sha256": "9021dcf015bad4d75132988ea995fa5d2f389932b11b20b9bb26069f25fb3889"
+    },
+    {
+      "path": "raw/player_game_availability_sources/90fa491abe372ed6d72bacfe6f3264e9a3fed7963cd7462774fd27d58bd1f5dd.json",
+      "size_bytes": 20982,
+      "sha256": "90fa491abe372ed6d72bacfe6f3264e9a3fed7963cd7462774fd27d58bd1f5dd"
+    },
+    {
+      "path": "raw/player_game_availability_sources/91d9c60e425051871c562f4d1a0488f7a645c83c4df0f389e01b1dc84e4f554d.structured.json",
+      "size_bytes": 1118,
+      "sha256": "91d9c60e425051871c562f4d1a0488f7a645c83c4df0f389e01b1dc84e4f554d"
+    },
+    {
+      "path": "raw/player_game_availability_sources/94561f11dd0185ea171888f4d7f480067464d9cb76f8b5eb488bb39889cfb938.structured.json",
+      "size_bytes": 1118,
+      "sha256": "94561f11dd0185ea171888f4d7f480067464d9cb76f8b5eb488bb39889cfb938"
+    },
+    {
+      "path": "raw/player_game_availability_sources/951fe8f8012c70297b8c05441ecf39cb8803fa67efce11dc3371bee613f4c215.json",
+      "size_bytes": 23760,
+      "sha256": "951fe8f8012c70297b8c05441ecf39cb8803fa67efce11dc3371bee613f4c215"
+    },
+    {
+      "path": "raw/player_game_availability_sources/957ff789a33498e54d908a738c07d21f9da7417430033abfc53b0f980130fa8d.json",
+      "size_bytes": 25083,
+      "sha256": "957ff789a33498e54d908a738c07d21f9da7417430033abfc53b0f980130fa8d"
+    },
+    {
+      "path": "raw/player_game_availability_sources/98c53a8005899b601790c8c8862307cb4b4b9f2db69ff91352d3acaee84a2722.json",
+      "size_bytes": 24681,
+      "sha256": "98c53a8005899b601790c8c8862307cb4b4b9f2db69ff91352d3acaee84a2722"
+    },
+    {
+      "path": "raw/player_game_availability_sources/994d2850724e86f1e6db09591ca8fc323817ccad7ac39baae3408fbebfa3b137.json",
+      "size_bytes": 16290,
+      "sha256": "994d2850724e86f1e6db09591ca8fc323817ccad7ac39baae3408fbebfa3b137"
+    },
+    {
+      "path": "raw/player_game_availability_sources/9a9395dfa72307b2e0333805893cb9207d501c5cf8fc0d1f4461deb4a1165b40.json",
+      "size_bytes": 19678,
+      "sha256": "9a9395dfa72307b2e0333805893cb9207d501c5cf8fc0d1f4461deb4a1165b40"
+    },
+    {
+      "path": "raw/player_game_availability_sources/9b43594c10735f2a7d1b00a279d834812e6ac530dedaedaf6aac484cb7059316.json",
+      "size_bytes": 16860,
+      "sha256": "9b43594c10735f2a7d1b00a279d834812e6ac530dedaedaf6aac484cb7059316"
+    },
+    {
+      "path": "raw/player_game_availability_sources/9c81d8a02d9869351c568f24a5ef20f000d62b676ebbc88622a445a5376b161b.structured.json",
+      "size_bytes": 1118,
+      "sha256": "9c81d8a02d9869351c568f24a5ef20f000d62b676ebbc88622a445a5376b161b"
+    },
+    {
+      "path": "raw/player_game_availability_sources/9df6c88a8facd3bb0e237f1e1eebe5191f51aafe73e5c8bbfc47e19a2941be3b.structured.json",
+      "size_bytes": 1118,
+      "sha256": "9df6c88a8facd3bb0e237f1e1eebe5191f51aafe73e5c8bbfc47e19a2941be3b"
+    },
+    {
+      "path": "raw/player_game_availability_sources/9e2d5fbc0cba3a452c98e0d3f19aa220f8fe46d13bb778e45769ccb6a0815f86.structured.json",
+      "size_bytes": 1118,
+      "sha256": "9e2d5fbc0cba3a452c98e0d3f19aa220f8fe46d13bb778e45769ccb6a0815f86"
+    },
+    {
+      "path": "raw/player_game_availability_sources/9ee8e330eed9af3aaeb0bc31b831b5d8201bad08377e77135e1643b1ebc03674.structured.json",
+      "size_bytes": 1118,
+      "sha256": "9ee8e330eed9af3aaeb0bc31b831b5d8201bad08377e77135e1643b1ebc03674"
+    },
+    {
+      "path": "raw/player_game_availability_sources/9fd87ac5d5a22cf26a0c0bf53e6decfa75871ba1c132b876be682ffb2030f789.json",
+      "size_bytes": 19061,
+      "sha256": "9fd87ac5d5a22cf26a0c0bf53e6decfa75871ba1c132b876be682ffb2030f789"
+    },
+    {
+      "path": "raw/player_game_availability_sources/a0758e59021a52492f5f04eebcc3c50659b8a17d8317eddae600ff99f33bca28.json",
+      "size_bytes": 18336,
+      "sha256": "a0758e59021a52492f5f04eebcc3c50659b8a17d8317eddae600ff99f33bca28"
+    },
+    {
+      "path": "raw/player_game_availability_sources/a08975b789cea720a5be161b321b8df13a914cb47746ae96fdc3024f39bc377f.json",
+      "size_bytes": 19707,
+      "sha256": "a08975b789cea720a5be161b321b8df13a914cb47746ae96fdc3024f39bc377f"
+    },
+    {
+      "path": "raw/player_game_availability_sources/a1064d801ced6959f2943b5ec1f18fb023851ad4b3dadd836e13759366f9d12b.json",
+      "size_bytes": 3529,
+      "sha256": "a1064d801ced6959f2943b5ec1f18fb023851ad4b3dadd836e13759366f9d12b"
+    },
+    {
+      "path": "raw/player_game_availability_sources/a19505f8ab6063ecac5b78cfa1378eb92f91fa8b41bf76c288239fa9cf7b9e36.json",
+      "size_bytes": 16090,
+      "sha256": "a19505f8ab6063ecac5b78cfa1378eb92f91fa8b41bf76c288239fa9cf7b9e36"
+    },
+    {
+      "path": "raw/player_game_availability_sources/a248693ee57702ed9702706ccdaa68f56e04816d2508f85061be7b65733c6450.json",
+      "size_bytes": 21354,
+      "sha256": "a248693ee57702ed9702706ccdaa68f56e04816d2508f85061be7b65733c6450"
+    },
+    {
+      "path": "raw/player_game_availability_sources/a2fc3518d84ec478fed5d2c5b46e237b90abae259ba816236d2566abca54d70a.json",
+      "size_bytes": 19739,
+      "sha256": "a2fc3518d84ec478fed5d2c5b46e237b90abae259ba816236d2566abca54d70a"
+    },
+    {
+      "path": "raw/player_game_availability_sources/a3b595dc6302dd4413a048aba1777aa78b837badb37d9dcf8f592e2d101acf2a.json",
+      "size_bytes": 16296,
+      "sha256": "a3b595dc6302dd4413a048aba1777aa78b837badb37d9dcf8f592e2d101acf2a"
+    },
+    {
+      "path": "raw/player_game_availability_sources/a420877ed77e9e5511772141f9a399b171369efbffee0d1d2772e08c6cfc6d8f.structured.json",
+      "size_bytes": 1118,
+      "sha256": "a420877ed77e9e5511772141f9a399b171369efbffee0d1d2772e08c6cfc6d8f"
+    },
+    {
+      "path": "raw/player_game_availability_sources/a45328c1b8f3574e4656a642a1c6586085aafb32a36ad34eb202ae34fd41e9fd.json",
+      "size_bytes": 23385,
+      "sha256": "a45328c1b8f3574e4656a642a1c6586085aafb32a36ad34eb202ae34fd41e9fd"
+    },
+    {
+      "path": "raw/player_game_availability_sources/a45a1db28e7fba1c7484d2b7e21ba83dd154cb659235f1b76dc491f65f9a9ad5.json",
+      "size_bytes": 20257,
+      "sha256": "a45a1db28e7fba1c7484d2b7e21ba83dd154cb659235f1b76dc491f65f9a9ad5"
+    },
+    {
+      "path": "raw/player_game_availability_sources/a622529782789099bae26e77103c8a15674b208b803c5c9df632f0b75ba16130.json",
+      "size_bytes": 16323,
+      "sha256": "a622529782789099bae26e77103c8a15674b208b803c5c9df632f0b75ba16130"
+    },
+    {
+      "path": "raw/player_game_availability_sources/a6d25d2e65f24fa26b529e2ee3831be38fdd6a22df2c068e07341bba85d313ee.json",
+      "size_bytes": 19056,
+      "sha256": "a6d25d2e65f24fa26b529e2ee3831be38fdd6a22df2c068e07341bba85d313ee"
+    },
+    {
+      "path": "raw/player_game_availability_sources/a731327674bd9b9d56e40c97f19dce8a25f0390c05c6a232d58a4a7eee2329b7.json",
+      "size_bytes": 19687,
+      "sha256": "a731327674bd9b9d56e40c97f19dce8a25f0390c05c6a232d58a4a7eee2329b7"
+    },
+    {
+      "path": "raw/player_game_availability_sources/a86920d78b1cc060ef7b9206a13e4bd6f22c310707d662035097a9ff8776d909.json",
+      "size_bytes": 20960,
+      "sha256": "a86920d78b1cc060ef7b9206a13e4bd6f22c310707d662035097a9ff8776d909"
+    },
+    {
+      "path": "raw/player_game_availability_sources/a9074ede36f2b4f8f6eef4078891831b4dbb8ca5357f26a28e03a8d94fc90706.pdf",
+      "size_bytes": 27385,
+      "sha256": "a9074ede36f2b4f8f6eef4078891831b4dbb8ca5357f26a28e03a8d94fc90706"
+    },
+    {
+      "path": "raw/player_game_availability_sources/a922b09a637d637b2c2ebbb2a831673076c8e7b508c4117a33ab51696cdd4a13.structured.json",
+      "size_bytes": 1118,
+      "sha256": "a922b09a637d637b2c2ebbb2a831673076c8e7b508c4117a33ab51696cdd4a13"
+    },
+    {
+      "path": "raw/player_game_availability_sources/aa1aebba470fcec9c4a94f8bb57d2275273e8d223bef2ca61298e0b853e60e5e.structured.json",
+      "size_bytes": 1118,
+      "sha256": "aa1aebba470fcec9c4a94f8bb57d2275273e8d223bef2ca61298e0b853e60e5e"
+    },
+    {
+      "path": "raw/player_game_availability_sources/aa91350ca683cbf4f0d5a33842073e2a7a30c63fe3dff42ee076d8b2e3c3a6f8.json",
+      "size_bytes": 19592,
+      "sha256": "aa91350ca683cbf4f0d5a33842073e2a7a30c63fe3dff42ee076d8b2e3c3a6f8"
+    },
+    {
+      "path": "raw/player_game_availability_sources/ab4478394aa3999953de0d0a1c3549c074a7f5b0e3729d8d4fcc35bbe0ca550b.structured.json",
+      "size_bytes": 1118,
+      "sha256": "ab4478394aa3999953de0d0a1c3549c074a7f5b0e3729d8d4fcc35bbe0ca550b"
+    },
+    {
+      "path": "raw/player_game_availability_sources/ad21849fe6281444e1a814289fcb255df950cf2ee174b3f803211a1ce76fc500.json",
+      "size_bytes": 18457,
+      "sha256": "ad21849fe6281444e1a814289fcb255df950cf2ee174b3f803211a1ce76fc500"
+    },
+    {
+      "path": "raw/player_game_availability_sources/ad3b8107b01b91b32d94fa7adb7c3323e8ce79702c3b46514eae3541e6eb0df4.json",
+      "size_bytes": 17992,
+      "sha256": "ad3b8107b01b91b32d94fa7adb7c3323e8ce79702c3b46514eae3541e6eb0df4"
+    },
+    {
+      "path": "raw/player_game_availability_sources/adeafd3a395d5ec706dcdb655622c331b3c54abc00c7e7bbd1b847ccf90b048e.structured.json",
+      "size_bytes": 1118,
+      "sha256": "adeafd3a395d5ec706dcdb655622c331b3c54abc00c7e7bbd1b847ccf90b048e"
+    },
+    {
+      "path": "raw/player_game_availability_sources/ae052b70bc5a92ee875998b156af6147f2e38eeedb5a1349dc3d5fd4b9574271.structured.json",
+      "size_bytes": 1118,
+      "sha256": "ae052b70bc5a92ee875998b156af6147f2e38eeedb5a1349dc3d5fd4b9574271"
+    },
+    {
+      "path": "raw/player_game_availability_sources/aef02e6defd499431634a83197777577574ab1b507a1961fae74fb343f2ab85c.structured.json",
+      "size_bytes": 1118,
+      "sha256": "aef02e6defd499431634a83197777577574ab1b507a1961fae74fb343f2ab85c"
+    },
+    {
+      "path": "raw/player_game_availability_sources/aef2cad903063007af505820d6b2ff10e60c7f911cd7e535bb8a679083fa8c8d.json",
+      "size_bytes": 19079,
+      "sha256": "aef2cad903063007af505820d6b2ff10e60c7f911cd7e535bb8a679083fa8c8d"
+    },
+    {
+      "path": "raw/player_game_availability_sources/af9f22faf381a0d604dcb7039b268e946ab2af307060ca70ae813ef70f6ea8fe.json",
+      "size_bytes": 16175,
+      "sha256": "af9f22faf381a0d604dcb7039b268e946ab2af307060ca70ae813ef70f6ea8fe"
+    },
+    {
+      "path": "raw/player_game_availability_sources/b17f28b7d7216cf023ed67c583b5d6483ec9c0819c7bcd16b2a9d4a4f7843dab.structured.json",
+      "size_bytes": 1118,
+      "sha256": "b17f28b7d7216cf023ed67c583b5d6483ec9c0819c7bcd16b2a9d4a4f7843dab"
+    },
+    {
+      "path": "raw/player_game_availability_sources/b1edf1f7ac5384d45865686c158acd2a4ddd6521b4f025b689577c6967b0b708.json",
+      "size_bytes": 19651,
+      "sha256": "b1edf1f7ac5384d45865686c158acd2a4ddd6521b4f025b689577c6967b0b708"
+    },
+    {
+      "path": "raw/player_game_availability_sources/b2424f63269300f6865eb79ca85c3755c4ba3dd54059088449b4cf2adc4997ed.json",
+      "size_bytes": 21487,
+      "sha256": "b2424f63269300f6865eb79ca85c3755c4ba3dd54059088449b4cf2adc4997ed"
+    },
+    {
+      "path": "raw/player_game_availability_sources/b49b0aea27e7e585a1528ab068a49505e28874d62ad976392e8cfe7207dc0337.json",
+      "size_bytes": 19639,
+      "sha256": "b49b0aea27e7e585a1528ab068a49505e28874d62ad976392e8cfe7207dc0337"
+    },
+    {
+      "path": "raw/player_game_availability_sources/b4e98fc872f6fe52809a8e9d90b846bc4df1a53b075e6abeb32001fee78e2149.structured.json",
+      "size_bytes": 1118,
+      "sha256": "b4e98fc872f6fe52809a8e9d90b846bc4df1a53b075e6abeb32001fee78e2149"
+    },
+    {
+      "path": "raw/player_game_availability_sources/b50a2ef2ee9896994e62737c499a9ea64298bbe7c6a068aae75d66b44a34a402.json",
+      "size_bytes": 17064,
+      "sha256": "b50a2ef2ee9896994e62737c499a9ea64298bbe7c6a068aae75d66b44a34a402"
+    },
+    {
+      "path": "raw/player_game_availability_sources/b531749bd647f1071c09b7ca8ad30b8f4f94dd29f4129fc6e725cde86a55c792.json",
+      "size_bytes": 16154,
+      "sha256": "b531749bd647f1071c09b7ca8ad30b8f4f94dd29f4129fc6e725cde86a55c792"
+    },
+    {
+      "path": "raw/player_game_availability_sources/b547af0f7415901a8c15d1d92a377936c6e3a569f13aae7ba18a664063941a4c.json",
+      "size_bytes": 16142,
+      "sha256": "b547af0f7415901a8c15d1d92a377936c6e3a569f13aae7ba18a664063941a4c"
+    },
+    {
+      "path": "raw/player_game_availability_sources/b6265e72d7da208e5bf2ee680c80aa103471430090239cf3fa124e8a907a2d26.json",
+      "size_bytes": 20954,
+      "sha256": "b6265e72d7da208e5bf2ee680c80aa103471430090239cf3fa124e8a907a2d26"
+    },
+    {
+      "path": "raw/player_game_availability_sources/b957c872509a694afe9e64179c2a180f63dd00a1b1490b02090b0d7b263df145.structured.json",
+      "size_bytes": 1118,
+      "sha256": "b957c872509a694afe9e64179c2a180f63dd00a1b1490b02090b0d7b263df145"
+    },
+    {
+      "path": "raw/player_game_availability_sources/b9de6a1535c776be7768e10b65dcb8288d010ffc883f5363a478184c3db25038.structured.json",
+      "size_bytes": 1118,
+      "sha256": "b9de6a1535c776be7768e10b65dcb8288d010ffc883f5363a478184c3db25038"
+    },
+    {
+      "path": "raw/player_game_availability_sources/bae1f09de922e3177942dd868f8d315a3f08882bc13c05f1d8f670b53b2c7f06.json",
+      "size_bytes": 20886,
+      "sha256": "bae1f09de922e3177942dd868f8d315a3f08882bc13c05f1d8f670b53b2c7f06"
+    },
+    {
+      "path": "raw/player_game_availability_sources/bb017939d977c0f49038a5ee46e7d8b7a79f856e60e8cdcce99e0bb75b3130d6.json",
+      "size_bytes": 15849,
+      "sha256": "bb017939d977c0f49038a5ee46e7d8b7a79f856e60e8cdcce99e0bb75b3130d6"
+    },
+    {
+      "path": "raw/player_game_availability_sources/bbf5cf228544820971798c382e9c883ea9517d89fdc1e383e5010560862af4e7.json",
+      "size_bytes": 16887,
+      "sha256": "bbf5cf228544820971798c382e9c883ea9517d89fdc1e383e5010560862af4e7"
+    },
+    {
+      "path": "raw/player_game_availability_sources/bc16717f2656d0417fa2f30ea6a3976b9eafaf358623dfb7702ffb1ff9db540a.json",
+      "size_bytes": 21854,
+      "sha256": "bc16717f2656d0417fa2f30ea6a3976b9eafaf358623dfb7702ffb1ff9db540a"
+    },
+    {
+      "path": "raw/player_game_availability_sources/bd31b22953b4bcad531830f007aa5d24bf54bc258f30b967a16e5e1f8afa69ef.json",
+      "size_bytes": 19690,
+      "sha256": "bd31b22953b4bcad531830f007aa5d24bf54bc258f30b967a16e5e1f8afa69ef"
+    },
+    {
+      "path": "raw/player_game_availability_sources/be8457921d6375f8019651dcbed2e4d21bac96b281ae9ba0d4d461d26c3c27a2.json",
+      "size_bytes": 20883,
+      "sha256": "be8457921d6375f8019651dcbed2e4d21bac96b281ae9ba0d4d461d26c3c27a2"
+    },
+    {
+      "path": "raw/player_game_availability_sources/c04f648a713fe44b86d29b01df2a4f6b11eb3bb87b8aa9d90f6751672065c246.structured.json",
+      "size_bytes": 1118,
+      "sha256": "c04f648a713fe44b86d29b01df2a4f6b11eb3bb87b8aa9d90f6751672065c246"
+    },
+    {
+      "path": "raw/player_game_availability_sources/c0d7e46478c7a577dab0fe40913dd38a4eba6bbd68237faf38a1892700a46bab.structured.json",
+      "size_bytes": 1118,
+      "sha256": "c0d7e46478c7a577dab0fe40913dd38a4eba6bbd68237faf38a1892700a46bab"
+    },
+    {
+      "path": "raw/player_game_availability_sources/c2919a188f92df6ad3c6b3e2330b6b9bcdcdfc1c1c04ac290452eb6c9a2f497c.json",
+      "size_bytes": 19590,
+      "sha256": "c2919a188f92df6ad3c6b3e2330b6b9bcdcdfc1c1c04ac290452eb6c9a2f497c"
+    },
+    {
+      "path": "raw/player_game_availability_sources/c4c437b53e61845e20ea68b3218eb5c67d764263e4e02462e7f10eefa21ef64d.json",
+      "size_bytes": 16863,
+      "sha256": "c4c437b53e61845e20ea68b3218eb5c67d764263e4e02462e7f10eefa21ef64d"
+    },
+    {
+      "path": "raw/player_game_availability_sources/c4d05bccae21ed88c234fd06239cb9a5f1f0754b80f20385c92698f0e884cc93.json",
+      "size_bytes": 22652,
+      "sha256": "c4d05bccae21ed88c234fd06239cb9a5f1f0754b80f20385c92698f0e884cc93"
+    },
+    {
+      "path": "raw/player_game_availability_sources/c537472c68e1f89e6f52491162c89fbee6737f6d775655553b6c5aa65443cb05.json",
+      "size_bytes": 17144,
+      "sha256": "c537472c68e1f89e6f52491162c89fbee6737f6d775655553b6c5aa65443cb05"
+    },
+    {
+      "path": "raw/player_game_availability_sources/c5bf5b71864e91fe04358009444dc4c109de7cddbee39da35223971ab4fcc121.json",
+      "size_bytes": 18028,
+      "sha256": "c5bf5b71864e91fe04358009444dc4c109de7cddbee39da35223971ab4fcc121"
+    },
+    {
+      "path": "raw/player_game_availability_sources/c5f9e8b0b2bc07bb017a15272cf6b177598f7b93dd4b2aafa647df925d406a3f.json",
+      "size_bytes": 23396,
+      "sha256": "c5f9e8b0b2bc07bb017a15272cf6b177598f7b93dd4b2aafa647df925d406a3f"
+    },
+    {
+      "path": "raw/player_game_availability_sources/c6b94a7a650f32f1dce378e7fb77a1000ffb24a96793d2e1d3d8b09065fb892c.structured.json",
+      "size_bytes": 1118,
+      "sha256": "c6b94a7a650f32f1dce378e7fb77a1000ffb24a96793d2e1d3d8b09065fb892c"
+    },
+    {
+      "path": "raw/player_game_availability_sources/c73d4a30937bc5920b693d4b3613567125a234e5cd15b21b4a43ba95f3fcb4da.json",
+      "size_bytes": 20911,
+      "sha256": "c73d4a30937bc5920b693d4b3613567125a234e5cd15b21b4a43ba95f3fcb4da"
+    },
+    {
+      "path": "raw/player_game_availability_sources/c8e1372ce657be3023a78e460ed648d10cc39f664a42fcbd2395b7de3297c264.json",
+      "size_bytes": 19655,
+      "sha256": "c8e1372ce657be3023a78e460ed648d10cc39f664a42fcbd2395b7de3297c264"
+    },
+    {
+      "path": "raw/player_game_availability_sources/ca2db09fb67a7e3e40187eccc66a4ac7c03cc30ddab748bcdf442e573943cdf6.json",
+      "size_bytes": 15966,
+      "sha256": "ca2db09fb67a7e3e40187eccc66a4ac7c03cc30ddab748bcdf442e573943cdf6"
+    },
+    {
+      "path": "raw/player_game_availability_sources/ca31cbbc49d8a1ae849255bab2edccd07dd9796e988a7aed639302bcf54cc3e1.json",
+      "size_bytes": 3433,
+      "sha256": "ca31cbbc49d8a1ae849255bab2edccd07dd9796e988a7aed639302bcf54cc3e1"
+    },
+    {
+      "path": "raw/player_game_availability_sources/cbb78b1c283ef9a8ee67331fe0fd8ef72a660811eab8be177047c61113f28716.structured.json",
+      "size_bytes": 1118,
+      "sha256": "cbb78b1c283ef9a8ee67331fe0fd8ef72a660811eab8be177047c61113f28716"
+    },
+    {
+      "path": "raw/player_game_availability_sources/cc6e82dff2e6e791dca4864c99499645f1b947ca72e9ed25e25a7118314d7bf3.structured.json",
+      "size_bytes": 1118,
+      "sha256": "cc6e82dff2e6e791dca4864c99499645f1b947ca72e9ed25e25a7118314d7bf3"
+    },
+    {
+      "path": "raw/player_game_availability_sources/cd7b69bdb4007c008ee2b387b9500ddfef7dc475b203064c93f92e7ebb30944e.json",
+      "size_bytes": 19769,
+      "sha256": "cd7b69bdb4007c008ee2b387b9500ddfef7dc475b203064c93f92e7ebb30944e"
+    },
+    {
+      "path": "raw/player_game_availability_sources/cd849f436b8b5169fd2e1a0b46fd53cfa3874a985d58c27830971f4d4aae8de9.structured.json",
+      "size_bytes": 1118,
+      "sha256": "cd849f436b8b5169fd2e1a0b46fd53cfa3874a985d58c27830971f4d4aae8de9"
+    },
+    {
+      "path": "raw/player_game_availability_sources/ce85bcc3f5eb3f255797dbbf2a2d1aaadbbefd670f9a2875b11d2d7549370683.structured.json",
+      "size_bytes": 1118,
+      "sha256": "ce85bcc3f5eb3f255797dbbf2a2d1aaadbbefd670f9a2875b11d2d7549370683"
+    },
+    {
+      "path": "raw/player_game_availability_sources/cea7d3e49fcd6415164aeec212c814091c43fb9e27b2f68f8fe982bd88de2078.json",
+      "size_bytes": 20233,
+      "sha256": "cea7d3e49fcd6415164aeec212c814091c43fb9e27b2f68f8fe982bd88de2078"
+    },
+    {
+      "path": "raw/player_game_availability_sources/cf219a4a6188e2f0e012a95c3e1dc84384c3096b41e31756af0775c466dd5b8c.pdf",
+      "size_bytes": 26697,
+      "sha256": "cf219a4a6188e2f0e012a95c3e1dc84384c3096b41e31756af0775c466dd5b8c"
+    },
+    {
+      "path": "raw/player_game_availability_sources/d398079232ffa830e9dcf916eb83809816849fa34836ce364b5f7b68140a2307.structured.json",
+      "size_bytes": 1118,
+      "sha256": "d398079232ffa830e9dcf916eb83809816849fa34836ce364b5f7b68140a2307"
+    },
+    {
+      "path": "raw/player_game_availability_sources/d53c990e13228f8fb24318148b95b3119e8e646dbb60e8c2170fb2d621026eda.json",
+      "size_bytes": 15497,
+      "sha256": "d53c990e13228f8fb24318148b95b3119e8e646dbb60e8c2170fb2d621026eda"
+    },
+    {
+      "path": "raw/player_game_availability_sources/d544615a14f9444b65ed3ba324316e5a638d98f5a3624fbe51b5be04d8d5f1d0.json",
+      "size_bytes": 19643,
+      "sha256": "d544615a14f9444b65ed3ba324316e5a638d98f5a3624fbe51b5be04d8d5f1d0"
+    },
+    {
+      "path": "raw/player_game_availability_sources/d62931dddc72c51dc7708596d071cc457a54370948eb80f17a37ce9dce77e31b.json",
+      "size_bytes": 15994,
+      "sha256": "d62931dddc72c51dc7708596d071cc457a54370948eb80f17a37ce9dce77e31b"
+    },
+    {
+      "path": "raw/player_game_availability_sources/d65c501d7d4f0980f8a7e19931ad8cae1f4f145fd0bfeb8b5fd39bf84dfc1c63.json",
+      "size_bytes": 16172,
+      "sha256": "d65c501d7d4f0980f8a7e19931ad8cae1f4f145fd0bfeb8b5fd39bf84dfc1c63"
+    },
+    {
+      "path": "raw/player_game_availability_sources/d7282a5d37c0e55d3940ba68bd1cd2d183745f44ece3feb7f373a931319883a5.json",
+      "size_bytes": 22337,
+      "sha256": "d7282a5d37c0e55d3940ba68bd1cd2d183745f44ece3feb7f373a931319883a5"
+    },
+    {
+      "path": "raw/player_game_availability_sources/d7719a670993d1a50653edc30b273714c8c9eee209519cacbdf1eb9040c9a11b.json",
+      "size_bytes": 22532,
+      "sha256": "d7719a670993d1a50653edc30b273714c8c9eee209519cacbdf1eb9040c9a11b"
+    },
+    {
+      "path": "raw/player_game_availability_sources/d7d8275db2e7861b67281f429d099b9ac353c0ba9964373e3b6db173ecd100e0.json",
+      "size_bytes": 17507,
+      "sha256": "d7d8275db2e7861b67281f429d099b9ac353c0ba9964373e3b6db173ecd100e0"
+    },
+    {
+      "path": "raw/player_game_availability_sources/d88731ed45af8374303e1b9d089ed693af77e68367c8c47d11ef7edb1aca1607.json",
+      "size_bytes": 17380,
+      "sha256": "d88731ed45af8374303e1b9d089ed693af77e68367c8c47d11ef7edb1aca1607"
+    },
+    {
+      "path": "raw/player_game_availability_sources/d94dc3de68dbfc482abb2ab128749a53018f3c91b6c54ed4e1bee25599e89e2c.structured.json",
+      "size_bytes": 1118,
+      "sha256": "d94dc3de68dbfc482abb2ab128749a53018f3c91b6c54ed4e1bee25599e89e2c"
+    },
+    {
+      "path": "raw/player_game_availability_sources/d983176d51f6c90fbadf15a8cc217b37b262aeb4908dcb489084ca76025c5161.json",
+      "size_bytes": 20980,
+      "sha256": "d983176d51f6c90fbadf15a8cc217b37b262aeb4908dcb489084ca76025c5161"
+    },
+    {
+      "path": "raw/player_game_availability_sources/d9ccda05f1e12a61a3334a65b15fe4b97600314af1f24b26cdbbcbc0d5f484c7.json",
+      "size_bytes": 20370,
+      "sha256": "d9ccda05f1e12a61a3334a65b15fe4b97600314af1f24b26cdbbcbc0d5f484c7"
+    },
+    {
+      "path": "raw/player_game_availability_sources/d9d55fc8b0bcdbd1a0e0a624b78238fc28b7f08c35bd6a0aa0e58b95aefc1494.json",
+      "size_bytes": 19858,
+      "sha256": "d9d55fc8b0bcdbd1a0e0a624b78238fc28b7f08c35bd6a0aa0e58b95aefc1494"
+    },
+    {
+      "path": "raw/player_game_availability_sources/d9e89a42f74022ed00518e08202bb9e3187f4e16034abf0cf41d18a472771fbc.structured.json",
+      "size_bytes": 1118,
+      "sha256": "d9e89a42f74022ed00518e08202bb9e3187f4e16034abf0cf41d18a472771fbc"
+    },
+    {
+      "path": "raw/player_game_availability_sources/da2d1edb882789e7a99ea8b26536c20fc01372257e46b1c67e77f8fc0da8f582.json",
+      "size_bytes": 18710,
+      "sha256": "da2d1edb882789e7a99ea8b26536c20fc01372257e46b1c67e77f8fc0da8f582"
+    },
+    {
+      "path": "raw/player_game_availability_sources/db26fe227896bc0b0d6f0e0aaf6790bbf9e2dee75a7b47a398e2c87c9fecdd28.json",
+      "size_bytes": 19598,
+      "sha256": "db26fe227896bc0b0d6f0e0aaf6790bbf9e2dee75a7b47a398e2c87c9fecdd28"
+    },
+    {
+      "path": "raw/player_game_availability_sources/db4896995ea797ccc565319409fa80d91ac26b233e9fb26bcdd31e8c1e06b2c8.pdf",
+      "size_bytes": 27706,
+      "sha256": "db4896995ea797ccc565319409fa80d91ac26b233e9fb26bcdd31e8c1e06b2c8"
+    },
+    {
+      "path": "raw/player_game_availability_sources/dc0242265c83643a8deaaf9a3f3168783c4582bc08dd3126060576be3163493b.structured.json",
+      "size_bytes": 1118,
+      "sha256": "dc0242265c83643a8deaaf9a3f3168783c4582bc08dd3126060576be3163493b"
+    },
+    {
+      "path": "raw/player_game_availability_sources/dcf809e7d7da68d8c2d6d94e9d8871ff9760ac0a6f42c8b883ec8c01b4b4a4ea.structured.json",
+      "size_bytes": 1118,
+      "sha256": "dcf809e7d7da68d8c2d6d94e9d8871ff9760ac0a6f42c8b883ec8c01b4b4a4ea"
+    },
+    {
+      "path": "raw/player_game_availability_sources/dd6229b4ef8e5d35cd686f1f595502d4461409c84f7e0d0debe8cc3b47ac1cbe.json",
+      "size_bytes": 17939,
+      "sha256": "dd6229b4ef8e5d35cd686f1f595502d4461409c84f7e0d0debe8cc3b47ac1cbe"
+    },
+    {
+      "path": "raw/player_game_availability_sources/de07bba04c2024ba33391c5a98b72ad3f9fa0bee9d1f3ef2af9a8be0486b850e.structured.json",
+      "size_bytes": 1118,
+      "sha256": "de07bba04c2024ba33391c5a98b72ad3f9fa0bee9d1f3ef2af9a8be0486b850e"
+    },
+    {
+      "path": "raw/player_game_availability_sources/df95084c32642123e1e44c8fbc6fbad9036012e536ad2f5d371f2bd86fd23593.json",
+      "size_bytes": 19110,
+      "sha256": "df95084c32642123e1e44c8fbc6fbad9036012e536ad2f5d371f2bd86fd23593"
+    },
+    {
+      "path": "raw/player_game_availability_sources/dfd773d75256a7403e584ed5bbe859c35312849f5ba1e790ab0a0aafc7d5d94b.structured.json",
+      "size_bytes": 1118,
+      "sha256": "dfd773d75256a7403e584ed5bbe859c35312849f5ba1e790ab0a0aafc7d5d94b"
+    },
+    {
+      "path": "raw/player_game_availability_sources/dfdc8f71c9bc71be136f554dfb22df371d80d49b2a9e257e2e3ec597921dcf32.json",
+      "size_bytes": 19652,
+      "sha256": "dfdc8f71c9bc71be136f554dfb22df371d80d49b2a9e257e2e3ec597921dcf32"
+    },
+    {
+      "path": "raw/player_game_availability_sources/dff36a09608d2e150c29d096db8a952e103dc4a4c842a3e26ce858e165134081.json",
+      "size_bytes": 15373,
+      "sha256": "dff36a09608d2e150c29d096db8a952e103dc4a4c842a3e26ce858e165134081"
+    },
+    {
+      "path": "raw/player_game_availability_sources/e0ab8f40f92edf6115a4d0e72b7f3a261784eadfe34eac2ff8682d0d117d12e3.structured.json",
+      "size_bytes": 1118,
+      "sha256": "e0ab8f40f92edf6115a4d0e72b7f3a261784eadfe34eac2ff8682d0d117d12e3"
+    },
+    {
+      "path": "raw/player_game_availability_sources/e1818c986fcb2921c47b43be410a12a693294c4d461005ad8c43e905abf69708.json",
+      "size_bytes": 19681,
+      "sha256": "e1818c986fcb2921c47b43be410a12a693294c4d461005ad8c43e905abf69708"
+    },
+    {
+      "path": "raw/player_game_availability_sources/e2234ec32f4867efde768e592e4c4ed233a73bf763a4353b74b12ab55e5bece8.structured.json",
+      "size_bytes": 1118,
+      "sha256": "e2234ec32f4867efde768e592e4c4ed233a73bf763a4353b74b12ab55e5bece8"
+    },
+    {
+      "path": "raw/player_game_availability_sources/e47c50aa7744201cc5923e2b669e9a8c400afaabee3aabbef218d3f0d7b23861.json",
+      "size_bytes": 19681,
+      "sha256": "e47c50aa7744201cc5923e2b669e9a8c400afaabee3aabbef218d3f0d7b23861"
+    },
+    {
+      "path": "raw/player_game_availability_sources/e4bcffb340cb249184174a054759887c9c3c4f13cb30512a3dd5ecb489087060.structured.json",
+      "size_bytes": 1118,
+      "sha256": "e4bcffb340cb249184174a054759887c9c3c4f13cb30512a3dd5ecb489087060"
+    },
+    {
+      "path": "raw/player_game_availability_sources/e55a40fc83fc4fa74e84eb05a87eb34f23b3315b3e1825130184b30de6fdaa16.structured.json",
+      "size_bytes": 1118,
+      "sha256": "e55a40fc83fc4fa74e84eb05a87eb34f23b3315b3e1825130184b30de6fdaa16"
+    },
+    {
+      "path": "raw/player_game_availability_sources/e5bbd7efc319708cfe8f11702c75cb767f1145afc4660e042d5f791ffaedae03.json",
+      "size_bytes": 20401,
+      "sha256": "e5bbd7efc319708cfe8f11702c75cb767f1145afc4660e042d5f791ffaedae03"
+    },
+    {
+      "path": "raw/player_game_availability_sources/e690d1e44f81717191f285776054bde2ec027374f581ee6faa8eb596906b09d7.structured.json",
+      "size_bytes": 1118,
+      "sha256": "e690d1e44f81717191f285776054bde2ec027374f581ee6faa8eb596906b09d7"
+    },
+    {
+      "path": "raw/player_game_availability_sources/e6ceaa9b179d9b356b19edd12648bc658f2e71e88d6a06d0c60f0ef422809e61.json",
+      "size_bytes": 20323,
+      "sha256": "e6ceaa9b179d9b356b19edd12648bc658f2e71e88d6a06d0c60f0ef422809e61"
+    },
+    {
+      "path": "raw/player_game_availability_sources/e6fd789624bf9241fa56ef4b13faea73040bd9033927dd3c1074a21e73be7d9b.json",
+      "size_bytes": 18603,
+      "sha256": "e6fd789624bf9241fa56ef4b13faea73040bd9033927dd3c1074a21e73be7d9b"
+    },
+    {
+      "path": "raw/player_game_availability_sources/e7d5b0465cecb577a855ef99cc8bc3e5505d987bd30478aded85e45f698c62b5.structured.json",
+      "size_bytes": 1118,
+      "sha256": "e7d5b0465cecb577a855ef99cc8bc3e5505d987bd30478aded85e45f698c62b5"
+    },
+    {
+      "path": "raw/player_game_availability_sources/e88c222a9fa1f6a31e77d43fcfa990a28ff38e3a21592c7a1f5b6bc20c42cff9.pdf",
+      "size_bytes": 27521,
+      "sha256": "e88c222a9fa1f6a31e77d43fcfa990a28ff38e3a21592c7a1f5b6bc20c42cff9"
+    },
+    {
+      "path": "raw/player_game_availability_sources/eba8f8c058922f2843b592d7c8f0d9c5d6cc588be13a7eb290138a0e26fec6df.json",
+      "size_bytes": 20848,
+      "sha256": "eba8f8c058922f2843b592d7c8f0d9c5d6cc588be13a7eb290138a0e26fec6df"
+    },
+    {
+      "path": "raw/player_game_availability_sources/edd7b32f4cdba8dc602ffa1dbb00dfa96ea8baa064475b25bd2c3400af4adb61.json",
+      "size_bytes": 19687,
+      "sha256": "edd7b32f4cdba8dc602ffa1dbb00dfa96ea8baa064475b25bd2c3400af4adb61"
+    },
+    {
+      "path": "raw/player_game_availability_sources/ee9a67f85b430e42ddb842b9210057569449c375541471f84f4f0a34abe8960e.json",
+      "size_bytes": 16631,
+      "sha256": "ee9a67f85b430e42ddb842b9210057569449c375541471f84f4f0a34abe8960e"
+    },
+    {
+      "path": "raw/player_game_availability_sources/eed37d95ebd37061890849a2a27274e7739c4249ce49f07ba7b2d6d4eb3f7bd1.structured.json",
+      "size_bytes": 1117,
+      "sha256": "eed37d95ebd37061890849a2a27274e7739c4249ce49f07ba7b2d6d4eb3f7bd1"
+    },
+    {
+      "path": "raw/player_game_availability_sources/ef76cb61db4de650049c8348b21b2652220d6a895693d7811bf066830fd03c3a.json",
+      "size_bytes": 19701,
+      "sha256": "ef76cb61db4de650049c8348b21b2652220d6a895693d7811bf066830fd03c3a"
+    },
+    {
+      "path": "raw/player_game_availability_sources/f0517e15b889341ca5f0acd7cc9a04ef89b5def4997bcd9d7fc757541722c84d.json",
+      "size_bytes": 19123,
+      "sha256": "f0517e15b889341ca5f0acd7cc9a04ef89b5def4997bcd9d7fc757541722c84d"
+    },
+    {
+      "path": "raw/player_game_availability_sources/f18d10fb27e864222b7db1154b3dc6b0921294c397a950ad447844a2f554d916.structured.json",
+      "size_bytes": 1118,
+      "sha256": "f18d10fb27e864222b7db1154b3dc6b0921294c397a950ad447844a2f554d916"
+    },
+    {
+      "path": "raw/player_game_availability_sources/f46b968bbe0ea60ff3b5dd1d1609a0b36b64d97fd787265b52e6e7faeb5f679e.json",
+      "size_bytes": 21988,
+      "sha256": "f46b968bbe0ea60ff3b5dd1d1609a0b36b64d97fd787265b52e6e7faeb5f679e"
+    },
+    {
+      "path": "raw/player_game_availability_sources/f4a46314e56988e6d3f32d9c0d71a03c5a5b4f61cb6edb71b459d118e283c7c0.structured.json",
+      "size_bytes": 1118,
+      "sha256": "f4a46314e56988e6d3f32d9c0d71a03c5a5b4f61cb6edb71b459d118e283c7c0"
+    },
+    {
+      "path": "raw/player_game_availability_sources/f85473f6e3be5f3de9903cdf3763f38652809441747cb7b60a068c976ea8e069.structured.json",
+      "size_bytes": 1118,
+      "sha256": "f85473f6e3be5f3de9903cdf3763f38652809441747cb7b60a068c976ea8e069"
+    },
+    {
+      "path": "raw/player_game_availability_sources/f92ba0c01de7057a8c58118dbd4016324a32116f0f165be7870159671b67da28.json",
+      "size_bytes": 20788,
+      "sha256": "f92ba0c01de7057a8c58118dbd4016324a32116f0f165be7870159671b67da28"
+    },
+    {
+      "path": "raw/player_game_availability_sources/f9b64cef9abf371559dfeb2b851a075906eadd9c5afc582072bc7cc621352412.json",
+      "size_bytes": 15348,
+      "sha256": "f9b64cef9abf371559dfeb2b851a075906eadd9c5afc582072bc7cc621352412"
+    },
+    {
+      "path": "raw/player_game_availability_sources/fa83b6429e2eddb23dff31f0c946094654cac02229b4399bc901d55ed78c5e78.json",
+      "size_bytes": 17928,
+      "sha256": "fa83b6429e2eddb23dff31f0c946094654cac02229b4399bc901d55ed78c5e78"
+    },
+    {
+      "path": "raw/player_game_availability_sources/fac7a1a5ea4688cd4301d1dd89baccece1e1f622747f5397c0445496aa212432.structured.json",
+      "size_bytes": 1118,
+      "sha256": "fac7a1a5ea4688cd4301d1dd89baccece1e1f622747f5397c0445496aa212432"
+    },
+    {
+      "path": "raw/player_game_availability_sources/fb365a0cfe356b17b769cf3caa431a5e1b557d7c892db6af48d1bd4180fe4e26.json",
+      "size_bytes": 23089,
+      "sha256": "fb365a0cfe356b17b769cf3caa431a5e1b557d7c892db6af48d1bd4180fe4e26"
+    },
+    {
+      "path": "raw/player_game_availability_sources/fd2cd43a34c9980095ac02fc04e4c2a621b4d4b5bd86771d02ba1f6437a148c3.structured.json",
+      "size_bytes": 1118,
+      "sha256": "fd2cd43a34c9980095ac02fc04e4c2a621b4d4b5bd86771d02ba1f6437a148c3"
+    },
+    {
+      "path": "raw/player_game_availability_sources/fd342644d456dc7387bd5ffd5ae7e08e73e191a9cc779c32b7d90358edc863d7.structured.json",
+      "size_bytes": 1118,
+      "sha256": "fd342644d456dc7387bd5ffd5ae7e08e73e191a9cc779c32b7d90358edc863d7"
+    },
+    {
+      "path": "raw/player_game_availability_sources/fe8053bf97b49532f548044148c1473d9dd6a297ee0a9d6e1c6031c9bb164333.json",
+      "size_bytes": 20266,
+      "sha256": "fe8053bf97b49532f548044148c1473d9dd6a297ee0a9d6e1c6031c9bb164333"
+    },
+    {
+      "path": "raw/player_game_availability_sources/febc81c3278821bb3a5e9fcdb1ae129d1fd1293fdf6ad49ade4ffedaf109d575.json",
+      "size_bytes": 16640,
+      "sha256": "febc81c3278821bb3a5e9fcdb1ae129d1fd1293fdf6ad49ade4ffedaf109d575"
+    },
+    {
+      "path": "raw/player_game_availability_sources/fecd351e3b151da43ee487984d4b446522bdafcea0ea7d9441048604d19347c2.structured.json",
+      "size_bytes": 1118,
+      "sha256": "fecd351e3b151da43ee487984d4b446522bdafcea0ea7d9441048604d19347c2"
+    },
+    {
+      "path": "validation.json",
+      "size_bytes": 121961,
+      "sha256": "27116981cd3c0c923a13d1248a9edf249c9c5e26f73f2aa3c527092295e34390"
+    }
+  ],
+  "code_files": [
+    {
+      "path": "src/nbatools/commands/pipeline/generation_publication.py",
+      "sha256": "c555573acca4d29bbad74dd3029fbf6b77f5bf8163046123d925eb6846254da7"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/generation_refresh.py",
+      "sha256": "678e515898e9318789f88d2f621fb7fa34944df94260e6c25072cee047d79ca5"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/pull_player_game_availability.py",
+      "sha256": "7ee6ed22911e9953c305f288de1f83da5ad5549459e6e6c2c95103f97b1ad248"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/player_game_availability_report.py",
+      "sha256": "0cc2c293406647816f298a06135808007f5f4554b28aa4b38af6d61c92e65d6b"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/player_game_availability_profiles.py",
+      "sha256": "509271a504e105343a0fe87ffd0ac561afc1d29647151b0cf48087d07b65a334"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/player_game_availability_espn.py",
+      "sha256": "7c1b8618cc228fac780d331865b8e7c5db0255499d03a0fcea36c65aee7c18f5"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/pull_player_game_starter_roles.py",
+      "sha256": "2403c697d4c5121826ae3ff5074084244857d19f96773925e7135c9281935d7e"
+    },
+    {
+      "path": "src/nbatools/data_source.py",
+      "sha256": "cebe4cbd4e6a1451b0c383072eaaf47ef9b53e7b5a3148f4b5b921f04c1b9474"
+    },
+    {
+      "path": "working/nba-tools-completion-program/publish-opening-availability.py",
+      "sha256": "aa0953a0f374de825250d97c90493d554a4564949eca0a700fac534d99350675"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/structured_participation.py",
+      "sha256": "e007ac61ef8ec28aa54747737b8bf06b1409d1b807a5bddf123057fb87281fc0"
+    },
+    {
+      "path": "tools/availability_overlay.py",
+      "sha256": "ea1fa2ab4f86a8d6336f0e0700607e0eff1fa9e5413cd3318e5043e12d4a3977"
+    },
+    {
+      "path": "tools/r2_publication.py",
+      "sha256": "8cccffc3c91511cbfb6fd9d43c2bf0839bd749ac2de2fcdd84b76e584e082f0d"
+    },
+    {
+      "path": "tools/stage_participation_collection.py",
+      "sha256": "b878bc8b69519860f2786c612f0be4734e940f9086c8aff003dd67101baf0743"
+    },
+    {
+      "path": "src/nbatools/commands/_reported_absence_reasons.py",
+      "sha256": "757496d14da34e10dc2e8a485fd9ac3e38a1a72e5c3dfd1694f7bcc63f1aebe3"
+    },
+    {
+      "path": "tools/compose_participation_overlays.py",
+      "sha256": "f2b0971b021e73c370d2bba9e2fc5c60c93db162d77f99b9628f4cdde40804e7"
+    },
+    {
+      "path": "working/nba-tools-completion-program/publish-participation-2025-durant.py",
+      "sha256": "a2b47160cfe02f7265397448ad507cb9dcbb4eebde2e188cfc91a61a64cfab86"
+    },
+    {
+      "path": "tests/cloud_participation_2025_stage_real_data.py",
+      "sha256": "51c4d83e6316fdd19ac6b1f8b99c91bad707f7f9f4f87f45c38a62fa3d9dac24"
+    },
+    {
+      "path": "tests/cloud_composed_participation_stage_real_data.py",
+      "sha256": "57aa347d00321a3925c9bee46f3b43bf5939da224a0aebcaaee80531315e8db4"
+    },
+    {
+      "path": "tests/cloud_core1_k08_lal_default_real_data.py",
+      "sha256": "3d56a5168cb14f8168bc587f36095435fc214c44c5afeb6a50a0943e78199a51"
+    },
+    {
+      "path": "tests/cloud_durant_franchise_stage_real_data.py",
+      "sha256": "62a35b717d50d49c5527cdf6c7b6ccec91c57c0f1392ade14959f0a65e1427d5"
+    }
+  ]
+}
