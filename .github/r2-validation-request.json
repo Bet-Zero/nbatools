@@ -1,0 +1,1 @@
+{"schema_version":1,"reviewed_sha":"bb4a32c387911e7bfa879da0065c789a186dc9f1","generation":"availability-participation-2025-durant-v1-20261114","tests":["tests/cloud_core1_acceptance_view_real_data.py::test_core1_acceptance_view_has_no_software_failures"],"raw_qa_cases":[]}
