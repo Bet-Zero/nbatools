@@ -488,6 +488,44 @@ class TestBuildResultGameSummary:
         assert first_game["opponent_team_abbr"] == "MIA"
         assert first_game["opponent_pts"] == 110
 
+    def test_losses_to_an_opponent_list_every_game(self):
+        """'Losses to X' lists the games like 'wins over X', past five games."""
+        from nbatools.commands.game_summary import build_result
+
+        rows = []
+        # A supplied frame is the already-selected sample: 7 losses to LAL.
+        for i in range(7):
+            opp = ("LAL", 1610612747)
+            rows.append(
+                {
+                    "game_id": f"00{i}",
+                    "game_date": f"2025-01-{10 + i:02d}",
+                    "season": "2024-25",
+                    "season_type": "Regular Season",
+                    "team_id": 1610612738,
+                    "team_abbr": "BOS",
+                    "team_name": "Boston Celtics",
+                    "opponent_team_id": opp[1],
+                    "opponent_team_abbr": opp[0],
+                    "opponent_team_name": opp[0],
+                    "is_home": 1,
+                    "is_away": 0,
+                    "wl": "L",
+                    "pts": 100,
+                    "plus_minus": -3,
+                }
+            )
+        df = pd.DataFrame(rows)
+
+        sections = build_result(
+            season="2024-25", team="BOS", opponent="LAL", losses_only=True, df=df
+        ).to_dict()["sections"]
+        assert len(sections["game_log"]) == 7
+
+        # Without an opponent, a long sample stays a summary.
+        plain = build_result(season="2024-25", team="BOS", losses_only=True, df=df)
+        assert "game_log" not in plain.to_dict()["sections"]
+
     def test_to_dict_includes_top_player_performers(self):
         from nbatools.commands.game_summary import build_result
 

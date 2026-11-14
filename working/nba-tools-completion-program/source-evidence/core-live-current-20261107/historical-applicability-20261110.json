@@ -7,7 +7,7 @@
   "original_capture_sha256": "a5c718c7498f24d787866ff4e3d53220363e00588a045607e92f5947ac2074a5",
   "original_case_manifest_sha256": "096f093c24df872fca3107a1d4a23b19fc98e549b86aecfdc9df3b538ca1382a",
   "original_bound_file_count": 663,
-  "unchanged_bound_file_count": 641,
+  "unchanged_bound_file_count": 640,
   "cases": [
     {
       "id": "k12-s1",
@@ -477,6 +477,37 @@
       "reviewed_sha256": "3f65cf6ae98297e251931f01b34f8e374cdd10a2c1f4ff8a904a0a8613d41215",
       "reviewed_functions": "resolve_player_in_query; mask_player_owned_team_words; resolve_team_in_query",
       "semantic_reach": "All original 22 person names lack internal team-alias words and initial periods. Their complete-name-before-alias precedence and identities remain unchanged. The new substring precheck is equivalent to the following bounded regex; broader full-name lookup adds no different matching person to these exact names. Team masking does not erase any independent team mention.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ]
+    },
+    {
+      "path": "src/nbatools/commands/game_summary.py",
+      "old_sha256": "9aa51c30a3d5e458075ebffbb0413ec0f6dbd6bbc877aa93cd555a9bb22ac3ce",
+      "reviewed_sha256": "62e8c5c7e178bba7a692c5f182cc4cd41c14e44eb4e3e5c6dadd6ff462a25eda",
+      "reviewed_functions": "build_result include_game_log",
+      "semantic_reach": "A team game summary filtered to an opponent with wins-only or losses-only now also returns its game log and top performers. Sample selection, summary and by-season values are unchanged. None of the original 22 queries routes to game_summary (their routes are player/team summaries, team_record, team_split_summary, finders, leaders and compare); team_record and team_split_summary import only the unchanged _build_game_log_section and select_team_summary_sample.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
