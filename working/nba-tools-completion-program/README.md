@@ -96,6 +96,38 @@ answering the plain-language questions in `cmsg_01ABTwDaHncgP7nUEgUSYNtvP2G6Z7Br
 | Raw QA: 13 open failures (608 pass on reuse) | Mapped | 11 are participation-coverage gaps covered by the K08 rows above. 1 is an unsafe `available = played` expectation (fix the expectation through independent review; don't implement it). 1 is an accent-format expectation. |
 | Filter sweep PASS_WITH_GAPS (39 dropped, 44 no-signal) | Not yet mapped | Map each relevant gap to a K row or to carry-forward. Gaps are never counted as passes. |
 
+### UNRESOLVED: league-wide "with/without player" (B, 2026-11-14)
+
+B: "Just leave it for now and finish the rest, then make sure it is noted as
+unresolved" (`cmsg_01ABTwDaHncgP7nUEgUSYNtv7ejNNCtvNVUUz6uQnrFKf4`).
+
+- **Today:** "with/without X" and "games X missed" work only where official
+  who-played records are loaded (the published cohorts). Everyone else refuses
+  honestly.
+- **Why box scores alone aren't enough:** a box score lists only who played.
+  A missing line could mean he sat out, hadn't joined yet, or had been traded.
+  The roster file lists who was on a team each season, with no dates.
+- **Options tested against 5,155 official records (7 seasons)** with
+  `source-evidence/boxscore-participation-20261114/measure.py` (run it on a local
+  copy of the live generation's `raw/` folder):
+  - **Option 1. Count only between a player's first and last game for the team.**
+    Inside that window it was exact: 3,275 of 3,275 played games right, and
+    every in-window gap was a real miss. But about a third of real misses
+    (602 of 1,880) fall outside the window, for example season-opening or
+    season-ending injuries and two-way players. Those would have to be refused
+    or caveated.
+  - **Option 2. Treat the whole season as the window for single-team roster players.**
+    This catches those misses. But in 296 fully listed team-games, 198 of its
+    1,693 "missed" calls (about 1 in 8) were games the player wasn't on the
+    team yet, e.g. Steven Adams (traded to HOU in 2023-24) and Seth Curry (signed
+    by GSW mid-season in 2025-26).
+  - **Option 3. Load official who-played records league-wide, 1996-97 onward.** Exact.
+    It needs a source that can be fetched (data refresh is parked) and one
+    protected publish.
+- Options 1 and 2 relax the standing rule "never infer a missed game from a
+  missing row", so they need B's yes first. Recommendation on record: option 1,
+  labeled "counted between his first and last games with the team".
+
 ### Next action
 
 1. **Done (2026-11-14):** `python tools/core1_acceptance_view.py` prints each
@@ -130,11 +162,30 @@ answering the plain-language questions in `cmsg_01ABTwDaHncgP7nUEgUSYNtvP2G6Z7Br
        were updated to current safe behavior in PR615 and pass on the live
        generation ([R2 43586876226](https://github.com/Bet-Zero/nbatools/actions/runs/43586876226),
        627/627).
-     - Open: the source-acquisition tests in
-       `test_pipeline_player_game_availability_real_data.py` (3 on R2) still need
-       triage.
-   - Not yet repinned: rerunning the deployed desktop/mobile wrappers on the new
-     generation.
+     - The 3 source-acquisition tests in
+       `test_pipeline_player_game_availability_real_data.py` were triaged:
+       - The ESPN test expected ESPN rows to pass publication checks. Since
+         PR555 only official or reviewed structured sources can be published,
+         so it now expects the refusal.
+       - The two official-report tests can't resolve rookie Alex Toohey's
+         identity from a cloud runner. NBA's CDN returns 403 there (the known
+         cloud block), and his name isn't in nba_api 1.12.0's bundled player
+         list. His row is already published, from the same official report.
+         These tests stay red until fetching works again (Live/data refresh,
+         parked). Loosening the identity check is not an option.
+   - **Done (2026-11-14): deployed desktop/mobile check on the live generation.**
+     [R2 43602584850](https://github.com/Bet-Zero/nbatools/actions/runs/43602584850)
+     (K08, 50 questions × 2 viewports; also the ESPN refusal test) and
+     [R2 43602403345](https://github.com/Bet-Zero/nbatools/actions/runs/43602403345)
+     (original 22 K01-K12 cases × 2 viewports) both passed against the exact
+     production deployment.
+   - What those checks do:
+     `tests/cloud_core1_deployed_view_real_data.py` asks every K08 question
+     through the real interface on both viewports and must match the candidate
+     in process and the acceptance map. The original 22 K01-K12 historical cases
+     rerun through
+     `cloud_core_historical_delivery_real_data.py::test_actual_new_runtime_historical_api_and_ui_on_live_generation`.
+     IDs 45/46 (structured routes) and ID 44's unit node stay with the local view.
 
 ### Carry-forward from PR607 (not Core-1 blockers unless an original case needs them)
 

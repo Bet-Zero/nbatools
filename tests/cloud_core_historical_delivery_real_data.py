@@ -37,6 +37,11 @@ PROGRAM = ROOT / "working/nba-tools-completion-program"
 EVIDENCE = PROGRAM / "source-evidence/core-live-current-20261107"
 BASE = "availability-lebron-season-v1-20261031"
 MANIFEST = "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3"
+# The live generation after both approved 2026-11-14 publications. It adds only
+# participation files; the stats inputs these 22 cases read are rebound below.
+LIVE = "availability-participation-2025-durant-v1-20261114"
+LIVE_MANIFEST = "cde98408f3390e6191da564197fb77ffbc598a3059963cfc21d9f2d7e1a6b366"
+GENERATIONS = {BASE: MANIFEST, LIVE: LIVE_MANIFEST}
 URL = "https://nbatools.vercel.app"
 S4 = PROGRAM / "source-evidence/paired-missing-20261107/r2-final/composed-acceptance.json"
 OWNED = PROGRAM / "source-evidence/distinct-player-or-20261106/independent/oracle.json"
@@ -139,10 +144,10 @@ def _outcome(body):
     )
 
 
-def _readiness(http, body):
+def _readiness(http, body, generation=BASE):
     assert http == 503
     assert body["ready"] is False and body["immutable_generation"] is True
-    assert body["active_generation"] == BASE
+    assert body["active_generation"] == generation
     assert [b["code"] for b in body["blockers"]] == ["new_season_not_loaded"]
     assert not body["exception"]["applied"]
 
@@ -261,6 +266,12 @@ def _assert_s4(body, case):
     )
 
 
+def _assert_team(cell, abbreviation, name):
+    # The 2026-11-07 interface rendered the abbreviation as cell text; the
+    # current one shows only the full name. The name must match exactly.
+    assert cell in (abbreviation + name, name), cell
+
+
 def _shown(item, label):
     tables = [t for t in item["tables"] if t["label"] == label]
     assert len(tables) == 1
@@ -300,7 +311,7 @@ def _verify(item, delivery, sources, frozen, seq_sources, history_sources, lebro
         actual = body["result"]["sections"]["streak"]
         assert len(shown) == len(actual)
         for row, value in zip(shown, actual, strict=True):
-            assert row["Team"] == "MIAHeat"
+            _assert_team(row["Team"], "MIA", "Heat")
             assert row["Length"] == f"{value['streak_length']} games"
             assert int(row["Games"]) == value["games"]
             assert row["Record"] == f"{value['wins']}-{value['losses']}"
@@ -316,7 +327,7 @@ def _verify(item, delivery, sources, frozen, seq_sources, history_sources, lebro
         rows = _shown(item, "Team record")
         assert len(rows) == 1
         row = rows[0]
-        assert row["Team"] == "GSWGolden State Warriors"
+        _assert_team(row["Team"], "GSW", "Golden State Warriors")
         assert row["W-L"] == f"{expected['wins']}-{expected['losses']}"
         assert int(row["Games"]) == expected["games"]
         for label, value in (
@@ -372,10 +383,35 @@ def _verify(item, delivery, sources, frozen, seq_sources, history_sources, lebro
         for phrase in ("Home", "110+ PTS", "Opp PTS < 110"):
             assert phrase in item["text"]
         shown = _shown(item, "Team record")
-        assert len(shown) == 1 and shown[0]["Team"] == "LALLos Angeles Lakers"
+        assert len(shown) == 1
+        _assert_team(shown[0]["Team"], "LAL", "Los Angeles Lakers")
         assert shown[0]["W-L"] == f"{case['wins']}-{case['losses']}"
         assert int(shown[0]["Games"]) == case["games"]
         assert float(shown[0]["PPG"]) == pytest.approx(case["means"]["pts"], abs=0.051)
+
+
+# Approved 2026-11-14 packages whose append-only inventories bind each S4
+# participation input's old bytes; LIVE equals those bytes plus appended rows.
+PACKAGES = ("historical-participation-v1", "participation-2025-durant-v1")
+
+
+def _assert_published_append(path, digest, entries):
+    raw = data_path(path).read_bytes()
+    assert _sha(raw) == entries[path]["sha256"] and len(raw) == entries[path]["size_bytes"]
+    registry = json.loads((ROOT / ".github/data-publication-packages.json").read_bytes())
+    packages = registry["packages"]
+    bases = []
+    for name in PACKAGES:
+        package = packages[name]
+        inventory = (ROOT / package["inventory"]).read_bytes()
+        assert _sha(inventory) == package["inventory_sha256"]
+        item = json.loads(inventory)["append_only"].get(path)
+        if item:
+            bases.append(item)
+    # The first package touching the path appended to exactly the S4 input.
+    assert bases and bases[0]["base_sha256"] == digest, path
+    if path.endswith(".csv"):
+        assert _sha(raw[: bases[0]["base_size_bytes"]]) == digest, path
 
 
 def _assert_fixed_runtime(before, after):
@@ -385,8 +421,10 @@ def _assert_fixed_runtime(before, after):
     assert before["build_input_tree_sha256"] == after["build_input_tree_sha256"]
 
 
-def _run(tmp_path, *, retained=False, current_runtime=False):
+def _run(tmp_path, *, retained=False, current_runtime=False, generation_name=BASE):
     assert not (retained and current_runtime), "Retained captures cannot be fresh runtime evidence"
+    assert generation_name == BASE or current_runtime, "Only a fresh capture may use LIVE"
+    manifest = GENERATIONS[generation_name]
     binding = json.loads((EVIDENCE / "live-code-binding.json").read_bytes())
     applicability = None
     capture_url = URL
@@ -421,8 +459,8 @@ def _run(tmp_path, *, retained=False, current_runtime=False):
         assert _sha((ROOT / path).read_bytes()) == digest
     with data_generation_context() as generation:
         assert (
-            generation == BASE
-            and _sha(data_path("metadata/generation_manifest.json").read_bytes()) == MANIFEST
+            generation == generation_name
+            and _sha(data_path("metadata/generation_manifest.json").read_bytes()) == manifest
         )
         cases, delivery, sources, frozen, seq_sources, history_sources, lebron, s4 = _cases()
         if applicability:
@@ -438,8 +476,13 @@ def _run(tmp_path, *, retained=False, current_runtime=False):
             raw = data_path(path).read_bytes()
             assert _sha(raw) == entries[path]["sha256"] and len(raw) == entries[path]["size_bytes"]
         for path, digest in s4["validation"]["base_file_hashes"].items():
-            assert entries[path]["sha256"] == digest
+            if generation_name == BASE:
+                assert entries[path]["sha256"] == digest
+            else:
+                _assert_published_append(path, digest, entries)
     folder = "core-historical-live-new-runtime" if current_runtime else "core-historical-live"
+    if generation_name != BASE:
+        folder += "-" + generation_name
     output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / folder
     output.mkdir(parents=True, exist_ok=False)
     inputs = output / "cases.json"
@@ -460,8 +503,8 @@ def _run(tmp_path, *, retained=False, current_runtime=False):
         candidate_sha=os.environ["VALIDATION_SHA"],
         classification="named_historical_API_rendered_acceptance_with_current_readiness_separate",
         deployment_binding=binding,
-        generation=BASE,
-        manifest_sha256=MANIFEST,
+        generation=generation_name,
+        manifest_sha256=manifest,
         full_core1_accepted=False,
         current_season_accepted=False,
         operational_readiness_accepted=False,
@@ -578,8 +621,8 @@ def _run(tmp_path, *, retained=False, current_runtime=False):
                 and len(assets) == 1
                 and assets[0].startswith(capture_url + "/assets/index-")
             )
-            _readiness(item["readinessHttpBefore"], item["readinessBefore"])
-            _readiness(item["readinessHttpAfter"], item["readinessAfter"])
+            _readiness(item["readinessHttpBefore"], item["readinessBefore"], generation_name)
+            _readiness(item["readinessHttpAfter"], item["readinessAfter"], generation_name)
             assert item["freshness"]["current_through"] == "2026-06-13"
             assert item["freshness"]["status"] == "stale"
             assert "Data through 2026-06-13" in item["freshnessText"]
@@ -655,3 +698,8 @@ def test_requalify_retained_actual_historical_api_and_ui(tmp_path):
 def test_actual_new_runtime_historical_api_and_ui(tmp_path):
     """Fresh original22/44 delivery; current readiness/source gaps stay open."""
     _run(tmp_path, current_runtime=True)
+
+
+def test_actual_new_runtime_historical_api_and_ui_on_live_generation(tmp_path):
+    """The same fresh original22/44 delivery on the generation served after 2026-11-14."""
+    _run(tmp_path, current_runtime=True, generation_name=LIVE)
