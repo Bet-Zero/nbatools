@@ -383,6 +383,30 @@ def _verify(item, delivery, sources, frozen, seq_sources, history_sources, lebro
         assert float(shown[0]["PPG"]) == pytest.approx(case["means"]["pts"], abs=0.051)
 
 
+# Approved 2026-11-14 packages whose append-only inventories bind each S4
+# participation input's old bytes; LIVE equals those bytes plus appended rows.
+PACKAGES = ("historical-participation-v1", "participation-2025-durant-v1")
+
+
+def _assert_published_append(path, digest, entries):
+    raw = data_path(path).read_bytes()
+    assert _sha(raw) == entries[path]["sha256"] and len(raw) == entries[path]["size_bytes"]
+    registry = json.loads((ROOT / ".github/data-publication-packages.json").read_bytes())
+    packages = registry["packages"]
+    bases = []
+    for name in PACKAGES:
+        package = packages[name]
+        inventory = (ROOT / package["inventory"]).read_bytes()
+        assert _sha(inventory) == package["inventory_sha256"]
+        item = json.loads(inventory)["append_only"].get(path)
+        if item:
+            bases.append(item)
+    # The first package touching the path appended to exactly the S4 input.
+    assert bases and bases[0]["base_sha256"] == digest, path
+    if path.endswith(".csv"):
+        assert _sha(raw[: bases[0]["base_size_bytes"]]) == digest, path
+
+
 def _assert_fixed_runtime(before, after):
     assert before["deployment"]["id"] == after["deployment"]["id"]
     assert before["deployed_sha"] == after["deployed_sha"]
@@ -445,7 +469,10 @@ def _run(tmp_path, *, retained=False, current_runtime=False, generation_name=BAS
             raw = data_path(path).read_bytes()
             assert _sha(raw) == entries[path]["sha256"] and len(raw) == entries[path]["size_bytes"]
         for path, digest in s4["validation"]["base_file_hashes"].items():
-            assert entries[path]["sha256"] == digest
+            if generation_name == BASE:
+                assert entries[path]["sha256"] == digest
+            else:
+                _assert_published_append(path, digest, entries)
     folder = "core-historical-live-new-runtime" if current_runtime else "core-historical-live"
     if generation_name != BASE:
         folder += "-" + generation_name

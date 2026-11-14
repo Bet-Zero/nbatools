@@ -15,6 +15,7 @@ No data, pointer, protection or credential writes.
 import hashlib
 import json
 import os
+import re
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
@@ -50,15 +51,32 @@ def _sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
+_TIMESTAMP = re.compile(r"(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})")
+
+
+def _canonical(value):
+    # The deployed runtime writes timestamps as "YYYY-MM-DD HH:MM:SS" where the
+    # test client writes "YYYY-MM-DDTHH:MM:SS": same value, two spellings.
+    if isinstance(value, dict):
+        return {k: _canonical(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_canonical(v) for v in value]
+    if isinstance(value, str):
+        return _TIMESTAMP.sub(r"\1T\2", value) if _TIMESTAMP.fullmatch(value) else value
+    return value
+
+
 def _answer(body):
     """The answer itself: route, status and every result section."""
     result = body.get("result") or {}
-    return dict(
-        route=body.get("route"),
-        status=body.get("result_status"),
-        reason=body.get("result_reason"),
-        sections=result.get("sections"),
-        caveats=result.get("caveats"),
+    return _canonical(
+        dict(
+            route=body.get("route"),
+            status=body.get("result_status"),
+            reason=body.get("result_reason"),
+            sections=result.get("sections"),
+            caveats=result.get("caveats"),
+        )
     )
 
 
@@ -171,7 +189,7 @@ def test_core1_k08_deployed_view_matches_candidate():
         seen = {(r["viewport"], r["id"]) for r in receipts}
         assert len(seen) == len(receipts)
         assert seen == {(v, c["id"]) for v in ("desktop", "mobile") for c in cases}
-        by_query = {}
+        by_query, mismatches = {}, []
         assets = receipts[0]["assets"]
         for item in receipts:
             assert item["http"] == 200 and item["payload"]["query"] == item["query"]
@@ -181,9 +199,11 @@ def test_core1_k08_deployed_view_matches_candidate():
             assert item["assets"] == assets and len(assets) == 1
             _readiness(item["readinessHttpBefore"], item["readinessBefore"], LIVE)
             _readiness(item["readinessHttpAfter"], item["readinessAfter"], LIVE)
-            answer = _answer(item["payload"])
-            assert answer == expected_answers[item["query"]], (item["viewport"], item["query"])
+            if _answer(item["payload"]) != expected_answers[item["query"]]:
+                mismatches.append((item["viewport"], item["query"]))
             by_query.setdefault(item["query"], item["payload"])
+        receipt["answer_mismatches"] = mismatches
+        assert not mismatches, mismatches
         replay = _Replay(by_query)
         asked = [e for e in spec["k08"] if e.get("queries")]
         # IDs 45/46 are structured-route checks with no question to ask; they
