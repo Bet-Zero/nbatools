@@ -98,12 +98,18 @@ answering the plain-language questions in `cmsg_01ABTwDaHncgP7nUEgUSYNtvP2G6Z7Br
 
 ### Next action
 
-1. Build one acceptance view on the existing runners (Raw QA, the K08 shared
-   cases and the deployed wrappers). It should print each K01-K12 row and each
-   of the 46 K08 IDs as passing / software failure / missing data / needs
-   publish / Live, from one command. No new framework.
-2. Fix any software failures it shows, in shared logic, and run deployed checks
-   on the existing published generation where they apply.
+1. **Done (2026-11-14):** `python tools/core1_acceptance_view.py` prints each
+   K01-K12 row and each of the 46 K08 IDs as PASS / SOFTWARE FAILURE / MISSING
+   DATA / LIVE. Its expectations are fixed in `core1-acceptance-map.json`, taken
+   from the independent nine-ID oracle and the audited publication checks.
+   On the live generation ([R2 43582685873](https://github.com/Bet-Zero/nbatools/actions/runs/43582685873),
+   artifact zip `c8af58d6…e28fff`), K01-K07 and K09-K12 pass all 126 real-data
+   checks. K08 has no software failures: 16 pass (6, 7, 8, 16, 18, 23-25,
+   30-32, 35, 41, 44, 45, 46), 26 are missing data (the Davis default-season
+   group and ID26), and 4 are Live (4, 5, 19, 38).
+2. No software failures to fix. Carry-forward phrasing gap found while probing:
+   a bare trailing season after two names ("Lakers record without Davis and
+   Reaves 2023-24") hits the multi-player block, while "... in 2023-24" works.
 3. Every approved historical cohort is now published. Freeze a release candidate and
    run the broad checks once.
 
