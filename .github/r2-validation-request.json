@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "f64681f83e7620377710ce9faf920766b2fe450a",
+  "generation": "availability-participation-2025-durant-v1-20261114",
+  "tests": ["tests/test_season_inactive_pilot_real_data.py::test_retained_season_batch_unlocks_complete_season_answers"],
+  "raw_qa_cases": []
+}
