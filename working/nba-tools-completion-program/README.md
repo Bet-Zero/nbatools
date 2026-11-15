@@ -44,10 +44,11 @@ zero-appearance trade members, pre-anchor waivers and two-way status stay distin
 explicit expiry event type; older rosters/guides have exact recorded access gaps.
 [Sources, measured coverage, originals and reproduction](source-evidence/team-membership-20261114/README.md).
 
-Focused controlled tests passed (11); retained-source local replay executed/passed
+Focused controlled tests passed (14); retained-source local replay executed/passed
 one test after correcting the source expectation that Samuels actually played
 in Houston's opener. Source-stage independent reviews and three bounded successful
-capture/custody runs are preserved. Final exact-code review, blocking CI and
+capture/custody runs are preserved. The checker found two conditional boundary gaps (unanchored conversion/departure);
+both have narrow fixes and unfamiliar controls. Final exact-code delta review, blocking CI and
 focused R2 membership replay are pending; PR621 must not merge without them.
 No whole-project audit, routine full suite or broad replay was started manually.
 

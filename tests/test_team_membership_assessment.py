@@ -88,7 +88,25 @@ def test_conversion_does_not_end_membership_or_invent_a_join():
     events = normalize([row("ContractConverted", 1), row("ContractConverted", 2)])["events"]
     report = assess(events)
     assert states(report, 1) == ["member"] * 5
-    assert states(report, 2) == ["not_member", "not_member", "unknown", "unknown", "unknown"]
+    assert states(report, 2) == ["unknown"] * 5
+
+
+def test_preopening_conversion_requires_a_membership_anchor():
+    events = normalize(
+        [row("ContractConverted", 1, "2023-10-23"), row("ContractConverted", 2, "2023-10-23")]
+    )["events"]
+    report = assess(events)
+    assert states(report, 1) == ["member"] * 5
+    assert states(report, 2) == ["unknown"] * 5
+    assert {r["player_id"] for r in report["opening_conflicts"]} == {2}
+
+
+@pytest.mark.parametrize("event", [row("Waive", 2), row("Trade", 2, team=20, sender=10)])
+def test_departure_without_a_join_exposes_the_unanchored_earlier_span(event):
+    report = assess(normalize([event])["events"])
+    assert states(report, 2) == ["unknown", "unknown", "unknown", "not_member", "not_member"]
+    assert report["continuity_conflicts"][0]["reason"] == "departure_without_membership_anchor"
+    assert report["verified_missed_games"] is None
 
 
 def test_temporary_contract_without_expiry_stays_unknown_including_season_end():

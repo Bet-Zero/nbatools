@@ -481,7 +481,8 @@
       "participation_cells": {
         "played": 880,
         "unknown": 924
-      }
+      },
+      "continuity_conflicts": []
     },
     {
       "team_id": 1610612747,
@@ -687,7 +688,8 @@
       "participation_cells": {
         "played": 867,
         "unknown": 855
-      }
+      },
+      "continuity_conflicts": []
     }
   ]
 }

@@ -1,0 +1,49 @@
+{
+  "reviewer": "/root/coverage_checker",
+  "reviewed_revision": "eea1e797ea5d9ac558caa340325737aa367fb689",
+  "reviewed_tree": "49795c9449ec20eba7f85bc54391823a18292535",
+  "approval": "changes requested for two conditional-model boundary controls; not yet final R2/merge approval",
+  "open_findings": [
+    {
+      "id": "F1",
+      "severity": "P2",
+      "location": "tools/assess_team_membership.py:238",
+      "problem": "Pre-anchor status-only conversion of an unlisted player is excluded from anchor consistency checks, yielding hypothetical season-long not_member with no conflict.",
+      "reproduction": "Existing controlled helpers: baseline(1,), ContractConverted player2 onOct23, openingOct24 => five not_member cells, no opening_conflicts; same event after opening correctly exposes missing anchor.",
+      "expected": "Expose missing membership anchor/conflict and keep unresolved conditional span unknown; listed baseline conversion remains continuity.",
+      "real_sample_impact": "None: Nate Williams is already listed. Accepted runtime facts remain safe/empty."
+    },
+    {
+      "id": "F2",
+      "severity": "P2",
+      "location": "tools/assess_team_membership.py:263",
+      "problem": "Post-anchor departure of a player absent from baseline with no intervening join preserves hypothetical pre-waiver nonmembership, hiding missing join/baseline contradiction.",
+      "reproduction": "Existing helpers: baseline(1,), Waive player2 onNov2 => not_member,not_member,unknown,not_member,not_member; no opening or source contradiction.",
+      "expected": "Expose departure_without_membership_anchor for waiver/trade departure and leave unanchored pre-departure span unknown. Subsequent conditional nonmembership can use the known departure. Pre-anchor Days/JRE waivers remain consistent and distinct.",
+      "real_sample_impact": "None: sample post-anchor departures are anchored. No runtime/DNP facts affected."
+    }
+  ],
+  "native_custody_independently_verified": {
+    "originals_zip_sha256": "60a17134030c73ea0cf76233ca790bbd6d2e5c62265fdd4110e9918f0ee66ade",
+    "movement_body_sha256": "27f33ea01008038b987b31056be05ff087bc4a363957d476fcd5053e83c5aa8b",
+    "opening_pdf_sha256": "c122900f6a322dc7aac4aa5d1096d185e652bd439d79595106bc35eb130178f7",
+    "canonical_inputs": "Both exact source-request canonical hashes independently verified against retained published files",
+    "native_feed": "10144rows;2015-07-01..2026-11-13;4671Signing3448Waive1813Trade73AwardOnWaivers139ContractConverted"
+  },
+  "independent_numeric_oracle": {
+    "method": "Separate manual whole-team baseline-ID enumeration, native row classification and CSV game/player scan in work/membership-checker/review_native_counts.py; no assessment tool or app calculation functions",
+    "houston": {"games":82,"baseline":18,"candidate_people":22,"played_people":17,"conditional_member":1394,"conditional_not_member":246,"conditional_unknown":164,"exact_positive_facts":880,"actual_unknown":924,"zero_minute_rows":3,"contradictions":0},
+    "lakers": {"games":82,"baseline":17,"candidate_people":21,"played_people":21,"conditional_member":1420,"conditional_not_member":300,"conditional_unknown":2,"exact_positive_facts":867,"actual_unknown":855,"zero_minute_rows":1,"contradictions":0}
+  },
+  "passed_focused_checks": ["11 controlled assessment tests", "18 historical applicability tests including tamper cases", "independent native counts and exact ZIP/body/input hashes", "git diff --check"],
+  "historical_applicability": {
+    "approved": true,
+    "companion_sha256": "3ff8c7d1111c30f73d456664f2c66194a5710d0b2443230d6e67241fa6916337",
+    "data_contracts_sha256": "d68715e7db9c504cfe6a8abe00ced6cc3d5ca5be31b4e8027132a9f5a18a7eea",
+    "exact_delta": "Only existing docs/reference/data_contracts.md reviewed hash and documentation semantic-reach explanation changed; all other companion fields unchanged",
+    "reach": "New module is offline CLI/test only, no src runtime edits or imports; original22queries44captures663bindings remain exact,28changed635unchanged. Both false full-Core1 and fresh-deployment flags preserved. Gate only reseals exact companion hash and preserves all predicates."
+  },
+  "confirmed_safeguards": ["native whole-team parsing and trade both sides match independent event oracle", "source hashes and native capture metadata bound, no source reacquisition in assessor", "opening documentOct23 versus claimed effectiveOct24 preserved", "Hinton/Hudgins and Windler conflicts exposed", "explicit source-gaps and no expiry/freshness/complete-roster claims", "candidate model isolated from exact positive-minute facts via empty accepted resolver inputs", "no missing/zero-minute row becomes DNP", "all accepted_intervals empty, complete_membership false, verified_missed_games null", "appearance-only exact facts distinct from preserved PR619 availability imports", "all historical evidence/source versions preserved; no canonical dataset, publisher, runtime or automatic-refresh edits"],
+  "future_targeted_R2_selector": "tests/test_team_membership_sample_real_data.py::test_bulk_opening_and_movements_expose_membership_unknowns",
+  "required_delta": "Minimal F1/F2 fix, focused unfamiliar regressions, freeze new head, independent delta review; unchanged native numeric oracle may be reused. Then exact candidate-targeted R2 required before merge."
+}

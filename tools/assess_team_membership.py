@@ -231,7 +231,7 @@ def assess_team(
         if not document_date <= event["date"] <= end_date:
             raise ValueError("Event outside assessed source window")
         by_player[event["player_id"]].append(event)
-    conflicts, models, uncertain = [], [], []
+    conflicts, continuity_conflicts, models, uncertain = [], [], [], []
     day_after = timedelta(days=1)
     for player in sorted(universe):
         changes = sorted(by_player[player], key=lambda e: e["date"])
@@ -248,6 +248,16 @@ def assess_team(
         if prior_actions and prior_actions != {state}:
             conflicts.append(dict(player_id=player, roster_state=state, events=before))
             problem = "opening_source_conflict"
+        conversions = [
+            e for e in changes if e["date"] < anchor_date and e["action"] == "status_only"
+        ]
+        if (
+            player not in baseline
+            and conversions
+            and max(e["date"] for e in conversions) >= max((e["date"] for e in before), default="")
+        ):
+            conflicts.append(dict(player_id=player, roster_state=state, events=conversions))
+            problem = problem or "conversion_without_membership_anchor"
         if before and any(e["temporary"] for e in before if e["date"] == before[-1]["date"]):
             problem = problem or "temporary_contract_end_missing"
         start = anchor
@@ -260,6 +270,15 @@ def assess_team(
             actions = {e["action"] for e in group if e["action"] != "status_only"}
             if not actions and state == "member" and not problem:
                 continue
+            if not problem and state == "not_member" and (not actions or actions == {"not_member"}):
+                problem = (
+                    "departure_without_membership_anchor"
+                    if actions
+                    else "conversion_without_membership_anchor"
+                )
+                continuity_conflicts.append(
+                    dict(player_id=player, date=day_text, reason=problem, events=group)
+                )
             if start <= day - day_after:
                 if problem:
                     uncertain.append(
@@ -374,6 +393,7 @@ def assess_team(
         played_people=int(appearances.player_id.nunique()),
         zero_appearance_candidates=sorted(universe - set(appearances.player_id.astype(int))),
         opening_conflicts=conflicts,
+        continuity_conflicts=continuity_conflicts,
         unexplained_appearance_people=orphan,
         appearance_contradictions=contradictions,
         events=selected,
