@@ -123,4 +123,17 @@ file hashes. Output creation refuses an existing file. The CLI has no acquisitio
 publisher, refresh or runtime-import path. `sample-summary.json` omits detailed
 game-person cells; the targeted test retains the full report in its artifact.
 `independent-oracle.json` and the three source-stage review receipts preserve
-their literal review scope. Final review and focused R2 replay are recorded in PR621.
+their literal review scope. Final independent reviews approved `834111da` (boundary fixes) and `51891c6b`
+(report-directory setup), zero open findings. Fourteen focused tests plus two
+independent unfamiliar ordering controls passed; 18 historical applicability
+checks remain valid with their exact unchanged inputs. Source counts were
+independently derived from the native bodies/canonical files, not the assessor.
+
+Focused R2 [run43681585776](https://github.com/Bet-Zero/nbatools/actions/runs/43681585776)
+passed **one selected/executed test, zero skips/failures/errors**, on reviewed code
+`51891c6b` via sole-parent request `b9d073c9`. The earlier run43681278613 on
+`834111da` executed one test and failed creating the report directory after all
+source/count checks; it remains a failure. The sole fix created its missing
+output parent. `r2-validation.json` binds both literal results and the passing
+artifact. No numerical assertion, source body or coverage rule was relaxed.
+Final exact-head CI and documentation review are recorded in PR621.

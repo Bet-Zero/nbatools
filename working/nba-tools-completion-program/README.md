@@ -44,18 +44,25 @@ zero-appearance trade members, pre-anchor waivers and two-way status stay distin
 explicit expiry event type; older rosters/guides have exact recorded access gaps.
 [Sources, measured coverage, originals and reproduction](source-evidence/team-membership-20261114/README.md).
 
-Focused controlled tests passed (14); retained-source local replay executed/passed
-one test after correcting the source expectation that Samuels actually played
-in Houston's opener. Source-stage independent reviews and three bounded successful
-capture/custody runs are preserved. The checker found two conditional boundary gaps (unanchored conversion/departure);
-both have narrow fixes and unfamiliar controls. Final exact-code delta review, blocking CI and
-focused R2 membership replay are pending; PR621 must not merge without them.
-No whole-project audit, routine full suite or broad replay was started manually.
+Independent checker `/root/coverage_checker` approved reviewed code `51891c6b`,
+closing two unanchored conversion/departure controls. Fourteen controlled tests,
+two unfamiliar ordering controls, independent native counts and 18 historical
+applicability checks passed; all original 22 cases/44 captures/663 bindings and
+false full-Core/fresh-deployment flags remain intact. Focused R2
+[run43681585776](https://github.com/Bet-Zero/nbatools/actions/runs/43681585776)
+passed one selected/executed test, zero skips/errors, via request `b9d073c9`.
+A prior R2 attempt failed report-directory creation; its output-only fix and
+literal failed/passed receipts are preserved. Final docs-only review and exact
+pre/post-merge CI results are recorded in PR621; numerical evidence is reused
+only while assessor/test/source bytes stay unchanged. Existing
+frontend-security-dev red is advisory, not a passing blocking check.
+No whole-project audit, manual routine full suite or broad replay was started.
 
-**Next:** finish PR621's focused independent review/required gates, then qualify
-one bounded frozen season-final team chronology/game-notes archive for this sample.
-It must settle the opening corrections, effective dates and whole-team contract
-history before continuous intervals can enter the existing membership contract.
+**Next:** qualify one bounded frozen season-final team chronology/game-notes
+archive for this same sample. It must settle the opening corrections, effective
+dates and whole-team contract history before continuous intervals can enter the
+existing membership contract. PR621 implements the reusable assessment, not
+league-wide feature completion.
 No first/last or whole-season guesses. Missing participation stays unknown.
 Substantial historical backfill, production publication, new costs and automatic
 refresh remain separately gated; nothing is currently needed from B.
