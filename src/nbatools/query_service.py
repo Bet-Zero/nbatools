@@ -1748,7 +1748,22 @@ def _add_season_total_answer_metadata(metadata: dict[str, Any], result: Any) -> 
     if per_game and qualified:
         # The season board's games floor: "(at least 20 games)".
         context = f"{context} ({qualified})"
-    if players == 0:
+    named = re.match(r"season_total_list: (.+) seasons with ", request)
+    if named and per_season and not per_game:
+        # "LeBron James has 3 seasons with 1,000+ points from 1996-97 to 2025-26".
+        seasons = len(rows)
+        span = f"from {start} to {end}" if start and end else context
+        if filters:
+            span = " ".join(filters) + " " + span
+        if seasons == 0:
+            metadata["answer_phrase"] = f"{named.group(1)} has no seasons with {line} {span}."
+        else:
+            listed = [f"{row['season']} ({int(row[column]):,})" for _, row in rows.iterrows()]
+            noun = "season" if seasons == 1 else "seasons"
+            metadata["answer_phrase"] = (
+                f"{named.group(1)} has {seasons} {noun} with {line} {span}: {', '.join(listed)}."
+            )
+    elif players == 0:
         verb = ("averaged" if past else "averages") if per_game else "has"
         metadata["answer_phrase"] = f"No {who}{unit} {verb} {line} {context}."
     else:
@@ -3074,6 +3089,8 @@ def _filter_stat_label(stat: str) -> str:
     """Filter-chip label: "OPP PTS", "OPP FG3M", or the stat id."""
     if stat.startswith("opponent_"):
         return f"OPP {stat[len('opponent_') :].upper()}"
+    if stat == "game_total_pts":
+        return "COMBINED PTS"
     return stat
 
 
@@ -3093,6 +3110,7 @@ def stat_phrase_label(stat: str) -> str:
         "fta": "free throw attempts",
         "oreb": "offensive rebounds",
         "dreb": "defensive rebounds",
+        "game_total_pts": "combined points",
     }
     key = stat.lower()
     if key.startswith("opponent_") and key[len("opponent_") :] in labels:
@@ -3342,6 +3360,10 @@ def _apply_count_intent(
         entity_count = (
             int(leaders["player_id"].nunique()) if "player_id" in leaders else len(leaders)
         )
+        if route_kwargs.get("player") and route_kwargs.get("per_season"):
+            # "how many times has LeBron scored 2000 points in a season": his
+            # seasons at the line.
+            entity_count = len(leaders)
         detail = leaders
     elif parsed.get("distinct_player_count") or parsed.get("distinct_team_count"):
         entity_count = (

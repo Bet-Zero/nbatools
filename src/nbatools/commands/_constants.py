@@ -37,6 +37,8 @@ def normalize_text(text: str) -> str:
         r"\1 ",
         normalized,
     )
+    # "2024–25", "25—30 points": an en or em dash between numbers is a hyphen.
+    normalized = re.sub(r"(?<=\d)\s*[\u2013\u2014]\s*(?=\d)", "-", normalized)
     collapsed = " ".join(normalized.strip().split())
     # Drop end-of-sentence punctuation. Detectors that anchor on a word boundary
     # or end of string stop matching when a "?" is glued to the last token, so
@@ -293,6 +295,10 @@ STAT_ALIASES: dict[str, str] = {
     # fewer game margin").
     "game margin": "margin",
     "win margin": "win_margin",
+    # Both teams' points in a game; "130 total points" in a game is rewritten
+    # to this form ("games with 230 combined points").
+    "combined points": "game_total_pts",
+    "combined score": "game_total_pts",
     "loss margin": "loss_margin",
     # Usage rate
     "usage rate": "usg_pct",

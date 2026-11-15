@@ -86,6 +86,7 @@ GAME_LOG_LABELS = {
     "minutes": "MIN",
     "opponent": "Opp",
     "opponent_pts": "Opp PTS",
+    "game_total_pts": "Total PTS",
     "plus_minus": "+/-",
     "pts": "PTS",
     "reb": "REB",

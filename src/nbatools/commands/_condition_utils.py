@@ -208,8 +208,16 @@ PLAYER_GAME_CONTEXT_STATS = {
 #: of the same game.
 TOP_PLAYER_BASES = ("pts", "reb", "ast", "stl", "blk", "fg3m", "fgm", "ftm", "tov")
 TOP_PLAYER_STATS = {f"top_player_{base}": f"top_player_{base}" for base in TOP_PLAYER_BASES}
+#: Both teams' points in the game ("games with 230 combined points"), from the
+#: team's points and plus-minus (the opponent scored pts - plus_minus).
+GAME_TOTAL_STATS = {"game_total_pts": "game_total_pts"}
 #: Stats read from a team game row beyond its own box score.
-TEAM_GAME_EXTRA_STATS = {**OPPONENT_STATS, **MARGIN_STATS, **TOP_PLAYER_STATS}
+TEAM_GAME_EXTRA_STATS = {
+    **OPPONENT_STATS,
+    **MARGIN_STATS,
+    **TOP_PLAYER_STATS,
+    **GAME_TOTAL_STATS,
+}
 
 
 def attach_top_player_stats(df: pd.DataFrame, wanted: Any) -> pd.DataFrame:
@@ -257,6 +265,15 @@ def attach_margin_stats(df: pd.DataFrame, wanted: Any) -> pd.DataFrame:
     Player rows carry their team's as ``team_plus_minus``; their own
     ``plus_minus`` is on-court only and never a final margin.
     """
+    if (
+        "game_total_pts" in set(wanted)
+        and "game_total_pts" not in df.columns
+        and "player_id" not in df.columns
+        and {"pts", "plus_minus"}.issubset(df.columns)
+    ):
+        # A team row: its points plus the opponent's (pts - plus_minus).
+        pts = pd.to_numeric(df["pts"], errors="coerce")
+        df = df.assign(game_total_pts=2 * pts - pd.to_numeric(df["plus_minus"], errors="coerce"))
     names = [n for n in MARGIN_STATS if n in set(wanted) and n not in df.columns]
     if "team_plus_minus" in df.columns:
         source = "team_plus_minus"

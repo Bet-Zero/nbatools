@@ -1339,6 +1339,175 @@ def _canonicalize_one_possession(text: str) -> str:
     return _ONE_POSSESSION_TERM.sub(rewrite, text)
 
 
+# "25-30 points", "25 to 30 rebounds", "8–10 assists", "25-30 point games": a
+# range of a counting stat, read as the "between 25 and 30 points" form. Not a
+# margin ("won by 10-15 points"), a window ("last 5-10 games"), a year or a
+# season ("LeBron 15-16 points" names 2015-16, as "2015-16 points" does).
+_RANGE_STAT_NOUN = (
+    r"points?|pts|rebounds?|boards|assists?|dimes|threes?|3s|3pm|three[- ]pointers?|"
+    r"steals?|blocks?|turnovers?|fouls?|minutes|mins"
+)
+_RANGE_STAT_ADJECTIVE = {
+    "point": "points",
+    "rebound": "rebounds",
+    "assist": "assists",
+    "three": "threes",
+    "steal": "steals",
+    "block": "blocks",
+    "turnover": "turnovers",
+}
+_STAT_RANGE = re.compile(
+    r"(?<![\w.%/-])(?P<lead>(?:between|from)\s+)?(?P<low>\d{1,3})\s*(?:-|to)\s*(?P<high>\d{1,3})"
+    r"(?:\s*(?:points?|pts))?"
+    r"(?:(?P<adj>[- ](?:point|rebound|assist|three|steal|block|turnover))"
+    r"\s+(?P<games>games?|nights?)"
+    rf"|\s+(?P<noun>{_RANGE_STAT_NOUN})(?:\s+(?P<noun_games>games?|nights?))?)\b"
+)
+# Words before a range that make it a margin, a window or a series score.
+_STAT_RANGE_NOT_BEFORE = re.compile(
+    r"\b(?:by|last|past|first|next|previous|prior|won|lost|up|down|leads?|led|trail\w*)\s*$"
+)
+# Words that read a consecutive pair ("15-16") as a range, not a season.
+_STAT_RANGE_LEAD = re.compile(
+    r"\b(?:with|scored|scores?|scoring|had|has|have|grabbed|dished|made|hit|of|between|from)\s*$"
+)
+_FULL_SEASON = re.compile(r"\b(?:19|20)\d{2}-\d{2}\b")
+
+
+def _reads_as_season(match: re.Match) -> bool:
+    """A "15-16" pair that names a season (1990-91 to next season) rather
+    than a range: no range word before it, a hyphen, not an adjective game
+    list ("21-22 point games") and no other season named."""
+    low, high = int(match.group("low")), int(match.group("high"))
+    if not (len(match.group("low")) == len(match.group("high")) == 2 and (low + 1) % 100 == high):
+        return False
+    from nbatools.commands._seasons import default_end_season
+
+    latest = int(default_end_season("Regular Season")[:4]) + 1
+    if not 1990 <= (1900 if low >= 90 else 2000) + low <= latest:
+        return False
+    return not (
+        match.group("lead")
+        or match.group("adj")
+        or match.group("noun_games")
+        or "-" not in match.group(0)
+        or _STAT_RANGE_LEAD.search(match.string[: match.start()])
+        or _FULL_SEASON.search(match.string)
+    )
+
+
+def _stat_range(match: re.Match) -> str:
+    low, high = int(match.group("low")), int(match.group("high"))
+    before = match.string[: match.start()]
+    if low >= high or _STAT_RANGE_NOT_BEFORE.search(before) or _reads_as_season(match):
+        return match.group(0)
+    if match.group("adj"):
+        stat = _RANGE_STAT_ADJECTIVE[match.group("adj")[1:]]
+        if stat == "points" and high <= 5:
+            # "1-2 point games", "2-3 point games": close finishes, not a
+            # score of 2 or 3.
+            return match.group(0)
+        return f"{match.group('games')} with between {low} and {high} {stat}"
+    if match.group("noun_games"):
+        # "5-10 assists games": the games with that range.
+        return f"{match.group('noun_games')} with between {low} and {high} {match.group('noun')}"
+    return f"between {low} and {high} {match.group('noun')}"
+
+
+def canonicalize_stat_ranges(text: str) -> str:
+    """Rewrite "25-30 points" and "25-30 point games" into the between form."""
+    return _STAT_RANGE.sub(_stat_range, text)
+
+
+_TOTAL_STAT_WORDS = {
+    "pts": r"points?|pts",
+    "reb": r"rebounds?|boards",
+    "ast": r"assists?",
+    "stl": r"steals?",
+    "blk": r"blocks?",
+    "fg3m": r"threes|3s|three[- ]pointers|3[- ]pointers",
+}
+# Above these no player has had that many in a game. Up to them "40 total
+# points" is the subject's own count; above, "250 total rebounds" is a season
+# total and keeps its "total" for that reader. Points above 100 are a game's
+# combined score (below).
+_ONE_SIDE_GAME_CEILING = {"pts": 100, "reb": 55, "ast": 30, "stl": 11, "blk": 17, "fg3m": 14}
+# "players with 1500 total points", "who has 2000 total points": a player's
+# season total, not a game's combined score.
+_PLAYER_POPULATION = re.compile(
+    r"\b(?:players?|who|rookies?|sophomores?|guards?|forwards?|centers?|starters?|scorers?)\b"
+)
+_TOTAL_OF = re.compile(
+    r"\b(?:an?\s+)?totals?\s+of\s+(\d+)\s+(" + "|".join(_TOTAL_STAT_WORDS.values()) + r")\b"
+)
+_NUMBER_TOTAL = re.compile(
+    r"(?<![\w.%/-])(\d+)(?P<bound>\s+or\s+(?:more|fewer|less))?\s+total\s+("
+    + "|".join(_TOTAL_STAT_WORDS.values())
+    + r")\b"
+)
+
+
+def _population_owns(match: re.Match) -> bool:
+    """ "players with 2000 total points", "who has 1500 total points": a
+    player population before the total asks for season totals. A clause
+    after it ("where a player scored 40") or "a player" does not."""
+    before = match.string[: match.start()]
+    return any(
+        not re.search(r"\b(?:a|an|one|any|each|every|no)\s+$", before[: m.start()])
+        for m in _PLAYER_POPULATION.finditer(before)
+    )
+
+
+def names_unread_team_total(text: str) -> bool:
+    """A points total left as "N total points" after the rewrites: a team's
+    season total ("Lakers 6000 total points") or a population's season total
+    ("players in Lakers games with 230 total points"). Only a season list
+    reads it; a game list or record would drop it."""
+    return any(
+        _total_stat_key(m.group(3)) == "pts"
+        for m in _NUMBER_TOTAL.finditer(canonicalize_total_counts(text))
+    )
+
+
+def _total_stat_key(word: str) -> str:
+    return next(k for k, w in _TOTAL_STAT_WORDS.items() if re.fullmatch(w, word))
+
+
+def canonicalize_total_counts(text: str) -> str:
+    """ "a total of 2000 points" is "2000 total points". In a game, "total
+    points" is both teams' combined score ("Mavericks games with 130 total
+    points", "games with over 230 total points"): no player has scored over
+    100, so a larger number is the game's total. A player population
+    ("players with 2000 total points") keeps its season total. Counts a player
+    can reach ("LeBron games with 40 total points") are his own."""
+    text = _TOTAL_OF.sub(r"\1 total \2", text)
+
+    def number_total(match: re.Match) -> str:
+        population = _population_owns(match)
+        word = match.group(3)
+        stat = _total_stat_key(word)
+        value = int(match.group(1))
+        bound = match.group("bound") or ""
+        if value <= _ONE_SIDE_GAME_CEILING[stat]:
+            return f"{value}{bound} {word}"
+        if stat == "pts" and not population and value <= _COMBINED_SCORE_CEILING:
+            # A bare number is a floor ("230+"), read by the shared condition
+            # list so a second condition ("where they allowed 120") joins it.
+            bare = not bound and not _BOUND_BEFORE.search(match.string[: match.start()])
+            return f"{value}{'+' if bare else bound} combined points"
+        return match.group(0)
+
+    return _NUMBER_TOTAL.sub(number_total, text)
+
+
+# No NBA game has had 400 combined points; "Lakers 6000 total points" is a
+# season total, not a game's score.
+_COMBINED_SCORE_CEILING = 400
+_BOUND_BEFORE = re.compile(
+    r"\b(?:over|under|above|below|than|least|most|exactly|between|and|to|from)\s*$"
+)
+
+
 def canonicalize_bound_phrases(text: str) -> str:
     """Rewrite bound wording the readers miss into the form they read.
 
@@ -1348,6 +1517,8 @@ def canonicalize_bound_phrases(text: str) -> str:
     ignored and answered with every game; "close games" and "blowouts" were
     ignored too; "one possession games" refused outside two seasons.
     """
+    text = canonicalize_stat_ranges(text)
+    text = canonicalize_total_counts(text)
     text = canonicalize_trailing_ceilings(text)
     text = _canonicalize_one_possession(text)
     # "excluding close games", "non-blowout games": the games left out.

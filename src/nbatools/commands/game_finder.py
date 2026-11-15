@@ -436,7 +436,10 @@ def build_result(
     shown_opponent = [
         name
         for name in [stat_col, *(c.get("stat") for c in normalize_stat_conditions(conditions))]
-        if name and str(name).startswith("opponent_") and name not in output_cols
+        # "games with 230 combined points": the game's total is shown too.
+        if name
+        and (str(name).startswith("opponent_") or name == "game_total_pts")
+        and name not in output_cols
     ]
     output_cols = [c for c in [*output_cols, *dict.fromkeys(shown_opponent)] if c in df.columns]
 

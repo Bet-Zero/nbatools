@@ -189,11 +189,30 @@ unresolved" (`cmsg_01ABTwDaHncgP7nUEgUSYNtv7ejNNCtvNVUUz6uQnrFKf4`).
 
 ### Carry-forward from PR607 (not Core-1 blockers unless an original case needs them)
 
-"Mavericks games with 130 total points" drops the 130 floor. Two named teams on
-an event board narrow to one. "Who led <team> in games with X and Y" returns
-team grain. "25-30 points" ranges are dropped. En-dash and two-digit seasons
-("15-16", "2026–27") don't parse. Season-total thresholds ("total of 2000
-points") are unsupported.
+Two named teams on an event board narrow to one. "Who led <team> in games
+with X and Y" returns team grain. Fixed in PR618: "games with 230 total
+points" / "combined points" (both teams' score, on team game lists, records
+and summaries), "25-30 points" ranges, two-digit and dashed seasons ("15-16",
+"2026–27", "2015/16"), "a total of 2000 points" and one player's seasons over
+a total ("LeBron seasons with 1500 points"). Still open: a player's games by
+the combined score ("LeBron games with 230 total points") and league-wide game
+lists without a team refuse; a range of season totals or averages ("players
+averaging 25-30") refuses; "1-2 point games" is not read as a close finish.
+Pre-existing (also on main): "Lakers games where a starter scored 30" reads
+the team's own 30 points.
+
+PR618 checks: independent review approved 3ae4810 (separate agent session,
+four rounds) and the test-only follow-up ac3453c. Targeted R2
+[43658225359](https://github.com/Bet-Zero/nbatools/actions/runs/43658225359)
+passed (17 tests). Full R2 on 3ae4810
+([43656769674](https://github.com/Bet-Zero/nbatools/actions/runs/43656769674))
+versus a same-day full run on main 07b865e
+([43658019032](https://github.com/Bet-Zero/nbatools/actions/runs/43658019032)):
+identical failure sets apart from one PR618 real-data test whose raw
+plus-minus cross-check was wrong (fixed in ac3453c, green above). The shared
+failures are 9 with/without replay cases (UNRESOLVED, parked) and 142 stale
+deployed-pin and participation-package needs_data tests that predate PR618;
+no full run has been green since 2026-10-13.
 
 ## Preserved scope
 
