@@ -1,0 +1,1 @@
+{"schema_version":1,"reviewed_sha":"ac3453cdf8df8ddecdc4423a1bd80c00a7a30f67","generation":"availability-participation-2025-durant-v1-20261114","tests":["tests/test_ranges_short_seasons_totals_real_data.py","tests/test_c2_season_total_threshold_real_data.py","tests/test_summary_total_and_team_event_boards_real_data.py"],"raw_qa_cases":[]}
