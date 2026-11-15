@@ -1,0 +1,116 @@
+{
+  "classification": "qualified_retained_participation_staging_not_publication",
+  "reviewed_code": "f64681f83e7620377710ce9faf920766b2fe450a",
+  "request_sha": "7c5c653b9271a668b5ed66b33c693d42c2afaa77",
+  "run_id": 43690403060,
+  "job_id": 132739835179,
+  "summary": {
+    "candidate_sha": "7c5c653b9271a668b5ed66b33c693d42c2afaa77",
+    "generation": "availability-participation-2025-durant-v1-20261114",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/test_season_inactive_pilot_real_data.py::test_retained_season_batch_unlocks_complete_season_answers"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "validated_season_queries": 186,
+  "phases": {
+    "published": {
+      "candidate_cases": 713,
+      "complete_cases": 18,
+      "states": {
+        "unknown": 31790,
+        "played": 26283,
+        "did_not_play": 227,
+        "not_member": 166
+      },
+      "blocked_with_processed_game_omission": 66,
+      "blocked_only_outside_processed_game_population": 629
+    },
+    "prior_pr619": {
+      "candidate_cases": 713,
+      "complete_cases": 19,
+      "states": {
+        "unknown": 31685,
+        "played": 26283,
+        "did_not_play": 332,
+        "not_member": 166
+      },
+      "blocked_with_processed_game_omission": 134,
+      "blocked_only_outside_processed_game_population": 560
+    },
+    "retained_batch": {
+      "candidate_cases": 713,
+      "complete_cases": 93,
+      "states": {
+        "unknown": 20846,
+        "played": 26283,
+        "did_not_play": 11109,
+        "not_member": 228
+      },
+      "blocked_with_processed_game_omission": 134,
+      "blocked_only_outside_processed_game_population": 486
+    }
+  },
+  "overlay_file_sha256": {
+    "validation.json": "fd00dd4fb81ab366672169e9dad0ecaad144edc3a9b4785b5a6701bec37c687f",
+    "raw/player_game_availability_sources/30ff4b74b545e5955d39318aa60f542bfb9ada46eabf8e95ffc8de798e804fff.json": "30ff4b74b545e5955d39318aa60f542bfb9ada46eabf8e95ffc8de798e804fff",
+    "raw/player_game_availability_sources/f6d1880db63f2878618cf249662db42f5bb0fa023f9daa5135a4c5bbc746c127.structured.json": "f6d1880db63f2878618cf249662db42f5bb0fa023f9daa5135a4c5bbc746c127",
+    "raw/player_game_availability_sources/f5fc5d8ca026f70f646452a22b9eb20d50c2f1791ad870ed6ddf106e19fc0868.structured.json": "f5fc5d8ca026f70f646452a22b9eb20d50c2f1791ad870ed6ddf106e19fc0868",
+    "raw/player_game_availability_sources/70c952028da92388a2a22855c1d40f78e7964d9082e22fdec7216b96468b7ce4.structured.json": "70c952028da92388a2a22855c1d40f78e7964d9082e22fdec7216b96468b7ce4",
+    "raw/player_game_availability_sources/3759fa94b2635f9f5f5dbeb3d6f7d9dc72e400812b741cbf743afac496e68ae7.json": "3759fa94b2635f9f5f5dbeb3d6f7d9dc72e400812b741cbf743afac496e68ae7",
+    "raw/player_game_availability_sources/6daa4907ea472eb067374e12abe51b3050fefd6bb8a4b7051709e0f8a2145ca4.structured.json": "6daa4907ea472eb067374e12abe51b3050fefd6bb8a4b7051709e0f8a2145ca4",
+    "raw/player_game_availability_sources/2b2f6f3155739e8a5503a4ccbcc1c5c145503cccb9e0f46decebb02b50824309.json": "2b2f6f3155739e8a5503a4ccbcc1c5c145503cccb9e0f46decebb02b50824309",
+    "raw/player_game_availability_sources/a92d97e14240edb89a4c5e2ae765c094f9d1415a0e559126ec03b39367d409f7.json": "a92d97e14240edb89a4c5e2ae765c094f9d1415a0e559126ec03b39367d409f7",
+    "raw/player_game_availability_sources/60ba414e5e86f07d34c265c8be93f1e4af846d221a399918d4f0a4af90f899a8.structured.json": "60ba414e5e86f07d34c265c8be93f1e4af846d221a399918d4f0a4af90f899a8",
+    "raw/player_game_availability_sources/12ef4cb5ea46ee35c75c1096c7fa45946e74162ae7182cf132138adc7dc75410.json": "12ef4cb5ea46ee35c75c1096c7fa45946e74162ae7182cf132138adc7dc75410",
+    "raw/player_game_availability_sources/854218dc1ff50386d9a38812738cc69808b2b12de0ef7813cbde3c947f197541.json": "854218dc1ff50386d9a38812738cc69808b2b12de0ef7813cbde3c947f197541",
+    "raw/player_game_availability_sources/96555d579d5655bc7a9fac48d9e7dc69e64368852553b8d815d49c21af1f6738.json": "96555d579d5655bc7a9fac48d9e7dc69e64368852553b8d815d49c21af1f6738",
+    "raw/player_game_availability_sources/16ccd5ed97a14ef31bc8554fec21e3950292ce378af55764cbd4d3b734ebe12e.json": "16ccd5ed97a14ef31bc8554fec21e3950292ce378af55764cbd4d3b734ebe12e",
+    "raw/player_game_availability_sources/753f5eb3d995a81d501a1555cfc3606ca40140f445d6040660c0622197287094.json": "753f5eb3d995a81d501a1555cfc3606ca40140f445d6040660c0622197287094",
+    "raw/player_game_availability_sources/8264ab3ac6529c4ea094ec01b6a978998f81f13030b04e495268352d35628bf0.json": "8264ab3ac6529c4ea094ec01b6a978998f81f13030b04e495268352d35628bf0",
+    "raw/player_game_availability_sources/238cdfe7d1e691f433ae3d313dc46e8626e4c34af6262c12287a4790098fc57f.json": "238cdfe7d1e691f433ae3d313dc46e8626e4c34af6262c12287a4790098fc57f",
+    "raw/player_game_availability_sources/65043fbaf1de19d4991554e6565b119b05b38613e7ba248de6075bd859d57ca1.json": "65043fbaf1de19d4991554e6565b119b05b38613e7ba248de6075bd859d57ca1",
+    "raw/player_game_availability_sources/a1601b58dc0933e4d564cd77451805a202f78623233052d75850300b1dd0dcfa.json": "a1601b58dc0933e4d564cd77451805a202f78623233052d75850300b1dd0dcfa",
+    "raw/player_game_availability_sources/187e6600ac87d1df1cb27032aa647189a8307725e0bcd4db988a0d1bfc5e8176.structured.json": "187e6600ac87d1df1cb27032aa647189a8307725e0bcd4db988a0d1bfc5e8176",
+    "raw/player_game_availability_sources/ad9f6dbab6988bb6ca1bb6d1dedbac8eee3aace5e8c8d202a2e317239bfcf751.json": "ad9f6dbab6988bb6ca1bb6d1dedbac8eee3aace5e8c8d202a2e317239bfcf751",
+    "raw/player_game_availability_sources/d3bc6a5b405346c57ed25b6b16638723c16cd56eaf078050543d9aa2df2e769e.json": "d3bc6a5b405346c57ed25b6b16638723c16cd56eaf078050543d9aa2df2e769e",
+    "raw/player_game_availability_sources/605f332d64b287f4748277dfe18df5d5c31423d589f447e7ac8530712bcbd48f.json": "605f332d64b287f4748277dfe18df5d5c31423d589f447e7ac8530712bcbd48f",
+    "raw/player_game_availability_sources/22d9bfc74b2052e8ad5d0d3fc63c1e6d6882b6a7937f937238447211f637705d.structured.json": "22d9bfc74b2052e8ad5d0d3fc63c1e6d6882b6a7937f937238447211f637705d",
+    "raw/player_game_availability_sources/c5aa71bc9904712f772ad0a133a05526c44a40e00cb80dde72918201176db358.structured.json": "c5aa71bc9904712f772ad0a133a05526c44a40e00cb80dde72918201176db358",
+    "raw/player_game_availability/2023-24_regular_season.imports.json": "29acf70a7fd2c4ce869eb68d86f15fe041d7f3e8d3622c0a87df350ee7f10373",
+    "raw/player_game_availability/2023-24_regular_season.csv": "2646e8a490f10610c7915c7c111868cd990795b03db42b0114ae1df36b0a531b",
+    "raw/player_game_inactive/2023-24_regular_season.csv": "1a214a1a0bb3de8f434147a4367a377cdab95be72f819b3bd2633596a6d9f226",
+    "raw/player_game_inactive/2023-24_regular_season.source.json": "e5508c80636654ce884f7697da4d73139dbb5979045395c320c674fd043968ce",
+    "raw/player_game_inactive_sources/adf13e62baeb356fab9f8507a37379f35a4631cae3846700cb49fab4cd01969b.csv": "adf13e62baeb356fab9f8507a37379f35a4631cae3846700cb49fab4cd01969b"
+  },
+  "source_artifact_metadata": [
+    {
+      "id": 14152486273,
+      "name": "required-numerical-43690403060",
+      "size_bytes": 321610,
+      "sha256": "sha256:50319d1fe1df1a5d2265766532bc13d4f79fe598ac3b81cc0fb59ec129e0f224"
+    }
+  ],
+  "publication_state": "staged_only_no_writes",
+  "new_game_source_requests": 0,
+  "source_origin": "archive-derived SummaryV2 InactivePlayers, not original NBA wire responses",
+  "core1_acceptance_changed": false,
+  "durable_overlay": {
+    "file": "qualified-overlay-v1.zip",
+    "size_bytes": 324815,
+    "sha256": "cb5caebada456829616fe9f75e54ce8d4a5fd0ab1363945024c75ebf3205b9e8",
+    "file_contents_match_r2_inventory": true,
+    "packaging": "locally reproduced with pandas3.1.1/numpy2.4.6; fixed ZIP metadata; all30filebodyhashes match authenticated R2 log inventory; not a claim to have downloaded the source artifact ZIP"
+  }
+}

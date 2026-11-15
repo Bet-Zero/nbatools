@@ -2272,3 +2272,44 @@ appearances qualify only their exact game via the existing membership resolver.
 Zero-minute and missing appearance rows remain unknown. Existing qualified game
 participation imports, including the PR619 game-grain recovery process, are
 unchanged; this report neither replaces them nor asserts medical status/DNPs.
+
+### Archived season inactive observations
+
+`raw/player_game_inactive/<season>_regular_season.csv` supplements qualified
+per-game availability with explicit `BoxScoreSummaryV2.InactivePlayers` rows
+from a retained SportsDataverse `game_rosters_<ending-year>.csv` release asset.
+Despite that upstream filename, these are **listed inactive observations**, not
+full rosters, continuous membership or complete absence records.
+
+The producer `structured_participation.stage_season_inactive` accepts an isolated
+data root, original CSV bytes, source receipt and season. It performs no acquisition
+or publication and refuses an existing season dataset or published-generation
+root. Separate source/derived files leave old game rows and import ledgers intact.
+Canonical season game/team/appearance hashes, release asset identity/digest,
+original body/hash/size, capture time and source table are bound.
+`schema_reference_revision` identifies inspected publisher schema code, not a
+claimed source build execution. Original NBA capture time remains unknown.
+
+Keys are `(game_id, player_id)` with explicit `team_id`; only regular-season
+rows matching canonical final games/sides/abbreviations and known identity names
+qualify. Duplicates, appearance contradictions, changed original/canonical bytes
+or tampered derived rows reject the batch. New NBA IDs without appearance history
+are allowed, as in native Summary imports. Originals live in
+`raw/player_game_inactive_sources/<sha256>.csv`; the season `.source.json` receipt
+binds provenance and canonical dependencies. Runtime and publication validation
+replay the source before consumption, cached per immutable generation.
+
+Rows retain availability columns with `participation_state=did_not_play`, null
+`source_minutes`, `coverage_scope=listed_player_rows_only` and source kind
+`sportsdataverse_nba_inactive_archive:<sha256>`. Existing qualified observations
+take precedence on matching keys; disagreements reject instead of overwriting.
+The shared resolver uses only the requested game's association. Omissions remain
+unknown; dates before/after a trade or signing are never filled. No injury, absence
+reason, health or on-court statistic is inferred.
+
+The bounded 2023-24 pilot uses already retained inactive rows and PR619's unchanged
+eight-game staging. Product coverage counts only player/team/season cases with
+**all 82 games classified**, including genuine empty with/without samples. Partial
+logs and appearance counts alone are not complete season-long absence support.
+Staging is distinct from publication and does not expand Core-1 acceptance or
+prove every historical season complete.

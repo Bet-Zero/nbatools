@@ -8,6 +8,7 @@ No network, publication or season-wide membership inference occurs here.
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import re
 from datetime import datetime
@@ -384,3 +385,273 @@ def validate_structured_import(root, game_id, rows, receipt):
     expected = _build(root, packet, directory, digest)
     if _game_digest(expected) != _game_digest(rows):
         raise ValueError("Structured rows differ from original qualified sources")
+
+
+INACTIVE_PREFIX = "sportsdataverse_nba_inactive_archive"
+INACTIVE_ROOT = "raw/player_game_inactive"
+INACTIVE_SOURCES = "raw/player_game_inactive_sources"
+INACTIVE_FIELDS = (
+    "player_id",
+    "first_name",
+    "last_name",
+    "jersey_num",
+    "team_id",
+    "team_city",
+    "team_name",
+    "team_abbreviation",
+    "season",
+    "game_id",
+    "season_type_id",
+)
+
+
+def inactive_dependencies(season):
+    if not isinstance(season, str) or not re.fullmatch(r"(?:19|20)\d{2}-\d{2}", season):
+        raise ValueError("Invalid inactive season")
+    if season[-2:] != str(int(season[:4]) + 1)[-2:]:
+        raise ValueError("Invalid inactive season ending year")
+    suffix = f"{season}_regular_season.csv"
+    return [f"raw/{kind}/{suffix}" for kind in ("games", "team_game_stats", "player_game_stats")]
+
+
+def qualify_season_inactive(raw, receipt, season, dependencies):
+    """Qualify explicit archived SummaryV2 inactive rows, never source omissions.
+
+    This is the publisher's season CSV, not reconstructed NBA wire responses.
+    Canonical scope, known identities and appearances constrain every record.
+    No continuous membership, complete roster or absence reason is derived.
+    """
+    paths = inactive_dependencies(season)
+    year = int(season[:4]) + 1
+    digest = hashlib.sha256(raw).hexdigest()
+    url = (
+        "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/"
+        f"nba_stats_game_rosters/game_rosters_{year}.csv"
+    )
+    asset = receipt["publisher_asset"]
+    if (
+        not 0 < len(raw) <= 16_000_000
+        or receipt.get("schema_version") != 1
+        or receipt.get("source_kind") != "archive_derived_summary_v2_inactive_rows"
+        or receipt.get("origin_table") != "BoxScoreSummaryV2.InactivePlayers"
+        or receipt.get("source_url") != url
+        or receipt.get("sha256") != digest
+        or receipt.get("size_bytes") != len(raw)
+        or receipt.get("original_nba_capture_time") is not None
+        or datetime.fromisoformat(receipt["retrieved_at"]).tzinfo is None
+        or not re.fullmatch(r"[a-f0-9]{40}", receipt["schema_reference_revision"])
+        or type(asset["id"]) is not int
+        or asset["id"] <= 0
+        or asset["name"] != f"game_rosters_{year}.csv"
+        or asset["browser_download_url"] != url
+        or asset["digest"] != "sha256:" + digest
+        or asset["size"] != len(raw)
+        or set(dependencies) != set(paths)
+        or set(receipt["canonical_file_sha256"]) != set(paths)
+        or any(
+            hashlib.sha256(dependencies[p]).hexdigest() != receipt["canonical_file_sha256"][p]
+            for p in paths
+        )
+    ):
+        raise ValueError("Inactive archive provenance/dependency mismatch")
+    frame = pd.read_csv(io.BytesIO(raw), dtype=str, keep_default_na=False)
+    if tuple(frame.columns) != INACTIVE_FIELDS or frame.empty:
+        raise ValueError("Unrecognized inactive archive schema")
+    if not (
+        frame.game_id.str.fullmatch(r"\d{10}")
+        & frame.season.eq(str(year))
+        & frame.season_type_id.eq(frame.game_id.str[2])
+        & frame.first_name.str.strip().ne("")
+        & frame.last_name.str.strip().ne("")
+    ).all():
+        raise ValueError("Malformed inactive archive identity/season")
+    from nbatools.commands._participation_observations import _ids
+
+    for key in ("game_id", "player_id", "team_id"):
+        frame[key] = _ids(frame[key])
+    if frame.duplicated(["game_id", "player_id"]).any():
+        raise ValueError("Duplicate/conflicting inactive archive keys")
+    frame = frame.loc[frame.season_type_id.eq("2")].copy()
+    if frame.empty:
+        raise ValueError("Inactive archive has no regular-season observations")
+    games, teams, players = [pd.read_csv(io.BytesIO(dependencies[p])) for p in paths]
+    for table in (games, teams, players):
+        if not (table.season.eq(season) & table.season_type.eq("Regular Season")).all():
+            raise ValueError("Inactive canonical season/type mismatch")
+    if games.game_id.duplicated().any() or teams.duplicated(["game_id", "team_id"]).any():
+        raise ValueError("Duplicate inactive canonical game/team keys")
+    games = games.set_index("game_id")
+    teams = teams.set_index(["game_id", "team_id"])
+    known = players.groupby("player_id").player_name.agg(lambda ns: {_name(n) for n in ns})
+    for row in frame.itertuples():
+        if row.game_id not in games.index or (row.game_id, row.team_id) not in teams.index:
+            raise ValueError("Inactive archive outside canonical game/team sides")
+        game, team = games.loc[row.game_id], teams.loc[(row.game_id, row.team_id)]
+        if (
+            str(game.is_final).lower() not in {"true", "1"}
+            or row.team_id not in {int(game.home_team_id), int(game.away_team_id)}
+            or row.team_abbreviation != team.team_abbr
+            or str(team.game_date) != str(game.game_date)
+        ):
+            raise ValueError("Inactive archive canonical envelope mismatch")
+        # Unknown NBA IDs are allowed just as in native Summary imports; some
+        # two-way players never appear in the canonical appearance/name index.
+        if (
+            row.player_id in known
+            and _name(row.first_name + " " + row.last_name) not in known[row.player_id]
+        ):
+            raise ValueError("Inactive name conflicts with known NBA identity")
+    if not frame.merge(players, on=["game_id", "player_id"]).empty:
+        raise ValueError("Inactive archive contradicts a canonical appearance")
+    result = pd.DataFrame(
+        {
+            "game_id": frame.game_id,
+            "game_date": frame.game_id.map(games.game_date),
+            "season": season,
+            "season_type": "Regular Season",
+            "team_id": frame.team_id,
+            "team_abbr": frame.team_abbreviation,
+            "player_id": frame.player_id,
+            "player_name": frame.first_name + " " + frame.last_name,
+            "participation_state": "did_not_play",
+            "source_minutes": None,
+            "source_comment": "INACTIVE - archived BoxScoreSummaryV2 listed row",
+            "source": INACTIVE_PREFIX + ":" + digest,
+            "source_sha256": digest,
+            "identity_source_sha256": "",
+            "coverage_scope": "listed_player_rows_only",
+        },
+        columns=COLUMNS,
+    )
+    return result.sort_values(["game_id", "player_id"]).reset_index(drop=True)
+
+
+def stage_season_inactive(root, raw, receipt, season):
+    """Add a separate immutable batch to an isolated data root; no acquisition.
+
+    Existing per-game/PDF rows and import ledgers are never overwritten.
+    """
+    root = Path(root)
+    if (root / "metadata/generation_manifest.json").exists():
+        raise ValueError("Inactive staging cannot modify a published generation")
+    paths = inactive_dependencies(season)
+    rows = qualify_season_inactive(
+        raw, receipt, season, {p: (root / p).read_bytes() for p in paths}
+    )
+    target = root / INACTIVE_ROOT / f"{season}_regular_season.csv"
+    existing = root / "raw/player_game_availability" / target.name
+    if existing.exists():
+        validate_inactive_overlap(pd.read_csv(existing), rows)
+    provenance = target.with_suffix(".source.json")
+    if target.exists() or provenance.exists():
+        raise ValueError("Inactive staging requires a new immutable season dataset")
+    original = root / INACTIVE_SOURCES / f"{receipt['sha256']}.csv"
+    if original.exists() and original.read_bytes() != raw:
+        raise ValueError("Inactive original conflicts with retained bytes")
+    original.parent.mkdir(parents=True, exist_ok=True)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    original.write_bytes(raw)
+    provenance.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
+    _atomic_csv(rows, target)
+    return rows
+
+
+def validate_inactive_overlap(existing, inactive):
+    shared = existing.merge(inactive, on=["game_id", "player_id"], suffixes=("", "_inactive"))
+    if (
+        not shared.empty
+        and not (
+            shared.team_id.eq(shared.team_id_inactive)
+            & shared.game_date.eq(shared.game_date_inactive)
+            & shared.participation_state.isin(["did_not_play", "unknown"])
+        ).all()
+    ):
+        raise ValueError("Season inactive archive contradicts qualified game observations")
+
+
+def _inactive_replay(derived, original, receipt, season, dependencies):
+    expected = qualify_season_inactive(original, receipt, season, dependencies)
+    if set(derived) != set(COLUMNS):
+        raise ValueError("Inactive derived schema differs from qualified source")
+
+    def cells(frame):
+        from nbatools.commands._participation_observations import _ids
+
+        frame = frame.copy()
+        for key in ("game_id", "team_id", "player_id"):
+            frame[key] = _ids(frame[key])
+        return (
+            frame[list(COLUMNS)]
+            .sort_values(["game_id", "player_id"])
+            .fillna("")
+            .astype(str)
+            .reset_index(drop=True)
+        )
+
+    if not cells(expected).equals(cells(derived)):
+        raise ValueError("Inactive derived rows differ from qualified original")
+    return expected
+
+
+def validate_season_inactive(root):
+    directory = Path(root) / INACTIVE_ROOT
+    if not directory.exists():
+        return
+    for path in directory.iterdir():
+        if not re.fullmatch(
+            r"(?:19|20)\d{2}-\d{2}_regular_season\.(?:csv|source\.json)", path.name
+        ):
+            raise ValueError("Unfinished/unrecognized inactive staging file")
+        season = path.name[:7]
+        target = directory / f"{season}_regular_season.csv"
+        receipt = json.loads(target.with_suffix(".source.json").read_bytes())
+        if not re.fullmatch(r"[a-f0-9]{64}", str(receipt.get("sha256", ""))):
+            raise ValueError("Malformed inactive original digest")
+        if path != target:
+            if not target.exists():
+                raise ValueError("Inactive provenance lacks derived rows")
+            continue
+        expected = _inactive_replay(
+            pd.read_csv(target),
+            (Path(root) / INACTIVE_SOURCES / f"{receipt['sha256']}.csv").read_bytes(),
+            receipt,
+            season,
+            {p: (Path(root) / p).read_bytes() for p in inactive_dependencies(season)},
+        )
+        existing = Path(root) / "raw/player_game_availability" / target.name
+        if existing.exists():
+            validate_inactive_overlap(pd.read_csv(existing), expected)
+
+
+def load_season_inactive(seasons):
+    """Serve only replayed source rows, cached by immutable generation identity."""
+    from nbatools.data_source import data_exists, data_path, data_source_cache_key
+    from nbatools.dataframe_cache import FRAME_CACHE
+
+    frames = []
+    for season in seasons:
+        paths = inactive_dependencies(season)
+        target = f"data/{INACTIVE_ROOT}/{season}_regular_season.csv"
+        provenance = target.removesuffix(".csv") + ".source.json"
+
+        def load(target=target, provenance=provenance, paths=paths, season=season):
+            if data_exists(target) != data_exists(provenance):
+                raise ValueError("Partial inactive season dataset")
+            if not data_exists(target):
+                return pd.DataFrame(columns=COLUMNS)
+            receipt = json.loads(data_path(provenance).read_bytes())
+            if not re.fullmatch(r"[a-f0-9]{64}", str(receipt.get("sha256", ""))):
+                raise ValueError("Malformed inactive original digest")
+            original = f"data/{INACTIVE_SOURCES}/{receipt['sha256']}.csv"
+            return _inactive_replay(
+                pd.read_csv(data_path(target)),
+                data_path(original).read_bytes(),
+                receipt,
+                season,
+                {p: data_path("data/" + p).read_bytes() for p in paths},
+            )
+
+        frames.append(
+            FRAME_CACHE.get_or_load(("season_inactive", data_source_cache_key(), season), load)
+        )
+    return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=COLUMNS)

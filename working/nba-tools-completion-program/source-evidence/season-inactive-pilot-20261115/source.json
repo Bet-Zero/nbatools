@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "source_kind": "archive_derived_summary_v2_inactive_rows",
+  "origin_table": "BoxScoreSummaryV2.InactivePlayers",
+  "source_url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/nba_stats_game_rosters/game_rosters_2024.csv",
+  "sha256": "adf13e62baeb356fab9f8507a37379f35a4631cae3846700cb49fab4cd01969b",
+  "size_bytes": 862872,
+  "retrieved_at": "2026-11-15T03:41:42.856039+00:00",
+  "original_nba_capture_time": null,
+  "schema_reference_revision": "26a6296dbbd743da71ee30d3e05086726c932d76",
+  "publisher_asset": {
+    "id": 602011267,
+    "name": "game_rosters_2024.csv",
+    "browser_download_url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/nba_stats_game_rosters/game_rosters_2024.csv",
+    "digest": "sha256:adf13e62baeb356fab9f8507a37379f35a4631cae3846700cb49fab4cd01969b",
+    "size": 862872,
+    "created_at": "2026-09-30T23:34:23Z",
+    "updated_at": "2026-09-30T23:34:23Z"
+  },
+  "canonical_file_sha256": {
+    "raw/games/2023-24_regular_season.csv": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346",
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760"
+  }
+}

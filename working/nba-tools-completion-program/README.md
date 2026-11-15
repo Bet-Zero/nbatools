@@ -11,60 +11,70 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**November 15, 2026 (Detroit). Lead: Codex.** Starting live main verified at
-`a9e30710` (merged PR621; all earlier work preserved). Current branch:
-`codex/bounded-membership-outcome`, documentation only. Agent 2/DQ-005 and K12
-cold-start stay parked; no background data worker is running.
+**November 15, 2026 (Detroit). Lead: Codex.** Starting main verified at `469dc12a`
+(PR622 merged). Current unit: PR623, `codex/season-inactive-pilot`. Previous work,
+source originals and stopped membership investigation are preserved. No team-PDF
+hunt or new membership-research infrastructure. Agent 2/DQ-005 and K12 stay parked.
 
-**Core-1 remains limited acceptance, not league-wide completion.** Earlier
-acceptance, K08 gaps, release evidence and defects remain in the unchanged
-[checkpoint history](checkpoint-history-20261114.md). Last recorded published
-snapshot remains `availability-participation-2025-durant-v1-20261114`, manifest
+**Core-1 remains limited acceptance, not league-wide completion.** K08's existing
+16 PASS/26 MISSING DATA/4 LIVE view is unchanged: Davis default-season/cross-team
+membership and current-season freshness/readiness remain unresolved. Older proof,
+release gaps and defects stay in [checkpoint history](checkpoint-history-20261114.md).
+Last recorded published snapshot remains
+`availability-participation-2025-durant-v1-20261114`, manifest
 `cde98408f3390e6191da564197fb77ffbc598a3059963cfc21d9f2d7e1a6b366`.
-No production change or new active-pointer/inventory/freshness claim.
+No production data/pointer change or fresh deployed-acceptance claim.
 
-**Bounded membership attempt stopped: zero new intervals or functional coverage.**
-Reused PR621 sources/code. Four discovery queries and two primary guide-body
-attempts found no qualifying season-final chronology: the official Rockets
-media-page guide returned403; the archived Lakers2024-25 guide exceeded the
-fetch tool's size limit (129,130,463bytes). Exact URLs/results are in the PR.
-No retries, alternate-host chase, new acquisition/validation infrastructure or
-individual investigation followed. Hinton/Hudgins opening conflicts, Windler's
-effective-date dispute and full contract-event coverage remain unresolved.
-Expiry coverage is unqualified; this sample has no ten-day signing to test it.
+### Useful full-season participation improvement, staged only
 
-**Actual existing coverage:** pinned manifest/relevant CSV hashes verified;
-43candidate player/team identities over164team-games (160unique NBA games),
-3,526exact-game membership questions, not every NBA player:
+The bounded pilot is 2023-24, all30clubs. PR619's retained complete-game path
+already supplies one additional full-season case; other retained native pairs
+add no further complete case. A retained 0.86MB season CSV has 11,010 explicit
+NBA SummaryV2 inactive rows for all1,230regular games. Independent checks matched
+all30native comparators and found no appearance/side/duplicate contradictions.
+The new strict archive-derived inactive producer/reader adds a separate dataset,
+keeps old per-game/PDF rows and ledgers intact, and never fills omissions.
 
-| Sample | Known member | Known nonmember | Unknown | Total |
-| --- | ---: | ---: | ---: | ---: |
-| Rockets2023-24 | 885 | 3 | 916 | 1,804 |
-| Lakers2023-24 | 980 | 4 | 738 | 1,722 |
+| Full player/team/season cases (all82games known) | Count |
+| --- | ---: |
+| Published before pilot | 18 |
+| Including prior PR619 staging | 19 |
+| Including retained season inactive batch | 93 |
 
-Total **1,872known /1,654unknown (53.1% known)**:1,747played,118explicit
-nonparticipants,7same-game opponent facts. The extra125facts beyond PR621's
-appearance-only census were already qualified/retained, not newly acquired.
-No membership-interval file exists; date-only continuous membership stays unknown.
+That is **75 above published,74 beyond already-staged work**, across27clubs, in a
+713candidate-case denominator. No entire club is complete for every candidate.
+The remaining620cases include134with omissions even in processed whole-game
+sources and486with gaps only outside those reports. All20,846unknown cells have
+unresolved membership and participation; no membership-known/play-unknown-only
+case exists. Trades/late joins stay blocked without qualified associations;
+missing rows never become DNPs. No new acquisition/cost or automatic refresh.
 
-Existing-engine natural queries verified outside the original named cohorts:
-Rockets **28-28 in56games with Jock Landale** in2023-24; Rockets **1-0 without
-Cam Whitmore on November8,2023** (128-94); Lakers **0-1 without Harry GilesIII
-on April9,2024** (120-134). Season-wide Rockets without Whitmore remains
-unsupported. Separate checker independently reproduced every cell from source
-CSVs and authenticated both native inactive lists/scores, without app calculations.
-No source, dataset, parser, engine or PR619 recovery code changed; no suite/R2 run.
+Local product verification checked186actual season-long with/without queries,
+including zero-appearance players and genuine zero-game samples. Examples:
+Denver without Čančar57-25; Minnesota without Clark56-26; Houston without
+Sengun12-7; Cleveland without Allen2-3. Each is explicit2023-24 scope, not a
+current/deployed claim. Full-season Adams/Houston and Dinwiddie/Lakers still
+refuse incomplete coverage. [Source/coverage details](source-evidence/season-inactive-pilot-20261115/README.md).
 
-**Next practical direction:** stop team-PDF membership hunting. Continuous
-1996-97+ coverage needs a vetted league/season bulk contract-lifecycle ledger
-(join/trade/waiver/expiry/two-way changes) plus dated opening populations. The
-current official feed begins July2015 and is insufficient alone. Do not claim
-that missing bulk input is available or automatically start another source hunt.
-Use the existing whole-game qualifier over retained originals for incremental
-exact-game functionality; it does not solve omitted-player tenure. Reopen
-continuous membership only with materially new bulk source evidence. No substantial
-backfill, costs or automatic refresh; nothing currently needed from B.
-PR621 originals/reviews remain in [source evidence](source-evidence/team-membership-20261114/README.md).
+Reviewed code `f64681f8` passed authenticated targeted R2
+[run43690403060](https://github.com/Bet-Zero/nbatools/actions/runs/43690403060)
+via sole-parent request `7c5c653b`:1selected/executed/passed,0skips/errors;
+all186season queries passed. Actual active-generation and exact manifest checks
+preceded the published baseline. Separate checker approved the source, all
+case/native controls, preservation guards and nonregular-scope fix. Source and
+boundary controls passed; the31changed632unchanged historical companion preserves
+all663bindings/22cases/44captures and false full-Core/fresh flags. Final data/docs-only
+review and exact CI results are recorded in PR623; known dev-security red stays advisory.
+No manual full suite or broad replay. Closed membership/PDF research stays closed.
+
+The durable [qualified overlay](source-evidence/season-inactive-pilot-20261115/qualified-overlay-v1.zip)
+is324,815bytes (about5.09MBuncompressed), with all30file bodies matching the
+R2-validated inventory. Source/canonical bytes and old rows remain preserved.
+**Next:** prepare/register this exact overlay through the existing protected
+publication path, with required owner approval before activation. Published
+coverage remains18;93cases are qualified isolated staging. No additional
+collection is needed for this gain. Do not infer membership for the620remaining
+cases, restart source hunts or label this pilot league-wide completion.
 
 ## Preserved scope
 
