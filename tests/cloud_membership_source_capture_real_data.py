@@ -133,3 +133,69 @@ def test_capture_fixed_bulk_membership_source_sample(capfd):
     emit("MEMBERSHIP_CAPTURE_DIAGNOSTIC", receipt)
     assert len(receipt["captures"]) == 5
     assert sum(item["size_bytes"] for item in receipt["captures"]) <= 21_000_000
+
+
+def test_capture_one_complete_player_movement_response(capfd):
+    """Changed bound after the prior 200 response exceeded 4MB; never repeat the batch."""
+    output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "membership-movement-source"
+    output.mkdir(parents=True, exist_ok=False)
+    name, url, _ = SOURCES[-1]
+    limit = 16_000_000
+    item = dict(
+        file=name,
+        url=url,
+        started_at=datetime.now(UTC).isoformat(),
+        limit_bytes=limit,
+        complete=False,
+        attempts=1,
+        redirects=0,
+        classification="bounded_native_capture_not_membership_acceptance",
+        membership_accepted=False,
+        production_writes=0,
+    )
+    raw = bytearray()
+    try:
+        with requests.get(url, stream=True, timeout=20, allow_redirects=False) as response:
+            item["http_status"] = response.status_code
+            item["reported_content_length"] = response.headers.get("Content-Length")
+            for chunk in response.iter_content(65536):
+                remaining = limit - len(raw)
+                raw.extend(chunk[:remaining])
+                if len(chunk) > remaining:
+                    raise ValueError("body_limit_exceeded")
+            item["complete"] = response.status_code == 200
+    except (requests.RequestException, ValueError) as error:
+        item["error_type"] = type(error).__name__
+    if raw:
+        (output / name).write_bytes(raw)
+    item.update(
+        size_bytes=len(raw),
+        sha256=hashlib.sha256(raw).hexdigest(),
+        retrieved_at=datetime.now(UTC).isoformat(),
+        original_nba_capture_time=None,
+    )
+    (output / "capture.json").write_text(json.dumps(item, indent=2) + "\n")
+    with capfd.disabled():
+        print("MEMBERSHIP_MOVEMENT_CAPTURE " + json.dumps(item), flush=True)
+    assert item["complete"], "The bounded source remains unavailable; no membership accepted"
+    document = json.loads(raw)
+    native = document["NBA_Player_Movement"]
+    # Raw selected rows are diagnostic observations, not normalized membership.
+    # First inspect the actual column/row schema; the later qualifier replays originals.
+    rows = native["rows"]
+    selected = [
+        r
+        for r in rows
+        if any(team in str(r) for team in ("Lakers", "Rockets"))
+        and any(year in str(r) for year in ("2023", "2024"))
+    ]
+    summary = dict(
+        columns=native["columns"],
+        row_count=len(rows),
+        row_examples=rows[:2],
+        selected_raw_rows=selected,
+        original_sha256=item["sha256"],
+    )
+    (output / "schema-and-sample.json").write_text(json.dumps(summary, indent=2) + "\n")
+    with capfd.disabled():
+        print("MEMBERSHIP_MOVEMENT_SCHEMA " + json.dumps(summary), flush=True)
