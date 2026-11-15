@@ -201,6 +201,19 @@ averaging 25-30") refuses; "1-2 point games" is not read as a close finish.
 Pre-existing (also on main): "Lakers games where a starter scored 30" reads
 the team's own 30 points.
 
+PR618 checks: independent review approved 3ae4810 (separate agent session,
+four rounds) and the test-only follow-up ac3453c. Targeted R2
+[43658225359](https://github.com/Bet-Zero/nbatools/actions/runs/43658225359)
+passed (17 tests). Full R2 on 3ae4810
+([43656769674](https://github.com/Bet-Zero/nbatools/actions/runs/43656769674))
+versus a same-day full run on main 07b865e
+([43658019032](https://github.com/Bet-Zero/nbatools/actions/runs/43658019032)):
+identical failure sets apart from one PR618 real-data test whose raw
+plus-minus cross-check was wrong (fixed in ac3453c, green above). The shared
+failures are 9 with/without replay cases (UNRESOLVED, parked) and 142 stale
+deployed-pin and participation-package needs_data tests that predate PR618;
+no full run has been green since 2026-10-13.
+
 ## Preserved scope
 
 - **Acceptance contract:** [acceptance-baseline-pr582.md](acceptance-baseline-pr582.md),
