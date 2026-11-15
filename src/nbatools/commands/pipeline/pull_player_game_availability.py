@@ -272,6 +272,9 @@ def validate_publication(root: Path) -> None:
     )
 
     validate_reasons(root)
+    from nbatools.commands.pipeline.structured_participation import validate_season_inactive
+
+    validate_season_inactive(root)
     directory = root / "raw/player_game_availability"
     if not directory.exists():
         return

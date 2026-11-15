@@ -68,7 +68,31 @@ def load_observations(seasons: list[str], season_type: str) -> pd.DataFrame:
 
         key = ("player_game_availability", data_source_cache_key(), season_type, season)
         frames.append(FRAME_CACHE.get_or_load(key, load))
-    return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=_REQUIRED)
+    rows = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=_REQUIRED)
+    if not any(
+        data_exists(f"data/raw/player_game_inactive/{season}_regular_season.{suffix}")
+        for season in seasons
+        for suffix in ("csv", "source.json")
+    ):
+        return rows
+    from nbatools.commands.pipeline.structured_participation import load_season_inactive
+
+    inactive = load_season_inactive(seasons)
+    shared = rows.merge(inactive, on=["game_id", "player_id"], suffixes=("", "_inactive"))
+    if (
+        not shared.empty
+        and not (
+            shared.team_id.eq(shared.team_id_inactive)
+            & shared.game_date.eq(shared.game_date_inactive)
+            & shared.participation_state.isin(["did_not_play", "unknown"])
+        ).all()
+    ):
+        raise ValueError("Season inactive archive contradicts qualified game observations")
+    # Keep every existing observation/clock authority. The separate season
+    # dataset supplies explicit missing keys, never replacement game packets.
+    known = set(zip(rows.game_id, rows.player_id))
+    extra = inactive.loc[[key not in known for key in zip(inactive.game_id, inactive.player_id)]]
+    return pd.concat([rows, extra], ignore_index=True)
 
 
 def resolve_observed_name(phrase: str, seasons: list[str], season_type: str) -> ResolutionResult:
