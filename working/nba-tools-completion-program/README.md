@@ -12,9 +12,10 @@ evidence; don't extend it.
 ## Resume checkpoint
 
 **November 14, 2026 (Detroit). Lead: Codex, taking over from Claude.**
-Live main verified at `da6ae716` (PR618 merged). Clean starting tree preserved;
-work is on `codex/league-participation-recovery`, based on that exact main.
-Only old PR462 remains open; its branch and saved Tatum work are untouched.
+Live main verified at `2d4bbe26` (PR619 merged, retaining PR618). The clean
+starting tree and previous branches were preserved. PR619 final reviewed code
+is `4dc3afb7`; its stager/numerical-test code is unchanged from R2-tested `a9895ea`.
+Old PR462, its branch and saved Tatum work are untouched.
 No background data worker is running; Agent 2/DQ-005 and K12 cold-start remain parked.
 
 ### What remains true
@@ -69,16 +70,19 @@ Keep the existing generalized membership/participation engine.
 
 ### Verification and one next action
 
-Separate checker `/root/coverage_checker` approved `a9895ea` with zero findings:
+Separate checker `/root/coverage_checker` approved `a9895ea` and final `4dc3afb7`
+with zero findings:
 67 focused tests, two unfamiliar omission/unknown controls, exact native rows and
 prior-cell preservation. R2 numerical validation passed as above. Initial CI
 caught the historical applicability seal. The checker separately approved the
 offline stager/documentation reach across all 22 original cases; the companion
 now binds 28 changed/635 unchanged files, preserving all 663 original bindings,
 22 inputs, 44 captures and false full-Core/fresh-deployment flags. Focused guard
-tests passed. Final CI/delta review must pass before merging PR619.
+tests passed. All blocking PR619 CI passed on the exact final head, including
+Python 3.11/3.12/3.13. The red frontend-security-dev audit is informational.
+Post-merge CI is checked separately; its live result is linked in PR619.
 
-After landing, qualify bulk **team/season membership evidence**, especially
+**Next: qualify bulk team/season membership evidence**, especially
 opening rosters plus dated NBA contract changes and older injured-list coverage.
 Use the game-based recovery path for valid retained pairs first; do not replace
 existing one-sided reports or claim that a complete file index proves membership. Bring exact missing
