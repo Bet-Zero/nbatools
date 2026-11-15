@@ -240,6 +240,8 @@ def test_existing_source_authority_is_preserved_and_conflicts_fail(sample):
     clear_frame_cache()
     with pytest.raises(ValueError, match="contradicts"):
         load_observations(["2023-24"], "Regular Season")
+    with pytest.raises(ValueError, match="contradicts"):
+        validate_season_inactive(root)
 
 
 def test_published_generation_cannot_be_mutated(sample):

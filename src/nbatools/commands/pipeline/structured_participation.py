@@ -539,6 +539,9 @@ def stage_season_inactive(root, raw, receipt, season):
         raw, receipt, season, {p: (root / p).read_bytes() for p in paths}
     )
     target = root / INACTIVE_ROOT / f"{season}_regular_season.csv"
+    existing = root / "raw/player_game_availability" / target.name
+    if existing.exists():
+        validate_inactive_overlap(pd.read_csv(existing), rows)
     provenance = target.with_suffix(".source.json")
     if target.exists() or provenance.exists():
         raise ValueError("Inactive staging requires a new immutable season dataset")
@@ -551,6 +554,19 @@ def stage_season_inactive(root, raw, receipt, season):
     provenance.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
     _atomic_csv(rows, target)
     return rows
+
+
+def validate_inactive_overlap(existing, inactive):
+    shared = existing.merge(inactive, on=["game_id", "player_id"], suffixes=("", "_inactive"))
+    if (
+        not shared.empty
+        and not (
+            shared.team_id.eq(shared.team_id_inactive)
+            & shared.game_date.eq(shared.game_date_inactive)
+            & shared.participation_state.isin(["did_not_play", "unknown"])
+        ).all()
+    ):
+        raise ValueError("Season inactive archive contradicts qualified game observations")
 
 
 def _inactive_replay(derived, original, receipt, season, dependencies):
@@ -595,13 +611,16 @@ def validate_season_inactive(root):
             if not target.exists():
                 raise ValueError("Inactive provenance lacks derived rows")
             continue
-        _inactive_replay(
+        expected = _inactive_replay(
             pd.read_csv(target),
             (Path(root) / INACTIVE_SOURCES / f"{receipt['sha256']}.csv").read_bytes(),
             receipt,
             season,
             {p: (Path(root) / p).read_bytes() for p in inactive_dependencies(season)},
         )
+        existing = Path(root) / "raw/player_game_availability" / target.name
+        if existing.exists():
+            validate_inactive_overlap(pd.read_csv(existing), expected)
 
 
 def load_season_inactive(seasons):
