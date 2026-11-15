@@ -569,6 +569,19 @@ OR consumers remain unfinished and may retain their existing unsupported reason.
   Publication validation rebuilds the rows from retained originals and the
   canonical game, rejecting altered sources, packets or normalized rows. This
   prepares verifiable staging; it grants no production publication authority.
+  The offline `tools.stage_participation_collection` request can use
+  `requirement_grain: "game"` (default remains `"player_game"`). Each game
+  requirement contains exactly `game_id`, `game_date` and `proposed_sources`:
+  one Traditional V3 plus one Summary V2/V3 source, with the existing pinned
+  provenance, original-body hashes and canonical checks. This recovers every
+  listed player on both sides without a player target. The receipt's
+  `qualified_games` records listed-player, played, explicit nonparticipant and
+  unknown counts per game; `qualified_targets` is empty. These counts are not
+  complete-roster certificates. Empty inactive lists and unlisted identities
+  remain unknown, including older injured-list eras. Requests cannot replace
+  an already represented game, even if its existing report covers only one side;
+  enrichment requires separately qualified composition. Existing source and
+  row preservation, offline replay and protected publication remain mandatory.
   Structured `source_minutes` supports participation and retains source resolution;
   it is not certified original-scorer whole-second precision. Exact-report
   positive-seconds consumers continue to require qualified Final Box PDF

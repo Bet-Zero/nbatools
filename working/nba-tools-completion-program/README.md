@@ -11,208 +11,70 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**As of 2026-11-14, main `45be77f` (after PR613) plus the second publication's audit.** Lead: temporary Claude Agent 1
-(Codex unavailable). Agent 2 stopped. DQ-005 parked. K12 cold-start moved to Live.
+**November 14, 2026 (Detroit). Lead: Codex, taking over from Claude.**
+Live main verified at `da6ae716` (PR618 merged). Clean starting tree preserved;
+work is on `codex/league-participation-recovery`, based on that exact main.
+Only old PR462 remains open; its branch and saved Tatum work are untouched.
+No background data worker is running; Agent 2/DQ-005 and K12 cold-start remain parked.
 
-### Where things stand, in plain English
+### What remains true
 
-- **The app works on history.** Ten of the twelve Core-1 capability groups
-  (K01-K07, K09-K11) are built and numerically rechecked on a pinned candidate
-  (PR595). They still need served-generation proof and the deployed
-  desktop/mobile check on a frozen release candidate. K03 and K05 also need fresh
-  numerical, language and rendering evidence for their paths changed since
-  their bindings.
-- **Participation questions (K08) are the main unfinished group.** Of the 46
-  original questions, IDs 7, 8, 23-25, 30-32 and 41 pass numerically on published
-  data, and also passed new-runtime desktop/mobile checks (PR605). IDs 16, 18
-  and 35 pass numerically on qualified data that isn't published yet. IDs 6
-  (Tatum 2024) and 44 (Durant 2007) have qualified, unpublished source data.
-  A few are blocked on missing evidence, and five are "this season" questions
-  that move to Live. A per-ID table for all 46 is the first next action.
-- **First approved publication is live (2026-11-14).** Package
-  `historical-participation-v1` adds 2023-24 Lakers participation for Davis,
-  LeBron and Reaves, and 2024-25 Tatum participation. It is the active generation
-  `availability-historical-participation-v1-20261114` (manifest `be094017…`,
-  852 objects, 404,817,823 bytes).
-  - B approved [run 43569028151](https://github.com/Bet-Zero/nbatools/actions/runs/43569028151),
-    which wrote and byte-verified every object.
-  - Like the LeBron publication, its verify job then failed only at the readiness
-    gate, which still reports `new_season_not_loaded` (freshness, moved to Live).
-  - The read-only audit `tools/audit_historical_publication.py`
-    ([R2 43573241422](https://github.com/Bet-Zero/nbatools/actions/runs/43573241422),
-    1/1 passed) then checked all 22 registered live answers (16 carried over from LeBron, 6 new). The pointer was
-    unchanged before and after.
-- **Second publication live (2026-11-14): `participation-2025-durant-v1`.** It adds the
-  2025-26 LAL/BOS participation (IDs 16/18/35, plus the reported-rest reasons) and
-  Durant 2007-08 (ID44). It is the active generation
-  `availability-participation-2025-durant-v1-20261114` (manifest `cde98408…`, 1,186
-  objects, 410,181,610 bytes).
-  - The stages were rebased onto the first publication by
-    `tests/cloud_participation_2025_stage_real_data.py`. It proves the live base is the
-    old base plus exactly the published files, and that the stages are disjoint from
-    them. It reruns the original consumers ([R2 43575535897](https://github.com/Bet-Zero/nbatools/actions/runs/43575535897)).
-  - B approved [publish run 43578345136](https://github.com/Bet-Zero/nbatools/actions/runs/43578345136).
-    Again, verify failed only at the `new_season_not_loaded` readiness gate.
-  - The read-only audit `tools/audit_participation_2025_publication.py`
-    ([R2 43581023642](https://github.com/Bet-Zero/nbatools/actions/runs/43581023642))
-    passed all 31 live answers (22 kept, 9 new, including the original 16 and 35
-    defaults). The pointer was unchanged.
-- **K12 (delivery)** works functionally. Its cold-start timing checks moved to Live (B, 2026-11-14).
-- **Recent fixes:** PR606 corrected P.J. Washington's rebounds (data v7). PR607
-  fixed "total" questions, team-restricted double-double boards, "who led…"
-  questions and a season-year bug.
-- **Scope decision (B, 2026-11-11):** Core-1 is accepted on data already held
-  (published history plus the fixed 123-game 2026-27 cutoff). Daily freshness and
-  literal "this season" questions move to the Live milestone. They're deferred,
-  not deleted.
+- **Core-1 has limited acceptance on held data, not league-wide completion.**
+  The existing 126 K01-K07/K09-K12 checks, acceptance view and deployed
+  desktop/mobile proof remain recorded, not rerun here. Latest K08 view: 16
+  PASS, 26 MISSING DATA, 4 LIVE; no software failures in that view. Its Davis
+  default-season and cross-team membership gaps remain open. Literal current
+  season/daily freshness and K12 cold-start moved to Live by B. The 484 unknown
+  USG%/TOV% values remain labeled unavailable, never zero.
+- Last recorded published snapshot:
+  `availability-participation-2025-durant-v1-20261114`, manifest
+  `cde98408f3390e6191da564197fb77ffbc598a3059963cfc21d9f2d7e1a6b366`,
+  1,186 objects. Both approved participation publications and their 31 audited
+  answers are preserved. Publication readiness still failed only at
+  `new_season_not_loaded`; no new live-pointer or full-inventory claim here.
+- PR618's parser fixes and independent/targeted R2 evidence are preserved.
+  Known broader replay failures and stale pinned package/deployed evidence are
+  not reclassified as passes. No broad replay or full suite was rerun.
+- Exact prior runs, decisions, remaining release evidence and carry-forward
+  defects are preserved unchanged in
+  [checkpoint-history-20261114.md](checkpoint-history-20261114.md).
 
-### B's decisions (2026-11-14, "yes yes and yes")
+### Active priority: league-wide with/without coverage
 
-Source: B, 2026-11-14 06:07 UTC (`cmsg_01ABTwDaHncgP7nUEgUSYNtvUp9CnT8J6gygVaXisAB7fm`),
-answering the plain-language questions in `cmsg_01ABTwDaHncgP7nUEgUSYNtvP2G6Z7BrxJ6Eue7UrM1sBB`.
+B's current direction supersedes the earlier first/last-appearance suggestion:
+**no first/last or whole-season roster guesses; no missing-row-as-DNP.**
+Keep the existing generalized membership/participation engine.
 
-1. **K12 cold-start timing moves to Live.** It is no longer a Core-1 blocker.
-2. **The 484 unknown USG%/TOV% values show as labeled "unavailable"** and do not
-   block the release. They are never shown as numbers.
-3. **Publication approved** for the already-qualified staged historical cohorts
-   (LAL 16/18/35, Tatum 2024, Durant 2007, historical Davis), through the existing
-   protected publication workflow only. This covers no current 2026-27 data, and
-   the existing no-write validation, review and environment gates still apply.
+- Core player stats came from season appearance logs, not full box-score lists.
+  Legacy starter-role extraction discarded nonplayers and did not save HTTP
+  bodies. Newer retained Traditional/Summary originals do contain unused DNP
+  and inactive evidence. Exact-game lists establish association and play state,
+  not tenure or nonmembership for omitted players.
+- Small change prepared: existing offline stager accepts a **game-grain request**
+  and recovers all listed players on both teams, without naming a player target.
+  Same original-source, canonical, append-only and protected-publication checks.
+  Local staging recovered 278 rows (173 played/105 explicit nonparticipants)
+  from eight already-retained games, preserving all 597 existing season rows.
+  Independent raw tally agrees. This staging is **not published**.
+- Source research independently checked opener/finale absences, Adams' trade
+  despite no Houston appearances, late signings, waivers, two-way players and
+  arbitrary opponent players. Older injured-list members can be omitted from
+  both Traditional and Summary: acquiring every pair is not a proven exact
+  1996-97+ membership solution. Season inactive archives and official team/season
+  transaction chronologies are reusable leads, with explicit completeness/date
+  gaps and source conflicts.
+- Evidence and exact missing inputs:
+  [league participation findings](source-evidence/league-participation-20261114/README.md).
+  Originals, old snapshots, accepted cohorts and safeguards are preserved.
 
-### What's left for Core-1
+### One next action
 
-| Item | Kind | What closes it |
-| --- | --- | --- |
-| Deployed check of K01-K12 | Release step | Served-generation proof and one desktop/mobile run on a frozen release candidate |
-| K03/K05 changed paths | Software evidence | Numerical, language and rendering checks for paths changed since the bindings |
-| K08 historical Davis/LeBron/Reaves 2023-24 + Tatum 2024-25 | **Published 2026-11-14** (run 43569028151; 22 live answers audited, R2 43573241422) | Map the IDs this closes in the acceptance view |
-| K08 2025-26 LAL/BOS (16/18/35) + Durant 2007 (44) | **Published 2026-11-14** (run 43578345136; 31 live answers audited, R2 43581023642) | Map the IDs this closes in the acceptance view |
-| K08 Davis default-season group (incl. 12 and both 40 questions, 2025-26) | Missing data | Dated official Davis club membership, or official per-game inactive lists, for every selected 2025-26 Lakers date. Not inferred from absent rows. |
-| K08 ID26 (Lakers vs Celtics and Knicks without Tatum) | Missing data | Dated Knicks-side membership or nonmembership on every selected date |
-| K08 IDs 4, 5, 19, 38 and the "current" 40 | Live (B, 2026-11-11) | Need real current-season inputs |
-| K08 IDs 45, 46 | Kept in controlled structured form, per the mapping | Confirm in the acceptance view |
-| K12 cold-start B1/M1/H1 | Live (B, 2026-11-14) | Not a Core-1 blocker |
-| 484 USG%/TOV% unknowns | Labeled unavailable (B, 2026-11-14) | Confirm they render as unavailable in the acceptance view |
-| Raw QA: 13 open failures (608 pass on reuse) | Mapped | 11 are participation-coverage gaps covered by the K08 rows above. 1 is an unsafe `available = played` expectation (fix the expectation through independent review; don't implement it). 1 is an accent-format expectation. |
-| Filter sweep PASS_WITH_GAPS (39 dropped, 44 no-signal) | Not yet mapped | Map each relevant gap to a K row or to carry-forward. Gaps are never counted as passes. |
-
-### UNRESOLVED: league-wide "with/without player" (B, 2026-11-14)
-
-B: "Just leave it for now and finish the rest, then make sure it is noted as
-unresolved" (`cmsg_01ABTwDaHncgP7nUEgUSYNtv7ejNNCtvNVUUz6uQnrFKf4`).
-
-- **Today:** "with/without X" and "games X missed" work only where official
-  who-played records are loaded (the published cohorts). Everyone else refuses
-  honestly.
-- **Why box scores alone aren't enough:** a box score lists only who played.
-  A missing line could mean he sat out, hadn't joined yet, or had been traded.
-  The roster file lists who was on a team each season, with no dates.
-- **Options tested against 5,155 official records (7 seasons)** with
-  `source-evidence/boxscore-participation-20261114/measure.py` (run it on a local
-  copy of the live generation's `raw/` folder):
-  - **Option 1. Count only between a player's first and last game for the team.**
-    Inside that window it was exact: 3,275 of 3,275 played games right, and
-    every in-window gap was a real miss. But about a third of real misses
-    (602 of 1,880) fall outside the window, for example season-opening or
-    season-ending injuries and two-way players. Those would have to be refused
-    or caveated.
-  - **Option 2. Treat the whole season as the window for single-team roster players.**
-    This catches those misses. But in 296 fully listed team-games, 198 of its
-    1,693 "missed" calls (about 1 in 8) were games the player wasn't on the
-    team yet, e.g. Steven Adams (traded to HOU in 2023-24) and Seth Curry (signed
-    by GSW mid-season in 2025-26).
-  - **Option 3. Load official who-played records league-wide, 1996-97 onward.** Exact.
-    It needs a source that can be fetched (data refresh is parked) and one
-    protected publish.
-- Options 1 and 2 relax the standing rule "never infer a missed game from a
-  missing row", so they need B's yes first. Recommendation on record: option 1,
-  labeled "counted between his first and last games with the team".
-
-### Next action
-
-1. **Done (2026-11-14):** `python tools/core1_acceptance_view.py` prints each
-   K01-K12 row and each of the 46 K08 IDs as PASS / SOFTWARE FAILURE / MISSING
-   DATA / LIVE. Its expectations are fixed in `core1-acceptance-map.json`, taken
-   from the independent nine-ID oracle and the audited publication checks.
-   On the live generation ([R2 43582685873](https://github.com/Bet-Zero/nbatools/actions/runs/43582685873),
-   artifact zip `c8af58d6…e28fff`), K01-K07 and K09-K12 pass all 126 real-data
-   checks. K08 has no software failures: 16 pass (6, 7, 8, 16, 18, 23-25,
-   30-32, 35, 41, 44, 45, 46), 26 are missing data (the Davis default-season
-   group and ID26), and 4 are Live (4, 5, 19, 38).
-2. The view covers only the K verifiers and the 46 K08 IDs, and it showed no
-   software failures. The full suite was run separately (step 3).
-   B decided 2026-11-14 that "losses to" lists the games like "wins over": a
-   team summary with an opponent and wins-only or losses-only now always
-   returns its game log. Carry-forward phrasing gap found while probing:
-   a bare trailing season after two names ("Lakers record without Davis and
-   Reaves 2023-24") hits the multi-player block, while "... in 2023-24" works.
-3. **Broad check run once (2026-11-14)** on frozen candidate main `0216ded6` and the
-   live generation ([R2 full 43582932175](https://github.com/Bet-Zero/nbatools/actions/runs/43582932175)):
-   - Raw QA 612 pass / 9 fail. All 9 are participation-coverage gaps (Booker,
-     Giannis, Brunson, Curry, Embiid, LeBron-for-Davis, Reaves/Luka "available"
-     wording). That is 4 fewer than before the publications.
-   - Filter sweep passed.
-   - needs_data: 1,723 pass / 160 fail. No full run had happened since 2026-10-13.
-     - About 125 are evidence tests pinned by design to the older generation or
-       manifest they qualified (including all deployed desktop/mobile wrappers).
-     - 10 are deployed-site calls that get the known readiness 503.
-     - Stage, prepare and package tests are bound to their old bases; their
-       output is now published.
-     - 13 failed identically on the old base and were stale expectations. They
-       were updated to current safe behavior in PR615 and pass on the live
-       generation ([R2 43586876226](https://github.com/Bet-Zero/nbatools/actions/runs/43586876226),
-       627/627).
-     - The 3 source-acquisition tests in
-       `test_pipeline_player_game_availability_real_data.py` were triaged:
-       - The ESPN test expected ESPN rows to pass publication checks. Since
-         PR555 only official or reviewed structured sources can be published,
-         so it now expects the refusal.
-       - The two official-report tests can't resolve rookie Alex Toohey's
-         identity from a cloud runner. NBA's CDN returns 403 there (the known
-         cloud block), and his name isn't in nba_api 1.12.0's bundled player
-         list. His row is already published, from the same official report.
-         These tests stay red until fetching works again (Live/data refresh,
-         parked). Loosening the identity check is not an option.
-   - **Done (2026-11-14): deployed desktop/mobile check on the live generation.**
-     [R2 43602584850](https://github.com/Bet-Zero/nbatools/actions/runs/43602584850)
-     (K08, 50 questions × 2 viewports; also the ESPN refusal test) and
-     [R2 43602403345](https://github.com/Bet-Zero/nbatools/actions/runs/43602403345)
-     (original 22 K01-K12 cases × 2 viewports) both passed against the exact
-     production deployment.
-   - What those checks do:
-     `tests/cloud_core1_deployed_view_real_data.py` asks every K08 question
-     through the real interface on both viewports and must match the candidate
-     in process and the acceptance map. The original 22 K01-K12 historical cases
-     rerun through
-     `cloud_core_historical_delivery_real_data.py::test_actual_new_runtime_historical_api_and_ui_on_live_generation`.
-     IDs 45/46 (structured routes) and ID 44's unit node stay with the local view.
-
-### Carry-forward from PR607 (not Core-1 blockers unless an original case needs them)
-
-Two named teams on an event board narrow to one. "Who led <team> in games
-with X and Y" returns team grain. Fixed in PR618: "games with 230 total
-points" / "combined points" (both teams' score, on team game lists, records
-and summaries), "25-30 points" ranges, two-digit and dashed seasons ("15-16",
-"2026–27", "2015/16"), "a total of 2000 points" and one player's seasons over
-a total ("LeBron seasons with 1500 points"). Still open: a player's games by
-the combined score ("LeBron games with 230 total points") and league-wide game
-lists without a team refuse; a range of season totals or averages ("players
-averaging 25-30") refuses; "1-2 point games" is not read as a close finish.
-Pre-existing (also on main): "Lakers games where a starter scored 30" reads
-the team's own 30 points.
-
-PR618 checks: independent review approved 3ae4810 (separate agent session,
-four rounds) and the test-only follow-up ac3453c. Targeted R2
-[43658225359](https://github.com/Bet-Zero/nbatools/actions/runs/43658225359)
-passed (17 tests). Full R2 on 3ae4810
-([43656769674](https://github.com/Bet-Zero/nbatools/actions/runs/43656769674))
-versus a same-day full run on main 07b865e
-([43658019032](https://github.com/Bet-Zero/nbatools/actions/runs/43658019032)):
-identical failure sets apart from one PR618 real-data test whose raw
-plus-minus cross-check was wrong (fixed in ac3453c, green above). The shared
-failures are 9 with/without replay cases (UNRESOLVED, parked) and 142 stale
-deployed-pin and participation-package needs_data tests that predate PR618;
-no full run has been green since 2026-10-13.
+Freeze/review the game-grain staging change, run its focused real-data test via
+existing read-only R2 validation, and land only with the existing required gates.
+Then continue a bounded game/season coverage matrix for qualified membership and
+participation, reusing retained sources before acquisition. Bring exact missing
+season/game bodies and bounds to B before any substantial historical backfill;
+production publication, new costs and automatic refresh remain separately gated.
 
 ## Preserved scope
 

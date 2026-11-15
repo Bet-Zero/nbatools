@@ -43,7 +43,11 @@ def _document(path):
 def build_stage(
     request_path: Path, source_directory: Path, work: Path, output: Path, *, candidate_sha: str
 ) -> dict:
-    """Qualify one requested season in work/data; export only its changed overlay."""
+    """Qualify one season's player or whole-game requests into a new overlay.
+
+    Whole-game requests recover every explicitly listed player, including DNPs
+    and inactives. They do not certify an exhaustive roster or infer omissions.
+    """
     request, provenance = _document(request_path), _document(source_directory / "sources.json")
     season, kind = request["season"], request["season_type"]
     if (
@@ -56,6 +60,9 @@ def build_stage(
     ):
         raise ValueError("Invalid collection request scope/candidate")
     requirements = request["requirements"]
+    grain = request.get("requirement_grain", "player_game")
+    if grain not in {"player_game", "game"}:
+        raise ValueError("Unrecognized participation request grain")
     if not isinstance(requirements, list) or not requirements:
         raise ValueError("Missing requested targets")
     revision = provenance["revision"]
@@ -82,13 +89,16 @@ def build_stage(
             not isinstance(gid, str)
             or not re.fullmatch(r"[0-9]{10}", gid)
             or int(gid) <= 0
-            or any(
+            or grain == "player_game"
+            and any(
                 type(requirement[field]) is not int or requirement[field] <= 0
                 for field in ["team_id", "player_id"]
             )
             or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", requirement["game_date"])
         ):
             raise ValueError("Invalid requested game/player/team/date key")
+        if grain == "game" and set(requirement) != {"game_id", "game_date", "proposed_sources"}:
+            raise ValueError("Game requests require only game/date/source keys")
         if (
             "prior_state" in requirement
             and requirement["prior_state"] != "unknown"
@@ -110,6 +120,8 @@ def build_stage(
         ):
             raise ValueError("Each game requires one traditional and one summary source")
         if gid in groups:
+            if grain == "game":
+                raise ValueError("Duplicate requested game")
             previous = groups[gid][0]
             if any(row["player_id"] == requirement["player_id"] for row in groups[gid]):
                 raise ValueError("Duplicate or conflicting requested game/player target")
@@ -254,7 +266,7 @@ def build_stage(
             pd.to_numeric(pd.read_csv(root / csv).game_id)
         ):
             raise ValueError("Collection would replace existing qualified game evidence")
-        added, targets = 0, []
+        added, targets, qualified_games = 0, [], []
         for requested_targets, paths, version, captured in qualified:
             rows = stage_structured_game(
                 root,
@@ -267,7 +279,21 @@ def build_stage(
                 revision=revision,
                 retrieved_at=captured,
             )
-            for requirement in requested_targets:
+            if not rows.game_date.eq(requested_targets[0]["game_date"]).all():
+                raise ValueError("Requested game date differs from qualified source")
+            if grain == "game":
+                qualified_games.append(
+                    dict(
+                        game_id=requested_targets[0]["game_id"],
+                        game_date=requested_targets[0]["game_date"],
+                        coverage_scope="listed_player_rows_only",
+                        listed_players=len(rows),
+                        played=int(rows.participation_state.eq("played").sum()),
+                        did_not_play=int(rows.participation_state.eq("did_not_play").sum()),
+                        unknown=int(rows.participation_state.eq("unknown").sum()),
+                    )
+                )
+            for requirement in requested_targets if grain == "player_game" else []:
                 target = rows.loc[
                     rows.team_id.eq(requirement["team_id"])
                     & rows.player_id.eq(requirement["player_id"])
@@ -343,10 +369,12 @@ def build_stage(
             append_only=append,
             manifest_absent_creations=creations,
             qualified_targets=targets,
-            requested_target_count=len(requirements),
+            requested_target_count=len(targets),
             requested_game_count=len(groups),
             overlay_files=files,
         )
+        if grain == "game":
+            result.update(requirement_grain=grain, qualified_games=qualified_games)
         (output / "validation.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
         return result
 

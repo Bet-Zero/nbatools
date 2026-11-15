@@ -1,0 +1,12 @@
+{
+  "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/nba_stats_game_rosters/game_rosters_2024.csv",
+  "sha256": "adf13e62baeb356fab9f8507a37379f35a4631cae3846700cb49fab4cd01969b",
+  "size_bytes": 862872,
+  "observed_rows": 11239,
+  "observed_game_ids": 1313,
+  "matched_2023_24_regular_season_catalog_games": 1230,
+  "canonical_catalog_games": 1230,
+  "coverage": "explicit_inactive_rows_only_not_complete_roster",
+  "publication": "none",
+  "classification": "bounded_archive_schema_and_coverage_diagnostic_not_ingested"
+}

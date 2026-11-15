@@ -124,6 +124,91 @@ def run(collection):
     return build_stage(request, retained, work, output, candidate_sha="c" * 40)
 
 
+def game_request(collection):
+    request = json.loads(collection[0].read_text())
+    request["requirement_grain"] = "game"
+    request["requirements"] = [
+        {key: row[key] for key in ["game_id", "game_date", "proposed_sources"]}
+        for row in request["requirements"]
+    ]
+    collection[0].write_text(json.dumps(request))
+    return request
+
+
+def test_game_request_recovers_both_teams_without_player_targets(collection):
+    game_request(collection)
+    baseline = {p: p.read_bytes() for p in collection[4].rglob("*") if p.is_file()}
+    result = run(collection)
+    assert result["requested_target_count"] == 0 and result["qualified_targets"] == []
+    assert result["qualified_games"] == [
+        dict(
+            game_id="0022500002",
+            game_date="2025-10-21",
+            coverage_scope="listed_player_rows_only",
+            listed_players=4,
+            played=2,
+            did_not_play=2,
+            unknown=0,
+        )
+    ]
+    rows = pd.read_csv(collection[3] / "raw/player_game_availability" / SUFFIX)
+    added = rows.loc[rows.game_id.eq(22500002)]
+    assert set(zip(added.team_id, added.player_id, added.participation_state)) == {
+        (1, 11, "played"),
+        (1, 12, "did_not_play"),
+        (1, 13, "did_not_play"),
+        (2, 21, "played"),
+    }
+    assert {p: p.read_bytes() for p in baseline} == baseline
+    assert result["publication_state"] == "staged_only_no_writes"
+
+
+def test_game_request_keeps_ambiguous_listed_row_unknown_and_never_fills_roster(collection):
+    game_request(collection)
+    retained = collection[1]
+    name = "boxscoretraditionalv3_0022500002.json"
+    path = retained / "sources" / name
+    document = json.loads(path.read_text())
+    document["boxScoreTraditional"]["homeTeam"]["players"][1]["comment"] = ""
+    raw = json.dumps(document).encode()
+    path.write_bytes(raw)
+    provenance = json.loads((retained / "sources.json").read_text())
+    provenance["files"][name].update(
+        sha256=hashlib.sha256(raw).hexdigest(),
+        size_bytes=len(raw),
+        git_blob_sha=hashlib.sha1(f"blob {len(raw)}\0".encode() + raw).hexdigest(),
+    )
+    (retained / "sources.json").write_text(json.dumps(provenance))
+    result = run(collection)
+    assert result["qualified_games"][0]["unknown"] == 1
+    assert result["qualified_games"][0]["did_not_play"] == 1
+    rows = pd.read_csv(collection[3] / "raw/player_game_availability" / SUFFIX)
+    assert (
+        rows.loc[rows.game_id.eq(22500002) & rows.player_id.eq(12), "participation_state"].item()
+        == "unknown"
+    )
+    assert set(rows.player_id) == {11, 12, 13, 21}
+
+
+@pytest.mark.parametrize("damage", ["date", "duplicate_game", "player_target", "grain", "source"])
+def test_game_request_does_not_relax_existing_scope_or_original_checks(collection, damage):
+    request = game_request(collection)
+    if damage == "date":
+        request["requirements"][0]["game_date"] = "2025-10-22"
+    elif damage == "duplicate_game":
+        request["requirements"] *= 2
+    elif damage == "player_target":
+        request["requirements"][0]["player_id"] = 99
+    elif damage == "grain":
+        request["requirement_grain"] = "roster"
+    else:
+        request["requirements"][0]["proposed_sources"][0]["url"] += "?changed"
+    collection[0].write_text(json.dumps(request))
+    with pytest.raises(ValueError):
+        run(collection)
+    assert not collection[3].exists()
+
+
 def test_originals_qualify_append_and_only_overlay_is_exported(collection):
     request, retained, work, output, served = collection
     baseline = {
