@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "51891c6b9862a92901ae3c696e445f535bda9009",
+  "generation": "availability-participation-2025-durant-v1-20261114",
+  "tests": ["tests/test_team_membership_sample_real_data.py::test_bulk_opening_and_movements_expose_membership_unknowns"],
+  "raw_qa_cases": []
+}
