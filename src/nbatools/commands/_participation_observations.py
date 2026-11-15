@@ -69,7 +69,7 @@ def load_observations(seasons: list[str], season_type: str) -> pd.DataFrame:
         key = ("player_game_availability", data_source_cache_key(), season_type, season)
         frames.append(FRAME_CACHE.get_or_load(key, load))
     rows = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=_REQUIRED)
-    if not any(
+    if season_type != "Regular Season" or not any(
         data_exists(f"data/raw/player_game_inactive/{season}_regular_season.{suffix}")
         for season in seasons
         for suffix in ("csv", "source.json")

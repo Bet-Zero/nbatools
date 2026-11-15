@@ -251,3 +251,21 @@ def test_published_generation_cannot_be_mutated(sample):
     raw, receipt = inputs()
     with pytest.raises(ValueError, match="published"):
         stage_season_inactive(root, raw, receipt, "2023-24")
+
+
+def test_regular_inactive_batch_cannot_enter_playoff_scope(sample):
+    root, frame, dependencies, inputs = sample
+    raw, receipt = inputs()
+    regular = stage_season_inactive(root, raw, receipt, "2023-24")
+    playoff = regular.copy()
+    playoff["game_id"] = 42300001
+    playoff["game_date"] = "2024-04-20"
+    playoff["season_type"] = "Playoffs"
+    playoff["source"] = "nba_stats_structured_archive:" + "b" * 40 + ":0042300001"
+    target = root / "raw/player_game_availability/2023-24_playoffs.csv"
+    target.parent.mkdir(parents=True)
+    target.write_text(playoff.to_csv(index=False))
+    actual = load_observations(["2023-24"], "Playoffs")
+    assert len(actual) == 1
+    assert actual.season_type.eq("Playoffs").all()
+    assert actual.game_id.tolist() == [42300001]
