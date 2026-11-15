@@ -56,17 +56,25 @@ Sengun12-7; Cleveland without Allen2-3. Each is explicit2023-24 scope, not a
 current/deployed claim. Full-season Adams/Houston and Dinwiddie/Lakers still
 refuse incomplete coverage. [Source/coverage details](source-evidence/season-inactive-pilot-20261115/README.md).
 
-Local season integration,43focused source/boundary controls and18historical
-applicability guards passed. Source count changed31/unchanged632 preserves all
-663original bindings,22cases/44captures and false full-Core/fresh flags. Final
-exact-head review, blocking CI and targeted R2 are required before merge; their
-results belong in PR623, reusing passing PR619 evidence for unchanged code/data.
+Reviewed code `f64681f8` passed authenticated targeted R2
+[run43690403060](https://github.com/Bet-Zero/nbatools/actions/runs/43690403060)
+via sole-parent request `7c5c653b`:1selected/executed/passed,0skips/errors;
+all186season queries passed. Actual active-generation and exact manifest checks
+preceded the published baseline. Separate checker approved the source, all
+case/native controls, preservation guards and nonregular-scope fix. Source and
+boundary controls passed; the31changed632unchanged historical companion preserves
+all663bindings/22cases/44captures and false full-Core/fresh flags. Final data/docs-only
+review and exact CI results are recorded in PR623; known dev-security red stays advisory.
+No manual full suite or broad replay. Closed membership/PDF research stays closed.
 
-**Next:** complete PR623's focused qualification/review, then prepare its bounded
-validated overlay for separately protected production approval. Published coverage
-remains18until approval/activation; the93case result is isolated staging. No
-additional game collection is necessary for this gain. Do not restart membership
-source hunts or assume this pilot completes NBA history.
+The durable [qualified overlay](source-evidence/season-inactive-pilot-20261115/qualified-overlay-v1.zip)
+is324,815bytes (about5.09MBuncompressed), with all30file bodies matching the
+R2-validated inventory. Source/canonical bytes and old rows remain preserved.
+**Next:** prepare/register this exact overlay through the existing protected
+publication path, with required owner approval before activation. Published
+coverage remains18;93cases are qualified isolated staging. No additional
+collection is needed for this gain. Do not infer membership for the620remaining
+cases, restart source hunts or label this pilot league-wide completion.
 
 ## Preserved scope
 

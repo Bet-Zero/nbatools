@@ -46,9 +46,29 @@ from unsupported unknowns. Coverage includes opening/finale absences and three
 players with no appearances (Čančar, Clark, Lee). Whole-season Adams/Houston and
 Dinwiddie/Lakers remain unsupported rather than counting pre-join games as DNPs.
 
-Local editing verification passed the season test and 43 focused source/boundary
-controls; 18 historical-applicability checks passed after the finite companion
-update. Exact-head review, targeted R2 result and CI are recorded in PR623.
-The data overlay is staging only until separately approved publication. Core-1's
-limited acceptance, Davis default-season/cross-team gaps, freshness/readiness and
-parked K12 work remain separate; no full-Core or new deployed acceptance claim.
+Qualification passed on reviewed code `f64681f8` via sole-parent request
+`7c5c653b`: [R2 run43690403060](https://github.com/Bet-Zero/nbatools/actions/runs/43690403060),
+one required test selected/executed/passed, zero skips/failures/errors, all186
+natural-language query checks passed. The run authenticated the actual active
+base generation before measuring the published baseline. Separate checker
+`/root/coverage_checker` approved source qualification, independently derived all
+case counts/native controls, and closed a nonregular-scope finding with a focused
+Playoffs row-preservation regression. Source/boundary controls and the finite
+historical companion checks passed; source review findings are closed.
+
+`qualification.json` binds the literal R2 result and per-file inventory.
+`qualified-overlay-v1.zip` is the durable 324,815-byte data overlay, SHA256
+`cb5caebada456829616fe9f75e54ce8d4a5fd0ab1363945024c75ebf3205b9e8`.
+All30file bodies match the authenticated R2 log inventory byte-for-byte. The
+archive was reproduced with validation's pandas3.1.1/numpy2.4.6; ZIP packaging
+metadata differs from the Actions artifact. No source ZIP download/byte-verification
+claim is made for the artifact metadata digest. Existing source originals are kept.
+The resulting overlay is roughly5.09MBuncompressed,0.325MBcompressed, with zero
+new game requests. It includes unchanged PR619 staging plus the new season batch.
+
+The overlay is **not published**. Registering/preparing it through the existing
+protected publication path and owner approval remain separate from this data
+qualification. Core-1's limited acceptance, Davis default-season/cross-team gaps,
+freshness/readiness and parked K12 work remain separate; no full-Core or fresh
+deployed acceptance claim. Exact final documentation/data-only review and
+pre/post-merge CI are recorded in PR623.
