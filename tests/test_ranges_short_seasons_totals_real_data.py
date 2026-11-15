@@ -69,17 +69,16 @@ def test_mavericks_combined_score_games():
     assert {int(r["game_id"]) for r in rows} == {int(g) for g in dal["game_id"]}
 
 
-def test_combined_score_matches_both_team_rows():
+def test_combined_score_count_from_both_team_rows():
     teams = _teams("2023-24")
+    # Both teams' rows of the same game, summed. Plus-minus is missing on some
+    # real rows, so it is not used for the expectation.
     pairs = teams.groupby("game_id")["pts"].sum()
-    totals = teams.assign(total=2 * teams["pts"] - teams["plus_minus"]).set_index("game_id")
-    lal = totals[totals["team_abbr"].eq("LAL")]
-    assert (lal["total"] == pairs.reindex(lal.index)).all()
-    expected = set(lal.index[lal["total"] < 210])
-    from nbatools.query_service import execute_natural_query
-
-    result = execute_natural_query("how many Lakers games had under 210 total points in 2023-24")
-    assert result.result.to_dict()["sections"]["count"] == [{"count": len(expected)}]
+    lal = teams[teams["team_abbr"].eq("LAL")]
+    expected = set(lal["game_id"][lal["game_id"].map(pairs).lt(210)])
+    assert expected
+    sections = _sections("how many Lakers games had under 210 total points in 2023-24")
+    assert sections["count"] == [{"count": len(expected)}]
 
 
 def test_players_with_a_total_of_2000_points():
