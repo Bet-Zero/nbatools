@@ -1447,15 +1447,26 @@ _NUMBER_TOTAL = re.compile(
 )
 
 
-def names_unread_team_total(text: str) -> bool:
-    """ "Lakers 6000 total points": more than any game's combined score, so a
-    team's season total, which game lists and records cannot apply."""
-    if _PLAYER_POPULATION.search(text):
-        return False
+def _population_owns(match: re.Match) -> bool:
+    """ "players with 2000 total points", "who has 1500 total points": a
+    player population before the total asks for season totals. A clause
+    after it ("where a player scored 40") or "a player" does not."""
+    before = match.string[: match.start()]
     return any(
-        _total_stat_key(m.group(3)) == "pts" and int(m.group(1)) > _COMBINED_SCORE_CEILING
-        for m in _NUMBER_TOTAL.finditer(canonicalize_total_counts(text))
+        not re.search(r"\b(?:a|an|one|any|each|every|no)\s+$", before[: m.start()])
+        for m in _PLAYER_POPULATION.finditer(before)
     )
+
+
+def names_unread_team_total(text: str) -> bool:
+    """ "Lakers 6000 total points", or a total left unread beside a player
+    population: game lists and records cannot apply it."""
+    for m in _NUMBER_TOTAL.finditer(canonicalize_total_counts(text)):
+        if _total_stat_key(m.group(3)) != "pts" or _population_owns(m):
+            continue
+        if int(m.group(1)) > _COMBINED_SCORE_CEILING:
+            return True
+    return False
 
 
 def _total_stat_key(word: str) -> str:
@@ -1470,9 +1481,9 @@ def canonicalize_total_counts(text: str) -> str:
     ("players with 2000 total points") keeps its season total. Counts a player
     can reach ("LeBron games with 40 total points") are his own."""
     text = _TOTAL_OF.sub(r"\1 total \2", text)
-    population = bool(_PLAYER_POPULATION.search(text))
 
     def number_total(match: re.Match) -> str:
+        population = _population_owns(match)
         word = match.group(3)
         stat = _total_stat_key(word)
         value = int(match.group(1))

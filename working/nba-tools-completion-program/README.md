@@ -198,6 +198,8 @@ a total ("LeBron seasons with 1500 points"). Still open: a player's games by
 the combined score ("LeBron games with 230 total points") and league-wide game
 lists without a team refuse; a range of season totals or averages ("players
 averaging 25-30") refuses; "1-2 point games" is not read as a close finish.
+Pre-existing (also on main): "Lakers games where a starter scored 30" reads
+the team's own 30 points.
 
 ## Preserved scope
 

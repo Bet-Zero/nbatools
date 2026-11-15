@@ -412,7 +412,7 @@
     {
       "path": "src/nbatools/commands/_parse_helpers.py",
       "old_sha256": "f6bf722bb2223a8ff09e68bced4799dd030043a637f6831ba5570ef4347e0171",
-      "reviewed_sha256": "b62a9df804d03c044dcac185c488af9626744d0ee45c209f0bb0e1ecce1d830f",
+      "reviewed_sha256": "a9daeadf3463127386a5206a64371a291fab9ab901355806b148144a4e499bdd",
       "reviewed_functions": "opponent-list/period detection; wants_summary total; extract_min_value season guard; canonicalize_stat_ranges, _reads_as_season, canonicalize_total_counts",
       "semantic_reach": "All original 22 inputs have identical old/current regex matches; all quarter/half predicates are None, no vs/against either phrase. PR607's requested-total summary needs the word total, absent from all 22, and its season-token floor guard leaves every original 22 route and route_kwargs byte-identical to main 8a390f70 (checked by parse_query on both trees). PR618: stat ranges ('25-30 points') and 'N total <stat>' / 'a total of N' rewrites need a number range or the word total beside a stat; none of the original 22 has either, and their route, route_kwargs and notes are byte-identical to main 07b865e (parse_query on both trees).",
       "eligible_existing_case_ids": [

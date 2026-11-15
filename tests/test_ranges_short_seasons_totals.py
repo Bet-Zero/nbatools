@@ -314,3 +314,23 @@ def test_team_season_total_refuses_instead_of_answering_no(query):
 )
 def test_season_before_in_games_is_kept(query, season):
     assert _kwargs(query)["season"] == season
+
+
+def test_a_player_clause_after_the_total_keeps_the_combined_score():
+    # "a player scored 40" is a clause about the game, not a player population
+    # asking for season totals; the combined score must not be dropped.
+    result = execute_natural_query("Lakers games with 230 total points where a player scored 40")
+    if result.result_status == "ok":
+        teams = _teams("2025-26")
+        combined = teams.groupby("game_id")["pts"].sum()
+        rows = result.result.to_dict()["sections"]["finder"]
+        assert all(combined[int(r["game_id"])] >= 230 for r in rows)
+    else:
+        assert result.result_reason == "filter_not_supported"
+
+
+def test_population_before_the_total_is_a_season_total():
+    totals = _season_totals("2024-25", "pts")
+    expected = set(totals.loc[totals["pts"] >= 1500, "player_id"])
+    rows = _sections("who has 1500 total points in 2024-25")["leaderboard"]
+    assert {row["player_id"] for row in rows} == expected
