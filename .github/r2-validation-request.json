@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "a9895ea522385cbe7de21b00e6a7ab580cc5161b",
+  "generation": "availability-participation-2025-durant-v1-20261114",
+  "tests": [
+    "tests/test_game_participation_collection_real_data.py"
+  ],
+  "raw_qa_cases": []
+}
