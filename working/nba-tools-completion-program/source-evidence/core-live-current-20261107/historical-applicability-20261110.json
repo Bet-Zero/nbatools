@@ -7,7 +7,7 @@
   "original_capture_sha256": "a5c718c7498f24d787866ff4e3d53220363e00588a045607e92f5947ac2074a5",
   "original_case_manifest_sha256": "096f093c24df872fca3107a1d4a23b19fc98e549b86aecfdc9df3b538ca1382a",
   "original_bound_file_count": 663,
-  "unchanged_bound_file_count": 636,
+  "unchanged_bound_file_count": 635,
   "cases": [
     {
       "id": "k12-s1",
@@ -226,9 +226,9 @@
     {
       "path": "docs/reference/data_contracts.md",
       "old_sha256": "6cc8cbeab09758d9db569d7e5d0c44572d0983c198532f8c925344e6113bcf2a",
-      "reviewed_sha256": "65a15a0a2ae105547f1014dc243c8d23ec0483108b0032258fe0f3d1d239448c",
+      "reviewed_sha256": "3056a1cb71739840ed9869b8a6d3c3bda90aa1284a57f319732aee3aa3d93e26",
       "reviewed_functions": "documentation",
-      "semantic_reach": "No runtime execution; source definitions remain independently checked.",
+      "semantic_reach": "Adds only the explicitly invoked offline game-grain collection request and listed-only receipt contract. No runtime execution or source-coverage promotion; original query semantics and all 22 retained cases are unchanged.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -252,7 +252,9 @@
         "live-s4-player-without",
         "live-owned-team",
         "live-owned-opponent"
-      ]
+      ],
+      "delta_reviewer": "/root/coverage_checker (separate Codex session)",
+      "delta_reviewed_revision": "a9895ea522385cbe7de21b00e6a7ab580cc5161b"
     },
     {
       "path": "src/nbatools/commands/_condition_utils.py",
@@ -935,6 +937,39 @@
         "live-owned-team",
         "live-owned-opponent"
       ]
+    },
+    {
+      "path": "tools/stage_participation_collection.py",
+      "old_sha256": "b878bc8b69519860f2786c612f0be4734e940f9086c8aff003dd67101baf0743",
+      "reviewed_sha256": "c79966acb5fae984a19687829a42593dcb8da32f7ea743e771a3793816777176",
+      "reviewed_functions": "build_stage game-grain request validation and per-game listed-state receipts (offline only)",
+      "semantic_reach": "Explicitly invoked offline staging tool; not imported or executed by src, API or frontend query routes. It writes only a new isolated preparation/overlay directory, never production inputs or a pointer. The existing listed-player qualifier and append-only/source checks remain. No original 22 query execution or retained capture can be changed by this preparation-only addition.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ],
+      "delta_reviewer": "/root/coverage_checker (separate Codex session)",
+      "delta_reviewed_revision": "a9895ea522385cbe7de21b00e6a7ab580cc5161b"
     }
   ],
   "original_src_python_inventory": [

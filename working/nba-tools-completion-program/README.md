@@ -50,12 +50,12 @@ Keep the existing generalized membership/participation engine.
   bodies. Newer retained Traditional/Summary originals do contain unused DNP
   and inactive evidence. Exact-game lists establish association and play state,
   not tenure or nonmembership for omitted players.
-- Small change prepared: existing offline stager accepts a **game-grain request**
+- PR619 adds: existing offline stager accepts a **game-grain request**
   and recovers all listed players on both teams, without naming a player target.
   Same original-source, canonical, append-only and protected-publication checks.
   Local staging recovered 278 rows (173 played/105 explicit nonparticipants)
   from eight already-retained games, preserving all 597 existing season rows.
-  Independent raw tally agrees. This staging is **not published**.
+  Independent raw tally agrees. Focused R2 [43674107752](https://github.com/Bet-Zero/nbatools/actions/runs/43674107752) passed one selected/executed required test, zero skips/errors, on code `a9895ea` via request `2c56414f`. This staging is **not published**.
 - Source research independently checked opener/finale absences, Adams' trade
   despite no Houston appearances, late signings, waivers, two-way players and
   arbitrary opponent players. Older injured-list members can be omitted from
@@ -67,12 +67,21 @@ Keep the existing generalized membership/participation engine.
   [league participation findings](source-evidence/league-participation-20261114/README.md).
   Originals, old snapshots, accepted cohorts and safeguards are preserved.
 
-### One next action
+### Verification and one next action
 
-Freeze/review the game-grain staging change, run its focused real-data test via
-existing read-only R2 validation, and land only with the existing required gates.
-Then continue a bounded game/season coverage matrix for qualified membership and
-participation, reusing retained sources before acquisition. Bring exact missing
+Separate checker `/root/coverage_checker` approved `a9895ea` with zero findings:
+67 focused tests, two unfamiliar omission/unknown controls, exact native rows and
+prior-cell preservation. R2 numerical validation passed as above. Initial CI
+caught the historical applicability seal. The checker separately approved the
+offline stager/documentation reach across all 22 original cases; the companion
+now binds 28 changed/635 unchanged files, preserving all 663 original bindings,
+22 inputs, 44 captures and false full-Core/fresh-deployment flags. Focused guard
+tests passed. Final CI/delta review must pass before merging PR619.
+
+After landing, qualify bulk **team/season membership evidence**, especially
+opening rosters plus dated NBA contract changes and older injured-list coverage.
+Use the game-based recovery path for valid retained pairs first; do not replace
+existing one-sided reports or claim that a complete file index proves membership. Bring exact missing
 season/game bodies and bounds to B before any substantial historical backfill;
 production publication, new costs and automatic refresh remain separately gated.
 
