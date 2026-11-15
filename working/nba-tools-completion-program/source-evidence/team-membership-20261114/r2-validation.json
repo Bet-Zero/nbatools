@@ -1,0 +1,66 @@
+{
+  "classification": "provisional_source_assessment_validation_not_membership_completeness",
+  "reviewed_code": "51891c6b9862a92901ae3c696e445f535bda9009",
+  "request_sha": "b9d073c9e34570633459cde444991c847d52908f",
+  "run_id": 43681585776,
+  "job_id": 132713334475,
+  "summary": {
+    "candidate_sha": "b9d073c9e34570633459cde444991c847d52908f",
+    "generation": "availability-participation-2025-durant-v1-20261114",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/test_team_membership_sample_real_data.py::test_bulk_opening_and_movements_expose_membership_unknowns"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "artifacts": [
+    {
+      "id": 14148034742,
+      "name": "required-numerical-43681585776",
+      "sha256": "sha256:0f724f3021585176a48332a506787c4025f6885946e70ab5dacb08d89d577656",
+      "size_bytes": 22036
+    }
+  ],
+  "prior_failed_attempt": {
+    "reviewed_code": "834111da4e83fb4c940af015ac019b4e95d91a3c",
+    "request_sha": "9c71d5601590b1873db991cc802965b9832eb1c6",
+    "run_id": 43681278613,
+    "job_id": 132712419296,
+    "summary": {
+      "candidate_sha": "9c71d5601590b1873db991cc802965b9832eb1c6",
+      "generation": "availability-participation-2025-durant-v1-20261114",
+      "scope": "targeted",
+      "required_selection": [
+        "tests/test_team_membership_sample_real_data.py::test_bulk_opening_and_movements_expose_membership_unknowns"
+      ],
+      "required_test_limit": 100,
+      "selected": 1,
+      "executed": 1,
+      "passed": 0,
+      "skipped": 0,
+      "failed": 1,
+      "errors": 0,
+      "xfailed": 0,
+      "pytest_exit": 1,
+      "conclusion": "failure",
+      "problems": [
+        "pytest did not succeed (exit=1)",
+        "Every selected required test must execute and pass",
+        "Required tests contain skips, failures, errors, or expected failures"
+      ]
+    },
+    "failure": "FileNotFoundError creating report directory after source/count assertions; fixed output parent creation only"
+  },
+  "production_writes": 0,
+  "accepted_membership_intervals": 0
+}

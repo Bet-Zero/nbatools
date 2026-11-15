@@ -1,0 +1,33 @@
+{
+  "reviewer": "/root/coverage_checker",
+  "reviewed_revision": "834111da4e83fb4c940af015ac019b4e95d91a3c",
+  "reviewed_tree": "fd1d44c764d9a1a4e7292613872b0d5bf800243e",
+  "base_review": "eea1e797ea5d9ac558caa340325737aa367fb689",
+  "base_review_receipt_sha256": "4ba3afc042f800d003c97cea3e9315e878a3de0cf883dbc4360a19195f21938f",
+  "approval": "Independent exact-head approval for targeted real-source R2 validation; no open review findings",
+  "open_findings": [],
+  "closed_findings": [
+    {"id":"F1","resolution":"Missing pre-anchor status-only membership anchor now emits opening conflict/unknown. A strictly later dated removal explains absence; same-day unresolved ordering remains unknown. Listed baseline conversion remains continuity."},
+    {"id":"F2","resolution":"Post-anchor unanchored waiver/trade departure records continuity_conflicts and preceding unknown span; event-day unknown, subsequent conditional not_member. Unanchored conversion also marks preceding span unknown and keeps unresolved continuity unknown. Pre-anchor Days/JRE controls preserved."}
+  ],
+  "delta_verification": ["14 focused controlled tests executed/passed on reviewed head", "2 independently chosen wider pre-anchor publication/anchor-window ordering controls executed/passed: conversion then later removal resolves conditional absence; same-day conversion/removal stays unknown", "git diff --check passed", "Sample-summary delta only adds two empty continuity_conflicts arrays; all native sample values unchanged", "Real-source numerical test bytes unchanged"],
+  "reviewed_file_hashes": {
+    "tools/assess_team_membership.py": "b27af6a8c367d27e64d10ddd8d77c6132ab4fd63b871092c168e701c43beb672",
+    "tests/test_team_membership_assessment.py": "e1d284981f30cb6295c106c3d16d324b596a1e3fbc8207599e82acd01020e673",
+    "tests/test_team_membership_sample_real_data.py": "d5deec67710e81dca5912b8a7887afa8443a5fbe3ce2fc7aa7ab5ff516ac55cf"
+  },
+  "reused_evidence": {
+    "native_independent_counts": "work/membership-checker/native-independent-counts.json fromeea1e797; exact originals/canonical bytes unchanged, added controls do not affect actual anchored sample events",
+    "houston": "1394conditional member246not_member164unknown;880exact positive facts924unknown",
+    "lakers": "1420conditional member300not_member2unknown;867exact positive facts855unknown",
+    "historical_applicability": "18focused applicability tests passed on eea1e797; companion3ff8c7d1111c30f73d456664f2c66194a5710d0b2443230d6e67241fa6916337, documentation and gate bytes unchanged by this delta; all22cases44captures663originalbindings28changed635unchanged and false full/fresh flags preserved"
+  },
+  "approved_targeted_R2": {
+    "selector": "tests/test_team_membership_sample_real_data.py::test_bulk_opening_and_movements_expose_membership_unknowns",
+    "generation": "availability-participation-2025-durant-v1-20261114",
+    "manifest_sha256": "cde98408f3390e6191da564197fb77ffbc598a3059963cfc21d9f2d7e1a6b366",
+    "scope": "ONE required retained-source replay through existing read-only workflow; fixed originals.zip, no NBA source calls or publication",
+    "required_result": "Selected/executed/passed numerical check with zero skips/errors; workflow-green alone does not count"
+  },
+  "limits": "This approves the isolated provisional source assessment implementation, not source completeness, accepted dated tenure, inferred DNPs, production publication or league-wide feature completion. All missing evidence, exact-game-only participation semantics and existing safeguards remain. Required blocking CI and actual targeted R2 pass still needed before merge."
+}

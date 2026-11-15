@@ -2250,3 +2250,25 @@ can filter rows. Requested unknown columns/joins/identities or missing requested
 player seasons withhold the result rather than forming a partial union or zero.
 The final projection preserves player-game rows or aggregates by `player_id`;
 no absent appearance, medical status or membership fact is inferred.
+
+### Offline team-membership source assessment
+
+`tools.assess_team_membership` reads retained opening-roster PDF columns and
+native NBA movement rows in bulk, scoped by team and dates. Its JSON report is
+`provisional_source_assessment_only`, never a `player_team_membership` import.
+Inputs bind original bodies, URLs, capture times and hashes, plus canonical
+season game/appearance hashes. The inspected opening-format adapter currently
+supports the frozen 2023 release; the captured movement body spans July 2015
+through November 2026. Those bounds do not certify completeness.
+
+The report grain is `(team_id, game_id, player_id)` over opening-list, relevant
+transaction and observed-appearance identities. It preserves each native event
+row, distinguishes both trade sides, conversions and draft-only records, and
+reports opening conflicts, disputed dates, unknown actions and missing temporary
+contract ends. `conditional_membership` describes only the explicitly hypothetical
+complete-source model. It is never accepted tenure: `complete_membership=false`,
+`accepted_intervals=[]`, and `verified_missed_games=null`. Actual positive-minute
+appearances qualify only their exact game via the existing membership resolver.
+Zero-minute and missing appearance rows remain unknown. Existing qualified game
+participation imports, including the PR619 game-grain recovery process, are
+unchanged; this report neither replaces them nor asserts medical status/DNPs.

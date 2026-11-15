@@ -1,0 +1,250 @@
+"""Finite public-source diagnostic, not membership or publication acceptance.
+
+Existing read-only R2 runner is the acquisition route. No source retries,
+redirects, inferred membership, credentials to source hosts, or auto-expansion.
+"""
+
+import base64
+import hashlib
+import html
+import io
+import json
+import os
+import re
+import zipfile
+import zlib
+from datetime import UTC, datetime
+from pathlib import Path
+
+import pytest
+import requests
+from pypdf import PdfReader
+from pypdf.errors import PdfReadError
+
+pytestmark = [pytest.mark.needs_data, pytest.mark.engine]
+SOURCES = (
+    (
+        "opening-2023.pdf",
+        "https://bloximages.chicago2.vip.townnews.com/tucson.com/content/tncms/assets/v3/editorial/b/52/b52fd976-71ff-11ee-8fbf-d7479459d4aa/653708216e38d.pdf.pdf",
+        2_000_000,
+    ),
+    ("opening-2009.html", "https://pr.nba.com/opening-day-rosters-set/", 1_000_000),
+    (
+        "rockets-2016-guide.pdf",
+        "https://ak-static-int.nba.com/wp-content/uploads/sites/3/2016/10/2016-17-Media-Guide-Rockets.pdf",
+        12_000_000,
+    ),
+    (
+        "gleague-2023.html",
+        "https://gleague.nba.com/2023-24-nba-g-league-transactions",
+        2_000_000,
+    ),
+    (
+        "player-movement.json",
+        "https://stats.nba.com/js/data/playermovement/NBA_Player_Movement.json",
+        4_000_000,
+    ),
+)
+
+
+def test_capture_fixed_bulk_membership_source_sample(capfd):
+    def emit(label, document):
+        with capfd.disabled():
+            print(label + " " + json.dumps(document), flush=True)
+
+    output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "membership-source-sample"
+    output.mkdir(parents=True, exist_ok=False)
+    receipt = dict(
+        classification="bounded_source_diagnostic_not_membership_acceptance",
+        candidate_sha=os.environ["VALIDATION_SHA"],
+        source_count=5,
+        max_total_body_bytes=21_000_000,
+        attempts_per_source=1,
+        redirects=0,
+        timeout_seconds=20,
+        production_writes=0,
+        membership_accepted=False,
+        captures=[],
+    )
+    for name, url, limit in SOURCES:
+        raw = bytearray()
+        item = dict(
+            file=name,
+            url=url,
+            started_at=datetime.now(UTC).isoformat(),
+            complete=False,
+            limit_bytes=limit,
+        )
+        try:
+            with requests.get(url, stream=True, timeout=20, allow_redirects=False) as response:
+                item["http_status"] = response.status_code
+                for chunk in response.iter_content(65536):
+                    remaining = limit - len(raw)
+                    raw.extend(chunk[:remaining])
+                    if len(chunk) > remaining:
+                        raise ValueError("body_limit_exceeded")
+                item["complete"] = response.status_code == 200
+        except (requests.RequestException, ValueError) as error:
+            item["error_type"] = type(error).__name__
+        if raw:
+            (output / name).write_bytes(raw)
+        item.update(
+            size_bytes=len(raw),
+            sha256=hashlib.sha256(raw).hexdigest(),
+            retrieved_at=datetime.now(UTC).isoformat(),
+            original_nba_capture_time=None,
+        )
+        receipt["captures"].append(item)
+        (output / "capture.json").write_text(json.dumps(receipt, indent=2) + "\n")
+        # Selected native text is a diagnostic derivative, bound to the body hash.
+        # Originals remain in the artifact; the runner can replay them offline.
+        if item["complete"] and name.endswith(".pdf") and raw.startswith(b"%PDF-"):
+            try:
+                pdf = PdfReader(io.BytesIO(raw))
+                pages = (
+                    range(min(3, len(pdf.pages))) if name.startswith("opening") else range(156, 162)
+                )
+                native = dict(
+                    file=name,
+                    original_sha256=item["sha256"],
+                    pages={
+                        str(i): pdf.pages[i].extract_text() for i in pages if i < len(pdf.pages)
+                    },
+                )
+                (output / (name + ".pages.json")).write_text(json.dumps(native) + "\n")
+                emit("MEMBERSHIP_NATIVE_TEXT", native)
+            except (ValueError, IndexError, PdfReadError) as error:
+                item["pdf_diagnostic_error"] = type(error).__name__
+        if item["complete"] and name.endswith(".html"):
+            text = raw.decode("utf-8", errors="replace")
+            text = re.sub(r"<(script|style)\b[^>]*>.*?</\1>", "", text, flags=re.S | re.I)
+            text = html.unescape(re.sub(r"<[^>]+>", "\n", text))
+            lines = [line.strip() for line in text.splitlines() if line.strip()]
+            native = dict(file=name, original_sha256=item["sha256"], text="\n".join(lines)[:180000])
+            (output / (name + ".text.json")).write_text(json.dumps(native) + "\n")
+            emit("MEMBERSHIP_NATIVE_TEXT", native)
+        if item["complete"] and name.endswith(".json"):
+            try:
+                document = json.loads(raw)
+                emit(
+                    "MEMBERSHIP_JSON_SCHEMA",
+                    dict(file=name, keys=list(document), preview=str(document)[:2000]),
+                )
+            except (ValueError, TypeError):
+                item["json_diagnostic_error"] = True
+    (output / "capture.json").write_text(json.dumps(receipt, indent=2) + "\n")
+    emit("MEMBERSHIP_CAPTURE_DIAGNOSTIC", receipt)
+    assert len(receipt["captures"]) == 5
+    assert sum(item["size_bytes"] for item in receipt["captures"]) <= 21_000_000
+
+
+def test_capture_one_complete_player_movement_response(capfd):
+    """Changed bound after the prior 200 response exceeded 4MB; never repeat the batch."""
+    output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "membership-movement-source"
+    output.mkdir(parents=True, exist_ok=False)
+    name, url, _ = SOURCES[-1]
+    limit = 16_000_000
+    item = dict(
+        file=name,
+        url=url,
+        started_at=datetime.now(UTC).isoformat(),
+        limit_bytes=limit,
+        complete=False,
+        attempts=1,
+        redirects=0,
+        classification="bounded_native_capture_not_membership_acceptance",
+        membership_accepted=False,
+        production_writes=0,
+    )
+    raw = bytearray()
+    try:
+        with requests.get(url, stream=True, timeout=20, allow_redirects=False) as response:
+            item["http_status"] = response.status_code
+            item["reported_content_length"] = response.headers.get("Content-Length")
+            for chunk in response.iter_content(65536):
+                remaining = limit - len(raw)
+                raw.extend(chunk[:remaining])
+                if len(chunk) > remaining:
+                    raise ValueError("body_limit_exceeded")
+            item["complete"] = response.status_code == 200
+    except (requests.RequestException, ValueError) as error:
+        item["error_type"] = type(error).__name__
+    if raw:
+        (output / name).write_bytes(raw)
+    item.update(
+        size_bytes=len(raw),
+        sha256=hashlib.sha256(raw).hexdigest(),
+        retrieved_at=datetime.now(UTC).isoformat(),
+        original_nba_capture_time=None,
+    )
+    (output / "capture.json").write_text(json.dumps(item, indent=2) + "\n")
+    with capfd.disabled():
+        print("MEMBERSHIP_MOVEMENT_CAPTURE " + json.dumps(item), flush=True)
+    assert item["complete"], "The bounded source remains unavailable; no membership accepted"
+    document = json.loads(raw)
+    native = document["NBA_Player_Movement"]
+    # Raw selected rows are diagnostic observations, not normalized membership.
+    # First inspect the actual column/row schema; the later qualifier replays originals.
+    rows = native["rows"]
+    selected = [
+        r
+        for r in rows
+        if any(team in str(r) for team in ("Lakers", "Rockets"))
+        and any(year in str(r) for year in ("2023", "2024"))
+    ]
+    summary = dict(
+        columns=native["columns"],
+        row_count=len(rows),
+        row_examples=rows[:2],
+        selected_raw_rows=selected,
+        original_sha256=item["sha256"],
+    )
+    (output / "schema-and-sample.json").write_text(json.dumps(summary, indent=2) + "\n")
+    with capfd.disabled():
+        print("MEMBERSHIP_MOVEMENT_SCHEMA " + json.dumps(summary), flush=True)
+
+
+def test_retain_fixed_captured_originals(capfd):
+    """Transfer two already captured public bodies, never contact NBA sources."""
+    from tools.r2_publication import api
+
+    inputs = (
+        (
+            14147163330,
+            "f55fdfb41ef547e13f2c6111ce02a6b9e3b5df0297b1232a7e9831603ab9c81c",
+            "membership-source-sample/opening-2023.pdf",
+            "c122900f6a322dc7aac4aa5d1096d185e652bd439d79595106bc35eb130178f7",
+        ),
+        (
+            14147259065,
+            "1aa89d789b115b013e09619ffd513c69be0c64b5c258b8a9e712108f94411527",
+            "membership-movement-source/player-movement.json",
+            "27f33ea01008038b987b31056be05ff087bc4a363957d476fcd5053e83c5aa8b",
+        ),
+    )
+    for artifact, archive_sha, suffix, source_sha in inputs:
+        raw = api(f"/actions/artifacts/{artifact}/zip", binary=True)
+        assert hashlib.sha256(raw).hexdigest() == archive_sha
+        with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+            matches = [n for n in archive.namelist() if n.endswith("/" + suffix)]
+            assert len(matches) == 1
+            assert archive.getinfo(matches[0]).file_size <= 16_000_000
+            source = archive.read(matches[0])
+        assert hashlib.sha256(source).hexdigest() == source_sha
+        encoded = base64.b64encode(zlib.compress(source)).decode("ascii")
+        assert len(encoded) <= 800_000
+        with capfd.disabled():
+            for start in range(0, len(encoded), 16_000):
+                print(
+                    "MEMBERSHIP_RETAIN_ORIGINAL "
+                    + json.dumps(
+                        dict(
+                            file=suffix.split("/")[-1],
+                            sha256=source_sha,
+                            start=start,
+                            total=len(encoded),
+                            zlib_base64=encoded[start : start + 16_000],
+                        )
+                    ),
+                    flush=True,
+                )

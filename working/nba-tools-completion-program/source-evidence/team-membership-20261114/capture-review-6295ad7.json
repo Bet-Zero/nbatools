@@ -1,0 +1,16 @@
+{
+  "reviewer": "/root/coverage_checker",
+  "reviewed_revision": "6295ad756527d969f5badb6753e60b93705ab879",
+  "reviewed_tree": "14b3c5d9d68c84a9591c898f071929f06ca1dbe2",
+  "changed_path": "tests/cloud_membership_source_capture_real_data.py",
+  "changed_file_sha256": "f5bae53a2c9e965f36b9343110afddea603607d28949645b261807d5f7b9c041",
+  "scope_approved": true,
+  "open_findings": [],
+  "authority": "AGENTS.md and docs/operations/data_availability.md standing bounded public-source collection through existing read-only targeted Actions route; no new credentials, permissions or costs",
+  "fixed_sources": ["2023 opening-night roster press release mirror", "official 2009 NBA opening roster HTML", "official Rockets 2016-17 media guide", "official G League 2023-24 transaction archive", "static NBA player movement JSON"],
+  "bounds": {"source_count": 5, "attempts_each": 1, "redirects": false, "retained_body_limits": [2000000, 1000000, 12000000, 2000000, 4000000], "max_retained_body_bytes": 21000000, "connect_and_idle_timeout_seconds": 20, "existing_push_job_overall_limit_minutes": 20},
+  "safeguards": ["no application/runtime changes", "no explicit source authorization or credential headers", "no canonical dataset or production writes", "artifact writes confined to acquisition output", "native bodies retained with URLs, hashes, capture times, status and failure completeness", "partial timeout and size-limit bodies cannot be complete", "selected diagnostic text bound to native body hash", "membership acceptance explicitly false", "default pytest filename discovery does not collect cloud_ file"],
+  "executed_offline_checks": "work/membership-checker/review_capture_offline.py: all five exact URL calls, expected args, successful PDF and JSON capture, refused 302, partial timeout retention, size-cap failure retention, SHA256 consistency, no membership acceptance",
+  "live_requests_during_review": 0,
+  "limits": ["approval is for one fixed five-source native acquisition diagnostic only", "passing transport diagnostic does not qualify source coverage or numeric membership", "native body parsers and full-season chronology/date conflict qualification remain future work", "20 seconds is a connect/read idle timeout rather than total request duration; existing workflow job bounds overall runtime", "no substantial backfill, automatic refresh or production publication authorization"]
+}

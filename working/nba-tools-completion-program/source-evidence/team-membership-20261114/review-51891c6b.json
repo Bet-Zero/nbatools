@@ -1,0 +1,15 @@
+{
+  "reviewer":"/root/coverage_checker",
+  "reviewed_revision":"51891c6b9862a92901ae3c696e445f535bda9009",
+  "reviewed_tree":"cdc76226afff7e0cccd6a160ace111eb286faa7d",
+  "base_approved_revision":"834111da4e83fb4c940af015ac019b4e95d91a3c",
+  "approval":"Exact-head approval for fresh targeted R2 replay; zero open findings",
+  "open_findings":[],
+  "sole_delta":"tests/test_team_membership_sample_real_data.py: output.mkdir(parents=True, exist_ok=False). No assessor, native data, oracle or numerical/assertion changes.",
+  "independently_inspected_failure":{"run_id":43681278613,"job_id":132712419296,"selected":1,"executed":1,"passed":0,"failed":1,"skipped":0,"failure":"FileNotFoundError creating outputs/required_data_validation/acquired_data/membership-assessment after source/count/control assertions. This is a failed required check, not a numerical pass."},
+  "executed_focused_check":"Absent nested parent creation succeeds with parents=True; repeating same directory still raises FileExistsError. No source/data recollection or broad tests.",
+  "approved_selector":"tests/test_team_membership_sample_real_data.py::test_bulk_opening_and_movements_expose_membership_unknowns",
+  "approved_scope":"One fresh existing read-only targeted run on new exact candidate; pinned generation/manifest and retained sources unchanged. No NBA request, publication or refresh.",
+  "reused_evidence":"834111da exact-head review,14controlled tests,2independent ordering controls, native independent tally and historical applicability evidence remain valid. Failed hosted run is preserved honestly; fresh selected/executed/passed result remains required before merge.",
+  "diff_check":"passed"
+}

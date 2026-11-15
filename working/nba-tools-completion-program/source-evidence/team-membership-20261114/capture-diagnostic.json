@@ -1,0 +1,74 @@
+{
+  "classification": "bounded_source_diagnostic_not_membership_acceptance",
+  "candidate_sha": "670f755c04d518ccf83fc85c6370c1ee9b17f54f",
+  "source_count": 5,
+  "max_total_body_bytes": 21000000,
+  "attempts_per_source": 1,
+  "redirects": 0,
+  "timeout_seconds": 20,
+  "production_writes": 0,
+  "membership_accepted": false,
+  "captures": [
+    {
+      "file": "opening-2023.pdf",
+      "url": "https://bloximages.chicago2.vip.townnews.com/tucson.com/content/tncms/assets/v3/editorial/b/52/b52fd976-71ff-11ee-8fbf-d7479459d4aa/653708216e38d.pdf.pdf",
+      "started_at": "2026-11-15T04:53:40.161901+00:00",
+      "complete": true,
+      "limit_bytes": 2000000,
+      "http_status": 200,
+      "size_bytes": 176609,
+      "sha256": "c122900f6a322dc7aac4aa5d1096d185e652bd439d79595106bc35eb130178f7",
+      "retrieved_at": "2026-11-15T04:53:40.296997+00:00",
+      "original_nba_capture_time": null
+    },
+    {
+      "file": "opening-2009.html",
+      "url": "https://pr.nba.com/opening-day-rosters-set/",
+      "started_at": "2026-11-15T04:53:40.550347+00:00",
+      "complete": false,
+      "limit_bytes": 1000000,
+      "http_status": 403,
+      "size_bytes": 425,
+      "sha256": "9f3ece7c265f2f047d66ca579e9d95e07b0819e2e64e80e19558da774692cd33",
+      "retrieved_at": "2026-11-15T04:53:40.673551+00:00",
+      "original_nba_capture_time": null
+    },
+    {
+      "file": "rockets-2016-guide.pdf",
+      "url": "https://ak-static-int.nba.com/wp-content/uploads/sites/3/2016/10/2016-17-Media-Guide-Rockets.pdf",
+      "started_at": "2026-11-15T04:53:40.673798+00:00",
+      "complete": false,
+      "limit_bytes": 12000000,
+      "http_status": 403,
+      "size_bytes": 425,
+      "sha256": "7388b50492b4821b789c6ce6c56e0b541cc4bcca00cda79bdb3e52d68d339eda",
+      "retrieved_at": "2026-11-15T04:53:40.772384+00:00",
+      "original_nba_capture_time": null
+    },
+    {
+      "file": "gleague-2023.html",
+      "url": "https://gleague.nba.com/2023-24-nba-g-league-transactions",
+      "started_at": "2026-11-15T04:53:40.772706+00:00",
+      "complete": false,
+      "limit_bytes": 2000000,
+      "http_status": 403,
+      "size_bytes": 429,
+      "sha256": "c306f4ff9045770ac31585cbb7f4109731c76c26d3799ac9ee01a71365f485b1",
+      "retrieved_at": "2026-11-15T04:53:40.860780+00:00",
+      "original_nba_capture_time": null
+    },
+    {
+      "file": "player-movement.json",
+      "url": "https://stats.nba.com/js/data/playermovement/NBA_Player_Movement.json",
+      "started_at": "2026-11-15T04:53:40.861088+00:00",
+      "complete": false,
+      "limit_bytes": 4000000,
+      "http_status": 200,
+      "error_type": "ValueError",
+      "size_bytes": 4000000,
+      "sha256": "22e40fcca6cf6e5b1df2c5f9e25d4446a3eca2f209390f3e0fbee090f1855ab6",
+      "retrieved_at": "2026-11-15T04:53:40.968121+00:00",
+      "original_nba_capture_time": null
+    }
+  ]
+}

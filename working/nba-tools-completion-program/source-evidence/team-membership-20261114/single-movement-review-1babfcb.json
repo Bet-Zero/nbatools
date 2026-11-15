@@ -1,0 +1,18 @@
+{
+  "reviewer": "/root/coverage_checker",
+  "reviewed_revision": "1babfcb67b2704ca5e235f26d927c0ab98f5bf7b",
+  "reviewed_tree": "21b232634175d77566cfcf647517bf373797450d",
+  "changed_file": "tests/cloud_membership_source_capture_real_data.py",
+  "changed_file_sha256": "642a839caf35c3b212d560eef2a2911fdc6836425065d9ad76d4b97fec9c4afd",
+  "approved_node": "tests/cloud_membership_source_capture_real_data.py::test_capture_one_complete_player_movement_response",
+  "approved_one_response_url": "https://stats.nba.com/js/data/playermovement/NBA_Player_Movement.json",
+  "approval": "ONE new bounded native capture through existing read-only targeted Actions route only",
+  "scope_approved": true,
+  "open_findings": [],
+  "new_evidence": "Prior run43678627453 returned HTTP200 for this exact URL but exceeded4MB; receipt retains4MB partial with complete=false. A16MB cap adjustment is justified by actual successful transport/body-size evidence and does not retry the three diagnosed403 sources.",
+  "bounds": {"source_count": 1, "attempts": 1, "redirects": false, "max_retained_body_bytes": 16000000, "connect_and_idle_timeout_seconds": 20, "overall_bound": "existing20minute push workflow job"},
+  "reviewed_safeguards": ["Original five-source collector unchanged and must not be selected again", "new node makes only the one fixed public request", "failure/redirect/body-cap cannot set complete=true", "native body or partial retained before assertion with URL/hash/status/time", "outputs confined to NBATOOLS_ACQUISITION_OUTPUT/membership-movement-source", "no source authorization headers added", "no canonical or production writes", "membership_accepted=false", "full JSON parse required before schema diagnostic", "raw string-filtered sample is diagnostic only and must not serve as normalized season/contract coverage"],
+  "executed_offline_checks": "work/membership-checker/review_single_movement_offline.py: successful native-schema-shaped JSON,302 refusal, partial ReadTimeout and16MB overflow; each exactly one request with expected args, original/partial hashes, failure assertions, no schema output on transport failure",
+  "live_requests_during_review": 0,
+  "limits": ["This approves capture, not data completeness, native schema correctness, source freshness, NBA membership, participation or numerical acceptance", "No additional sources, larger cap, repeated batch, automated refresh or production publication approved", "Retained opening PDF document dateOct23 and claimed effective openingOct24 stay distinct; all sample-teamOct23 events require explicit anchor-conflict accounting", "Source artifact/outer workflow bind exact code/request identity; do not misstate manifest request revision as independently reviewed collector revision"]
+}
