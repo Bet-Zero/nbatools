@@ -11,83 +11,53 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**November 14, 2026 (Detroit). Lead: Codex, taking over from Claude.**
-Live main verified at `2d4bbe26` (PR619 merged, retaining PR618). The clean
-starting tree and previous branches were preserved. PR619 final reviewed code
-is `4dc3afb7`; its stager/numerical-test code is unchanged from R2-tested `a9895ea`.
-Old PR462, its branch and saved Tatum work are untouched.
-No background data worker is running; Agent 2/DQ-005 and K12 cold-start remain parked.
+**November 14, 2026 (Detroit). Lead: Codex.** Live main verified at
+`f22f87ae` (merged PR619/620, retaining PR618). Existing branches, Tatum work,
+source originals, published generations and all completed acceptance are preserved.
+No background data worker is running; Agent 2/DQ-005 and K12 cold-start stay parked.
 
-### What remains true
+**Core-1 remains limited acceptance on held data, not league-wide completion.**
+The earlier 126 checks, deployed proof and K08 view (16 PASS, 26 MISSING DATA,
+4 LIVE) remain recorded, not rerun. Davis' default-season/cross-team gaps, wider
+coverage, current-season freshness and known unavailable advanced values remain
+open. Prior release evidence and defects stay in the unchanged
+[checkpoint history](checkpoint-history-20261114.md).
 
-- **Core-1 has limited acceptance on held data, not league-wide completion.**
-  The existing 126 K01-K07/K09-K12 checks, acceptance view and deployed
-  desktop/mobile proof remain recorded, not rerun here. Latest K08 view: 16
-  PASS, 26 MISSING DATA, 4 LIVE; no software failures in that view. Its Davis
-  default-season and cross-team membership gaps remain open. Literal current
-  season/daily freshness and K12 cold-start moved to Live by B. The 484 unknown
-  USG%/TOV% values remain labeled unavailable, never zero.
-- Last recorded published snapshot:
-  `availability-participation-2025-durant-v1-20261114`, manifest
-  `cde98408f3390e6191da564197fb77ffbc598a3059963cfc21d9f2d7e1a6b366`,
-  1,186 objects. Both approved participation publications and their 31 audited
-  answers are preserved. Publication readiness still failed only at
-  `new_season_not_loaded`; no new live-pointer or full-inventory claim here.
-- PR618's parser fixes and independent/targeted R2 evidence are preserved.
-  Known broader replay failures and stale pinned package/deployed evidence are
-  not reclassified as passes. No broad replay or full suite was rerun.
-- Exact prior runs, decisions, remaining release evidence and carry-forward
-  defects are preserved unchanged in
-  [checkpoint-history-20261114.md](checkpoint-history-20261114.md).
+Last recorded published snapshot:
+`availability-participation-2025-durant-v1-20261114`, manifest
+`cde98408f3390e6191da564197fb77ffbc598a3059963cfc21d9f2d7e1a6b366`,
+1,186 objects. No new live-pointer/freshness claim or production data publication.
+Readiness's known `new_season_not_loaded` blocker remains.
 
-### Active priority: league-wide with/without coverage
+**Current unit: PR621, `codex/dated-membership-sample`.** The generalized engine
+and PR619's game-grain recovery remain unchanged. PR619's 278 staged explicit
+rows (173 played/105 nonparticipants) still are not published; its passing
+focused R2 run43674107752 is reused only for that unchanged process.
 
-B's current direction supersedes the earlier first/last-appearance suggestion:
-**no first/last or whole-season roster guesses; no missing-row-as-DNP.**
-Keep the existing generalized membership/participation engine.
+The new offline bulk membership assessment automatically reads a frozen 2023
+opening PDF and the complete retained NBA transaction feed. Whole-team sample:
+2023-24 Lakers and Rockets, 82 observed games each, 21/22 candidate identities,
+all 21/17 played identities explained, 13 changes plus conversion/draft controls.
+It flags Hinton/Hudgins opening conflicts and Windler's disputed waiver date;
+zero-appearance trade members, pre-anchor waivers and two-way status stay distinct.
+**No accepted tenure or inferred DNPs.** The feed begins July 2015 and has no
+explicit expiry event type; older rosters/guides have exact recorded access gaps.
+[Sources, measured coverage, originals and reproduction](source-evidence/team-membership-20261114/README.md).
 
-- Core player stats came from season appearance logs, not full box-score lists.
-  Legacy starter-role extraction discarded nonplayers and did not save HTTP
-  bodies. Newer retained Traditional/Summary originals do contain unused DNP
-  and inactive evidence. Exact-game lists establish association and play state,
-  not tenure or nonmembership for omitted players.
-- PR619 adds: existing offline stager accepts a **game-grain request**
-  and recovers all listed players on both teams, without naming a player target.
-  Same original-source, canonical, append-only and protected-publication checks.
-  Local staging recovered 278 rows (173 played/105 explicit nonparticipants)
-  from eight already-retained games, preserving all 597 existing season rows.
-  Independent raw tally agrees. Focused R2 [43674107752](https://github.com/Bet-Zero/nbatools/actions/runs/43674107752) passed one selected/executed required test, zero skips/errors, on code `a9895ea` via request `2c56414f`. This staging is **not published**.
-- Source research independently checked opener/finale absences, Adams' trade
-  despite no Houston appearances, late signings, waivers, two-way players and
-  arbitrary opponent players. Older injured-list members can be omitted from
-  both Traditional and Summary: acquiring every pair is not a proven exact
-  1996-97+ membership solution. Season inactive archives and official team/season
-  transaction chronologies are reusable leads, with explicit completeness/date
-  gaps and source conflicts.
-- Evidence and exact missing inputs:
-  [league participation findings](source-evidence/league-participation-20261114/README.md).
-  Originals, old snapshots, accepted cohorts and safeguards are preserved.
+Focused controlled tests passed (11); retained-source local replay executed/passed
+one test after correcting the source expectation that Samuels actually played
+in Houston's opener. Source-stage independent reviews and three bounded successful
+capture/custody runs are preserved. Final exact-code review, blocking CI and
+focused R2 membership replay are pending; PR621 must not merge without them.
+No whole-project audit, routine full suite or broad replay was started manually.
 
-### Verification and one next action
-
-Separate checker `/root/coverage_checker` approved `a9895ea` and final `4dc3afb7`
-with zero findings:
-67 focused tests, two unfamiliar omission/unknown controls, exact native rows and
-prior-cell preservation. R2 numerical validation passed as above. Initial CI
-caught the historical applicability seal. The checker separately approved the
-offline stager/documentation reach across all 22 original cases; the companion
-now binds 28 changed/635 unchanged files, preserving all 663 original bindings,
-22 inputs, 44 captures and false full-Core/fresh-deployment flags. Focused guard
-tests passed. All blocking PR619 CI passed on the exact final head, including
-Python 3.11/3.12/3.13. The red frontend-security-dev audit is informational.
-Post-merge CI is checked separately; its live result is linked in PR619.
-
-**Next: qualify bulk team/season membership evidence**, especially
-opening rosters plus dated NBA contract changes and older injured-list coverage.
-Use the game-based recovery path for valid retained pairs first; do not replace
-existing one-sided reports or claim that a complete file index proves membership. Bring exact missing
-season/game bodies and bounds to B before any substantial historical backfill;
-production publication, new costs and automatic refresh remain separately gated.
+**Next:** finish PR621's focused independent review/required gates, then qualify
+one bounded frozen season-final team chronology/game-notes archive for this sample.
+It must settle the opening corrections, effective dates and whole-team contract
+history before continuous intervals can enter the existing membership contract.
+No first/last or whole-season guesses. Missing participation stays unknown.
+Substantial historical backfill, production publication, new costs and automatic
+refresh remain separately gated; nothing is currently needed from B.
 
 ## Preserved scope
 

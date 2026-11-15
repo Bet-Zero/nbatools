@@ -1,0 +1,693 @@
+{
+  "classification": "provisional_source_assessment_only",
+  "source": {
+    "events": [
+      {
+        "native_row": 2677,
+        "date": "2024-03-02",
+        "player_id": 1628385,
+        "player_slug": "harry-giles-iii",
+        "kind": "Signing",
+        "description": "Los Angeles Lakers signed forward Harry Giles III to a Two-Way Contract.",
+        "group": "Signing 1114985",
+        "team_id": 1610612747,
+        "action": "member",
+        "temporary": false
+      },
+      {
+        "native_row": 2684,
+        "date": "2024-03-01",
+        "player_id": 1629685,
+        "player_slug": "dylan-windler",
+        "kind": "Waive",
+        "description": "Los Angeles Lakers waived guard Dylan Windler.",
+        "group": "Waive 1114948",
+        "team_id": 1610612747,
+        "action": "not_member",
+        "temporary": false
+      },
+      {
+        "native_row": 2736,
+        "date": "2024-02-10",
+        "player_id": 203915,
+        "player_slug": "spencer-dinwiddie",
+        "kind": "Signing",
+        "description": "Los Angeles Lakers signed guard Spencer Dinwiddie to a Rest-of-Season Contract.",
+        "group": "Signing 1113563",
+        "team_id": 1610612747,
+        "action": "member",
+        "temporary": false
+      },
+      {
+        "native_row": 2830,
+        "date": "2024-02-01",
+        "player_id": 203500,
+        "player_slug": "steven-adams",
+        "kind": "Trade",
+        "description": "Houston Rockets received center Steven Adams from Memphis Grizzlies.",
+        "group": "Trade 2023029",
+        "team_id": 1610612745,
+        "action": "member",
+        "temporary": false
+      },
+      {
+        "native_row": 2831,
+        "date": "2024-02-01",
+        "player_id": 203506,
+        "player_slug": "victor-oladipo",
+        "kind": "Trade",
+        "description": "Memphis Grizzlies received guard Victor Oladipo from Houston Rockets.",
+        "group": "Trade 2023029",
+        "team_id": 1610612745,
+        "action": "not_member",
+        "temporary": false
+      },
+      {
+        "native_row": 2866,
+        "date": "2024-01-08",
+        "player_id": 1630219,
+        "player_slug": "skylar-mays",
+        "kind": "Signing",
+        "description": "Los Angeles Lakers signed guard Skylar Mays to a Two-Way Contract.",
+        "group": "Signing 1111664",
+        "team_id": 1610612747,
+        "action": "member",
+        "temporary": false
+      },
+      {
+        "native_row": 2874,
+        "date": "2024-01-06",
+        "player_id": 1629685,
+        "player_slug": "dylan-windler",
+        "kind": "Signing",
+        "description": "Los Angeles Lakers signed guard Dylan Windler to a Two-Way Contract.",
+        "group": "Signing 1111605",
+        "team_id": 1610612747,
+        "action": "member",
+        "temporary": false
+      },
+      {
+        "native_row": 2876,
+        "date": "2024-01-06",
+        "player_id": 1641788,
+        "player_slug": "alex-fudge",
+        "kind": "Waive",
+        "description": "Los Angeles Lakers waived forward Alex Fudge.",
+        "group": "Waive 1111585",
+        "team_id": 1610612747,
+        "action": "not_member",
+        "temporary": false
+      },
+      {
+        "native_row": 2877,
+        "date": "2024-01-06",
+        "player_id": 1641793,
+        "player_slug": "dmoi-hodge",
+        "kind": "Waive",
+        "description": "Los Angeles Lakers waived guard D'Moi Hodge.",
+        "group": "Waive 1111586",
+        "team_id": 1610612747,
+        "action": "not_member",
+        "temporary": false
+      },
+      {
+        "native_row": 2957,
+        "date": "2023-10-23",
+        "player_id": 1631466,
+        "player_slug": "nate-williams",
+        "kind": "ContractConverted",
+        "description": "Houston Rockets converted the contract of guard Nate Williams to a Two-Way Contract.",
+        "group": "ContractConverted 1107057",
+        "team_id": 1610612745,
+        "action": "status_only",
+        "temporary": false
+      },
+      {
+        "native_row": 2966,
+        "date": "2023-10-23",
+        "player_id": 1630207,
+        "player_slug": "nate-hinton",
+        "kind": "Signing",
+        "description": "Houston Rockets signed guard Nate Hinton to a Two-Way Contract.",
+        "group": "Signing 1107144",
+        "team_id": 1610612745,
+        "action": "member",
+        "temporary": false
+      },
+      {
+        "native_row": 2969,
+        "date": "2023-10-23",
+        "player_id": 1630620,
+        "player_slug": "darius-days",
+        "kind": "Waive",
+        "description": "Houston Rockets waived forward Darius Days.",
+        "group": "Waive 1107119",
+        "team_id": 1610612745,
+        "action": "not_member",
+        "temporary": false
+      },
+      {
+        "native_row": 2970,
+        "date": "2023-10-23",
+        "player_id": 1630526,
+        "player_slug": "jeremiah-robinson-earl",
+        "kind": "Waive",
+        "description": "Houston Rockets waived forward Jeremiah Robinson-Earl.",
+        "group": "Waive 1107120",
+        "team_id": 1610612745,
+        "action": "not_member",
+        "temporary": false
+      },
+      {
+        "native_row": 2975,
+        "date": "2023-10-23",
+        "player_id": 1631309,
+        "player_slug": "trevor-hudgins",
+        "kind": "Waive",
+        "description": "Houston Rockets waived guard Trevor Hudgins.",
+        "group": "Waive 1107255",
+        "team_id": 1610612745,
+        "action": "not_member",
+        "temporary": false
+      }
+    ],
+    "ignored": [
+      {
+        "native_row": 2832,
+        "date": "2024-02-01",
+        "player_id": 0,
+        "player_slug": "",
+        "kind": "Trade",
+        "description": "Memphis Grizzlies received draft consideration from Houston Rockets.",
+        "group": "Trade 2023029",
+        "reason": "nonplayer_transaction"
+      }
+    ],
+    "native_row_count": 10144,
+    "earliest": "2015-07-01",
+    "latest": "2026-11-13"
+  },
+  "inputs": {
+    "working/nba-tools-completion-program/source-evidence/team-membership-20261114/sample-request.json": "921c86c8dc3803fa2ae9c2f8d7dd9804418cc90ce5d810cc97494cd29633f90e",
+    "work/membership-sample/sources.json": "490bc1e69b9e7f9d82f503f0c5fddaa505d8a9aaa0d053b452b284905d8f53cc",
+    "work/membership-sample/opening-2023.pdf": "c122900f6a322dc7aac4aa5d1096d185e652bd439d79595106bc35eb130178f7",
+    "work/membership-sample/player-movement.json": "27f33ea01008038b987b31056be05ff087bc4a363957d476fcd5053e83c5aa8b",
+    "work/coverage-recovery/published/data/generations/availability-participation-2025-durant-v1-20261114/raw/games/2023-24_regular_season.csv": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346",
+    "work/coverage-recovery/published/data/generations/availability-participation-2025-durant-v1-20261114/raw/player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760"
+  },
+  "original_source_captures": {
+    "opening-2023.pdf": {
+      "file": "opening-2023.pdf",
+      "url": "https://bloximages.chicago2.vip.townnews.com/tucson.com/content/tncms/assets/v3/editorial/b/52/b52fd976-71ff-11ee-8fbf-d7479459d4aa/653708216e38d.pdf.pdf",
+      "started_at": "2026-11-15T04:53:40.161901+00:00",
+      "complete": true,
+      "limit_bytes": 2000000,
+      "http_status": 200,
+      "size_bytes": 176609,
+      "sha256": "c122900f6a322dc7aac4aa5d1096d185e652bd439d79595106bc35eb130178f7",
+      "retrieved_at": "2026-11-15T04:53:40.296997+00:00",
+      "original_nba_capture_time": null
+    },
+    "player-movement.json": {
+      "file": "player-movement.json",
+      "url": "https://stats.nba.com/js/data/playermovement/NBA_Player_Movement.json",
+      "started_at": "2026-11-15T05:01:03.340642+00:00",
+      "limit_bytes": 16000000,
+      "complete": true,
+      "attempts": 1,
+      "redirects": 0,
+      "classification": "bounded_native_capture_not_membership_acceptance",
+      "membership_accepted": false,
+      "production_writes": 0,
+      "http_status": 200,
+      "reported_content_length": null,
+      "size_bytes": 4286543,
+      "sha256": "27f33ea01008038b987b31056be05ff087bc4a363957d476fcd5053e83c5aa8b",
+      "retrieved_at": "2026-11-15T05:01:03.680360+00:00",
+      "original_nba_capture_time": null
+    }
+  },
+  "production_writes": 0,
+  "teams": [
+    {
+      "team_id": 1610612745,
+      "classification": "provisional_source_assessment_only",
+      "complete_membership": false,
+      "accepted_intervals": [],
+      "verified_missed_games": null,
+      "missing_evidence": [
+        "qualified_complete_opening_anchor",
+        "qualified_complete_dated_contract_ledger"
+      ],
+      "document_date": "2023-10-23",
+      "claimed_opening_date": "2023-10-24",
+      "opening": [
+        {
+          "player_id": 1628415,
+          "source_name": "Dillon Brooks",
+          "two_way": false
+        },
+        {
+          "player_id": 203493,
+          "source_name": "Reggie Bullock Jr.",
+          "two_way": false
+        },
+        {
+          "player_id": 1630224,
+          "source_name": "Jalen Green",
+          "two_way": false
+        },
+        {
+          "player_id": 201145,
+          "source_name": "Jeff Green",
+          "two_way": false
+        },
+        {
+          "player_id": 1628988,
+          "source_name": "Aaron Holiday",
+          "two_way": false
+        },
+        {
+          "player_id": 1629111,
+          "source_name": "Jock Landale",
+          "two_way": false
+        },
+        {
+          "player_id": 1626246,
+          "source_name": "Boban Marjanovic",
+          "two_way": false
+        },
+        {
+          "player_id": 1630578,
+          "source_name": "Alperen Sengun",
+          "two_way": false
+        },
+        {
+          "player_id": 1631095,
+          "source_name": "Jabari Smith Jr.",
+          "two_way": false
+        },
+        {
+          "player_id": 1630256,
+          "source_name": "Jae'Sean Tate",
+          "two_way": false
+        },
+        {
+          "player_id": 1641708,
+          "source_name": "Amen Thompson",
+          "two_way": false
+        },
+        {
+          "player_id": 1627832,
+          "source_name": "Fred V anVleet",
+          "two_way": false
+        },
+        {
+          "player_id": 1641715,
+          "source_name": "Cam Whitmore",
+          "two_way": false
+        },
+        {
+          "player_id": 1631106,
+          "source_name": "Tari Eason",
+          "two_way": false
+        },
+        {
+          "player_id": 1631309,
+          "source_name": "Trevor Hudgins",
+          "two_way": true
+        },
+        {
+          "player_id": 203506,
+          "source_name": "Victor Oladipo",
+          "two_way": false
+        },
+        {
+          "player_id": 1631257,
+          "source_name": "Jermaine Samuels Jr.",
+          "two_way": true
+        },
+        {
+          "player_id": 1631466,
+          "source_name": "Nate Williams",
+          "two_way": true
+        }
+      ],
+      "observed_games": 82,
+      "candidate_people": 22,
+      "played_people": 17,
+      "zero_appearance_candidates": [
+        203500,
+        203506,
+        1630526,
+        1630620,
+        1631309
+      ],
+      "opening_conflicts": [
+        {
+          "player_id": 1630207,
+          "roster_state": "not_member",
+          "events": [
+            {
+              "native_row": 2966,
+              "date": "2023-10-23",
+              "player_id": 1630207,
+              "player_slug": "nate-hinton",
+              "kind": "Signing",
+              "description": "Houston Rockets signed guard Nate Hinton to a Two-Way Contract.",
+              "group": "Signing 1107144",
+              "team_id": 1610612745,
+              "action": "member",
+              "temporary": false
+            }
+          ]
+        },
+        {
+          "player_id": 1631309,
+          "roster_state": "member",
+          "events": [
+            {
+              "native_row": 2975,
+              "date": "2023-10-23",
+              "player_id": 1631309,
+              "player_slug": "trevor-hudgins",
+              "kind": "Waive",
+              "description": "Houston Rockets waived guard Trevor Hudgins.",
+              "group": "Waive 1107255",
+              "team_id": 1610612745,
+              "action": "not_member",
+              "temporary": false
+            }
+          ]
+        }
+      ],
+      "unexplained_appearance_people": [],
+      "appearance_contradictions": [],
+      "events": [
+        {
+          "native_row": 2830,
+          "date": "2024-02-01",
+          "player_id": 203500,
+          "player_slug": "steven-adams",
+          "kind": "Trade",
+          "description": "Houston Rockets received center Steven Adams from Memphis Grizzlies.",
+          "group": "Trade 2023029",
+          "team_id": 1610612745,
+          "action": "member",
+          "temporary": false
+        },
+        {
+          "native_row": 2831,
+          "date": "2024-02-01",
+          "player_id": 203506,
+          "player_slug": "victor-oladipo",
+          "kind": "Trade",
+          "description": "Memphis Grizzlies received guard Victor Oladipo from Houston Rockets.",
+          "group": "Trade 2023029",
+          "team_id": 1610612745,
+          "action": "not_member",
+          "temporary": false
+        },
+        {
+          "native_row": 2957,
+          "date": "2023-10-23",
+          "player_id": 1631466,
+          "player_slug": "nate-williams",
+          "kind": "ContractConverted",
+          "description": "Houston Rockets converted the contract of guard Nate Williams to a Two-Way Contract.",
+          "group": "ContractConverted 1107057",
+          "team_id": 1610612745,
+          "action": "status_only",
+          "temporary": false
+        },
+        {
+          "native_row": 2966,
+          "date": "2023-10-23",
+          "player_id": 1630207,
+          "player_slug": "nate-hinton",
+          "kind": "Signing",
+          "description": "Houston Rockets signed guard Nate Hinton to a Two-Way Contract.",
+          "group": "Signing 1107144",
+          "team_id": 1610612745,
+          "action": "member",
+          "temporary": false
+        },
+        {
+          "native_row": 2969,
+          "date": "2023-10-23",
+          "player_id": 1630620,
+          "player_slug": "darius-days",
+          "kind": "Waive",
+          "description": "Houston Rockets waived forward Darius Days.",
+          "group": "Waive 1107119",
+          "team_id": 1610612745,
+          "action": "not_member",
+          "temporary": false
+        },
+        {
+          "native_row": 2970,
+          "date": "2023-10-23",
+          "player_id": 1630526,
+          "player_slug": "jeremiah-robinson-earl",
+          "kind": "Waive",
+          "description": "Houston Rockets waived forward Jeremiah Robinson-Earl.",
+          "group": "Waive 1107120",
+          "team_id": 1610612745,
+          "action": "not_member",
+          "temporary": false
+        },
+        {
+          "native_row": 2975,
+          "date": "2023-10-23",
+          "player_id": 1631309,
+          "player_slug": "trevor-hudgins",
+          "kind": "Waive",
+          "description": "Houston Rockets waived guard Trevor Hudgins.",
+          "group": "Waive 1107255",
+          "team_id": 1610612745,
+          "action": "not_member",
+          "temporary": false
+        }
+      ],
+      "conditional_cells": {
+        "member": 1394,
+        "not_member": 246,
+        "unknown": 164
+      },
+      "exact_game_membership_cells": {
+        "member": 880,
+        "unknown": 924
+      },
+      "participation_cells": {
+        "played": 880,
+        "unknown": 924
+      }
+    },
+    {
+      "team_id": 1610612747,
+      "classification": "provisional_source_assessment_only",
+      "complete_membership": false,
+      "accepted_intervals": [],
+      "verified_missed_games": null,
+      "missing_evidence": [
+        "qualified_complete_opening_anchor",
+        "qualified_complete_dated_contract_ledger"
+      ],
+      "document_date": "2023-10-23",
+      "claimed_opening_date": "2023-10-24",
+      "opening": [
+        {
+          "player_id": 1631108,
+          "source_name": "Max Christie",
+          "two_way": false
+        },
+        {
+          "player_id": 203076,
+          "source_name": "Anthony Davis",
+          "two_way": false
+        },
+        {
+          "player_id": 1629060,
+          "source_name": "Rui Hachimura",
+          "two_way": false
+        },
+        {
+          "player_id": 1629637,
+          "source_name": "Jaxson Hayes",
+          "two_way": false
+        },
+        {
+          "player_id": 1641720,
+          "source_name": "Jalen Hood - Schifino",
+          "two_way": false
+        },
+        {
+          "player_id": 2544,
+          "source_name": "LeBron James",
+          "two_way": false
+        },
+        {
+          "player_id": 1641721,
+          "source_name": "Maxwell Lewis",
+          "two_way": false
+        },
+        {
+          "player_id": 1627752,
+          "source_name": "Taurean Prince",
+          "two_way": false
+        },
+        {
+          "player_id": 1630559,
+          "source_name": "Austin Reaves",
+          "two_way": false
+        },
+        {
+          "player_id": 1629629,
+          "source_name": "Cam Reddish",
+          "two_way": false
+        },
+        {
+          "player_id": 1626156,
+          "source_name": "D'Angelo Russell",
+          "two_way": false
+        },
+        {
+          "player_id": 1629020,
+          "source_name": "Jarred V anderbilt",
+          "two_way": false
+        },
+        {
+          "player_id": 1629216,
+          "source_name": "Gabe Vincent",
+          "two_way": false
+        },
+        {
+          "player_id": 1626174,
+          "source_name": "Christian Wood",
+          "two_way": false
+        },
+        {
+          "player_id": 1630658,
+          "source_name": "Colin Castleton",
+          "two_way": true
+        },
+        {
+          "player_id": 1641788,
+          "source_name": "Alex Fudge",
+          "two_way": true
+        },
+        {
+          "player_id": 1641793,
+          "source_name": "D'Moi Hodge",
+          "two_way": true
+        }
+      ],
+      "observed_games": 82,
+      "candidate_people": 21,
+      "played_people": 21,
+      "zero_appearance_candidates": [],
+      "opening_conflicts": [],
+      "unexplained_appearance_people": [],
+      "appearance_contradictions": [],
+      "events": [
+        {
+          "native_row": 2677,
+          "date": "2024-03-02",
+          "player_id": 1628385,
+          "player_slug": "harry-giles-iii",
+          "kind": "Signing",
+          "description": "Los Angeles Lakers signed forward Harry Giles III to a Two-Way Contract.",
+          "group": "Signing 1114985",
+          "team_id": 1610612747,
+          "action": "member",
+          "temporary": false
+        },
+        {
+          "native_row": 2684,
+          "date": "2024-03-01",
+          "player_id": 1629685,
+          "player_slug": "dylan-windler",
+          "kind": "Waive",
+          "description": "Los Angeles Lakers waived guard Dylan Windler.",
+          "group": "Waive 1114948",
+          "team_id": 1610612747,
+          "action": "not_member",
+          "temporary": false
+        },
+        {
+          "native_row": 2736,
+          "date": "2024-02-10",
+          "player_id": 203915,
+          "player_slug": "spencer-dinwiddie",
+          "kind": "Signing",
+          "description": "Los Angeles Lakers signed guard Spencer Dinwiddie to a Rest-of-Season Contract.",
+          "group": "Signing 1113563",
+          "team_id": 1610612747,
+          "action": "member",
+          "temporary": false
+        },
+        {
+          "native_row": 2866,
+          "date": "2024-01-08",
+          "player_id": 1630219,
+          "player_slug": "skylar-mays",
+          "kind": "Signing",
+          "description": "Los Angeles Lakers signed guard Skylar Mays to a Two-Way Contract.",
+          "group": "Signing 1111664",
+          "team_id": 1610612747,
+          "action": "member",
+          "temporary": false
+        },
+        {
+          "native_row": 2874,
+          "date": "2024-01-06",
+          "player_id": 1629685,
+          "player_slug": "dylan-windler",
+          "kind": "Signing",
+          "description": "Los Angeles Lakers signed guard Dylan Windler to a Two-Way Contract.",
+          "group": "Signing 1111605",
+          "team_id": 1610612747,
+          "action": "member",
+          "temporary": false
+        },
+        {
+          "native_row": 2876,
+          "date": "2024-01-06",
+          "player_id": 1641788,
+          "player_slug": "alex-fudge",
+          "kind": "Waive",
+          "description": "Los Angeles Lakers waived forward Alex Fudge.",
+          "group": "Waive 1111585",
+          "team_id": 1610612747,
+          "action": "not_member",
+          "temporary": false
+        },
+        {
+          "native_row": 2877,
+          "date": "2024-01-06",
+          "player_id": 1641793,
+          "player_slug": "dmoi-hodge",
+          "kind": "Waive",
+          "description": "Los Angeles Lakers waived guard D'Moi Hodge.",
+          "group": "Waive 1111586",
+          "team_id": 1610612747,
+          "action": "not_member",
+          "temporary": false
+        }
+      ],
+      "conditional_cells": {
+        "member": 1420,
+        "not_member": 300,
+        "unknown": 2
+      },
+      "exact_game_membership_cells": {
+        "member": 867,
+        "unknown": 855
+      },
+      "participation_cells": {
+        "played": 867,
+        "unknown": 855
+      }
+    }
+  ]
+}

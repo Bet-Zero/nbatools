@@ -1,0 +1,13 @@
+{
+  "reviewer": "/root/coverage_checker",
+  "reviewed_revision": "2a98f6a4e85ed363a70a4d6e1d305a2d3a3a297f",
+  "reviewed_tree": "3e9d45a7ac8616aa1f7229ef54b7092c84ec1ef9",
+  "changed_file_sha256": "564ef6621532363bf516997ec86ca0caeba7bfbca49067878528f3ec377401ca",
+  "approved_node": "tests/cloud_membership_source_capture_real_data.py::test_retain_fixed_captured_originals",
+  "approved_scope": "One read-only targeted run transferring only two already captured public originals from fixed same-repository artifacts14147163330 and14147259065; no NBA requests",
+  "scope_approved": true,
+  "open_findings": [],
+  "reviewed_guards": ["Fixed artifactIDs and exact ZIP SHA256s", "existing unchanged GitHub reader32MiB archive ceiling and60s timeout", "unique exact suffix match, selected member <=16MB", "native SHA256 authenticated before any body output", "zlib/base64 output <=800000bytes per original", "16000character chunks bound to filename/hash/start/total", "only public source bodies may pass fixed native hashes", "no source download or canonical data/publication writes", "existing read-only GH_TOKEN used by unchanged repository-bound GET reader; no headers/tokens logged", "prior source-collection functions unchanged and not selected by this approval"],
+  "verification": "Static exact delta and existing GitHub reader inspected; git diff --check passed. No network calls or numerical/membership tests executed or claimed.",
+  "limits": "Transport/custody approval only. Compressed body output is not membership acceptance, coverage qualification or production publication. Native body and archive hashes must be independently checked after local reconstruction."
+}

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "classification": "provisional_source_assessment_only",
+  "season": "2023-24",
+  "base_generation": "availability-participation-2025-durant-v1-20261114",
+  "base_manifest_sha256": "cde98408f3390e6191da564197fb77ffbc598a3059963cfc21d9f2d7e1a6b366",
+  "document_date": "2023-10-23",
+  "claimed_opening_date": "2023-10-24",
+  "end_date": "2024-04-14",
+  "input_sha256": {
+    "opening-2023.pdf": "c122900f6a322dc7aac4aa5d1096d185e652bd439d79595106bc35eb130178f7",
+    "player-movement.json": "27f33ea01008038b987b31056be05ff087bc4a363957d476fcd5053e83c5aa8b",
+    "games": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346",
+    "appearances": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760"
+  },
+  "teams": [
+    {
+      "team_id": 1610612745,
+      "header": "HOUSTON"
+    },
+    {
+      "team_id": 1610612747,
+      "header": "L.A. LAKERS",
+      "date_disputes": [
+        {
+          "player_id": 1629685,
+          "start_date": "2024-03-01",
+          "end_date": "2024-03-02",
+          "reason": "Feed action date March1; bulk secondary and official announcement March2. Publication date does not resolve effective time.",
+          "reference": "https://www.nba.com/lakers/news/lakers-sign-harry-giles-iii-to-two-way-contract-030224"
+        }
+      ]
+    }
+  ]
+}

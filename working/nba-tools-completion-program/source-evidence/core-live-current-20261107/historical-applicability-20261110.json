@@ -226,9 +226,9 @@
     {
       "path": "docs/reference/data_contracts.md",
       "old_sha256": "6cc8cbeab09758d9db569d7e5d0c44572d0983c198532f8c925344e6113bcf2a",
-      "reviewed_sha256": "3056a1cb71739840ed9869b8a6d3c3bda90aa1284a57f319732aee3aa3d93e26",
+      "reviewed_sha256": "d68715e7db9c504cfe6a8abe00ced6cc3d5ca5be31b4e8027132a9f5a18a7eea",
       "reviewed_functions": "documentation",
-      "semantic_reach": "Adds only the explicitly invoked offline game-grain collection request and listed-only receipt contract. No runtime execution or source-coverage promotion; original query semantics and all 22 retained cases are unchanged.",
+      "semantic_reach": "Adds only the explicitly invoked offline game-grain collection request and listed-only receipt contract. No runtime execution or source-coverage promotion; original query semantics and all 22 retained cases are unchanged. PR621 documents an offline provisional membership-source assessment only; no runtime, query, original case, capture, data generation or accepted tenure changes.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
