@@ -121,5 +121,5 @@ def test_bulk_opening_and_movements_expose_membership_unknowns(tmp_path):
         assert cell["conditional_membership"] == conditional
         assert cell["participation"] == ("played" if player == 1631257 else "unknown")
     output = Path(os.environ.get("NBATOOLS_ACQUISITION_OUTPUT", tmp_path)) / "membership-assessment"
-    output.mkdir(exist_ok=False)
+    output.mkdir(parents=True, exist_ok=False)
     (output / "report.json").write_text(json.dumps(report, indent=2) + "\n")
