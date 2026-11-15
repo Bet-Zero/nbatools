@@ -1,0 +1,74 @@
+{
+  "games": [
+    {
+      "game_id": "0022300373",
+      "rows": 35,
+      "states": {
+        "played": 24,
+        "did_not_play": 11
+      }
+    },
+    {
+      "game_id": "0022300432",
+      "rows": 35,
+      "states": {
+        "played": 21,
+        "did_not_play": 14
+      }
+    },
+    {
+      "game_id": "0022300507",
+      "rows": 35,
+      "states": {
+        "played": 21,
+        "did_not_play": 14
+      }
+    },
+    {
+      "game_id": "0022300984",
+      "rows": 34,
+      "states": {
+        "played": 21,
+        "did_not_play": 13
+      }
+    },
+    {
+      "game_id": "0022301011",
+      "rows": 35,
+      "states": {
+        "played": 23,
+        "did_not_play": 12
+      }
+    },
+    {
+      "game_id": "0022301134",
+      "rows": 35,
+      "states": {
+        "played": 20,
+        "did_not_play": 15
+      }
+    },
+    {
+      "game_id": "0022301173",
+      "rows": 35,
+      "states": {
+        "played": 23,
+        "did_not_play": 12
+      }
+    },
+    {
+      "game_id": "0022301186",
+      "rows": 34,
+      "states": {
+        "played": 20,
+        "did_not_play": 14
+      }
+    }
+  ],
+  "total_states": {
+    "played": 173,
+    "did_not_play": 105
+  },
+  "preserved_availability_rows": 597,
+  "byte_identical_other_copied_files": 456
+}
