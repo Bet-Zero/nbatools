@@ -4,12 +4,15 @@ Existing read-only R2 runner is the acquisition route. No source retries,
 redirects, inferred membership, credentials to source hosts, or auto-expansion.
 """
 
+import base64
 import hashlib
 import html
 import io
 import json
 import os
 import re
+import zipfile
+import zlib
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -199,3 +202,49 @@ def test_capture_one_complete_player_movement_response(capfd):
     (output / "schema-and-sample.json").write_text(json.dumps(summary, indent=2) + "\n")
     with capfd.disabled():
         print("MEMBERSHIP_MOVEMENT_SCHEMA " + json.dumps(summary), flush=True)
+
+
+def test_retain_fixed_captured_originals(capfd):
+    """Transfer two already captured public bodies, never contact NBA sources."""
+    from tools.r2_publication import api
+
+    inputs = (
+        (
+            14147163330,
+            "f55fdfb41ef547e13f2c6111ce02a6b9e3b5df0297b1232a7e9831603ab9c81c",
+            "membership-source-sample/opening-2023.pdf",
+            "c122900f6a322dc7aac4aa5d1096d185e652bd439d79595106bc35eb130178f7",
+        ),
+        (
+            14147259065,
+            "1aa89d789b115b013e09619ffd513c69be0c64b5c258b8a9e712108f94411527",
+            "membership-movement-source/player-movement.json",
+            "27f33ea01008038b987b31056be05ff087bc4a363957d476fcd5053e83c5aa8b",
+        ),
+    )
+    for artifact, archive_sha, suffix, source_sha in inputs:
+        raw = api(f"/actions/artifacts/{artifact}/zip", binary=True)
+        assert hashlib.sha256(raw).hexdigest() == archive_sha
+        with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+            matches = [n for n in archive.namelist() if n.endswith("/" + suffix)]
+            assert len(matches) == 1
+            assert archive.getinfo(matches[0]).file_size <= 16_000_000
+            source = archive.read(matches[0])
+        assert hashlib.sha256(source).hexdigest() == source_sha
+        encoded = base64.b64encode(zlib.compress(source)).decode("ascii")
+        assert len(encoded) <= 800_000
+        with capfd.disabled():
+            for start in range(0, len(encoded), 16_000):
+                print(
+                    "MEMBERSHIP_RETAIN_ORIGINAL "
+                    + json.dumps(
+                        dict(
+                            file=suffix.split("/")[-1],
+                            sha256=source_sha,
+                            start=start,
+                            total=len(encoded),
+                            zlib_base64=encoded[start : start + 16_000],
+                        )
+                    ),
+                    flush=True,
+                )
