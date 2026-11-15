@@ -334,3 +334,15 @@ def test_population_before_the_total_is_a_season_total():
     expected = set(totals.loc[totals["pts"] >= 1500, "player_id"])
     rows = _sections("who has 1500 total points in 2024-25")["leaderboard"]
     assert {row["player_id"] for row in rows} == expected
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "players in Lakers games with 230 total points",
+        "starters in Lakers games with 230 total points",
+    ],
+)
+def test_unread_total_on_a_game_route_refuses(query):
+    result = execute_natural_query(query)
+    assert (result.result_status, result.result_reason) == ("no_result", "filter_not_supported")

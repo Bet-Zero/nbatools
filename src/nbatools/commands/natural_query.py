@@ -544,9 +544,9 @@ def _unsupported_boundary_note(
         return attempt_note
     if route not in ("season_leaders", "season_team_leaders") and names_unread_team_total(q):
         return (
-            "unsupported_boundary: a team's season points total (more than any game's "
-            "combined score) is not read here yet; ask for its points per game or a "
-            "season leaderboard"
+            "unsupported_boundary: a season points total is not read on this route "
+            "yet; ask for points per game, a season leaderboard, or a game's combined "
+            'score ("Lakers games with 230 total points")'
         )
 
     if route == "season_team_leaders":

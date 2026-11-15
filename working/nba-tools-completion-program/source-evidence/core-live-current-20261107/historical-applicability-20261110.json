@@ -412,7 +412,7 @@
     {
       "path": "src/nbatools/commands/_parse_helpers.py",
       "old_sha256": "f6bf722bb2223a8ff09e68bced4799dd030043a637f6831ba5570ef4347e0171",
-      "reviewed_sha256": "a9daeadf3463127386a5206a64371a291fab9ab901355806b148144a4e499bdd",
+      "reviewed_sha256": "8ddd400b20d535f184dc9ba1ee7ffe2d6fffb7b50338fc2256fa57b345a02f95",
       "reviewed_functions": "opponent-list/period detection; wants_summary total; extract_min_value season guard; canonicalize_stat_ranges, _reads_as_season, canonicalize_total_counts",
       "semantic_reach": "All original 22 inputs have identical old/current regex matches; all quarter/half predicates are None, no vs/against either phrase. PR607's requested-total summary needs the word total, absent from all 22, and its season-token floor guard leaves every original 22 route and route_kwargs byte-identical to main 8a390f70 (checked by parse_query on both trees). PR618: stat ranges ('25-30 points') and 'N total <stat>' / 'a total of N' rewrites need a number range or the word total beside a stat; none of the original 22 has either, and their route, route_kwargs and notes are byte-identical to main 07b865e (parse_query on both trees).",
       "eligible_existing_case_ids": [
@@ -629,7 +629,7 @@
     {
       "path": "src/nbatools/commands/natural_query.py",
       "old_sha256": "8f98d100b63240b8e97419bf3fd198d3e3279812d4e286ce057535351377c275",
-      "reviewed_sha256": "c7a02091a9a767f3d95ed92e4fdedec2ddd547f7708f303487b53d3bcc2f192c",
+      "reviewed_sha256": "799400b73189d3b2e511b55c37128f7c2cc225261b5a89a8908156b60969bca1",
       "reviewed_functions": "_finalize_route; _teams_in_order; _team_mentions; _expand_bare_short_season, _season_total_threshold_board",
       "semantic_reach": "The new private natural source-rate unit flag requires player_game_finder plus a quarter or half. Original 22 queries have neither period predicate, so their route kwargs remain unchanged and no bound conversion is selected. New team-mention masking only hides complete person spans with internal team words; none of the original 22 names contains one, so team lists and comparison subjects remain identical. PR618: bare two-digit seasons need a consecutive NN-NN or NN/NN pair (the original 22 use four-digit seasons and ISO dates, which the pattern skips); the named-player season-total list needs a season-total number. Route, route_kwargs and notes for all 22 are byte-identical to main 07b865e.",
       "eligible_existing_case_ids": [

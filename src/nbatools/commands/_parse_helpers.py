@@ -1459,14 +1459,14 @@ def _population_owns(match: re.Match) -> bool:
 
 
 def names_unread_team_total(text: str) -> bool:
-    """ "Lakers 6000 total points", or a total left unread beside a player
-    population: game lists and records cannot apply it."""
-    for m in _NUMBER_TOTAL.finditer(canonicalize_total_counts(text)):
-        if _total_stat_key(m.group(3)) != "pts" or _population_owns(m):
-            continue
-        if int(m.group(1)) > _COMBINED_SCORE_CEILING:
-            return True
-    return False
+    """A points total left as "N total points" after the rewrites: a team's
+    season total ("Lakers 6000 total points") or a population's season total
+    ("players in Lakers games with 230 total points"). Only a season list
+    reads it; a game list or record would drop it."""
+    return any(
+        _total_stat_key(m.group(3)) == "pts"
+        for m in _NUMBER_TOTAL.finditer(canonicalize_total_counts(text))
+    )
 
 
 def _total_stat_key(word: str) -> str:
