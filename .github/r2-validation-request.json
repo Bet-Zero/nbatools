@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "2a98f6a4e85ed363a70a4d6e1d305a2d3a3a297f",
+  "generation": "availability-participation-2025-durant-v1-20261114",
+  "tests": ["tests/cloud_membership_source_capture_real_data.py::test_retain_fixed_captured_originals"],
+  "raw_qa_cases": []
+}
