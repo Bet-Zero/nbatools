@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "695b532226b83a7a5056fce47d31b6e628ee1f96",
+  "generation": "availability-participation-2025-durant-v1-20261114",
+  "tests": [
+    "tests/cloud_season_publication_receipt_readback.py::test_read_exact_protected_preparation_tuple"
+  ],
+  "raw_qa_cases": []
+}
