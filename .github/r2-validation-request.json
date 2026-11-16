@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "8168fbbc0f4b893fe7d3f9deccfd6b73ce296db2",
+  "generation": "availability-participation-2025-durant-v1-20261114",
+  "tests": [
+    "tests/test_season_inactive_publication_real_data.py::test_exact_pr623_bundle_complete_snapshot_prepare"
+  ],
+  "raw_qa_cases": []
+}
