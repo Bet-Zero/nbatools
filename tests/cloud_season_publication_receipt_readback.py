@@ -11,9 +11,9 @@ from nbatools.commands.pipeline import generation_publication as publication
 from tools import r2_publication as gate
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.engine]
-RUN = 43792493440
-ARTIFACT = 14192728093
-ZIP_SHA = "4d58422b3c8b54543210718e934dd529295e03f59e732d913f0ae168002c020c"
+RUN = 43801111855
+ARTIFACT = 14196209318
+ZIP_SHA = "777673808b1091794150dee1930d73f938b960cd02ecd447b99b451b3b843a85"
 BASE = "availability-participation-2025-durant-v1-20261114"
 TARGET = "availability-season-inactive-2023-v1-20261115"
 MANIFEST = "8ec80812ae9dda9222d9d157c253d7a919af214ae40c49a27c20f87b52d156c8"
@@ -23,9 +23,12 @@ def test_read_exact_protected_preparation_tuple(capfd):
     run = gate.api(f"/actions/runs/{RUN}")
     artifact = gate.api(f"/actions/artifacts/{ARTIFACT}")
     assert run["head_sha"] == "15a67708ae43c33b80eaefa21e071497b896459d"
-    assert run["conclusion"] == "success" and run["event"] == "workflow_dispatch"
+    assert run["event"] == "workflow_dispatch"
+    assert run["status"] == "waiting" and run["conclusion"] is None
+    assert gate.api("/actions/jobs/133081459664")["conclusion"] == "success"
+    assert gate.api("/actions/jobs/133082322600")["status"] == "waiting"
     assert run["path"] == ".github/workflows/r2-data-publication.yml"
-    assert run["display_title"] == "validate reviewed data package season-inactive-2023-v1"
+    assert run["display_title"] == "publish reviewed data package season-inactive-2023-v1"
     assert artifact["workflow_run"]["id"] == RUN and artifact["expired"] is False
     assert artifact["digest"] == "sha256:" + ZIP_SHA
     raw = gate.api(f"/actions/artifacts/{ARTIFACT}/zip", binary=True)
