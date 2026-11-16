@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "84b3fb26bf5bd7a6f37722345fa39dfdeb781f9f",
+  "generation": "availability-season-inactive-2023-v1-20261115",
+  "tests": [
+    "tests/test_season_inactive_2024_real_data.py::test_next_season_batch_adds_complete_answers_without_inventing_membership"
+  ],
+  "raw_qa_cases": []
+}
