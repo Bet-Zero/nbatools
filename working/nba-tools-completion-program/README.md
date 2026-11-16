@@ -50,18 +50,22 @@ transport bindings. Existing live generation remains
 `availability-participation-2025-durant-v1-20261114`, manifest
 `cde98408f3390e6191da564197fb77ffbc598a3059963cfc21d9f2d7e1a6b366`.
 
-**Activation blocker:** the authenticated public readiness check still returns
-503 / `new_season_not_loaded` because 2026-27 is missing. The unchanged protected
-post-publication verifier requires readiness 200. This historical overlay cannot
-resolve that dependency; no operational acceptance, readiness exception or
-activation approval is implied by successful preparation.
+**Known publication risk:** the authenticated public readiness check still returns
+503 / `new_season_not_loaded` because 2026-27 is missing. The unchanged verifier
+checks readiness **after** activation. If that persists, it will record
+`published_verification_failed`, skip live-answer checks and automatic backup,
+and leave the new generation active; no automatic rollback occurs. The previous
+generation remains retained. This is not a pre-write approval prohibition. The
+literal preparation flag `activation_ready=false` records operational readiness;
+it does not invent a policy gate. No exception or operational acceptance is implied.
 
 **Next:** finish registration and the existing protected **validate** run without
-writes. Keep the active pointer unchanged while readiness blocks recommendation
-of activation. Present an exact owner approval request only when publication can
-pass its unchanged gates. After approved publication, expand the same bulk
-participation approach to another season and measure newly complete season cases;
-do not restart individual-player or historical membership research.
+writes, then present the exact data-publication approval tuple and the known
+readiness/verification/backup consequences. Keep the pointer unchanged until the
+owner explicitly approves that exact protected action. After activation, keep
+read-only numeric verification/backup separate from failed readiness acceptance.
+The next development priority is additional-season bulk participation with measured
+newly complete cases; individual-player and historical membership research stay closed.
 
 ## Preserved scope
 
