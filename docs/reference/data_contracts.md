@@ -2299,6 +2299,18 @@ are allowed, as in native Summary imports. Originals live in
 binds provenance and canonical dependencies. Runtime and publication validation
 replay the source before consumption, cached per immutable generation.
 
+The default identity-name check remains strict. An explicit receipt policy,
+`identity_name_policy=quarantine_known_conflicts_v1`, instead excludes precisely
+the regular-season rows whose names conflict with the canonical NBA-ID name
+index. It does not resolve or accept those identities. All original rows still
+face the duplicate, scope, side and appearance-contradiction checks. Staging
+retains the unchanged original and a sorted `identity_name_rejections` ledger
+of `(game_id, team_id, player_id, reason=identity_name_conflict)`. Runtime and
+publication replay require and recompute that exact ledger; arbitrary exclusions,
+unknown policies and an entirely rejected batch fail. Excluded observations
+supply neither membership nor participation on either game side. Old receipts
+without the policy retain their original behavior and serialization.
+
 Rows retain availability columns with `participation_state=did_not_play`, null
 `source_minutes`, `coverage_scope=listed_player_rows_only` and source kind
 `sportsdataverse_nba_inactive_archive:<sha256>`. Existing qualified observations

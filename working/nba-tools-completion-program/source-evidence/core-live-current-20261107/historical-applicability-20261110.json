@@ -226,9 +226,9 @@
     {
       "path": "docs/reference/data_contracts.md",
       "old_sha256": "6cc8cbeab09758d9db569d7e5d0c44572d0983c198532f8c925344e6113bcf2a",
-      "reviewed_sha256": "81991da1547a67b3e98d92764c6084fcd40e1f49b72413148e969d41a210fe40",
+      "reviewed_sha256": "d1b14b48f019a9a24fd505bd23f39252412bc512def47f263c15f3e6fb4f683e",
       "reviewed_functions": "documentation",
-      "semantic_reach": "Adds only the explicitly invoked offline game-grain collection request and listed-only receipt contract. No runtime execution or source-coverage promotion; original query semantics and all 22 retained cases are unchanged. PR621 documents an offline provisional membership-source assessment only; no runtime, query, original case, capture, data generation or accepted tenure changes. PR623 documents only the optional explicit season-inactive source, listed-row semantics and staged-only publication status; none of the original 22 capture inputs changes.",
+      "semantic_reach": "Adds only the explicitly invoked offline game-grain collection request and listed-only receipt contract. No runtime execution or source-coverage promotion; original query semantics and all 22 retained cases are unchanged. PR621 documents an offline provisional membership-source assessment only; no runtime, query, original case, capture, data generation or accepted tenure changes. PR623 documents only the optional explicit season-inactive source, listed-row semantics and staged-only publication status; none of the original 22 capture inputs changes. Documents optional deterministic identity-name quarantine; no captured query/runtime semantics change.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1005,9 +1005,9 @@
     {
       "path": "src/nbatools/commands/pipeline/structured_participation.py",
       "old_sha256": "e007ac61ef8ec28aa54747737b8bf06b1409d1b807a5bddf123057fb87281fc0",
-      "reviewed_sha256": "0a0fd9e44aa567b538a265771d49cdb39735fde85bb3516afec9c00673b7b113",
+      "reviewed_sha256": "21ba9b722cf6573ae02a2f69c2859a117b10ac3930ec18bc95d9649391df334e",
       "reviewed_functions": "inactive_dependencies, qualify_season_inactive, stage_season_inactive, validate_inactive_overlap, _inactive_replay, validate_season_inactive, load_season_inactive",
-      "semantic_reach": "Adds explicit archive-derived inactive producer/validator/loader only. Existing native qualifier functions are unchanged; no new namespace exists in original capture generations. No parser, arithmetic, sample, original source or original-case semantics change.",
+      "semantic_reach": "Adds explicit archive-derived inactive producer/validator/loader and an opt-in known-name-conflict quarantine with exact replayed rejection ledger. Original capture generations contain no inactive namespace. Existing native qualifiers and default strict inactive qualification are unchanged; current published 2023 receipt has no opt-in policy. No parser, arithmetic, sample, original source or original-case semantics change. Archive qualification uses canonical participant sides for neutral games, verified against both canonical team-stat sides, without inferring home/away; old 2023 serialization remains byte-identical.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
