@@ -359,3 +359,22 @@ def test_all_rejected_and_unrequested_quarantine_are_invalid(sample):
     receipt["identity_name_rejections"] = []
     with pytest.raises(ValueError, match="explicit policy"):
         qualify_season_inactive(raw, receipt, "2023-24", dependencies)
+
+
+@pytest.mark.parametrize("other_side", [20, 10, 99])
+def test_neutral_participants_require_both_canonical_team_sides(sample, other_side):
+    root, frame, dependencies, inputs = sample
+    path = inactive_dependencies("2023-24")[0]
+    games = pd.read_csv(root / path)
+    games["team_a_id"], games["team_b_id"] = 10, other_side
+    games["home_team_id"], games["away_team_id"] = None, None
+    dependencies[path] = games.to_csv(index=False).encode()
+    (root / path).write_bytes(dependencies[path])
+    raw, receipt = inputs()
+    if other_side == 20:
+        rows = stage_season_inactive(root, raw, receipt, "2023-24")
+        validate_season_inactive(root)
+        assert rows.team_id.tolist() == [10]
+    else:
+        with pytest.raises(ValueError, match="envelope"):
+            stage_season_inactive(root, raw, receipt, "2023-24")

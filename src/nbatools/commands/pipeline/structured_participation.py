@@ -487,15 +487,25 @@ def qualify_season_inactive(raw, receipt, season, dependencies):
         raise ValueError("Duplicate inactive canonical game/team keys")
     games = games.set_index("game_id")
     teams = teams.set_index(["game_id", "team_id"])
+    # Neutral-site games can have known participants without a trusted home
+    # designation. Participation needs the sides, not their venue assignment.
+    side_fields = (
+        ("team_a_id", "team_b_id")
+        if {"team_a_id", "team_b_id"}.issubset(games)
+        else ("home_team_id", "away_team_id")
+    )
     known = players.groupby("player_id").player_name.agg(lambda ns: {_name(n) for n in ns})
     rejected, rejected_indices = [], []
     for row in frame.itertuples():
         if row.game_id not in games.index or (row.game_id, row.team_id) not in teams.index:
             raise ValueError("Inactive archive outside canonical game/team sides")
         game, team = games.loc[row.game_id], teams.loc[(row.game_id, row.team_id)]
+        sides = {_integer(game[field]) for field in side_fields}
         if (
             str(game.is_final).lower() not in {"true", "1"}
-            or row.team_id not in {int(game.home_team_id), int(game.away_team_id)}
+            or len(sides) != 2
+            or row.team_id not in sides
+            or set(teams.loc[row.game_id].index) != sides
             or row.team_abbreviation != team.team_abbr
             or str(team.game_date) != str(game.game_date)
         ):

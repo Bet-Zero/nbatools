@@ -107,12 +107,12 @@ def test_next_season_batch_adds_complete_answers_without_inventing_membership(
     clear_frame_cache()
     try:
         before, _ = combined_observations([SEASON], "Regular Season")
-        baseline, before_full = _census(before, teams, pairs, set(old.game_id))
         inactive = stage_season_inactive(root, raw, receipt, SEASON)
         rejections = inactive.attrs["identity_name_rejections"]
         assert len(source) == 10854 and len(inactive) == 10847 and len(rejections) == 7
         assert all((root / p).read_bytes() == b for p, b in original.items())
         validate_publication(root)
+        baseline, before_full = _census(before, teams, pairs, set(old.game_id))
         clear_frame_cache()
         after, _ = combined_observations([SEASON], "Regular Season")
         census, full = _census(after, teams, pairs, set(source.game_id))
@@ -169,6 +169,7 @@ def test_next_season_batch_adds_complete_answers_without_inventing_membership(
                     assert outcome.result_status == "ok", (query, outcome.metadata)
                     sections = outcome.to_dict()["sections"]
                     summary = sections["summary"][0]
+                    assert summary["team_name"] == games.team_name.iloc[0]
                     assert {r["game_id"] for r in sections["game_log"]} == ids, query
                     assert (summary["games"], summary["wins"], summary["losses"]) == (
                         len(ids),
@@ -187,6 +188,13 @@ def test_next_season_batch_adds_complete_answers_without_inventing_membership(
                     )
                 )
         assert len(queries) == 138
+        for query in [
+            "Lakers record without Luka Doncic in 2024-25",
+            "Warriors record without Jimmy Butler in 2024-25",
+            "Nets record without De'Anthony Melton in 2024-25",
+        ]:
+            outcome = execute_natural_query(query)
+            assert (outcome.result_status, outcome.result_reason) == ("no_result", "unsupported")
         # A rejected observation supplies no membership on either game side.
         from nbatools.commands._dated_membership import COLUMNS
         from nbatools.commands._participation_observations import game_participation
