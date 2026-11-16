@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "6000c157027dcd10544db368bd1fb0a70e06509f",
+  "generation": "availability-season-inactive-2023-v1-20261115",
+  "tests": [
+    "tests/test_season_inactive_2024_publication_real_data.py::test_exact_pr626_bundle_complete_snapshot_prepare"
+  ],
+  "raw_qa_cases": []
+}
