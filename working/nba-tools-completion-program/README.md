@@ -11,70 +11,61 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**November 15, 2026 (Detroit). Lead: Codex.** Starting main verified at `469dc12a`
-(PR622 merged). Current unit: PR623, `codex/season-inactive-pilot`. Previous work,
-source originals and stopped membership investigation are preserved. No team-PDF
-hunt or new membership-research infrastructure. Agent 2/DQ-005 and K12 stay parked.
+**November 15, 2026 (Detroit). Lead: Codex.** Main is `b4c8b063` (PR623),
+with all blocking post-merge checks passed. PR624, `codex/season-inactive-publication`,
+prepares its exact qualified data for the existing protected publication process.
+Prior work and originals remain preserved. No collection, source rebuilding,
+production write or active-pointer change is authorized or performed.
 
-**Core-1 remains limited acceptance, not league-wide completion.** K08's existing
-16 PASS/26 MISSING DATA/4 LIVE view is unchanged: Davis default-season/cross-team
-membership and current-season freshness/readiness remain unresolved. Older proof,
-release gaps and defects stay in [checkpoint history](checkpoint-history-20261114.md).
-Last recorded published snapshot remains
+**Core-1 remains limited acceptance, separate from league-wide completion.**
+K08 remains 16 PASS / 26 MISSING DATA / 4 LIVE. Davis default-season/cross-team
+cases and current-season freshness/readiness remain outstanding. K12, DQ-005,
+the 484-rate source investigations and historical membership/PDF research stay
+parked or closed. Older proof is in [checkpoint history](checkpoint-history-20261114.md).
+
+**Qualified gain, still staged:** the unchanged PR623 ZIP qualifies 93 complete
+2023-24 player/team/season cases, versus 18 published and 19 including prior PR619
+staging. Every counted case covers all 82 games and both with/without queries.
+Across 713 candidates, 620 remain incomplete: 134 include omissions in processed
+reports; 486 have gaps outside those reports. Their 20,846 unknown player-game
+cells retain unresolved membership and participation; missing rows never become
+DNPs/nonmembers. No club is complete for every candidate.
+
+Frozen preparation code `8168fbbc` passed independent review and targeted R2
+[43788034248](https://github.com/Bet-Zero/nbatools/actions/runs/43788034248),
+request `0dba4a1b`: 1 selected/executed/passed, zero skips/failures/errors.
+All 186 complete-season API queries, the previous 18 cases, all 31 registered
+published answers, every snapshot object and source/append preservation passed.
+The transport copies the saved ZIP byte-for-byte; it invokes no source producer.
+The deployed production record already contains PR623's reader, and runtime code
+is unchanged by this preparation. Focused publication checks passed (44 tests).
+Final registration review/CI and protected validate evidence belong in PR624;
+reuse this frozen-code numerical pass when its covered bytes remain unchanged.
+
+Proposed snapshot: `availability-season-inactive-2023-v1-20261115`, 1,213 objects /
+415,007,162 bytes, manifest `8ec80812ae9dda9222d9d157c253d7a919af214ae40c49a27c20f87b52d156c8`.
+The dry run projects 3,205,090,737 bytes against the unchanged 10 GB bucket ceiling.
+[Preparation receipt](season-inactive-preparation.json) records exact source and
+transport bindings. Existing live generation remains
 `availability-participation-2025-durant-v1-20261114`, manifest
 `cde98408f3390e6191da564197fb77ffbc598a3059963cfc21d9f2d7e1a6b366`.
-No production data/pointer change or fresh deployed-acceptance claim.
 
-### Useful full-season participation improvement, staged only
+**Known publication risk:** the authenticated public readiness check still returns
+503 / `new_season_not_loaded` because 2026-27 is missing. The unchanged verifier
+checks readiness **after** activation. If that persists, it will record
+`published_verification_failed`, skip live-answer checks and automatic backup,
+and leave the new generation active; no automatic rollback occurs. The previous
+generation remains retained. This is not a pre-write approval prohibition. The
+literal preparation flag `activation_ready=false` records operational readiness;
+it does not invent a policy gate. No exception or operational acceptance is implied.
 
-The bounded pilot is 2023-24, all30clubs. PR619's retained complete-game path
-already supplies one additional full-season case; other retained native pairs
-add no further complete case. A retained 0.86MB season CSV has 11,010 explicit
-NBA SummaryV2 inactive rows for all1,230regular games. Independent checks matched
-all30native comparators and found no appearance/side/duplicate contradictions.
-The new strict archive-derived inactive producer/reader adds a separate dataset,
-keeps old per-game/PDF rows and ledgers intact, and never fills omissions.
-
-| Full player/team/season cases (all82games known) | Count |
-| --- | ---: |
-| Published before pilot | 18 |
-| Including prior PR619 staging | 19 |
-| Including retained season inactive batch | 93 |
-
-That is **75 above published,74 beyond already-staged work**, across27clubs, in a
-713candidate-case denominator. No entire club is complete for every candidate.
-The remaining620cases include134with omissions even in processed whole-game
-sources and486with gaps only outside those reports. All20,846unknown cells have
-unresolved membership and participation; no membership-known/play-unknown-only
-case exists. Trades/late joins stay blocked without qualified associations;
-missing rows never become DNPs. No new acquisition/cost or automatic refresh.
-
-Local product verification checked186actual season-long with/without queries,
-including zero-appearance players and genuine zero-game samples. Examples:
-Denver without Čančar57-25; Minnesota without Clark56-26; Houston without
-Sengun12-7; Cleveland without Allen2-3. Each is explicit2023-24 scope, not a
-current/deployed claim. Full-season Adams/Houston and Dinwiddie/Lakers still
-refuse incomplete coverage. [Source/coverage details](source-evidence/season-inactive-pilot-20261115/README.md).
-
-Reviewed code `f64681f8` passed authenticated targeted R2
-[run43690403060](https://github.com/Bet-Zero/nbatools/actions/runs/43690403060)
-via sole-parent request `7c5c653b`:1selected/executed/passed,0skips/errors;
-all186season queries passed. Actual active-generation and exact manifest checks
-preceded the published baseline. Separate checker approved the source, all
-case/native controls, preservation guards and nonregular-scope fix. Source and
-boundary controls passed; the31changed632unchanged historical companion preserves
-all663bindings/22cases/44captures and false full-Core/fresh flags. Final data/docs-only
-review and exact CI results are recorded in PR623; known dev-security red stays advisory.
-No manual full suite or broad replay. Closed membership/PDF research stays closed.
-
-The durable [qualified overlay](source-evidence/season-inactive-pilot-20261115/qualified-overlay-v1.zip)
-is324,815bytes (about5.09MBuncompressed), with all30file bodies matching the
-R2-validated inventory. Source/canonical bytes and old rows remain preserved.
-**Next:** prepare/register this exact overlay through the existing protected
-publication path, with required owner approval before activation. Published
-coverage remains18;93cases are qualified isolated staging. No additional
-collection is needed for this gain. Do not infer membership for the620remaining
-cases, restart source hunts or label this pilot league-wide completion.
+**Next:** finish registration and the existing protected **validate** run without
+writes, then present the exact data-publication approval tuple and the known
+readiness/verification/backup consequences. Keep the pointer unchanged until the
+owner explicitly approves that exact protected action. After activation, keep
+read-only numeric verification/backup separate from failed readiness acceptance.
+The next development priority is additional-season bulk participation with measured
+newly complete cases; individual-player and historical membership research stay closed.
 
 ## Preserved scope
 

@@ -1,0 +1,141 @@
+{
+  "classification": "prepared_no_writes_not_operational_acceptance",
+  "r2_writes": 0,
+  "generation_id": "availability-season-inactive-2023-v1-20261115",
+  "base_generation": "availability-participation-2025-durant-v1-20261114",
+  "source_qualification_run": 43690403060,
+  "local_validation": {
+    "target": "local",
+    "generation_id": "availability-season-inactive-2023-v1-20261115",
+    "previous_generation_id": "legacy",
+    "file_count": 1213,
+    "total_bytes": 415007162,
+    "manifest_sha256": "8ec80812ae9dda9222d9d157c253d7a919af214ae40c49a27c20f87b52d156c8",
+    "pointer": "/tmp/pytest-of-runner/pytest-0/test_exact_pr623_bundle_comple0/prepared/validation/metadata/active_generation.json",
+    "action": "publish"
+  },
+  "budget": {
+    "current_bytes": 2780083575,
+    "conservative_projected_bytes": 3205090737,
+    "limit_bytes": 10000000000
+  },
+  "census": {
+    "candidate_cases": 713,
+    "complete_cases": 93,
+    "states": {
+      "unknown": 20846,
+      "played": 26283,
+      "did_not_play": 11109,
+      "not_member": 228
+    },
+    "blocked_with_processed_game_omission": 134,
+    "blocked_only_outside_processed_game_population": 486
+  },
+  "complete_season_queries": 186,
+  "preserved_registered_answers": 31,
+  "pointer_unchanged": true,
+  "production_deployment": {
+    "id": 7800547735,
+    "sha": "b4c8b0631694c8ceca0867a383dfbd016ce900d6"
+  },
+  "readiness": {
+    "classification": "new_season_not_loaded",
+    "http_status": 503,
+    "body": {
+      "ready": false,
+      "status": "not_ready",
+      "checked_at": "2026-11-16T01:46:17Z",
+      "season": "2025-26",
+      "season_state": "offseason",
+      "max_active_lag_hours": 24,
+      "active_generation": "availability-participation-2025-durant-v1-20261114",
+      "immutable_generation": true,
+      "release_exception_owner": "John Matthew, project owner",
+      "slices": [
+        {
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "trusted": true,
+          "validation_state": "passed",
+          "generation_id": "f49e2864076b4bdf8743a7a4da2e3962",
+          "current_through": "2026-04-12",
+          "expected_current_through": "2026-04-12",
+          "schedule_complete": true,
+          "postseason_complete": false,
+          "errors": [],
+          "missing_due_game_ids": []
+        },
+        {
+          "season": "2025-26",
+          "season_type": "Playoffs",
+          "trusted": true,
+          "validation_state": "passed",
+          "generation_id": "5cb10d4b44754ebd9300d99007e44179",
+          "current_through": "2026-06-13",
+          "expected_current_through": "2026-06-13",
+          "schedule_complete": true,
+          "postseason_complete": true,
+          "errors": [],
+          "missing_due_game_ids": []
+        }
+      ],
+      "blockers": [
+        {
+          "code": "new_season_not_loaded",
+          "detail": "The 2026-27 season should have started, but the runtime still serves 2025-26 as its latest season."
+        }
+      ],
+      "exception": {
+        "applied": false,
+        "owner": "John Matthew, project owner",
+        "reason": null,
+        "created_at": null,
+        "expires_at": null,
+        "error": null
+      }
+    }
+  },
+  "activation_ready": false,
+  "reviewed_code": "8168fbbc0f4b893fe7d3f9deccfd6b73ce296db2",
+  "required_run_id": 43788034248,
+  "request_sha": "0dba4a1bc725fb21386b001b0bf93c7a3a40652e",
+  "required_summary": {
+    "candidate_sha": "0dba4a1bc725fb21386b001b0bf93c7a3a40652e",
+    "generation": "availability-participation-2025-durant-v1-20261114",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/test_season_inactive_publication_real_data.py::test_exact_pr623_bundle_complete_snapshot_prepare"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "transport_artifact": {
+    "id": 14191895908,
+    "name": "required-numerical-43788034248",
+    "size_in_bytes": 375713,
+    "url": "https://api.github.com/repos/Bet-Zero/nbatools/actions/artifacts/14191895908",
+    "archive_download_url": "https://api.github.com/repos/Bet-Zero/nbatools/actions/artifacts/14191895908/zip",
+    "expired": false,
+    "created_at": "2026-11-16T01:52:48Z",
+    "expires_at": "2026-11-23T01:52:47Z",
+    "updated_at": "2026-11-16T01:52:48Z",
+    "digest": "sha256:661e96a97ab9bec3bb736ea2666342f55620015dd7dd112a01ad8b3e2b5516da",
+    "workflow_run": {
+      "id": 43788034248,
+      "repository_id": 1206758648,
+      "head_repository_id": 1206758648,
+      "head_branch": "r2-validation/season-inactive-publication-8168fbbc",
+      "head_sha": "0dba4a1bc725fb21386b001b0bf93c7a3a40652e"
+    }
+  },
+  "source_bundle_sha256": "cb5caebada456829616fe9f75e54ce8d4a5fd0ab1363945024c75ebf3205b9e8"
+}
