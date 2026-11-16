@@ -11,7 +11,7 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**Lead: Codex. Main `2c7d8cca` (PR626), all blocking post-merge CI passed.**
+**Lead: Codex. Main `b8d1e26d` (PR627), all blocking post-merge CI passed.**
 Production still uses `availability-season-inactive-2023-v1-20261115`, manifest
 `8ec80812ae9dda9222d9d157c253d7a919af214ae40c49a27c20f87b52d156c8`.
 It answers 93 complete 2023-24 cases (previously18); 620/713 candidates remain
@@ -22,8 +22,9 @@ incomplete. That publication is independently verified and backed up: see
 Prior sources, old generations and saved branches remain. Do not repeat those
 completed checks or call the preserved failed readiness receipt a data failure.
 
-**Current task: exact 2024-25 protected-publication preparation, not activation.**
-Branch `codex/season-inactive-2024-publication`; immutable publisher `a7816498`,
+**Current task: preparation complete; awaiting exact owner activation approval.**
+Checkpoint branch `codex/season-inactive-2024-approval-checkpoint`;
+validated main stays frozen at `b8d1e26d`. Immutable publisher `a7816498`,
 [PR627](https://github.com/Bet-Zero/nbatools/pull/627). Package
 `season-inactive-2024-v1` targets `availability-season-inactive-2024-v1-20261116`.
 The exact PR626 three-file ZIP is reused, SHA256
@@ -40,8 +41,8 @@ All **69 complete cases versus11**, across23teams, passed138 API checks; all38pr
 registered checks passed. All37,392 published2023 observations are unchanged,
 reusing the93-case proof rather than claiming93 fresh live requests.
 Seven disputed observations remain quarantined on14unknown game sides;
-**638/707 cases and20,649 player-game cells stay unknown**. No club or new tenure
-interval is complete. The existing engine and PR626 source qualification remain.
+**638/707 cases and20,649 player-game cells stay unknown**. No club is complete and no new tenure
+interval is claimed. The existing engine and PR626 source qualification remain.
 
 Deployment7817308443 /2c7d8cca supports the reader; source bytes were matched.
 Actual readiness503 is solely2026-27 `new_season_not_loaded`, no exception applied.
@@ -49,11 +50,17 @@ Actual storage projection:3,624,837,557 /10,000,000,000 bytes. Pointer unchanged
 R2writes0. Separate checker confirmed actual results, zero findings. An initial
 stale-generation test-helper failure is retained inPR627; it is not passed proof.
 Registry preserves every old package/check and adds seven source-qualified live
-examples. Protected **validate** on mergedmain is still required before approval;
-its actual receipt and independent inspection belong inPR627. Do not activate
-unless B explicitly approves the exact package/base/generation/manifest tuple.
+examples. Protected **validate**[43825619901](https://github.com/Bet-Zero/nbatools/actions/runs/43825619901)
+and actual receipt readback[43826440205](https://github.com/Bet-Zero/nbatools/actions/runs/43826440205)
+passed. The reader executed/passed one test, zero skips/errors, authenticated the
+exact prepared manifest/registry/publisher/source/budget and verified existing
+owner-review/main-only/no-admin-bypass protections. Current8ec pointer unchanged,
+R2writes0. Separate checker inspected the actual tuple, zero findings. These
+protections are configuration, not owner approval; no activation has occurred.
 
-**Next:** finish protected no-write validation and present that exact approval.
+**Next:** await B's explicit approval of the exact package/base/generation/manifest
+tuple above, then use the existing protected workflow. Preserve validated main
+until that action; merge this documentation-only checkpoint in the later closeout.
 After approval, recheck the tuple/base, use the protected writer, independently
 verify all published data/answers and complete the separate existing backup and
 secret-free restore. Known readiness failure will likely skip automatic live
