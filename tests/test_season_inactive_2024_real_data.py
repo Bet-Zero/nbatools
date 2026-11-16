@@ -29,11 +29,20 @@ GENERATION = "availability-season-inactive-2023-v1-20261115"
 MANIFEST = "8ec80812ae9dda9222d9d157c253d7a919af214ae40c49a27c20f87b52d156c8"
 SEASON = "2024-25"
 AVAILABILITY = f"raw/player_game_availability/{SEASON}_regular_season.csv"
+# Independently checked original/canonical name conflicts, never production rules.
+EXPECTED_REJECTIONS = {
+    (gid, 1610612751, 1642385)
+    for gid in (22400022, 22400027, 22400113, 22400136, 22400276, 22400348, 22401211)
+}
 
 
 def test_next_season_batch_adds_complete_answers_without_inventing_membership(
     tmp_path, monkeypatch, capfd
 ):
+    if os.environ.get("DATA_SOURCE") == "r2":
+        from nbatools.data_source import _get_data_source
+
+        assert _get_data_source().active_generation() == GENERATION
     with data_generation_context() as generation:
         assert generation == GENERATION
         manifest = data_path("data/metadata/generation_manifest.json").read_bytes()
@@ -43,6 +52,7 @@ def test_next_season_batch_adds_complete_answers_without_inventing_membership(
         paths = {
             *inactive_dependencies(SEASON),
             AVAILABILITY,
+            AVAILABILITY.removesuffix(".csv") + ".imports.json",
             f"raw/rosters/{SEASON}.csv",
             "metadata/player_names.csv",
             *(p for p in entries if p.startswith("raw/player_game_availability_sources/")),
@@ -110,6 +120,10 @@ def test_next_season_batch_adds_complete_answers_without_inventing_membership(
         inactive = stage_season_inactive(root, raw, receipt, SEASON)
         rejections = inactive.attrs["identity_name_rejections"]
         assert len(source) == 10854 and len(inactive) == 10847 and len(rejections) == 7
+        assert {
+            (r["game_id"], r["team_id"], r["player_id"]) for r in rejections
+        } == EXPECTED_REJECTIONS
+        assert all(r["reason"] == "identity_name_conflict" for r in rejections)
         assert all((root / p).read_bytes() == b for p, b in original.items())
         validate_publication(root)
         baseline, before_full = _census(before, teams, pairs, set(old.game_id))
@@ -117,13 +131,19 @@ def test_next_season_batch_adds_complete_answers_without_inventing_membership(
         after, _ = combined_observations([SEASON], "Regular Season")
         census, full = _census(after, teams, pairs, set(source.game_id))
         assert baseline["complete_cases"] == 11 and census["complete_cases"] == 69
+        assert census["states"] == {
+            "played": 26208,
+            "did_not_play": 10899,
+            "not_member": 218,
+            "unknown": 20649,
+        }
         assert set(before_full) <= set(full)
         assert len({t for t, p in full}) == 23
         assert not any(
             all((t, p) in full for t, p in pairs if t == tid) for tid in teams.team_id.unique()
         )
         # Independent oracle from original row keys, not producer/engine results.
-        rejected = {(r["game_id"], r["player_id"]) for r in rejections}
+        rejected = {(gid, pid) for gid, tid, pid in EXPECTED_REJECTIONS}
         facts = {
             (int(r.game_id), int(r.player_id)): (int(r.team_id), "played")
             for r in stats.loc[stats.minutes.gt(0)].itertuples()
@@ -240,6 +260,13 @@ def test_next_season_batch_adds_complete_answers_without_inventing_membership(
             for path in root.rglob("*"):
                 if path.is_file() and path.relative_to(root).as_posix() not in original:
                     archive.write(path, path.relative_to(root))
+        with (
+            ZipFile(output / "overlay.zip") as actual,
+            ZipFile(EVIDENCE / "qualified-overlay-v1.zip") as qualified,
+        ):
+            assert len(actual.namelist()) == len(set(actual.namelist())) == 3
+            assert set(actual.namelist()) == set(qualified.namelist())
+            assert all(actual.read(p) == qualified.read(p) for p in actual.namelist())
         with capfd.disabled():
             print(
                 "SEASON_INACTIVE_2024_PRODUCT "

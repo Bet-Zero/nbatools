@@ -1,0 +1,1045 @@
+{
+  "classification": "validated_staging_only_not_published",
+  "base_generation": "availability-season-inactive-2023-v1-20261115",
+  "base_manifest_sha256": "8ec80812ae9dda9222d9d157c253d7a919af214ae40c49a27c20f87b52d156c8",
+  "before": {
+    "candidate_cases": 707,
+    "complete_cases": 11,
+    "states": {
+      "unknown": 31483,
+      "played": 26208,
+      "not_member": 149,
+      "did_not_play": 134
+    },
+    "blocked_with_processed_game_omission": 56,
+    "blocked_only_outside_processed_game_population": 640
+  },
+  "after": {
+    "candidate_cases": 707,
+    "complete_cases": 69,
+    "states": {
+      "did_not_play": 10899,
+      "unknown": 20649,
+      "played": 26208,
+      "not_member": 218
+    },
+    "blocked_with_processed_game_omission": 638,
+    "blocked_only_outside_processed_game_population": 0
+  },
+  "identity_name_rejections": [
+    {
+      "game_id": 22400022,
+      "team_id": 1610612751,
+      "player_id": 1642385,
+      "reason": "identity_name_conflict"
+    },
+    {
+      "game_id": 22400027,
+      "team_id": 1610612751,
+      "player_id": 1642385,
+      "reason": "identity_name_conflict"
+    },
+    {
+      "game_id": 22400113,
+      "team_id": 1610612751,
+      "player_id": 1642385,
+      "reason": "identity_name_conflict"
+    },
+    {
+      "game_id": 22400136,
+      "team_id": 1610612751,
+      "player_id": 1642385,
+      "reason": "identity_name_conflict"
+    },
+    {
+      "game_id": 22400276,
+      "team_id": 1610612751,
+      "player_id": 1642385,
+      "reason": "identity_name_conflict"
+    },
+    {
+      "game_id": 22400348,
+      "team_id": 1610612751,
+      "player_id": 1642385,
+      "reason": "identity_name_conflict"
+    },
+    {
+      "game_id": 22401211,
+      "team_id": 1610612751,
+      "player_id": 1642385,
+      "reason": "identity_name_conflict"
+    }
+  ],
+  "complete_season_queries": [
+    {
+      "query": "Boston Celtics record with Jayson Tatum in 2024-25",
+      "games": 72,
+      "wins": 53,
+      "losses": 19,
+      "status": "ok"
+    },
+    {
+      "query": "Boston Celtics record without Jayson Tatum in 2024-25",
+      "games": 10,
+      "wins": 8,
+      "losses": 2,
+      "status": "ok"
+    },
+    {
+      "query": "Cleveland Cavaliers record with Donovan Mitchell in 2024-25",
+      "games": 71,
+      "wins": 55,
+      "losses": 16,
+      "status": "ok"
+    },
+    {
+      "query": "Cleveland Cavaliers record without Donovan Mitchell in 2024-25",
+      "games": 11,
+      "wins": 9,
+      "losses": 2,
+      "status": "ok"
+    },
+    {
+      "query": "Cleveland Cavaliers record with Jarrett Allen in 2024-25",
+      "games": 82,
+      "wins": 64,
+      "losses": 18,
+      "status": "ok"
+    },
+    {
+      "query": "Cleveland Cavaliers record without Jarrett Allen in 2024-25",
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "status": "no_result"
+    },
+    {
+      "query": "Cleveland Cavaliers record with Max Strus in 2024-25",
+      "games": 50,
+      "wins": 39,
+      "losses": 11,
+      "status": "ok"
+    },
+    {
+      "query": "Cleveland Cavaliers record without Max Strus in 2024-25",
+      "games": 32,
+      "wins": 25,
+      "losses": 7,
+      "status": "ok"
+    },
+    {
+      "query": "Cleveland Cavaliers record with Ty Jerome in 2024-25",
+      "games": 70,
+      "wins": 55,
+      "losses": 15,
+      "status": "ok"
+    },
+    {
+      "query": "Cleveland Cavaliers record without Ty Jerome in 2024-25",
+      "games": 12,
+      "wins": 9,
+      "losses": 3,
+      "status": "ok"
+    },
+    {
+      "query": "Cleveland Cavaliers record with Evan Mobley in 2024-25",
+      "games": 71,
+      "wins": 58,
+      "losses": 13,
+      "status": "ok"
+    },
+    {
+      "query": "Cleveland Cavaliers record without Evan Mobley in 2024-25",
+      "games": 11,
+      "wins": 6,
+      "losses": 5,
+      "status": "ok"
+    },
+    {
+      "query": "New Orleans Pelicans record with Dejounte Murray in 2024-25",
+      "games": 31,
+      "wins": 9,
+      "losses": 22,
+      "status": "ok"
+    },
+    {
+      "query": "New Orleans Pelicans record without Dejounte Murray in 2024-25",
+      "games": 51,
+      "wins": 12,
+      "losses": 39,
+      "status": "ok"
+    },
+    {
+      "query": "Chicago Bulls record with Patrick Williams in 2024-25",
+      "games": 63,
+      "wins": 31,
+      "losses": 32,
+      "status": "ok"
+    },
+    {
+      "query": "Chicago Bulls record without Patrick Williams in 2024-25",
+      "games": 19,
+      "wins": 8,
+      "losses": 11,
+      "status": "ok"
+    },
+    {
+      "query": "Denver Nuggets record with Russell Westbrook in 2024-25",
+      "games": 75,
+      "wins": 43,
+      "losses": 32,
+      "status": "ok"
+    },
+    {
+      "query": "Denver Nuggets record without Russell Westbrook in 2024-25",
+      "games": 7,
+      "wins": 7,
+      "losses": 0,
+      "status": "ok"
+    },
+    {
+      "query": "Denver Nuggets record with Aaron Gordon in 2024-25",
+      "games": 51,
+      "wins": 33,
+      "losses": 18,
+      "status": "ok"
+    },
+    {
+      "query": "Denver Nuggets record without Aaron Gordon in 2024-25",
+      "games": 31,
+      "wins": 17,
+      "losses": 14,
+      "status": "ok"
+    },
+    {
+      "query": "Denver Nuggets record with Nikola Joki\u0107 in 2024-25",
+      "games": 70,
+      "wins": 46,
+      "losses": 24,
+      "status": "ok"
+    },
+    {
+      "query": "Denver Nuggets record without Nikola Joki\u0107 in 2024-25",
+      "games": 12,
+      "wins": 4,
+      "losses": 8,
+      "status": "ok"
+    },
+    {
+      "query": "Denver Nuggets record with Jamal Murray in 2024-25",
+      "games": 67,
+      "wins": 41,
+      "losses": 26,
+      "status": "ok"
+    },
+    {
+      "query": "Denver Nuggets record without Jamal Murray in 2024-25",
+      "games": 15,
+      "wins": 9,
+      "losses": 6,
+      "status": "ok"
+    },
+    {
+      "query": "Denver Nuggets record with Michael Porter Jr. in 2024-25",
+      "games": 77,
+      "wins": 47,
+      "losses": 30,
+      "status": "ok"
+    },
+    {
+      "query": "Denver Nuggets record without Michael Porter Jr. in 2024-25",
+      "games": 5,
+      "wins": 3,
+      "losses": 2,
+      "status": "ok"
+    },
+    {
+      "query": "Denver Nuggets record with Christian Braun in 2024-25",
+      "games": 79,
+      "wins": 48,
+      "losses": 31,
+      "status": "ok"
+    },
+    {
+      "query": "Denver Nuggets record without Christian Braun in 2024-25",
+      "games": 3,
+      "wins": 2,
+      "losses": 1,
+      "status": "ok"
+    },
+    {
+      "query": "Denver Nuggets record with DaRon Holmes II in 2024-25",
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "status": "no_result"
+    },
+    {
+      "query": "Denver Nuggets record without DaRon Holmes II in 2024-25",
+      "games": 82,
+      "wins": 50,
+      "losses": 32,
+      "status": "ok"
+    },
+    {
+      "query": "Golden State Warriors record with Buddy Hield in 2024-25",
+      "games": 82,
+      "wins": 48,
+      "losses": 34,
+      "status": "ok"
+    },
+    {
+      "query": "Golden State Warriors record without Buddy Hield in 2024-25",
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "status": "no_result"
+    },
+    {
+      "query": "Houston Rockets record with Jalen Green in 2024-25",
+      "games": 82,
+      "wins": 52,
+      "losses": 30,
+      "status": "ok"
+    },
+    {
+      "query": "Houston Rockets record without Jalen Green in 2024-25",
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "status": "no_result"
+    },
+    {
+      "query": "LA Clippers record with Nicolas Batum in 2024-25",
+      "games": 78,
+      "wins": 47,
+      "losses": 31,
+      "status": "ok"
+    },
+    {
+      "query": "LA Clippers record without Nicolas Batum in 2024-25",
+      "games": 4,
+      "wins": 3,
+      "losses": 1,
+      "status": "ok"
+    },
+    {
+      "query": "LA Clippers record with James Harden in 2024-25",
+      "games": 79,
+      "wins": 50,
+      "losses": 29,
+      "status": "ok"
+    },
+    {
+      "query": "LA Clippers record without James Harden in 2024-25",
+      "games": 3,
+      "wins": 0,
+      "losses": 3,
+      "status": "ok"
+    },
+    {
+      "query": "LA Clippers record with Kawhi Leonard in 2024-25",
+      "games": 37,
+      "wins": 26,
+      "losses": 11,
+      "status": "ok"
+    },
+    {
+      "query": "LA Clippers record without Kawhi Leonard in 2024-25",
+      "games": 45,
+      "wins": 24,
+      "losses": 21,
+      "status": "ok"
+    },
+    {
+      "query": "LA Clippers record with Ivica Zubac in 2024-25",
+      "games": 80,
+      "wins": 50,
+      "losses": 30,
+      "status": "ok"
+    },
+    {
+      "query": "LA Clippers record without Ivica Zubac in 2024-25",
+      "games": 2,
+      "wins": 0,
+      "losses": 2,
+      "status": "ok"
+    },
+    {
+      "query": "LA Clippers record with Derrick Jones Jr. in 2024-25",
+      "games": 77,
+      "wins": 48,
+      "losses": 29,
+      "status": "ok"
+    },
+    {
+      "query": "LA Clippers record without Derrick Jones Jr. in 2024-25",
+      "games": 5,
+      "wins": 2,
+      "losses": 3,
+      "status": "ok"
+    },
+    {
+      "query": "Los Angeles Lakers record with LeBron James in 2024-25",
+      "games": 70,
+      "wins": 44,
+      "losses": 26,
+      "status": "ok"
+    },
+    {
+      "query": "Los Angeles Lakers record without LeBron James in 2024-25",
+      "games": 12,
+      "wins": 6,
+      "losses": 6,
+      "status": "ok"
+    },
+    {
+      "query": "Los Angeles Lakers record with Austin Reaves in 2024-25",
+      "games": 73,
+      "wins": 46,
+      "losses": 27,
+      "status": "ok"
+    },
+    {
+      "query": "Los Angeles Lakers record without Austin Reaves in 2024-25",
+      "games": 9,
+      "wins": 4,
+      "losses": 5,
+      "status": "ok"
+    },
+    {
+      "query": "Milwaukee Bucks record with Brook Lopez in 2024-25",
+      "games": 80,
+      "wins": 47,
+      "losses": 33,
+      "status": "ok"
+    },
+    {
+      "query": "Milwaukee Bucks record without Brook Lopez in 2024-25",
+      "games": 2,
+      "wins": 1,
+      "losses": 1,
+      "status": "ok"
+    },
+    {
+      "query": "Milwaukee Bucks record with Damian Lillard in 2024-25",
+      "games": 58,
+      "wins": 32,
+      "losses": 26,
+      "status": "ok"
+    },
+    {
+      "query": "Milwaukee Bucks record without Damian Lillard in 2024-25",
+      "games": 24,
+      "wins": 16,
+      "losses": 8,
+      "status": "ok"
+    },
+    {
+      "query": "Milwaukee Bucks record with Taurean Prince in 2024-25",
+      "games": 80,
+      "wins": 46,
+      "losses": 34,
+      "status": "ok"
+    },
+    {
+      "query": "Milwaukee Bucks record without Taurean Prince in 2024-25",
+      "games": 2,
+      "wins": 2,
+      "losses": 0,
+      "status": "ok"
+    },
+    {
+      "query": "Milwaukee Bucks record with Gary Trent Jr. in 2024-25",
+      "games": 74,
+      "wins": 44,
+      "losses": 30,
+      "status": "ok"
+    },
+    {
+      "query": "Milwaukee Bucks record without Gary Trent Jr. in 2024-25",
+      "games": 8,
+      "wins": 4,
+      "losses": 4,
+      "status": "ok"
+    },
+    {
+      "query": "Minnesota Timberwolves record with Rudy Gobert in 2024-25",
+      "games": 72,
+      "wins": 43,
+      "losses": 29,
+      "status": "ok"
+    },
+    {
+      "query": "Minnesota Timberwolves record without Rudy Gobert in 2024-25",
+      "games": 10,
+      "wins": 6,
+      "losses": 4,
+      "status": "ok"
+    },
+    {
+      "query": "Minnesota Timberwolves record with Julius Randle in 2024-25",
+      "games": 69,
+      "wins": 44,
+      "losses": 25,
+      "status": "ok"
+    },
+    {
+      "query": "Minnesota Timberwolves record without Julius Randle in 2024-25",
+      "games": 13,
+      "wins": 5,
+      "losses": 8,
+      "status": "ok"
+    },
+    {
+      "query": "Minnesota Timberwolves record with Nickeil Alexander-Walker in 2024-25",
+      "games": 82,
+      "wins": 49,
+      "losses": 33,
+      "status": "ok"
+    },
+    {
+      "query": "Minnesota Timberwolves record without Nickeil Alexander-Walker in 2024-25",
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "status": "no_result"
+    },
+    {
+      "query": "Minnesota Timberwolves record with Jaden McDaniels in 2024-25",
+      "games": 82,
+      "wins": 49,
+      "losses": 33,
+      "status": "ok"
+    },
+    {
+      "query": "Minnesota Timberwolves record without Jaden McDaniels in 2024-25",
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "status": "no_result"
+    },
+    {
+      "query": "Brooklyn Nets record with Nic Claxton in 2024-25",
+      "games": 70,
+      "wins": 20,
+      "losses": 50,
+      "status": "ok"
+    },
+    {
+      "query": "Brooklyn Nets record without Nic Claxton in 2024-25",
+      "games": 12,
+      "wins": 6,
+      "losses": 6,
+      "status": "ok"
+    },
+    {
+      "query": "New York Knicks record with Josh Hart in 2024-25",
+      "games": 77,
+      "wins": 48,
+      "losses": 29,
+      "status": "ok"
+    },
+    {
+      "query": "New York Knicks record without Josh Hart in 2024-25",
+      "games": 5,
+      "wins": 3,
+      "losses": 2,
+      "status": "ok"
+    },
+    {
+      "query": "Orlando Magic record with Moritz Wagner in 2024-25",
+      "games": 30,
+      "wins": 18,
+      "losses": 12,
+      "status": "ok"
+    },
+    {
+      "query": "Orlando Magic record without Moritz Wagner in 2024-25",
+      "games": 52,
+      "wins": 23,
+      "losses": 29,
+      "status": "ok"
+    },
+    {
+      "query": "Orlando Magic record with Franz Wagner in 2024-25",
+      "games": 60,
+      "wins": 33,
+      "losses": 27,
+      "status": "ok"
+    },
+    {
+      "query": "Orlando Magic record without Franz Wagner in 2024-25",
+      "games": 22,
+      "wins": 8,
+      "losses": 14,
+      "status": "ok"
+    },
+    {
+      "query": "Orlando Magic record with Paolo Banchero in 2024-25",
+      "games": 46,
+      "wins": 21,
+      "losses": 25,
+      "status": "ok"
+    },
+    {
+      "query": "Orlando Magic record without Paolo Banchero in 2024-25",
+      "games": 36,
+      "wins": 20,
+      "losses": 16,
+      "status": "ok"
+    },
+    {
+      "query": "Indiana Pacers record with Isaiah Jackson in 2024-25",
+      "games": 5,
+      "wins": 1,
+      "losses": 4,
+      "status": "ok"
+    },
+    {
+      "query": "Indiana Pacers record without Isaiah Jackson in 2024-25",
+      "games": 77,
+      "wins": 49,
+      "losses": 28,
+      "status": "ok"
+    },
+    {
+      "query": "Phoenix Suns record with Kevin Durant in 2024-25",
+      "games": 62,
+      "wins": 33,
+      "losses": 29,
+      "status": "ok"
+    },
+    {
+      "query": "Phoenix Suns record without Kevin Durant in 2024-25",
+      "games": 20,
+      "wins": 3,
+      "losses": 17,
+      "status": "ok"
+    },
+    {
+      "query": "Phoenix Suns record with Bradley Beal in 2024-25",
+      "games": 53,
+      "wins": 22,
+      "losses": 31,
+      "status": "ok"
+    },
+    {
+      "query": "Phoenix Suns record without Bradley Beal in 2024-25",
+      "games": 29,
+      "wins": 14,
+      "losses": 15,
+      "status": "ok"
+    },
+    {
+      "query": "Phoenix Suns record with Tyus Jones in 2024-25",
+      "games": 81,
+      "wins": 36,
+      "losses": 45,
+      "status": "ok"
+    },
+    {
+      "query": "Phoenix Suns record without Tyus Jones in 2024-25",
+      "games": 1,
+      "wins": 0,
+      "losses": 1,
+      "status": "ok"
+    },
+    {
+      "query": "Phoenix Suns record with Devin Booker in 2024-25",
+      "games": 75,
+      "wins": 35,
+      "losses": 40,
+      "status": "ok"
+    },
+    {
+      "query": "Phoenix Suns record without Devin Booker in 2024-25",
+      "games": 7,
+      "wins": 1,
+      "losses": 6,
+      "status": "ok"
+    },
+    {
+      "query": "Phoenix Suns record with Royce O'Neale in 2024-25",
+      "games": 75,
+      "wins": 33,
+      "losses": 42,
+      "status": "ok"
+    },
+    {
+      "query": "Phoenix Suns record without Royce O'Neale in 2024-25",
+      "games": 7,
+      "wins": 3,
+      "losses": 4,
+      "status": "ok"
+    },
+    {
+      "query": "Phoenix Suns record with Grayson Allen in 2024-25",
+      "games": 64,
+      "wins": 29,
+      "losses": 35,
+      "status": "ok"
+    },
+    {
+      "query": "Phoenix Suns record without Grayson Allen in 2024-25",
+      "games": 18,
+      "wins": 7,
+      "losses": 11,
+      "status": "ok"
+    },
+    {
+      "query": "Sacramento Kings record with DeMar DeRozan in 2024-25",
+      "games": 77,
+      "wins": 38,
+      "losses": 39,
+      "status": "ok"
+    },
+    {
+      "query": "Sacramento Kings record without DeMar DeRozan in 2024-25",
+      "games": 5,
+      "wins": 2,
+      "losses": 3,
+      "status": "ok"
+    },
+    {
+      "query": "Sacramento Kings record with Domantas Sabonis in 2024-25",
+      "games": 70,
+      "wins": 36,
+      "losses": 34,
+      "status": "ok"
+    },
+    {
+      "query": "Sacramento Kings record without Domantas Sabonis in 2024-25",
+      "games": 12,
+      "wins": 4,
+      "losses": 8,
+      "status": "ok"
+    },
+    {
+      "query": "Sacramento Kings record with Malik Monk in 2024-25",
+      "games": 65,
+      "wins": 36,
+      "losses": 29,
+      "status": "ok"
+    },
+    {
+      "query": "Sacramento Kings record without Malik Monk in 2024-25",
+      "games": 17,
+      "wins": 4,
+      "losses": 13,
+      "status": "ok"
+    },
+    {
+      "query": "Sacramento Kings record with Keegan Murray in 2024-25",
+      "games": 76,
+      "wins": 36,
+      "losses": 40,
+      "status": "ok"
+    },
+    {
+      "query": "Sacramento Kings record without Keegan Murray in 2024-25",
+      "games": 6,
+      "wins": 4,
+      "losses": 2,
+      "status": "ok"
+    },
+    {
+      "query": "San Antonio Spurs record with Chris Paul in 2024-25",
+      "games": 82,
+      "wins": 34,
+      "losses": 48,
+      "status": "ok"
+    },
+    {
+      "query": "San Antonio Spurs record without Chris Paul in 2024-25",
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "status": "no_result"
+    },
+    {
+      "query": "San Antonio Spurs record with Harrison Barnes in 2024-25",
+      "games": 82,
+      "wins": 34,
+      "losses": 48,
+      "status": "ok"
+    },
+    {
+      "query": "San Antonio Spurs record without Harrison Barnes in 2024-25",
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "status": "no_result"
+    },
+    {
+      "query": "San Antonio Spurs record with Julian Champagnie in 2024-25",
+      "games": 82,
+      "wins": 34,
+      "losses": 48,
+      "status": "ok"
+    },
+    {
+      "query": "San Antonio Spurs record without Julian Champagnie in 2024-25",
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "status": "no_result"
+    },
+    {
+      "query": "San Antonio Spurs record with Jeremy Sochan in 2024-25",
+      "games": 54,
+      "wins": 21,
+      "losses": 33,
+      "status": "ok"
+    },
+    {
+      "query": "San Antonio Spurs record without Jeremy Sochan in 2024-25",
+      "games": 28,
+      "wins": 13,
+      "losses": 15,
+      "status": "ok"
+    },
+    {
+      "query": "San Antonio Spurs record with Victor Wembanyama in 2024-25",
+      "games": 46,
+      "wins": 21,
+      "losses": 25,
+      "status": "ok"
+    },
+    {
+      "query": "San Antonio Spurs record without Victor Wembanyama in 2024-25",
+      "games": 36,
+      "wins": 13,
+      "losses": 23,
+      "status": "ok"
+    },
+    {
+      "query": "San Antonio Spurs record with Stephon Castle in 2024-25",
+      "games": 81,
+      "wins": 33,
+      "losses": 48,
+      "status": "ok"
+    },
+    {
+      "query": "San Antonio Spurs record without Stephon Castle in 2024-25",
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "status": "ok"
+    },
+    {
+      "query": "Oklahoma City Thunder record with Isaiah Hartenstein in 2024-25",
+      "games": 57,
+      "wins": 49,
+      "losses": 8,
+      "status": "ok"
+    },
+    {
+      "query": "Oklahoma City Thunder record without Isaiah Hartenstein in 2024-25",
+      "games": 25,
+      "wins": 19,
+      "losses": 6,
+      "status": "ok"
+    },
+    {
+      "query": "Oklahoma City Thunder record with Nikola Topic in 2024-25",
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "status": "no_result"
+    },
+    {
+      "query": "Oklahoma City Thunder record without Nikola Topic in 2024-25",
+      "games": 82,
+      "wins": 68,
+      "losses": 14,
+      "status": "ok"
+    },
+    {
+      "query": "Oklahoma City Thunder record with Ajay Mitchell in 2024-25",
+      "games": 36,
+      "wins": 31,
+      "losses": 5,
+      "status": "ok"
+    },
+    {
+      "query": "Oklahoma City Thunder record without Ajay Mitchell in 2024-25",
+      "games": 46,
+      "wins": 37,
+      "losses": 9,
+      "status": "ok"
+    },
+    {
+      "query": "Memphis Grizzlies record with Jaren Jackson Jr. in 2024-25",
+      "games": 74,
+      "wins": 42,
+      "losses": 32,
+      "status": "ok"
+    },
+    {
+      "query": "Memphis Grizzlies record without Jaren Jackson Jr. in 2024-25",
+      "games": 8,
+      "wins": 6,
+      "losses": 2,
+      "status": "ok"
+    },
+    {
+      "query": "Memphis Grizzlies record with Desmond Bane in 2024-25",
+      "games": 69,
+      "wins": 38,
+      "losses": 31,
+      "status": "ok"
+    },
+    {
+      "query": "Memphis Grizzlies record without Desmond Bane in 2024-25",
+      "games": 13,
+      "wins": 10,
+      "losses": 3,
+      "status": "ok"
+    },
+    {
+      "query": "Memphis Grizzlies record with Jaylen Wells in 2024-25",
+      "games": 79,
+      "wins": 47,
+      "losses": 32,
+      "status": "ok"
+    },
+    {
+      "query": "Memphis Grizzlies record without Jaylen Wells in 2024-25",
+      "games": 3,
+      "wins": 1,
+      "losses": 2,
+      "status": "ok"
+    },
+    {
+      "query": "Washington Wizards record with Jordan Poole in 2024-25",
+      "games": 68,
+      "wins": 15,
+      "losses": 53,
+      "status": "ok"
+    },
+    {
+      "query": "Washington Wizards record without Jordan Poole in 2024-25",
+      "games": 14,
+      "wins": 3,
+      "losses": 11,
+      "status": "ok"
+    },
+    {
+      "query": "Washington Wizards record with Saddiq Bey in 2024-25",
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "status": "no_result"
+    },
+    {
+      "query": "Washington Wizards record without Saddiq Bey in 2024-25",
+      "games": 82,
+      "wins": 18,
+      "losses": 64,
+      "status": "ok"
+    },
+    {
+      "query": "Washington Wizards record with Bub Carrington in 2024-25",
+      "games": 82,
+      "wins": 18,
+      "losses": 64,
+      "status": "ok"
+    },
+    {
+      "query": "Washington Wizards record without Bub Carrington in 2024-25",
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "status": "no_result"
+    },
+    {
+      "query": "Detroit Pistons record with Malik Beasley in 2024-25",
+      "games": 82,
+      "wins": 44,
+      "losses": 38,
+      "status": "ok"
+    },
+    {
+      "query": "Detroit Pistons record without Malik Beasley in 2024-25",
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "status": "no_result"
+    },
+    {
+      "query": "Detroit Pistons record with Jalen Duren in 2024-25",
+      "games": 78,
+      "wins": 43,
+      "losses": 35,
+      "status": "ok"
+    },
+    {
+      "query": "Detroit Pistons record without Jalen Duren in 2024-25",
+      "games": 4,
+      "wins": 1,
+      "losses": 3,
+      "status": "ok"
+    },
+    {
+      "query": "Charlotte Hornets record with Miles Bridges in 2024-25",
+      "games": 64,
+      "wins": 16,
+      "losses": 48,
+      "status": "ok"
+    },
+    {
+      "query": "Charlotte Hornets record without Miles Bridges in 2024-25",
+      "games": 18,
+      "wins": 3,
+      "losses": 15,
+      "status": "ok"
+    },
+    {
+      "query": "Charlotte Hornets record with LaMelo Ball in 2024-25",
+      "games": 47,
+      "wins": 16,
+      "losses": 31,
+      "status": "ok"
+    },
+    {
+      "query": "Charlotte Hornets record without LaMelo Ball in 2024-25",
+      "games": 35,
+      "wins": 3,
+      "losses": 32,
+      "status": "ok"
+    },
+    {
+      "query": "Charlotte Hornets record with Josh Green in 2024-25",
+      "games": 68,
+      "wins": 17,
+      "losses": 51,
+      "status": "ok"
+    },
+    {
+      "query": "Charlotte Hornets record without Josh Green in 2024-25",
+      "games": 14,
+      "wins": 2,
+      "losses": 12,
+      "status": "ok"
+    },
+    {
+      "query": "Charlotte Hornets record with Brandon Miller in 2024-25",
+      "games": 27,
+      "wins": 8,
+      "losses": 19,
+      "status": "ok"
+    },
+    {
+      "query": "Charlotte Hornets record without Brandon Miller in 2024-25",
+      "games": 55,
+      "wins": 11,
+      "losses": 44,
+      "status": "ok"
+    }
+  ],
+  "original_rows": 10854,
+  "accepted_rows": 10847,
+  "production_writes": 0,
+  "verified_dated_intervals": 0
+}
