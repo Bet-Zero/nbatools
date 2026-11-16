@@ -19,11 +19,11 @@ from nbatools.commands._participation_observations import combined_observations,
 from nbatools.commands.pipeline import generation_publication as publication
 from nbatools.data_source import reset_data_source_cache
 from nbatools.dataframe_cache import clear_frame_cache
+from tests.cloud_core_historical_delivery_real_data import _readiness
 from tests.test_season_inactive_2024_real_data import EXPECTED_REJECTIONS
 from tests.test_season_inactive_pilot_real_data import _census
 from tests.test_season_inactive_publication_real_data import _facts
 from tools import r2_publication as gate
-from tools.audit_participation_2025_publication import readiness_observation
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.engine]
 ROOT = Path(__file__).resolve().parents[1]
@@ -73,9 +73,12 @@ def test_exact_pr626_bundle_complete_snapshot_prepare(tmp_path, monkeypatch, cap
     for path in runtime:
         body = gate.api(f"/contents/{path}?ref={deployed['sha']}")
         assert base64.b64decode(body["content"]) == (ROOT / path).read_bytes()
-    readiness = readiness_observation()
-    assert readiness["classification"] in {"ready_observed", "new_season_not_loaded"}
-    assert readiness["body"]["active_generation"] == BASE
+    response = gate.requests.get("https://nbatools.vercel.app/readiness", timeout=20)
+    body = response.json()
+    _readiness(response.status_code, body, generation=BASE)
+    readiness = dict(
+        classification="new_season_not_loaded", http_status=response.status_code, body=body
+    )
     before2023, _ = combined_observations(["2023-24"], "Regular Season")
     transport = tmp_path / "transport"
     transport.mkdir()
