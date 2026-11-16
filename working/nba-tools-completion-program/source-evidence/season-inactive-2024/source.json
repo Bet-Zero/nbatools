@@ -1,0 +1,26 @@
+{
+  "canonical_file_sha256": {
+    "raw/games/2024-25_regular_season.csv": "14d7deee5a5fa39e0bc42e769dd0412ade69b9e02af207b3fa2f103be5851df3",
+    "raw/player_game_stats/2024-25_regular_season.csv": "3a259df8b93029e0d809ce38b8123d98a3f0f009017ec6d43e0b285906cf6591",
+    "raw/team_game_stats/2024-25_regular_season.csv": "36bc367e1e63d90ef7960683a484ae07020ea6e277fe1de4c80a568de05cb762"
+  },
+  "identity_name_policy": "quarantine_known_conflicts_v1",
+  "origin_table": "BoxScoreSummaryV2.InactivePlayers",
+  "original_nba_capture_time": null,
+  "publisher_asset": {
+    "browser_download_url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/nba_stats_game_rosters/game_rosters_2025.csv",
+    "created_at": "2026-10-01T00:30:06Z",
+    "digest": "sha256:906e36b7f4f5010ff33b35bf12b22d0083b9a0099f49383b01d2fea8ae82e769",
+    "id": 602080338,
+    "name": "game_rosters_2025.csv",
+    "size": 845487,
+    "updated_at": "2026-10-01T00:30:06Z"
+  },
+  "retrieved_at": "2026-11-16T05:39:31.789876+00:00",
+  "schema_reference_revision": "26a6296dbbd743da71ee30d3e05086726c932d76",
+  "schema_version": 1,
+  "sha256": "906e36b7f4f5010ff33b35bf12b22d0083b9a0099f49383b01d2fea8ae82e769",
+  "size_bytes": 845487,
+  "source_kind": "archive_derived_summary_v2_inactive_rows",
+  "source_url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/nba_stats_game_rosters/game_rosters_2025.csv"
+}

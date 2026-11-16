@@ -1,6 +1,7 @@
 """Listed inactive facts can supplement game sources, never fill omissions."""
 
 import hashlib
+import json
 
 import pandas as pd
 import pytest
@@ -269,3 +270,92 @@ def test_regular_inactive_batch_cannot_enter_playoff_scope(sample):
     assert len(actual) == 1
     assert actual.season_type.eq("Playoffs").all()
     assert actual.game_id.tolist() == [42300001]
+
+
+def _conflicting_sample(sample):
+    root, frame, dependencies, inputs = sample
+    path = inactive_dependencies("2023-24")[-1]
+    # Retain the canonical name in game two, but no appearance in game one.
+    players = pd.read_csv(root / path)
+    dependencies[path] = players.iloc[1:].to_csv(index=False).encode()
+    (root / path).write_bytes(dependencies[path])
+    conflict = frame.assign(player_id=1, first_name="Different", last_name="Name")
+    mixed = pd.concat([frame, conflict], ignore_index=True)
+    raw, receipt = inputs(mixed)
+    return root, mixed, dependencies, inputs, raw, receipt
+
+
+def test_explicit_quarantine_keeps_original_and_omissions_unknown(sample):
+    from datetime import date
+
+    root, mixed, dependencies, inputs, raw, receipt = _conflicting_sample(sample)
+    with pytest.raises(ValueError, match="name conflicts"):
+        qualify_season_inactive(raw, receipt, "2023-24", dependencies)
+    receipt["identity_name_policy"] = "quarantine_known_conflicts_v1"
+    rows = stage_season_inactive(root, raw, receipt, "2023-24")
+    assert rows.player_id.tolist() == [2]
+    ledger = rows.attrs["identity_name_rejections"]
+    assert ledger == [
+        dict(game_id=22300001, team_id=10, player_id=1, reason="identity_name_conflict")
+    ]
+    assert (
+        root / "raw/player_game_inactive_sources" / f"{receipt['sha256']}.csv"
+    ).read_bytes() == raw
+    validate_season_inactive(root)
+    observations = load_observations(["2023-24"], "Regular Season")
+    empty = pd.DataFrame(columns=MEMBERSHIP_COLUMNS)
+    for tid, other in [(10, 20), (20, 10)]:
+        state, membership = game_participation(
+            observations, empty, 1, 22300001, tid, date(2023, 11, 3), other_team=other
+        )
+        assert state == "unknown" and membership.state == "unknown"
+
+
+@pytest.mark.parametrize("damage", ["side", "duplicate", "appearance"])
+def test_quarantine_cannot_hide_other_invalid_rows(sample, damage):
+    root, mixed, dependencies, inputs, raw, receipt = _conflicting_sample(sample)
+    if damage == "side":
+        mixed.loc[1, "team_id"] = 99
+    elif damage == "duplicate":
+        mixed = pd.concat([mixed, mixed.iloc[[1]]], ignore_index=True)
+    else:
+        mixed.loc[1, "game_id"] = "0022300002"
+    raw, receipt = inputs(mixed)
+    receipt["identity_name_policy"] = "quarantine_known_conflicts_v1"
+    with pytest.raises(ValueError):
+        stage_season_inactive(root, raw, receipt, "2023-24")
+    assert not (root / "raw/player_game_inactive").exists()
+
+
+@pytest.mark.parametrize("damage", ["missing", "removed", "extra", "wrong_type", "unknown_policy"])
+def test_quarantine_replay_recomputes_exact_rejection_ledger(sample, damage):
+    root, mixed, dependencies, inputs, raw, receipt = _conflicting_sample(sample)
+    receipt["identity_name_policy"] = "quarantine_known_conflicts_v1"
+    stage_season_inactive(root, raw, receipt, "2023-24")
+    path = root / "raw/player_game_inactive/2023-24_regular_season.source.json"
+    stored = json.loads(path.read_bytes())
+    if damage == "missing":
+        del stored["identity_name_rejections"]
+    elif damage == "removed":
+        stored["identity_name_rejections"] = []
+    elif damage == "extra":
+        stored["identity_name_rejections"].append(stored["identity_name_rejections"][0])
+    elif damage == "wrong_type":
+        stored["identity_name_rejections"][0]["player_id"] = True
+    else:
+        stored["identity_name_policy"] = "ignore_names"
+    path.write_text(json.dumps(stored))
+    with pytest.raises(ValueError):
+        validate_season_inactive(root)
+
+
+def test_all_rejected_and_unrequested_quarantine_are_invalid(sample):
+    root, mixed, dependencies, inputs, raw, receipt = _conflicting_sample(sample)
+    raw, receipt = inputs(mixed.iloc[[1]])
+    receipt["identity_name_policy"] = "quarantine_known_conflicts_v1"
+    with pytest.raises(ValueError, match="No qualified"):
+        qualify_season_inactive(raw, receipt, "2023-24", dependencies)
+    raw, receipt = inputs()
+    receipt["identity_name_rejections"] = []
+    with pytest.raises(ValueError, match="explicit policy"):
+        qualify_season_inactive(raw, receipt, "2023-24", dependencies)

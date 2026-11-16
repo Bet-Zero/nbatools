@@ -421,6 +421,11 @@ def qualify_season_inactive(raw, receipt, season, dependencies):
     Canonical scope, known identities and appearances constrain every record.
     No continuous membership, complete roster or absence reason is derived.
     """
+    policy = receipt.get("identity_name_policy")
+    if policy not in (None, "quarantine_known_conflicts_v1"):
+        raise ValueError("Unknown inactive identity-name policy")
+    if policy is None and "identity_name_rejections" in receipt:
+        raise ValueError("Inactive identity rejections require an explicit policy")
     paths = inactive_dependencies(season)
     year = int(season[:4]) + 1
     digest = hashlib.sha256(raw).hexdigest()
@@ -483,6 +488,7 @@ def qualify_season_inactive(raw, receipt, season, dependencies):
     games = games.set_index("game_id")
     teams = teams.set_index(["game_id", "team_id"])
     known = players.groupby("player_id").player_name.agg(lambda ns: {_name(n) for n in ns})
+    rejected, rejected_indices = [], []
     for row in frame.itertuples():
         if row.game_id not in games.index or (row.game_id, row.team_id) not in teams.index:
             raise ValueError("Inactive archive outside canonical game/team sides")
@@ -500,9 +506,29 @@ def qualify_season_inactive(raw, receipt, season, dependencies):
             row.player_id in known
             and _name(row.first_name + " " + row.last_name) not in known[row.player_id]
         ):
-            raise ValueError("Inactive name conflicts with known NBA identity")
+            if policy is None:
+                raise ValueError("Inactive name conflicts with known NBA identity")
+            rejected_indices.append(row.Index)
+            rejected.append(
+                dict(
+                    game_id=int(row.game_id),
+                    team_id=int(row.team_id),
+                    player_id=int(row.player_id),
+                    reason="identity_name_conflict",
+                )
+            )
     if not frame.merge(players, on=["game_id", "player_id"]).empty:
         raise ValueError("Inactive archive contradicts a canonical appearance")
+    # Quarantine only this precisely defined identity uncertainty. Every source
+    # row still passes the scope, side, duplicate and appearance guards above.
+    rejected.sort(key=lambda r: (r["game_id"], r["team_id"], r["player_id"]))
+    if "identity_name_rejections" in receipt and json.dumps(
+        receipt["identity_name_rejections"], sort_keys=True
+    ) != json.dumps(rejected, sort_keys=True):
+        raise ValueError("Inactive identity rejection ledger differs from source")
+    frame = frame.drop(index=rejected_indices)
+    if frame.empty:
+        raise ValueError("No qualified inactive rows remain")
     result = pd.DataFrame(
         {
             "game_id": frame.game_id,
@@ -523,7 +549,10 @@ def qualify_season_inactive(raw, receipt, season, dependencies):
         },
         columns=COLUMNS,
     )
-    return result.sort_values(["game_id", "player_id"]).reset_index(drop=True)
+    result = result.sort_values(["game_id", "player_id"]).reset_index(drop=True)
+    if policy is not None:
+        result.attrs["identity_name_rejections"] = rejected
+    return result
 
 
 def stage_season_inactive(root, raw, receipt, season):
@@ -551,6 +580,9 @@ def stage_season_inactive(root, raw, receipt, season):
     original.parent.mkdir(parents=True, exist_ok=True)
     target.parent.mkdir(parents=True, exist_ok=True)
     original.write_bytes(raw)
+    receipt = dict(receipt)
+    if receipt.get("identity_name_policy") is not None:
+        receipt["identity_name_rejections"] = rows.attrs["identity_name_rejections"]
     provenance.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
     _atomic_csv(rows, target)
     return rows
@@ -570,6 +602,11 @@ def validate_inactive_overlap(existing, inactive):
 
 
 def _inactive_replay(derived, original, receipt, season, dependencies):
+    if (
+        receipt.get("identity_name_policy") is not None
+        and "identity_name_rejections" not in receipt
+    ):
+        raise ValueError("Inactive identity policy requires a replayable rejection ledger")
     expected = qualify_season_inactive(original, receipt, season, dependencies)
     if set(derived) != set(COLUMNS):
         raise ValueError("Inactive derived schema differs from qualified source")
