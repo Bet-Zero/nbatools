@@ -75,6 +75,12 @@ def test_exact_pr626_bundle_complete_snapshot_prepare(tmp_path, monkeypatch, cap
         assert base64.b64decode(body["content"]) == (ROOT / path).read_bytes()
     response = gate.requests.get("https://nbatools.vercel.app/readiness", timeout=20)
     body = response.json()
+    with capfd.disabled():
+        print(
+            "SEASON_INACTIVE_2024_READINESS "
+            + json.dumps(dict(http_status=response.status_code, body=body)),
+            flush=True,
+        )
     _readiness(response.status_code, body, generation=BASE)
     readiness = dict(
         classification="new_season_not_loaded", http_status=response.status_code, body=body
