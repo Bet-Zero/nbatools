@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "base_generation": "availability-season-inactive-2023-v1-20261115",
+  "base_manifest_sha256": "8ec80812ae9dda9222d9d157c253d7a919af214ae40c49a27c20f87b52d156c8",
+  "generation_id": "availability-season-inactive-2024-v1-20261116",
+  "append_only": {},
+  "source_qualification": {
+    "reviewed_sha": "84b3fb26bf5bd7a6f37722345fa39dfdeb781f9f",
+    "request_sha": "69a9234f69b34f4367b470b9ad378a34ab667c82",
+    "run_id": 43816748972,
+    "job_id": 133130723752
+  },
+  "overlay_files": [
+    {
+      "path": "raw/player_game_inactive/2024-25_regular_season.csv",
+      "sha256": "4f6868247da1cba0c840cdec801778da32bb83a9bdc3ffaf26501e1e9992126c",
+      "size_bytes": 3633429
+    },
+    {
+      "path": "raw/player_game_inactive/2024-25_regular_season.source.json",
+      "sha256": "748b7b4489412dfe8d960a652420c70f3d6977aaff54f63b629bc9a2f02e51dd",
+      "size_bytes": 2430
+    },
+    {
+      "path": "raw/player_game_inactive_sources/906e36b7f4f5010ff33b35bf12b22d0083b9a0099f49383b01d2fea8ae82e769.csv",
+      "sha256": "906e36b7f4f5010ff33b35bf12b22d0083b9a0099f49383b01d2fea8ae82e769",
+      "size_bytes": 845487
+    }
+  ],
+  "code_files": [
+    {
+      "path": "src/nbatools/commands/pipeline/generation_publication.py",
+      "sha256": "c555573acca4d29bbad74dd3029fbf6b77f5bf8163046123d925eb6846254da7"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/generation_refresh.py",
+      "sha256": "678e515898e9318789f88d2f621fb7fa34944df94260e6c25072cee047d79ca5"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/pull_player_game_availability.py",
+      "sha256": "8fa5b3b6dbbd7a4b9cad81cdf1b0dddd9ad506941f197fb940d3c0fbbcfe18fd"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/player_game_availability_report.py",
+      "sha256": "0cc2c293406647816f298a06135808007f5f4554b28aa4b38af6d61c92e65d6b"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/player_game_availability_profiles.py",
+      "sha256": "509271a504e105343a0fe87ffd0ac561afc1d29647151b0cf48087d07b65a334"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/player_game_availability_espn.py",
+      "sha256": "7c1b8618cc228fac780d331865b8e7c5db0255499d03a0fcea36c65aee7c18f5"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/pull_player_game_starter_roles.py",
+      "sha256": "2403c697d4c5121826ae3ff5074084244857d19f96773925e7135c9281935d7e"
+    },
+    {
+      "path": "src/nbatools/data_source.py",
+      "sha256": "cebe4cbd4e6a1451b0c383072eaaf47ef9b53e7b5a3148f4b5b921f04c1b9474"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/structured_participation.py",
+      "sha256": "21ba9b722cf6573ae02a2f69c2859a117b10ac3930ec18bc95d9649391df334e"
+    },
+    {
+      "path": "src/nbatools/commands/_reported_absence_reasons.py",
+      "sha256": "757496d14da34e10dc2e8a485fd9ac3e38a1a72e5c3dfd1694f7bcc63f1aebe3"
+    },
+    {
+      "path": "src/nbatools/commands/_participation_observations.py",
+      "sha256": "4fa592b1938202d9861e196a7cec3cf1a967302d684451fccf7d0078e0116693"
+    },
+    {
+      "path": "src/nbatools/query_service.py",
+      "sha256": "24005cd017f8cc180886c67cadc087fd6c360a3b7c2f0af655792a807a6312fc"
+    },
+    {
+      "path": "tools/r2_publication.py",
+      "sha256": "8cccffc3c91511cbfb6fd9d43c2bf0839bd749ac2de2fcdd84b76e584e082f0d"
+    },
+    {
+      "path": "working/nba-tools-completion-program/publish-season-inactive-2024.py",
+      "sha256": "ce3994286d8aa0520ad94cd91608476dc10432e154642506c2bcc3b9596afabb"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/season-inactive-2024/product-results.json",
+      "sha256": "b10feaaa4ebf9d7d4b7016e3c5f5a02d5de87b4c1a612dcccf126d96aea75a9c"
+    }
+  ],
+  "reviewed_sha": "6000c157027dcd10544db368bd1fb0a70e06509f",
+  "request_sha": "a13848048145b6571b2b806a903c19beb3901bd3",
+  "run_id": 43822127410,
+  "artifact_id": 14205745241,
+  "artifact_zip_sha256": "d554fd638494e084ef29cf04e709bd264b642b4d70114e8350addfbaf9a269e4",
+  "files": [
+    {
+      "path": "qualified-overlay-v1.zip",
+      "size_bytes": 237876,
+      "sha256": "a910703174d54873965f36f5f855e214fdb186a209565332922749f63de73e50"
+    }
+  ]
+}

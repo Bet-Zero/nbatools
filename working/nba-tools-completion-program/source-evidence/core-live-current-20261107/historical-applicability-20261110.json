@@ -102,9 +102,9 @@
     {
       "path": ".github/data-publication-packages.json",
       "old_sha256": "cc2042c866c201a9d764865ab3961f38ef878ea217f35b439d06cff605670c55",
-      "reviewed_sha256": "4d9ce67cda42f1e4577b2eca56dd811b42ef2ee3465eb56a6a3b4652072873ac",
+      "reviewed_sha256": "49f57bbd0ac486a5ad15cf06a54944a4c48ea8a7e92fb121b17d6c19ff2e0cf0",
       "reviewed_functions": "protected publication registry",
-      "semantic_reach": "Adds the historical-participation-v1, participation-2025-durant-v1 and season-inactive-2023-v1 package entries; previously registered packages remain unchanged. Read only by the separately protected publication workflow, never by the deployed application or any of the original 22 query executions. The new entry binds a retained historical overlay and does not authorize activation or change runtime answers.",
+      "semantic_reach": "Adds separately pinned protected-workflow publication packages through the exact 2024 season inactive overlay. Every prior package/check and all storage/approval limits remain unchanged. Registry is read by manual protected publication, not historical query execution; no original22 query, data, parser or arithmetic semantics change. All22 existing cases remain eligible; no new capture or broader acceptance is claimed.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
