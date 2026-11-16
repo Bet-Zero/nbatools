@@ -88,5 +88,17 @@
       "path": "working/nba-tools-completion-program/source-evidence/season-inactive-2024/product-results.json",
       "sha256": "b10feaaa4ebf9d7d4b7016e3c5f5a02d5de87b4c1a612dcccf126d96aea75a9c"
     }
+  ],
+  "reviewed_sha": "6000c157027dcd10544db368bd1fb0a70e06509f",
+  "request_sha": "a13848048145b6571b2b806a903c19beb3901bd3",
+  "run_id": 43822127410,
+  "artifact_id": 14205745241,
+  "artifact_zip_sha256": "d554fd638494e084ef29cf04e709bd264b642b4d70114e8350addfbaf9a269e4",
+  "files": [
+    {
+      "path": "qualified-overlay-v1.zip",
+      "size_bytes": 237876,
+      "sha256": "a910703174d54873965f36f5f855e214fdb186a209565332922749f63de73e50"
+    }
   ]
 }
