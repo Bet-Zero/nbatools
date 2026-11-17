@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "b8d1e26dd4a81990c25a5cdfc122b18f848160ac",
+  "generation": "availability-season-inactive-2024-v1-20261116",
+  "tests": [
+    "tests/cloud_operations_real_data.py::test_full_generation_backup"
+  ],
+  "raw_qa_cases": []
+}
