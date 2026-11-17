@@ -22,7 +22,7 @@ incomplete. That publication is independently verified and backed up: see
 Prior sources, old generations and saved branches remain. Do not repeat those
 completed checks or call the preserved failed readiness receipt a data failure.
 
-**Current task: preparation complete; awaiting exact owner activation approval.**
+**Current task: owner authorized the exact activation; GitHub owner gate is waiting.**
 Checkpoint branch `codex/season-inactive-2024-approval-checkpoint`;
 validated main stays frozen at `b8d1e26d`. Immutable publisher `a7816498`,
 [PR627](https://github.com/Bet-Zero/nbatools/pull/627). Package
@@ -58,9 +58,24 @@ owner-review/main-only/no-admin-bypass protections. Current8ec pointer unchanged
 R2writes0. Separate checker inspected the actual tuple, zero findings. These
 protections are configuration, not owner approval; no activation has occurred.
 
-**Next:** await B's explicit approval of the exact package/base/generation/manifest
-tuple above, then use the existing protected workflow. Preserve validated main
-until that action; merge this documentation-only checkpoint in the later closeout.
+**Current authorized run:** [44040333371](https://github.com/Bet-Zero/nbatools/actions/runs/44040333371)
+is the ONE protected publication request. Its fresh read-only preparation passed;
+artifact14309775941 SHA256
+`0b76b32cc43174153f861d0a8f28f76d2058513d3098002e687f747a340e1fc9`.
+Fresh actual tuple[44041769450](https://github.com/Bet-Zero/nbatools/actions/runs/44041769450)
+executed/passed one test, zero skips/errors. Independent checker: zero findings.
+Every approved tuple value, including base pointer and storage, is identical
+except workflow_run_id. The current pointer is still8ec; R2writes0.
+Protected writer133896348108 is WAITING for the existing required owner review;
+chat authorization is recorded but no GitHub approval record is claimed.
+
+**Next:** owner opens that SAME run, chooses Review deployments and approves
+`r2-publication`. This existing owner/main/no-admin-bypass gate is the only blocker.
+Do not dispatch another publication or bypass/change the gate. Continue the same
+run after the click; verify actual outcome, all45registered answers, preservation,
+quarantine/incomplete status, then separate backup/restore before strategy work.
+Keep validated mainb8d1 frozen; include this documentation-only checkpoint in the
+later closeout. Stop reason: required external GitHub owner-review action.
 After approval, recheck the tuple/base, use the protected writer, independently
 verify all published data/answers and complete the separate existing backup and
 secret-free restore. Known readiness failure will likely skip automatic live
