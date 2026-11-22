@@ -1,0 +1,732 @@
+[
+  {
+    "game_id": "0022400067",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 26,
+      "did_not_play": 9
+    }
+  },
+  {
+    "game_id": "0022400080",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 25,
+      "did_not_play": 9
+    }
+  },
+  {
+    "game_id": "0022400090",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 25,
+      "did_not_play": 10
+    }
+  },
+  {
+    "game_id": "0022400106",
+    "status": "qualified",
+    "listed_players": 32,
+    "states": {
+      "played": 19,
+      "did_not_play": 13
+    }
+  },
+  {
+    "game_id": "0022400118",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 23,
+      "did_not_play": 12
+    }
+  },
+  {
+    "game_id": "0022400133",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 24,
+      "did_not_play": 10
+    }
+  },
+  {
+    "game_id": "0022400145",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 19,
+      "did_not_play": 16
+    }
+  },
+  {
+    "game_id": "0022400154",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 20,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022400175",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 20,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022400188",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 27,
+      "did_not_play": 7
+    }
+  },
+  {
+    "game_id": "0022400199",
+    "status": "quarantined_game",
+    "error": "Invalid box-score duration: 19:60"
+  },
+  {
+    "game_id": "0022400212",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 21,
+      "did_not_play": 14
+    }
+  },
+  {
+    "game_id": "0022400220",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 21,
+      "did_not_play": 13
+    }
+  },
+  {
+    "game_id": "0022400013",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 23,
+      "did_not_play": 12
+    }
+  },
+  {
+    "game_id": "0022400236",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 24,
+      "did_not_play": 11
+    }
+  },
+  {
+    "game_id": "0022400021",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "did_not_play": 18,
+      "played": 16
+    }
+  },
+  {
+    "game_id": "0022400252",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 19,
+      "did_not_play": 16
+    }
+  },
+  {
+    "game_id": "0022400275",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 23,
+      "did_not_play": 12
+    }
+  },
+  {
+    "game_id": "0022400287",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 19,
+      "did_not_play": 16
+    }
+  },
+  {
+    "game_id": "0022400041",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 23,
+      "did_not_play": 12
+    }
+  },
+  {
+    "game_id": "0022400307",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 19,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022400051",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 25,
+      "did_not_play": 10
+    }
+  },
+  {
+    "game_id": "0022400325",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 19,
+      "did_not_play": 16
+    }
+  },
+  {
+    "game_id": "0022400340",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 21,
+      "did_not_play": 14
+    }
+  },
+  {
+    "game_id": "0022400351",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 22,
+      "did_not_play": 12
+    }
+  },
+  {
+    "game_id": "0022401208",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 20,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022401224",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 23,
+      "did_not_play": 12
+    }
+  },
+  {
+    "game_id": "0022400374",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 27,
+      "did_not_play": 8
+    }
+  },
+  {
+    "game_id": "0022400380",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 24,
+      "did_not_play": 10
+    }
+  },
+  {
+    "game_id": "0022400392",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 20,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022400424",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 23,
+      "did_not_play": 12
+    }
+  },
+  {
+    "game_id": "0022400446",
+    "status": "qualified",
+    "listed_players": 33,
+    "states": {
+      "played": 26,
+      "did_not_play": 7
+    }
+  },
+  {
+    "game_id": "0022400454",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 19,
+      "did_not_play": 16
+    }
+  },
+  {
+    "game_id": "0022400474",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 26,
+      "did_not_play": 9
+    }
+  },
+  {
+    "game_id": "0022400488",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 25,
+      "did_not_play": 10
+    }
+  },
+  {
+    "game_id": "0022400509",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 19,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022400517",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 20,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022400543",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 24,
+      "did_not_play": 11
+    }
+  },
+  {
+    "game_id": "0022400554",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 24,
+      "did_not_play": 11
+    }
+  },
+  {
+    "game_id": "0022400574",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 27,
+      "did_not_play": 8
+    }
+  },
+  {
+    "game_id": "0022400590",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 18,
+      "did_not_play": 16
+    }
+  },
+  {
+    "game_id": "0022400603",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 26,
+      "did_not_play": 8
+    }
+  },
+  {
+    "game_id": "0022400615",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 19,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022400631",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 18,
+      "did_not_play": 16
+    }
+  },
+  {
+    "game_id": "0022400640",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 19,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022400649",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 24,
+      "did_not_play": 10
+    }
+  },
+  {
+    "game_id": "0022400667",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 20,
+      "did_not_play": 14
+    }
+  },
+  {
+    "game_id": "0022400675",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 25,
+      "did_not_play": 10
+    }
+  },
+  {
+    "game_id": "0022400696",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 21,
+      "did_not_play": 13
+    }
+  },
+  {
+    "game_id": "0022400710",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 18,
+      "did_not_play": 16
+    }
+  },
+  {
+    "game_id": "0022400718",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 21,
+      "did_not_play": 13
+    }
+  },
+  {
+    "game_id": "0022400735",
+    "status": "qualified",
+    "listed_players": 33,
+    "states": {
+      "played": 19,
+      "did_not_play": 14
+    }
+  },
+  {
+    "game_id": "0022400755",
+    "status": "qualified",
+    "listed_players": 33,
+    "states": {
+      "played": 25,
+      "did_not_play": 8
+    }
+  },
+  {
+    "game_id": "0022400774",
+    "status": "qualified",
+    "listed_players": 33,
+    "states": {
+      "played": 22,
+      "did_not_play": 11
+    }
+  },
+  {
+    "game_id": "0022400791",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 25,
+      "did_not_play": 9
+    }
+  },
+  {
+    "game_id": "0022400797",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 26,
+      "did_not_play": 8
+    }
+  },
+  {
+    "game_id": "0022400819",
+    "status": "qualified",
+    "listed_players": 36,
+    "states": {
+      "played": 21,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022400830",
+    "status": "qualified",
+    "listed_players": 36,
+    "states": {
+      "played": 27,
+      "did_not_play": 9
+    }
+  },
+  {
+    "game_id": "0022400852",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 19,
+      "did_not_play": 16
+    }
+  },
+  {
+    "game_id": "0022400867",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 20,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022400886",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 25,
+      "did_not_play": 10
+    }
+  },
+  {
+    "game_id": "0022400893",
+    "status": "quarantined_game",
+    "error": "Invalid box-score duration: 28:60"
+  },
+  {
+    "game_id": "0022400904",
+    "status": "qualified",
+    "listed_players": 36,
+    "states": {
+      "played": 21,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022400922",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 27,
+      "did_not_play": 8
+    }
+  },
+  {
+    "game_id": "0022400940",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 19,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022400962",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 28,
+      "did_not_play": 7
+    }
+  },
+  {
+    "game_id": "0022400979",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 22,
+      "did_not_play": 13
+    }
+  },
+  {
+    "game_id": "0022400997",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 23,
+      "did_not_play": 12
+    }
+  },
+  {
+    "game_id": "0022401009",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 19,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022401021",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 19,
+      "did_not_play": 16
+    }
+  },
+  {
+    "game_id": "0022401030",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 24,
+      "did_not_play": 11
+    }
+  },
+  {
+    "game_id": "0022401051",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 19,
+      "did_not_play": 16
+    }
+  },
+  {
+    "game_id": "0022401059",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 20,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022401067",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 20,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022401081",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 19,
+      "did_not_play": 16
+    }
+  },
+  {
+    "game_id": "0022401103",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 24,
+      "did_not_play": 11
+    }
+  },
+  {
+    "game_id": "0022401124",
+    "status": "qualified",
+    "listed_players": 35,
+    "states": {
+      "played": 21,
+      "did_not_play": 14
+    }
+  },
+  {
+    "game_id": "0022401138",
+    "status": "qualified",
+    "listed_players": 34,
+    "states": {
+      "played": 19,
+      "did_not_play": 15
+    }
+  },
+  {
+    "game_id": "0022401147",
+    "status": "qualified",
+    "listed_players": 36,
+    "states": {
+      "played": 25,
+      "did_not_play": 11
+    }
+  },
+  {
+    "game_id": "0022401168",
+    "status": "qualified",
+    "listed_players": 36,
+    "states": {
+      "played": 20,
+      "did_not_play": 16
+    }
+  },
+  {
+    "game_id": "0022401175",
+    "status": "qualified",
+    "listed_players": 36,
+    "states": {
+      "did_not_play": 18,
+      "played": 18
+    }
+  },
+  {
+    "game_id": "0022401189",
+    "status": "qualified",
+    "listed_players": 36,
+    "states": {
+      "played": 21,
+      "did_not_play": 15
+    }
+  }
+]

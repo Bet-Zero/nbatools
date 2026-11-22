@@ -11,68 +11,55 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**Lead: Codex. Main `b8d1e26d` (PR627); approved publication, independent data
-verification and separate backup/restore are complete.** All prior work remains.
+**Lead: Codex. Main `b62ba303` (PR628).** Current bounded work is
+[PR629](https://github.com/Bet-Zero/nbatools/pull/629), Cleveland 2024-25 full-game
+participation. Qualified **staging only**, version `cleveland-full-boxscore-2024-v1`;
+no production activation, wider backfill, costs or automatic refresh.
 
-**Now answers:** 69 complete 2024-25 player/team/season cases, up from 11
-(58 added), across 23 teams. Both with/without questions cover all 82 games,
-including genuine empty samples. Previous 93 complete 2023-24 cases and their
-sources remain intact. Across the 707 tested 2024-25 candidates, **638 remain
-incomplete / 20,649 player-game cells unknown**; seven disputed observations
-stay quarantined. No entire club or league-wide completion is claimed.
+**Now answers in staging:** Cleveland **5 → 10 complete cases** on the frozen
+21-player cohort. Expanded cohort: also 21, zero new Cleveland candidates, 10
+complete. Both with/without answers account for all 82 games. New cases: Garland,
+Wade, Okoro, Merrill and Bates. Opponent gain is separate: Milwaukee/AJ Green,
+so the league cohort goes 69 → 75 /707. All previously complete cases survive.
+**The majority hypothesis failed: 10/21.** No league-wide completion is claimed.
 
-Active: `availability-season-inactive-2024-v1-20261116`, manifest
-`0abce6f8261957df6cffc19ce24a4ed408a548e1292a33456ce55c0481903ecc`.
-Previous `availability-season-inactive-2023-v1-20261115` is retained.
-The ONE [approved publication44040333371](https://github.com/Bet-Zero/nbatools/actions/runs/44040333371)
-recorded actual owner approval and successful writer133896348108. Its original
-[readiness-failure receipt](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-44040333371)
-is preserved unchanged. Current readiness is503 solely because 2026-27 is missing;
-no exception, repeat publication or rollback was performed. Details: PR627.
+**Evidence:** all 82 TraditionalV3/SummaryV3 pairs retained at pinned archive
+`2e44b7c0`: 164 body reads /3,066,238 bytes, no retries. Existing PR619 qualifier
+accepts 80 whole games /2,772 listed rows, both teams. Entire games 0022400199 and
+0022400893 are quarantined for literal 19:60 /28:60 clocks; no repair, alternate
+source hunt or partial-game promotion. Originals, provenance, immutable baseline,
+qualification subset, independent source arithmetic and overlay are under
+[source-evidence/cleveland-full-boxscore-2024](source-evidence/cleveland-full-boxscore-2024/).
+Exact review, targeted numerical execution and required CI evidence stay in PR629.
+Do not repeat the completed production/backup audits. The new overlay has 242 files /
+3,978,591 bytes; it remains isolated from production.
 
-**Actual independent verification:**
-[audit44059932340](https://github.com/Bet-Zero/nbatools/actions/runs/44059932340)
-executed/passed one required test, zero skips/errors: all 1,216 bodies /
-419,488,508 bytes, all 1,213 prior entries/source authority, actual published
-707-case census, seven quarantines on14unknown game sides, **45 registered live
-answers and seven unknown/empty controls** passed. Pointer unchanged, R2writes0.
-The 138-query preparation proof is reused against identical data/runtime, not
-claimed as138 new live requests. Separate checker confirmed zero findings.
-Data verification is complete; Core-1/operational acceptance is not expanded.
+**Still unknown:** 11 Cleveland cases /326 player-game cells. Four cases are blocked
+only by the two rejected games. Seven also lack dated membership/participation
+on dates omitted from qualified full-game sources (310 cells outside those games).
+Missing rows are neither DNP nor nonmembership. No first/last-appearance or
+season-roster tenure inference; seven existing disputed observations stay excluded.
 
-**Backup and separate restore:**
-[44062070685](https://github.com/Bet-Zero/nbatools/actions/runs/44062070685)
-passed export, durable retention, a separate runner restore without R2 credentials
-and restore retention. The [permanent seven-asset backup](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-44062070685)
-binds the same manifest, 1,216 files and419,488,508 bytes. Archive66,039,100 bytes,
-SHA256 `dd3361b2f4fb64cbb5b15360d2efe594e9e6fff8c6df0647e5570d9cf76ec786`.
-Export pointer unchanged / R2writes0; restore production_writes0. Independent
-checker verified actual jobs, receipts and assets. Do not repeat these checks.
+**Next:** stop this pilot after staging acceptance; do not expand to more seasons.
+Full-game recovery is reusable and improves real answers, but cannot establish
+membership for players omitted from all game records. A wider batch needs a
+measured complete-case benefit and qualified game bodies; resolve the two source
+clock failures only if a bounded approved replacement is accessible, without
+individual-player/PDF research or new infrastructure. Any future activation needs
+exact protected approval; no publication preparation is implied by this checkpoint.
 
-**Coverage strategy reassessed; no new collection started.** More season-inactive
-files alone will not address omitted DNPs. Retained ten complete games contain
-52 verified non-appearances absent from the season inactive file (35 coach's DNPs),
-plus two appearances not proved by canonical positive minutes. All are already
-imported: these are source-gap evidence, not newly accepted data or season cases.
-Trades and players omitted from both sources still need dated membership proof.
-Missing rows, season rosters and first/last appearances never fill that gap.
+**Production remains separately verified:** active
+`availability-season-inactive-2024-v1-20261116`, manifest
+`0abce6f8261957df6cffc19ce24a4ed408a548e1292a33456ce55c0481903ecc`;
+69 complete 2024-25 cases and 93 prior 2023-24 cases. Independent audit44059932340 and
+[permanent backup/secret-free restore44062070685](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-44062070685)
+passed. The original publication readiness-failure receipt remains unchanged.
 
-**Next:** one bounded **2024-25 Cleveland full-boxscore pilot**, using PR619's
-existing game-level recovery and approved archives, all listed players across
-all82games. Current source-derived baseline is5 complete /21 candidate cases;
-no retained full Cleveland game body remains to recover. Measure complete-season
-answers on both the fixed baseline and any expanded candidate set. Aim to close
-a majority of the expanded cohort before wider collection; do not assume that
-outcome or extrapolate one club to NBA history. Reuse all qualified inputs; if
-the bulk source or meaningful case gains fail, stop rather than start another
-source-hunt chain. No individual-player/PDF research or new infrastructure.
-No additional seasons, substantial backfill, costs or automatic refresh are
-started; any future data activation still requires exact protected approval.
-
-**Still separate:** Core-1 limited acceptance (K08:16 PASS /26 MISSING DATA /4 LIVE),
-Davis default-season/cross-team cases and 2026-27 freshness/readiness remain open.
-K12, DQ-005 and484 investigations stay parked/closed. Existing development-security
-advisory remains red; all blocking main/PR checks passed. Preserve the safeguards.
+**Separate open requirements:** Core-1 limited acceptance (K08:16 PASS /26 MISSING
+DATA /4 LIVE), Davis default-season/cross-team cases and 2026-27 freshness/readiness.
+No scope/acceptance upgrade. K12, DQ-005 and the 484/PDF membership hunts remain parked.
+The existing development-security advisory is informational red; blocking gates
+remain required. Preserve prior generations, sources, saved branches and safeguards.
 
 ## Preserved scope
 
