@@ -1,5 +1,6 @@
 """One explicit two-report capture through the existing read-only runner."""
 
+import base64
 import hashlib
 import json
 import os
@@ -67,3 +68,21 @@ def test_capture_only_two_official_final_boxes(monkeypatch, capfd):
     with capfd.disabled():
         print("CLEVELAND_TWO_SOURCE_CAPTURE " + json.dumps(report), flush=True)
     assert not any("unavailable" in r for r in results), report
+
+
+def test_read_only_retained_two_report_artifact(capfd):
+    """Transfer already captured public originals; no NBA fetch or data writes."""
+    from tools.r2_publication import api
+
+    payload = api("/actions/artifacts/14743399780/zip", binary=True)
+    assert len(payload) == 55441
+    assert (
+        hashlib.sha256(payload).hexdigest()
+        == "df954fe55ca067859dfa0cd76571b76cb8af7439eef27e037820665e131c535d"
+    )
+    encoded = base64.b64encode(payload).decode("ascii")
+    with capfd.disabled():
+        for index, start in enumerate(range(0, len(encoded), 4096)):
+            print(
+                f"CLEVELAND_RETAINED_CHUNK {index:02d} {encoded[start : start + 4096]}", flush=True
+            )
