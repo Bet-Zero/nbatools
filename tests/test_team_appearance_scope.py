@@ -81,6 +81,83 @@ def test_actual_unless_query_does_not_enable_an_unread_condition():
     assert "unread_participation_clause" in parsed["route_kwargs"]["unsupported_filters"]
 
 
+@pytest.mark.parametrize(
+    "clause,kwargs",
+    [
+        (
+            "without Caris LeVert when opponent Stephen Curry plays",
+            {"without_player": "Caris LeVert"},
+        ),
+        ("with Caris LeVert when opponent Stephen Curry plays", {"with_player": "Caris LeVert"}),
+        (
+            "without Stephen Curry when opponent Stephen Curry plays",
+            {"without_player": "Stephen Curry"},
+        ),
+        ("with Stephen Curry when opponent Stephen Curry plays", {"with_player": "Stephen Curry"}),
+        (
+            "without Stephen Curry anywhere in the game and with Caris LeVert",
+            {"without_player": "Stephen Curry", "with_player": "Caris LeVert"},
+        ),
+        (
+            "with Stephen Curry when opponent Stephen Curry plays while rostered",
+            {"with_player": "Stephen Curry"},
+        ),
+    ],
+)
+def test_global_role_cannot_retarget_or_drop_another_clause(clause, kwargs):
+    from nbatools.commands._team_participation_query import apply_team_participation_scope
+
+    original = copy.deepcopy(kwargs)
+    parsed = {"route": "team_record", "route_kwargs": kwargs}
+    out = apply_team_participation_scope(
+        f"Cavaliers record {clause} vs Warriors in 2024-25", parsed
+    )
+    assert "mixed_participation_roles" in out["route_kwargs"]["unsupported_filters"]
+    for key, value in original.items():
+        assert out["route_kwargs"][key] == value
+
+
+@pytest.mark.parametrize(
+    "clause,scope,kwargs",
+    [
+        ("when opponent Stephen Curry plays", "opponent", {"with_player": "Stephen Curry"}),
+        (
+            "with 120 points when opponent Stephen Curry plays",
+            "opponent",
+            {"with_player": "Stephen Curry"},
+        ),
+        ("without Stephen Curry anywhere in the game", "game", {"without_player": "Stephen Curry"}),
+    ],
+)
+def test_scalar_role_keeps_complete_actor_and_numeric_primary_bound(clause, scope, kwargs):
+    from nbatools.commands._team_participation_query import apply_team_participation_scope
+
+    out = apply_team_participation_scope(
+        f"Cavaliers record {clause} vs Warriors in 2024-25",
+        {"route": "team_record", "route_kwargs": kwargs},
+    )
+    assert not out["route_kwargs"].get("unsupported_filters")
+    assert out["route_kwargs"]["participation_scope"] == scope
+
+
+@pytest.mark.parametrize("prefix", ["not", "except", "excluding", "except for", "never"])
+@pytest.mark.parametrize(
+    "condition,field",
+    [
+        ("when opponent Stephen Curry plays", "with_player"),
+        ("without Stephen Curry anywhere in the game", "without_player"),
+    ],
+)
+def test_negation_cannot_disappear_before_a_scoped_clause(prefix, condition, field):
+    from nbatools.commands._team_participation_query import apply_team_participation_scope
+
+    out = apply_team_participation_scope(
+        f"Cavaliers record {prefix} {condition} vs Warriors in 2024-25",
+        {"route": "team_record", "route_kwargs": {field: "Stephen Curry"}},
+    )
+    assert "mixed_participation_roles" in out["route_kwargs"]["unsupported_filters"]
+
+
 @pytest.mark.parametrize("window", [None, "qualifying", "window", "original_window"])
 def test_new_mixed_scope_does_not_hide_unknown_behind_false_sibling(pair_sample, window):
     from nbatools.query_service import execute_structured_query

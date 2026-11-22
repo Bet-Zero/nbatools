@@ -6,7 +6,85 @@ from nbatools.commands.entity_resolution import resolve_player
 
 ROSTERED = re.compile(r"\bwhile (?:rostered|on (?:the|this) team)\b", re.I)
 ANYWHERE = re.compile(r"\b(?:anywhere in (?:the )?game|on either team|for either team)\b", re.I)
-OPPOSING = re.compile(r"\b(?:when (?:the )?opponent|(?:with|without) (?:the )?opponent)\b", re.I)
+OPPOSING = re.compile(
+    r"\b(?:when (?:the )?opponent(?=\s+[\w .'’\-]+?\s+(?:plays?|played|playing)\b)"
+    r"|(?:with|without) (?:the )?opponent)\b",
+    re.I,
+)
+
+
+def _scalar_role_clause(query, kwargs, scope):
+    """Bind a global role only to one completely consumed actor/polarity span.
+
+    Different actor roles need separate predicates; one global scope cannot
+    represent them. Numeric team-stat clauses remain the existing parser's.
+    """
+    from nbatools.commands._matchup_utils import (
+        _is_exact_player_reference_phrase,
+        _stat_count_phrase,
+        _tail_is_read_scope,
+    )
+
+    actors = [(mode, kwargs.get(mode + "_player")) for mode in ("with", "without")]
+    actors = [(mode, name) for mode, name in actors if name]
+    if len(actors) != 1 or re.search(r"\band\b|[,;&]", actors[0][1], re.I):
+        return False
+    mode, name = actors[0]
+    text = query.lower()
+    if scope == "opponent":
+        if ANYWHERE.search(text) or ROSTERED.search(text):
+            return False
+        pattern = (
+            r"\b(?P<intro>when|with|without)\s+(?:the\s+)?opponent\s+"
+            r"(?P<name>[\w .'’\-]+?)(?:\s+(?P<state>plays?|played|playing))?"
+            r"(?=\s+(?:in|on|at|vs\.?|versus|against|this|last|from|since|for|and|with|without|when|while)\b|[?!.]|$)"
+        )
+        matches = list(re.finditer(pattern, text))
+        if len(matches) != 1:
+            return False
+        clause = matches[0]
+        if clause["intro"] == "when" and clause["state"] is None:
+            return False
+        declared = "without" if clause["intro"] == "without" else "with"
+        fragment = clause["name"]
+        start, end = clause.span()
+    else:
+        markers = list(ANYWHERE.finditer(text))
+        if len(markers) != 1 or OPPOSING.search(text) or ROSTERED.search(text):
+            return False
+        marker = markers[0]
+        introductions = list(re.finditer(r"\b(with|without)\s+", text[: marker.start()]))
+        if not introductions:
+            return False
+        intro = introductions[-1]
+        declared = intro[1]
+        fragment = text[intro.end() : marker.start()].strip()
+        start, end = intro.start(), marker.end()
+    if (
+        declared != mode
+        or not _is_exact_player_reference_phrase(fragment, name)
+        or not _tail_is_read_scope(text, end)
+    ):
+        return False
+    # A second actor, including the SAME name with a separate polarity or role,
+    # cannot disappear behind a scalar role declaration. Only fully consumed
+    # primary numeric-stat clauses may remain alongside ordinary scope.
+    remaining = text[:start] + " " * (end - start) + text[end:]
+    if re.search(
+        r"\b(?:not|except|excluding|exclude|unless|never|neither|nor|other\s+than)\b", remaining
+    ):
+        return False  # Negation/exclusion of the role is not a parsed operator.
+    for marker in re.finditer(r"\b(with|without|when|while|if)\s+", remaining):
+        if marker[1] not in {"with", "when"}:
+            return False
+        pos = marker.end()
+        verb = re.match(r"(?:scoring|allowing|making|having)\s+", remaining[pos:])
+        if verb:
+            pos += verb.end()
+        count = _stat_count_phrase(remaining, pos)
+        if count is None or not _tail_is_read_scope(remaining, count.end()):
+            return False
+    return True
 
 
 def participation_scope_for(kwargs):
@@ -48,6 +126,18 @@ def apply_team_participation_scope(query, parsed):
         if OPPOSING.search(query)
         else participation_scope_for(kwargs)
     )
+    conflicting_roles = (
+        sum(bool(pattern.search(query)) for pattern in (ROSTERED, ANYWHERE, OPPOSING)) > 1
+    )
+    if (
+        conflicting_roles
+        or scope in {"opponent", "game"}
+        and not _scalar_role_clause(query, kwargs, scope)
+    ):
+        # Preserve the entire request and prior blockers; never retarget its
+        # retained actor or reduce a mixed-role request to one condition.
+        kwargs["unsupported_filters"] = sorted(blocked | {"mixed_participation_roles"})
+        return parsed
     if scope != "legacy" and re.search(r"\bunless\b", query, re.I):
         kwargs["unsupported_filters"] = sorted(blocked | {"unread_participation_clause"})
         kwargs["participation_scope"] = scope

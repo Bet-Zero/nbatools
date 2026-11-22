@@ -22,6 +22,57 @@ CLE = 1610612739
 PROOF = SOURCES / "team-appearances-cleveland-2024-v1/2024-25_regular_season.json"
 
 
+def test_explicit_role_cannot_reduce_a_mixed_request_on_published_catalog():
+    with data_generation_context() as generation:
+        assert generation == "availability-season-inactive-2024-v1-20261116"
+    client = TestClient(app)
+    for clause in (
+        "without Caris LeVert when opponent Stephen Curry plays",
+        "with Caris LeVert when opponent Stephen Curry plays",
+        "when opponent Stephen Curry plays without Caris LeVert",
+        "without Stephen Curry when opponent Stephen Curry plays",
+        "with Stephen Curry when opponent Stephen Curry plays",
+        "without Stephen Curry anywhere in the game and with Caris LeVert",
+        "not when opponent Stephen Curry plays",
+        "except when opponent Stephen Curry plays",
+        "not without Stephen Curry anywhere in the game",
+    ):
+        query = f"Cavaliers record {clause} vs Warriors in 2024-25"
+        body = client.post("/query", json={"query": query}).json()
+        assert body["query"] == query and body["result_status"] == "no_result", body
+        assert "mixed_participation_roles" in body["result"]["metadata"]["unsupported_filters"]
+        assert not body["result"]["sections"]
+    oracle = json.loads(
+        (SOURCES / "cleveland-full-boxscore-2024/independent/oracle.json").read_bytes()
+    )
+    games = {
+        g["game_id"]: g
+        for g in oracle["games"]
+        if 1610612744 in (g["home_team_id"], g["away_team_id"])
+    }
+    assert set(games) == {22400188, 22400446}
+    for bound in (False, True):
+        query = (
+            "Cavaliers record "
+            + ("with 120 points " if bound else "")
+            + "vs Warriors when opponent Stephen Curry plays in 2024-25"
+        )
+        body = client.post("/query", json={"query": query}).json()
+        assert body["result_status"] == "ok", body
+        assert body["result"]["metadata"]["participation_scope"] == "opponent"
+        expected = {g for g in games if not bound or games[g]["points_by_team"][str(CLE)] >= 120}
+        summary = body["result"]["sections"]["summary"][0]
+        assert (summary["games"], summary["wins"], summary["losses"]) == (
+            len(expected),
+            len(expected),
+            0,
+        )
+        assert summary["pts_avg"] == sum(
+            games[g]["points_by_team"][str(CLE)] for g in expected
+        ) / len(expected)
+        assert {int(r["game_id"]) for r in body["result"]["sections"]["game_log"]} == expected
+
+
 def test_retained_complete_team_lists_unlock_real_team_records(tmp_path, monkeypatch):
     frozen = json.loads(PROOF.read_bytes())
     assert len(frozen["sides"]) == 82 and {s["team_id"] for s in frozen["sides"]} == {CLE}

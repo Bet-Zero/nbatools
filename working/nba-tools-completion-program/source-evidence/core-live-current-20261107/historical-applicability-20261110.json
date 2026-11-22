@@ -1186,7 +1186,7 @@
       ],
       "reviewed_functions": "Team-record participation contract",
       "semantic_reach": "Reference prose only; no runtime reads. Original questions and historical sources remain exact.",
-      "reviewed_sha256": "db75a59628e8c182ee2b451cb07fb3576a4fdf20db7e558b574f046dcbd0851c"
+      "reviewed_sha256": "43ed0124845afbfed5fa2ac366f3f8c6ce9131791ece01ef7c2d99e8f577596c"
     }
   ],
   "original_src_python_inventory": [
@@ -1389,7 +1389,7 @@
     },
     {
       "path": "src/nbatools/commands/_team_participation_query.py",
-      "reviewed_sha256": "b2a9b748f8f2d330306ff02d03a014139e8d0f37a7f8dda939e47ba6098f84c8",
+      "reviewed_sha256": "df88992fbdeb24f9b967a559a4d9540d4734d228a2a2c0d7f88b451be3173035",
       "semantic_reach": "New explicit team_record appearance scope only; original22 have no team_record with/without combination. Offline qualification makes no source requests or writes to existing data. Split/player/finder strict predicates unchanged.",
       "eligible_existing_case_ids": [
         "k12-s1",
