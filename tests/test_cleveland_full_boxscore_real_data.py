@@ -1,11 +1,13 @@
 """One bounded, retained 82-game pilot; no acquisition or production writes."""
 
+import csv
 import hashlib
+import io
 import json
 import os
 import shutil
 from pathlib import Path
-from zipfile import ZIP_DEFLATED, ZipFile
+from zipfile import ZipFile
 
 import pandas as pd
 import pytest
@@ -19,6 +21,7 @@ from nbatools.commands.pipeline.structured_participation import stage_structured
 from nbatools.data_source import data_generation_context, data_path, reset_data_source_cache
 from nbatools.dataframe_cache import clear_frame_cache
 from tests.test_season_inactive_pilot_real_data import _census
+from tools.availability_overlay import verify_append
 from tools.stage_participation_collection import build_stage
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.engine]
@@ -119,6 +122,10 @@ def test_cleveland_full_boxscore_pilot_preserves_unknowns_and_adds_complete_answ
             assert _sha(data_path("data/" + relative).read_bytes()) == digest
         assert not any(p.startswith("raw/player_team_membership/") for p in entries)
         before_obs, _ = combined_observations([SEASON], "Regular Season")
+        append_bases = {
+            p: data_path("data/" + p).read_bytes()
+            for p in (CSV, CSV.removesuffix(".csv") + ".imports.json")
+        }
         old_game_ids = set(pd.read_csv(data_path("data/" + CSV)).game_id.astype(int))
         teams = pd.read_csv(data_path(f"data/raw/team_game_stats/{SEASON}_regular_season.csv"))
         fixed = {(CLE, int(r["player_id"])) for r in baseline["candidates"]}
@@ -184,10 +191,41 @@ def test_cleveland_full_boxscore_pilot_preserves_unknowns_and_adds_complete_answ
     assert validation["append_only"][CSV]["added_records"] == 2772
     assert sum(r["listed_players"] for r in validation["qualified_games"]) == 2772
     assert _sha((EVIDENCE / "qualified-overlay-v1.zip").read_bytes()) == OVERLAY
+    # A fresh pandas version can serialize the same minute float differently.
+    # Rebuild proof stays separate; the consumer MUST use the exact frozen ZIP.
+    (output / "validation.json").rename(output / "rebuild-validation.json")
+    frozen_files, changed_minute_spellings = [], 0
     with ZipFile(EVIDENCE / "qualified-overlay-v1.zip") as frozen:
         assert len(frozen.namelist()) == len(set(frozen.namelist())) == 242
         assert set(frozen.namelist()) == {r["path"] for r in validation["overlay_files"]}
-        assert all(frozen.read(p) == (output / p).read_bytes() for p in frozen.namelist())
+        for relative in frozen.namelist():
+            body, rebuilt = frozen.read(relative), (output / relative).read_bytes()
+            if relative == CSV:
+                left = csv.DictReader(io.StringIO(body.decode()))
+                right = csv.DictReader(io.StringIO(rebuilt.decode()))
+                assert left.fieldnames == right.fieldnames
+                for old, new in zip(left, right, strict=True):
+                    for field in old:
+                        if old[field] != new[field]:
+                            assert field == "source_minutes" and old[field] and new[field]
+                            # Existing _game_digest contract is %.9g. Every new
+                            # frozen clock also faces the independent raw oracle below.
+                            assert format(float(old[field]), ".9g") == format(
+                                float(new[field]), ".9g"
+                            )
+                            changed_minute_spellings += 1
+            else:
+                assert body == rebuilt, relative
+            if relative in validation["append_only"]:
+                verify_append(
+                    relative, append_bases[relative], body, validation["append_only"][relative]
+                )
+            (root / relative).write_bytes(body)
+            (output / relative).write_bytes(body)
+            frozen_files.append(dict(path=relative, size_bytes=len(body), sha256=_sha(body)))
+    assert sum(r["size_bytes"] for r in frozen_files) == 3978591
+    # This replays exact frozen rows/receipts against the original native bodies,
+    # not the locally rebuilt CSV. A real format/lineage incompatibility still fails.
     validate_publication(root)
     monkeypatch.setenv("DATA_SOURCE", "local")
     monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(root.parent))
@@ -243,7 +281,9 @@ def test_cleveland_full_boxscore_pilot_preserves_unknowns_and_adds_complete_answ
             if expected["source_minutes"] is None:
                 assert pd.isna(row.source_minutes)
             else:
-                assert row.source_minutes == pytest.approx(expected["source_minutes"], abs=1e-10)
+                assert row.source_minutes == pytest.approx(
+                    expected["source_minutes"], abs=1e-10, rel=0
+                )
         rejected_ids = {22400022, 22400027, 22400113, 22400136, 22400276, 22400348, 22401211}
         assert not rejected_ids & accepted_ids
         assert observations.loc[
@@ -315,11 +355,13 @@ def test_cleveland_full_boxscore_pilot_preserves_unknowns_and_adds_complete_answ
             quarantined_games=qualified["quarantined_games"],
             majority_goal_met=2 * cle["complete_cases"] > cle["candidate_cases"],
             production_writes=0,
+            frozen_overlay_sha256=OVERLAY,
+            frozen_overlay_files=frozen_files,
+            rebuild_validation_sha256=_sha((output / "rebuild-validation.json").read_bytes()),
+            rebuilt_minute_spellings_changed=changed_minute_spellings,
         )
         (output / "product-results.json").write_text(json.dumps(report, indent=2) + "\n")
-        with ZipFile(output / "overlay.zip", "w", ZIP_DEFLATED) as archive:
-            for item in validation["overlay_files"]:
-                archive.write(output / item["path"], item["path"])
+        shutil.copyfile(EVIDENCE / "qualified-overlay-v1.zip", output / "overlay.zip")
         with capfd.disabled():
             print("CLEVELAND_PILOT " + json.dumps(report), flush=True)
     finally:
