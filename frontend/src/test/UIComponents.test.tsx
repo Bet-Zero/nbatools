@@ -72,6 +72,28 @@ describe("SampleQueries", () => {
 });
 
 describe("NoResultDisplay", () => {
+  it("keeps an empty eligible participation sample distinct from no NBA games or a zero record", () => {
+    render(<NoResultDisplay reason="no_match" status="no_result"
+      metadata={{season: "2025-26", without_player: "Jimmy Butler", start_date: "2025-10-29", end_date: "2025-10-29"}} />);
+    expect(screen.getByText(/No eligible games matched all requested conditions/)).toBeInTheDocument();
+    expect(screen.getByText(/Verified nonmembers are excluded/)).toBeInTheDocument();
+    expect(screen.queryByText(/No NBA games matched|0-0/)).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ["filter_not_supported", ["unresolved_player_availability"], []],
+    ["filter_not_supported", ["multi_player_availability"], []],
+    ["unsupported", [], ["Incomplete game-day participation coverage for Jayson Tatum"]],
+  ])("explains unverified participation rather than an unavailable statistic (%s)", (reason, filters, notes) => {
+    render(<NoResultDisplay reason={reason as string} status="no_result"
+      metadata={{season: "2025-26", stat: "pts", unsupported_filters: filters as string[]}}
+      notes={notes as string[]} />);
+    expect(screen.getByText("Participation Not Verified")).toBeInTheDocument();
+    expect(screen.getByText(/Missing records establish neither a missed game nor nonmembership/)).toBeInTheDocument();
+    expect(screen.getByText(/Requested season: 2025-26/)).toBeInTheDocument();
+    expect(screen.queryByText(/Points is not available|Try one condition at a time|0-0/)).not.toBeInTheDocument();
+  });
+
   function openDetails() {
     fireEvent.click(screen.getByText("Details"));
   }
@@ -993,7 +1015,7 @@ describe("NoResultDisplay", () => {
 
     expect(
       screen.getByText(
-        "These player participation conditions are not supported together yet. Try one condition at a time.",
+        "The requested player participation conditions could not be verified for this sample. Missing records establish neither a missed game nor nonmembership.",
       ),
     ).toBeInTheDocument();
   });
@@ -1013,7 +1035,15 @@ describe("NoResultDisplay", () => {
     expect(screen.getByText(
       "The requested filter or metric is not available in the current dataset.",
     )).toBeInTheDocument();
+    expect(screen.queryByText("Participation Not Verified")).not.toBeInTheDocument();
     expect(screen.queryByText(/Try one condition at a time/)).not.toBeInTheDocument();
+  });
+
+  it("does not relabel an unrelated unavailable metric as unverified participation", () => {
+    render(<NoResultDisplay reason="filter_not_supported" status="no_result"
+      metadata={{stat: "pts", unsupported_filters: ["unrelated_metric"]}} />);
+    expect(screen.getByText("Points is not available for this query.")).toBeInTheDocument();
+    expect(screen.queryByText("Participation Not Verified")).not.toBeInTheDocument();
   });
 
   it("shows entity disambiguation candidates when provided", () => {

@@ -6,6 +6,7 @@ import {
   buildNoResultDetails,
   buildNoResultGuidance,
   hasQualifiedEmptyContext,
+  hasUnverifiedParticipation,
   isColumnUnavailableReason,
   isMetricUnavailableNoResult,
   readableNoResultMessage,
@@ -48,6 +49,7 @@ function stateProfile(
   status: string,
   metricUnavailable = false,
   boundaryTitle: string | null = null,
+  participationUnverified = false,
 ): StateProfile {
   if (reason === "unrouted") {
     return {
@@ -67,6 +69,16 @@ function stateProfile(
       label: "Result error",
       message: "An error occurred while processing the query.",
       badgeVariant: "danger",
+    };
+  }
+
+  if (participationUnverified) {
+    return {
+      variant: "recoverable",
+      title: "Participation Not Verified",
+      label: "Participation evidence unavailable",
+      message: "The requested participation conditions could not be verified for this sample.",
+      badgeVariant: "neutral",
     };
   }
 
@@ -185,6 +197,7 @@ export default function NoResultDisplay({
     status,
     isMetricUnavailableNoResult(reason, metadata, detailTexts),
     unsupportedBoundaryTitle(metadata),
+    hasUnverifiedParticipation(metadata, detailTexts),
   );
   const message = readableNoResultMessage(
     profile.message,
