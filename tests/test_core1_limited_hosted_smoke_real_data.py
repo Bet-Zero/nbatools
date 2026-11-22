@@ -10,10 +10,11 @@ from pathlib import Path
 import pytest
 import requests
 
-from tests.cloud_core_historical_delivery_real_data import LIVE, _readiness
+from tests.cloud_core_historical_delivery_real_data import _readiness
 from tests.core1_k08_runtime_binding import ROOT, _github, _local_build_tree, non_build
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.query]
+CURRENT = "availability-season-inactive-2024-v1-20261116"
 
 
 def _binding():
@@ -43,10 +44,10 @@ def _binding():
 
 
 def test_post_merge_four_participation_explanations(tmp_path):
-    assert os.environ["NBATOOLS_DATA_GENERATION"] == LIVE
+    assert os.environ["NBATOOLS_DATA_GENERATION"] == CURRENT
     before = _binding()
     response = requests.get(before["url"] + "/readiness", timeout=30, allow_redirects=False)
-    _readiness(response.status_code, response.json(), LIVE)
+    _readiness(response.status_code, response.json(), CURRENT)
     output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "core1-limited-hosted"
     output.mkdir(parents=True, exist_ok=False)
     allowed = {
@@ -115,5 +116,5 @@ console.log('8/8 actual hosted copy checks passed; no NBA requests, writes or re
     )
     assert _binding() == before
     response = requests.get(before["url"] + "/readiness", timeout=30, allow_redirects=False)
-    _readiness(response.status_code, response.json(), LIVE)
+    _readiness(response.status_code, response.json(), CURRENT)
     (output / "binding.json").write_text(json.dumps(before, indent=2))
