@@ -140,6 +140,24 @@ def test_scalar_role_keeps_complete_actor_and_numeric_primary_bound(clause, scop
     assert out["route_kwargs"]["participation_scope"] == scope
 
 
+@pytest.mark.parametrize("prefix", ["not", "except", "excluding", "except for", "never"])
+@pytest.mark.parametrize(
+    "condition,field",
+    [
+        ("when opponent Stephen Curry plays", "with_player"),
+        ("without Stephen Curry anywhere in the game", "without_player"),
+    ],
+)
+def test_negation_cannot_disappear_before_a_scoped_clause(prefix, condition, field):
+    from nbatools.commands._team_participation_query import apply_team_participation_scope
+
+    out = apply_team_participation_scope(
+        f"Cavaliers record {prefix} {condition} vs Warriors in 2024-25",
+        {"route": "team_record", "route_kwargs": {field: "Stephen Curry"}},
+    )
+    assert "mixed_participation_roles" in out["route_kwargs"]["unsupported_filters"]
+
+
 @pytest.mark.parametrize("window", [None, "qualifying", "window", "original_window"])
 def test_new_mixed_scope_does_not_hide_unknown_behind_false_sibling(pair_sample, window):
     from nbatools.query_service import execute_structured_query

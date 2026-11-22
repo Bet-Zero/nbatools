@@ -1389,7 +1389,7 @@
     },
     {
       "path": "src/nbatools/commands/_team_participation_query.py",
-      "reviewed_sha256": "75621d52371641934054a772f94f4d1f49f986429258bde9ff446971190c0e10",
+      "reviewed_sha256": "8d0125fbae1ec3115d234231b0f5c9d21438b2aa058d9bc88017b59327aab280",
       "semantic_reach": "New explicit team_record appearance scope only; original22 have no team_record with/without combination. Offline qualification makes no source requests or writes to existing data. Split/player/finder strict predicates unchanged.",
       "eligible_existing_case_ids": [
         "k12-s1",

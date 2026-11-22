@@ -66,6 +66,10 @@ def _scalar_role_clause(query, kwargs, scope):
     # cannot disappear behind a scalar role declaration. Only fully consumed
     # primary numeric-stat clauses may remain alongside ordinary scope.
     remaining = text[:start] + " " * (end - start) + text[end:]
+    if re.search(
+        r"\b(?:not|except|excluding|exclude|unless|never|neither|nor|other\s+than)\b", remaining
+    ):
+        return False  # Negation/exclusion of the role is not a parsed operator.
     for marker in re.finditer(r"\b(with|without|when|while|if)\s+", remaining):
         if marker[1] not in {"with", "when"}:
             return False

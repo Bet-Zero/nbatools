@@ -33,6 +33,9 @@ def test_explicit_role_cannot_reduce_a_mixed_request_on_published_catalog():
         "without Stephen Curry when opponent Stephen Curry plays",
         "with Stephen Curry when opponent Stephen Curry plays",
         "without Stephen Curry anywhere in the game and with Caris LeVert",
+        "not when opponent Stephen Curry plays",
+        "except when opponent Stephen Curry plays",
+        "not without Stephen Curry anywhere in the game",
     ):
         query = f"Cavaliers record {clause} vs Warriors in 2024-25"
         body = client.post("/query", json={"query": query}).json()
