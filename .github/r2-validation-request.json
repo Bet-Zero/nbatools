@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "bc568ff442e46e78596f758d149f0602307587ca",
+  "generation": "availability-season-inactive-2024-v1-20261116",
+  "tests": [
+    "tests/test_cleveland_two_game_replacement_real_data.py::test_two_report_replacement_unlocks_four_cases_without_membership_guesses"
+  ],
+  "raw_qa_cases": []
+}
