@@ -111,7 +111,15 @@ def test_away_scope_and_exact_date_preserved(source):
 
 
 def test_natural_team_record_keeps_original_team_and_opponent(source):
-    result = execute_natural_query("Lakers record vs Miami without Jimmy Butler in 2025-26")
+    # Preserve the original fixture and expectation under its original scope.
+    from nbatools.commands.natural_query import parse_query
+
+    original = "Lakers record vs Miami without Jimmy Butler in 2025-26"
+    request = parse_query(original)
+    result = execute_structured_query(
+        request["route"], **{**request["route_kwargs"], "participation_scope": "legacy"}
+    )
+    assert execute_natural_query(original).result_status == "no_result"
     assert ids(result, "game_log") == {386, 395}
     raw = pd.read_csv(source[0] / "data/raw/team_game_stats/2025-26_regular_season.csv")
     chosen = raw[raw.team_abbr.eq("LAL") & raw.game_id.isin([386, 395])]
@@ -182,7 +190,9 @@ def test_missing_member_participation_stays_unknown_and_blocks_missed_count(sour
 
 
 def test_verified_nonmember_is_an_empty_eligible_sample_not_a_zero_record(source):
-    result = execute_natural_query("Heat record without Jimmy Butler on 2025-10-29")
+    result = execute_natural_query(
+        "Heat record without Jimmy Butler while on the team on 2025-10-29"
+    )
     assert result.result_status == "no_result" and result.result_reason == "no_match"
     assert result.to_dict()["sections"] == {}
 

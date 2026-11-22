@@ -2273,6 +2273,34 @@ Zero-minute and missing appearance rows remain unknown. Existing qualified game
 participation imports, including the PR619 game-grain recovery process, are
 unchanged; this report neither replaces them nor asserts medical status/DNPs.
 
+### Complete team-side appearance lists
+
+`raw/team_game_appearances/<season>_<season_type>.json` is a schema-v1 proof,
+not membership or a DNP table. Grain/key: one accepted `(game_id, team_id)` side;
+`game_date`, `played_ids`, normalized observation SHA256 and original-source
+file hashes bind it to retained official full-game evidence. `dependencies`
+binds canonical game, team-stat and player-stat files and any identity inputs.
+Season/type/scope are explicit; a file may cover only selected sides. Omitted
+sides are unknown, never empty lists. Zero-minute or blank records without an
+explicit DNP remain ambiguous and prevent side qualification; precise positive
+source time may qualify an appearance even if a statistical CSV rounded to zero.
+
+The offline `team_appearance_coverage.qualify_retained_appearances` replays
+PR619's existing full-container validators and cached official Final Box reports,
+compares accepted import digests and refuses disputed/unresolved sides. It never
+downloads or edits sources. The reader replays those sources and checks hashes,
+dates, identities and contradictory positive observations before caching proof.
+An individual-game association is not a tenure interval. Complete lists support
+team-scoped WITH/WITHOUT and explicit opponent/anywhere predicates; rostered-only
+missed games still require the existing membership engine.
+
+Initial immutable qualified staging: `team-appearances-cleveland-2024-v1`,
+82 Cleveland regular-season sides for 2024-25, replayed from unchanged
+`cleveland-full-boxscore-2024-v2`. No Brooklyn replacement side or additional
+opponent scope is certified. Originals, quarantines and inactive observations
+remain unchanged. This data is not active in production; a later combined data
+release requires its own exact protected approval.
+
 ### Archived season inactive observations
 
 `raw/player_game_inactive/<season>_regular_season.csv` supplements qualified

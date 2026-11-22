@@ -11,61 +11,58 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**Lead: Codex. Baseline main `b5c08fb9` (PR631); branch
-`codex/core1-limited-snapshot`.** Owner approved
-membership expectation clarification and an explicitly **LIMITED Core-1 snapshot**
-on November 22. This milestone closes with the reviewed change's required gates;
-**full original Core-1 acceptance and league-wide participation remain unfinished**.
-No original question, controlled positive or baseline requirement is removed.
+**Lead: Codex. Baseline main `59a4dabe` (merged PR632); branch
+`codex/team-scoped-participation`.** The limited Core-1 snapshot remains closed;
+full original acceptance and league-wide participation remain unfinished.
+The owner separately approved a new November 22 product meaning: default team
+WITH/WITHOUT records concern appearances **FOR the selected team**, including
+before joining and after leaving. Opponent appearances are WITHOUT for that team.
+This is a changed product requirement, not retroactive evidence for old positives.
 
-**Complete within the limited scope:** the already verified historical identity,
-season/window, summary/record, finder/count, ranking, owned-condition, comparison,
-split, sequence, history/population and functional-delivery bindings, plus qualified
-participation cases. Reuse PR615's 126 non-K08 checks, PR617's final desktop/mobile
-runs [43602403345](https://github.com/Bet-Zero/nbatools/actions/runs/43602403345)
-and [43602584850](https://github.com/Bet-Zero/nbatools/actions/runs/43602584850),
-and PR618's [17 focused checks](https://github.com/Bet-Zero/nbatools/actions/runs/43658225359).
-New focused API/browser checks distinguish member-DNP, verified nonmember and
-unknown; shared explanation fixes stop describing unverified participation as
-unavailable points or an unsupported combination. An empty eligible sample is
-not a 0-0 record. Exact revision, independent review and execution are in this PR;
-old results are reused at their original scopes, not claimed as fresh runs.
+**New qualified staging:** `team-appearances-cleveland-2024-v1` certifies all
+82 Cleveland 2024-25 regular-season side lists by replaying existing retained
+full-game sources. No downloads, source-body changes or publication. All 21
+original Cleveland candidates support complete TEAM WITH/WITHOUT records; Curry
+is an additional no-Cleveland-appearance control. Examples: without LeVert 31–13,
+without Hunter 44–11, without Curry 64–18, including Curry's two GSW appearances.
+WITH Curry is a known-empty sample, not 0–0. Rostered-only Cleveland coverage stays
+14/21 complete, seven cases/318 unknown cells. BKN0022400199 stays uncertified;
+malformed originals, quarantines and disputed observations remain intact.
 
-**Exactly unsupported:** K08 remains **16 PASS /26 MISSING DATA /4 LIVE**.
-Davis-family original IDs **1/2/3/9/10/11/12/13/14/15/17/20/21/22/27/28/29/
-33/34/36/37/39/40/42/43** lack qualified complete membership/participation for
-2025-26 Lakers dates under the served default. Their controlled-fixture teammate
-positives test software, not factual Davis tenure. Retained official transfers
-(Feb2 2025 LAL→DAL; Feb5 2026 DAL→WAS) establish events, not continuous intervals.
-ID39 includes a WITH/coappearance variant; ID40 includes a literal-current variant.
-**ID26** retains the entire Celtics/Knicks union: dated Knicks-side nonmembership
-is unqualified, so the verified Boston subset cannot stand in for it. None of
-these original real-NBA outcomes is upgraded. The acceptance map now explicitly
-separates member-DNP, verified nonmember and unknown; nonmembers are excluded,
-never counted as absences. Missing records prove neither nonmembership nor DNP.
+**Shared behavior:** explicit rostered absence retains qualified membership/DNP;
+opposing-player, anywhere-in-game, player-stat teammate ownership and accepted
+explicit-matchup participant clauses remain distinct. Missing or ambiguous
+appearance lists withhold complete records. Zero-minute/blank rows without DNP
+are unqualified. Original strict filters and original 46 positive fixtures remain.
+Required focused tests, independent review, authenticated targeted R2 execution
+and exact-head blocking gates are recorded in the feature PR; no whole-project
+release audit, publication or backup audit is repeated.
 
-**Separate Live scope:** literal-current IDs4/5/19/38 and current40; 24-hour
-freshness/readiness, current cross-club membership/current publication (owner
-Nov11); K12 cold timing (Nov14). The 484 unknown USG%/TOV% values stay labeled
-unavailable and are not snapshot blockers (Nov14). The known 2026-27 readiness
-failure and original failed-publication-verification receipt remain unchanged.
-Existing stale-generation/acquisition failures and the informational development
-security advisory are not silently closed. DQ-005/rate source hunts stay parked.
+**Exactly unsupported:** the original K08 evidence ledger remains
+**16 PASS /26 MISSING DATA /4 LIVE** at its original rostered-absence scope.
+Davis-family original IDs1/2/3/9/10/11/12/13/14/15/17/20/21/22/27/28/29/
+33/34/36/37/39/40/42/43 lack qualified complete 2025-26 Lakers evidence under
+that contract; ID39 includes WITH and ID40 literal-current. ID26 keeps the entire
+Celtics/Knicks union. None is automatically upgraded by the new default; complete
+appearance proof for those selected 2025-26 games is still unavailable. Original
+questions, controlled positives, immutable baseline and historical evidence remain.
 
-**Next:** limited snapshot closed; stop this work. Begin Live only as a separately
-scoped task: establish whether the existing route can deliver one manually
-initiated current-season update, its due-game/required-source coverage and $0
-limits. Then qualify it and seek exact protected publication approval. No Live
-implementation, collection, automatic refresh or production change is authorized
-by this checkpoint. No extra historical research or test campaign.
+**Separate Live:** literal-current IDs4/5/19/38/current40, current cross-club
+membership/publication and 24-hour freshness/readiness; K12 cold timing. Known
+2026-27 readiness503/new_season_not_loaded, original failure receipts and 484
+unavailable rate values remain unchanged. DQ-005/source hunts stay parked.
 
-**Preserved:** production **0abc**, 69 complete 2024-25 cases plus 93 prior
-2023-24 cases, its verified backup/restore and all safeguards. Cleveland staging
-**`cleveland-full-boxscore-2024-v2`**, ZIP SHA256
+**Next:** finish the feature PR's required gates and merge only with independent
+review and actual targeted numerical passes. Preserve the proof for a future
+combined protected release; do not activate data, expand historical collection or
+begin Live without separately scoped authority. No new costs or automatic refresh.
+
+**Preserved:** production **0abc**, its 69 complete 2024-25 plus 93 prior 2023-24
+cases, verified backup/restore, Cleveland qualified v2 ZIP SHA256
 `a8a9ecfdd447a513498d5ae9a0333357711618e6abeacd2a7fb16b1d0807c298`,
-remains 14 complete /21 cases, seven cases /318 unknown cells. Keep originals,
-v1, quarantines and disputes for a later combined release; no standalone package,
-publication, wider collection or spending. No background work continues.
+originals/v1, all safeguards and the completed limited snapshot. No background
+collection or automatic worker is running. Exact PR receipts hold code hashes,
+source identities and test counts; old results stay attributed to original runs.
 
 ## Preserved scope
 

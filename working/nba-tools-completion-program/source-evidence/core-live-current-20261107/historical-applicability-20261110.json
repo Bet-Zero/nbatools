@@ -7,7 +7,7 @@
   "original_capture_sha256": "a5c718c7498f24d787866ff4e3d53220363e00588a045607e92f5947ac2074a5",
   "original_case_manifest_sha256": "096f093c24df872fca3107a1d4a23b19fc98e549b86aecfdc9df3b538ca1382a",
   "original_bound_file_count": 663,
-  "unchanged_bound_file_count": 629,
+  "unchanged_bound_file_count": 628,
   "cases": [
     {
       "id": "k12-s1",
@@ -226,9 +226,9 @@
     {
       "path": "docs/reference/data_contracts.md",
       "old_sha256": "6cc8cbeab09758d9db569d7e5d0c44572d0983c198532f8c925344e6113bcf2a",
-      "reviewed_sha256": "d1b14b48f019a9a24fd505bd23f39252412bc512def47f263c15f3e6fb4f683e",
-      "reviewed_functions": "documentation",
-      "semantic_reach": "Adds only the explicitly invoked offline game-grain collection request and listed-only receipt contract. No runtime execution or source-coverage promotion; original query semantics and all 22 retained cases are unchanged. PR621 documents an offline provisional membership-source assessment only; no runtime, query, original case, capture, data generation or accepted tenure changes. PR623 documents only the optional explicit season-inactive source, listed-row semantics and staged-only publication status; none of the original 22 capture inputs changes. Documents optional deterministic identity-name quarantine; no captured query/runtime semantics change.",
+      "reviewed_sha256": "369f696c35b243906ebe7a8a65477491f93d7a56d260d730a410981cbaf125fc",
+      "reviewed_functions": "Complete team-side appearance list contract",
+      "semantic_reach": "Reference prose only; no runtime reads. Existing dataset contracts and originals preserved.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -631,9 +631,9 @@
     {
       "path": "src/nbatools/commands/natural_query.py",
       "old_sha256": "8f98d100b63240b8e97419bf3fd198d3e3279812d4e286ce057535351377c275",
-      "reviewed_sha256": "799400b73189d3b2e511b55c37128f7c2cc225261b5a89a8908156b60969bca1",
-      "reviewed_functions": "_finalize_route; _teams_in_order; _team_mentions; _expand_bare_short_season, _season_total_threshold_board",
-      "semantic_reach": "The new private natural source-rate unit flag requires player_game_finder plus a quarter or half. Original 22 queries have neither period predicate, so their route kwargs remain unchanged and no bound conversion is selected. New team-mention masking only hides complete person spans with internal team words; none of the original 22 names contains one, so team lists and comparison subjects remain identical. PR618: bare two-digit seasons need a consecutive NN-NN or NN/NN pair (the original 22 use four-digit seasons and ISO dates, which the pattern skips); the named-player season-total list needs a season-total number. Route, route_kwargs and notes for all 22 are byte-identical to main 07b865e.",
+      "reviewed_sha256": "9e61ff934727010347da15e166cbe4afc468353746fc6511cdfd31b90a73ba62",
+      "reviewed_functions": "parse_query; explicit matchup participant scope",
+      "semantic_reach": "New scope translation applies only to team_record participation conditions. Original team_record cases have no with/without predicate; original S4 participant records use team_split_summary or player_split_summary, not this new consumer. No source/time/season mutation.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -755,9 +755,9 @@
     {
       "path": "src/nbatools/commands/team_record.py",
       "old_sha256": "bcd5c4660201ca5a268d9ff710e19c1eb0f2da5077c26773d92cb16646ec9e92",
-      "reviewed_sha256": "8ed0d586447f1062e2a0033228c3c3ba197ad1192a48053642074c0b68a4982d",
-      "reviewed_functions": "build_team_record_result caveat",
-      "semantic_reach": "Changed caveat is period_execution_backed gated; all 22 have no period request.",
+      "reviewed_sha256": "873a888f660e65b289de439c198cb110d5af2a52510cf3597b96974a2716e466",
+      "reviewed_functions": "build_team_record_result scoped participation dispatch",
+      "semantic_reach": "New TEAM selector runs only for team_record with/without. Original plain team records contain neither; original S4 participant cases use split routes and unchanged strict filters. Accepted explicit-matchup pairs retain legacy qualification. No original22 calculation changes.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -879,9 +879,9 @@
     {
       "path": "src/nbatools/query_service.py",
       "old_sha256": "8a9c15d23ebc0a0f7a7660789e5532f94d81956204e5eb236278fd0dc5dd3fcf",
-      "reviewed_sha256": "24005cd017f8cc180886c67cadc087fd6c360a3b7c2f0af655792a807a6312fc",
-      "reviewed_functions": "_build_query_metadata; _build_applied_filters; structured metadata call site; season_total count conversion, _add_season_total_answer_metadata, stat_phrase_label, _filter_stat_label",
-      "semantic_reach": "Numeric bound metadata conversion requires the private natural source-rate flag. That flag is set only for period player finders, absent from all 22 queries; original whole-game labels, values and numeric metadata are unchanged. The additive Playing for label requires an actual primary player plus explicit team; none of these 22 player requests has a team filter and team requests have no primary player. The existing comparison rule remains the same. Passing real structured kwargs preserves this same ownership condition, without changing the original natural HTTP captures. New scalar occurrence-event bound labels are unchanged for every original capture: only k12-e1 has such an event, and its event PTS>=80 exactly equals the existing scalar PTS>=80. The multi-condition Brunson count uses the earlier conditions branch; both owned Boolean counts use the expression branch. No original case ranks a scalar event count. PR618: the seasons count and sentence apply only with route_kwargs player plus per_season and a 'season_total_list: <player> seasons with' note; the new game_total_pts labels apply only to that stat. No original 22 case routes to a season-total list or uses game_total_pts, so their payloads are unchanged.",
+      "reviewed_sha256": "038f2f1ff6c183278793a6fb6bcb84bb74bab993797bb28f774d47de6d79e9d4",
+      "reviewed_functions": "Participation scope metadata; structured team_record scope",
+      "semantic_reach": "New scope labels/calculation dispatch attach only to team_record with/without. Original22 have no such route/predicate combination; S4 uses split routes. New optional metadata on plain team records is not an asserted numerical or rendered field. Existing ownership and original44 captures untouched.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1098,9 +1098,9 @@
     {
       "path": "frontend/src/components/noResultDisplayUtils.ts",
       "old_sha256": "b3f5623ea70f0c054b6ffcb4f479fc0c73f890929e8e3e31ed1b28bab09ce992",
-      "reviewed_sha256": "e0edf5d95aa66b74d5766a63929c827511479748e5e535988594f110bce921c3",
-      "reviewed_functions": "productFacingNotice; readableNoResultMessage; hasUnverifiedParticipation",
-      "semantic_reach": "Only unverified participation explanations and top-level no_match with a player-participation condition change. Original22 has no participation refusal or top-level participation no_match (the four S4 results are successful splits with an empty bucket); all original22 labels, values and scopes remain unchanged. Participation explanations require unsupported/filter_not_supported; stale flags cannot relabel no_match/no_data/error outcomes.",
+      "reviewed_sha256": "b95669d076251fa1b5de54a89643707f0532f0b890ab1a0d9439e6604725795c",
+      "reviewed_functions": "readableNoResultMessage; hasUnverifiedParticipation",
+      "semantic_reach": "New TEAM empty-sample and incomplete-appearance wording only. None of original22 is an empty TEAM appearance sample or new complete-list refusal; original fallback and historical captures preserved.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1129,9 +1129,9 @@
     {
       "path": "frontend/src/test/UIComponents.test.tsx",
       "old_sha256": "928e50583895c307bb3990a4aef6c7593d106c6c70521f968710a87fc7501543",
-      "reviewed_sha256": "affff18fa6bfd2b41fd7111877beeee6c51f22527f9e4512ebb7fec537e48091",
-      "reviewed_functions": "NoResultDisplay tests",
-      "semantic_reach": "Test-only explanation regressions for participation, nonmember empty sample, medical refusal and unrelated unavailable metrics. No runtime reach or original22 question/answer change.",
+      "reviewed_sha256": "83ea3774cfef50a4aa7d2fb6a13b33715fc16c51c0fdfed87555ab781bcff3a9",
+      "reviewed_functions": "New TEAM empty-sample and incomplete-proof controls",
+      "semantic_reach": "Test-only assertions, not bundled runtime; old22 expected text and original capture bodies unchanged.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1156,6 +1156,37 @@
         "live-owned-team",
         "live-owned-opponent"
       ]
+    },
+    {
+      "path": "docs/reference/query_catalog.md",
+      "old_sha256": "6aef52f4a1ab2f2b9d74a478b5cf7be0437ac1052183c2cd0542c3e962eb2d4a",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ],
+      "reviewed_functions": "Team-record participation contract",
+      "semantic_reach": "Reference prose only; no runtime reads. Original questions and historical sources remain exact.",
+      "reviewed_sha256": "db75a59628e8c182ee2b451cb07fb3576a4fdf20db7e558b574f046dcbd0851c"
     }
   ],
   "original_src_python_inventory": [
@@ -1325,5 +1356,94 @@
   "current_snapshot_accepted": false,
   "public_or_NBA_requests": 0,
   "production_writes": 0,
-  "acceptance_limit": "Applicability of retained original 44 desktop/mobile HTTP/rendered captures only; no new deployment, source, freshness, cold/performance, all 46 K08 positives or full Core-1 acceptance."
+  "acceptance_limit": "Applicability of retained original 44 desktop/mobile HTTP/rendered captures only; no new deployment, source, freshness, cold/performance, all 46 K08 positives or full Core-1 acceptance.",
+  "reviewed_added_source_modules": [
+    {
+      "path": "src/nbatools/commands/_team_appearances.py",
+      "reviewed_sha256": "0ec5be5941ab9424f2fc838fed0478f1cedea694a4b31237427d3e7de4a94645",
+      "semantic_reach": "New explicit team_record appearance scope only; original22 have no team_record with/without combination. Offline qualification makes no source requests or writes to existing data. Split/player/finder strict predicates unchanged.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ]
+    },
+    {
+      "path": "src/nbatools/commands/_team_participation_query.py",
+      "reviewed_sha256": "3fa8d5bb541fc22eed093223704c2966dff76719895d48c2a8263c3ceadca375",
+      "semantic_reach": "New explicit team_record appearance scope only; original22 have no team_record with/without combination. Offline qualification makes no source requests or writes to existing data. Split/player/finder strict predicates unchanged.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ]
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/team_appearance_coverage.py",
+      "reviewed_sha256": "d367a392f2c1e846cc23f9ce99aeab731972fec5ad013edc6ec6f0fd0a853892",
+      "semantic_reach": "New explicit team_record appearance scope only; original22 have no team_record with/without combination. Offline qualification makes no source requests or writes to existing data. Split/player/finder strict predicates unchanged.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ]
+    }
+  ]
 }

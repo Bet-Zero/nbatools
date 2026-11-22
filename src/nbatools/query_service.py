@@ -459,6 +459,20 @@ def _build_applied_filters(
         )
     if with_player:
         applied_filters.append({"label": "With player", "value": with_player, "kind": "player"})
+    if (without_player or with_player) and (
+        source.get("route") == "team_record" or route_kwargs.get("participation_scope")
+    ):
+        scope = route_kwargs.get("participation_scope", "team")
+        basis = {
+            "team": "FOR selected team; before joining / after leaving included",
+            "rostered": "While rostered; qualified nonparticipation only",
+            "legacy": "Qualified membership and participation",
+            "opponent": "FOR opposing team",
+            "game": "Anywhere in the game",
+        }.get(scope, scope)
+        applied_filters.append(
+            {"label": "Participation basis", "value": basis, "kind": "participation_scope"}
+        )
     if source.get("home_only"):
         applied_filters.append({"label": "Location", "value": "Home", "kind": "location"})
     if source.get("away_only"):
@@ -786,6 +800,9 @@ def _build_query_metadata(
         "opponent_team_abbrs": route_kwargs.get("opponent_team_abbrs"),
         "with_player": route_kwargs.get("with_player", parsed.get("with_player")),
         "without_player": route_kwargs.get("without_player", parsed.get("without_player")),
+        "participation_scope": route_kwargs.get(
+            "participation_scope", "team" if route == "team_record" else None
+        ),
         "without_player_reason": route_kwargs.get(
             "without_player_reason", parsed.get("without_player_reason")
         ),
@@ -3917,6 +3934,12 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
             route=route,
         )
 
+    if route == "team_record" and kwargs.get("without_player_reason"):
+        kwargs["participation_scope"] = "legacy"
+    elif route == "team_record":
+        from nbatools.commands._team_participation_query import participation_scope_for
+
+        kwargs["participation_scope"] = participation_scope_for(kwargs)
     query_class = route_to_query_class(route)
 
     # Build metadata from kwargs
@@ -3989,6 +4012,9 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         "opponent_team_abbrs": kwargs.get("opponent_team_abbrs"),
         "with_player": kwargs.get("with_player"),
         "without_player": kwargs.get("without_player") or kwargs.get("membership_player"),
+        "participation_scope": kwargs.get(
+            "participation_scope", "team" if route == "team_record" else None
+        ),
         "without_player_reason": kwargs.get("without_player_reason"),
         "unresolved_availability_player": kwargs.get("unresolved_availability_player"),
         "unsupported_filters": unsupported_filters,

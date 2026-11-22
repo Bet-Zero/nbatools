@@ -27,7 +27,7 @@ def _reseal(tmp_path, mutate):
 
 def test_reviewed_original22_applicability(binding):
     result = gate._retained_applicability(binding)
-    assert result["changed_files"] == 34
+    assert result["changed_files"] == 35
     assert len(result["cases"]) == 22
     assert result["companion_sha256"] == gate.APPLICABILITY_SHA256
 
@@ -92,6 +92,20 @@ def test_new_source_module_rejected(binding, monkeypatch):
 
     monkeypatch.setattr(Path, "rglob", extra_module)
     with pytest.raises(AssertionError, match="source module addition/deletion"):
+        gate._retained_applicability(binding)
+
+
+def test_reviewed_added_module_change_rejected(binding, monkeypatch):
+    proof = json.loads(gate.APPLICABILITY.read_bytes())
+    target = gate.ROOT / proof["reviewed_added_source_modules"][0]["path"]
+    original = Path.read_bytes
+
+    def altered_bytes(path):
+        raw = original(path)
+        return raw + b"\n# unreviewed addition delta\n" if path == target else raw
+
+    monkeypatch.setattr(Path, "read_bytes", altered_bytes)
+    with pytest.raises(AssertionError, match="Unreviewed added module change"):
         gate._retained_applicability(binding)
 
 

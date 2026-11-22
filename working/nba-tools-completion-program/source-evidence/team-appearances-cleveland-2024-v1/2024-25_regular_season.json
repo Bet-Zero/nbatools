@@ -1,0 +1,1994 @@
+{
+  "schema_version": 1,
+  "season": "2024-25",
+  "season_type": "Regular Season",
+  "scope": "complete_team_appearance_lists",
+  "dependencies": {
+    "raw/games/2024-25_regular_season.csv": "14d7deee5a5fa39e0bc42e769dd0412ade69b9e02af207b3fa2f103be5851df3",
+    "raw/team_game_stats/2024-25_regular_season.csv": "36bc367e1e63d90ef7960683a484ae07020ea6e277fe1de4c80a568de05cb762",
+    "raw/player_game_stats/2024-25_regular_season.csv": "3a259df8b93029e0d809ce38b8123d98a3f0f009017ec6d43e0b285906cf6591",
+    "raw/rosters/2024-25.csv": "545834d18a20a1035d70a46a47c68a90ef9b3da1ea7d50c7340d9e727d9c8358"
+  },
+  "sides": [
+    {
+      "game_id": 22400013,
+      "team_id": 1610612739,
+      "game_date": "2024-11-15",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1641854
+      ],
+      "observation_sha256": "6ab3769b640edd29fe380860b5120389c600acfa0b31aa4641f494ac77881666",
+      "source_files": {
+        "raw/player_game_availability_sources/7d30594b9b5ac0965c313409e7e89107cb89d1022e68e4ad8b58ca52d1e2027a.structured.json": "7d30594b9b5ac0965c313409e7e89107cb89d1022e68e4ad8b58ca52d1e2027a",
+        "raw/player_game_availability_sources/0dde9e40c9fb9f8493bf5986d9f445c7d2ed55c13dcb4e5c0a212594dcc0f41b.json": "0dde9e40c9fb9f8493bf5986d9f445c7d2ed55c13dcb4e5c0a212594dcc0f41b",
+        "raw/player_game_availability_sources/05aa2c187811932a7f72304ba7eaed14e724941d788b704a23a1732c53000a48.json": "05aa2c187811932a7f72304ba7eaed14e724941d788b704a23a1732c53000a48"
+      }
+    },
+    {
+      "game_id": 22400021,
+      "team_id": 1610612739,
+      "game_date": "2024-11-19",
+      "played_ids": [
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1630241,
+        1630596,
+        1641854
+      ],
+      "observation_sha256": "5f05183017670abe8af3b97e66639f7a18d61ec7d8f252a670358b7d2649c36b",
+      "source_files": {
+        "raw/player_game_availability_sources/4517f13a78ed02b7e256de437a709ab08eb07b949fa3bdfa9f4f60b0412e5c40.structured.json": "4517f13a78ed02b7e256de437a709ab08eb07b949fa3bdfa9f4f60b0412e5c40",
+        "raw/player_game_availability_sources/838d20f31b39988260c76b4ad4b5170d1a12c4ad89b9e661a9c039f36083ed45.json": "838d20f31b39988260c76b4ad4b5170d1a12c4ad89b9e661a9c039f36083ed45",
+        "raw/player_game_availability_sources/aa8a3876b0b454ea6ba2bae791ebe1ad1491efebabaac98ea8419f9ffeef48f1.json": "aa8a3876b0b454ea6ba2bae791ebe1ad1491efebabaac98ea8419f9ffeef48f1"
+      }
+    },
+    {
+      "game_id": 22400041,
+      "team_id": 1610612739,
+      "game_date": "2024-11-29",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1630171,
+        1630241,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "b25defd56068a5d35deb7164f122ad36f95f339b5eba093ae5be1cac8657f7d9",
+      "source_files": {
+        "raw/player_game_availability_sources/ac2ed23d7c8244d7ad132662d2176c60d36e0ca86ab43f8c8c504d885c36c71e.structured.json": "ac2ed23d7c8244d7ad132662d2176c60d36e0ca86ab43f8c8c504d885c36c71e",
+        "raw/player_game_availability_sources/13b135e9ebbccf6cba05f12adf8fc9b0a0636924333fb1d93cce9b874f70656c.json": "13b135e9ebbccf6cba05f12adf8fc9b0a0636924333fb1d93cce9b874f70656c",
+        "raw/player_game_availability_sources/ff29a0a15e9d04dfdcea392febd204e7668cdaa3b58fad601b8c53b470f423e3.json": "ff29a0a15e9d04dfdcea392febd204e7668cdaa3b58fad601b8c53b470f423e3"
+      }
+    },
+    {
+      "game_id": 22400051,
+      "team_id": 1610612739,
+      "game_date": "2024-12-03",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629731,
+        1630171,
+        1630241,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "14b91ea8626a3f40a92d152e41d02924b0e0d531a4fece0705077943c62da2cf",
+      "source_files": {
+        "raw/player_game_availability_sources/2eec7b13ddbc25a6b93307351e57e3f87ecd16e1676e7044eeef2dc090050e08.structured.json": "2eec7b13ddbc25a6b93307351e57e3f87ecd16e1676e7044eeef2dc090050e08",
+        "raw/player_game_availability_sources/eaa4ed19f2bd1435564595e8ec2c7c5fb866099705fae88e94d4f1aec40b13a1.json": "eaa4ed19f2bd1435564595e8ec2c7c5fb866099705fae88e94d4f1aec40b13a1",
+        "raw/player_game_availability_sources/98239ceb2ceb583aff4d4d18d28eac7e0b018ddd940adf1ef399a6d67dd2b56f.json": "98239ceb2ceb583aff4d4d18d28eac7e0b018ddd940adf1ef399a6d67dd2b56f"
+      }
+    },
+    {
+      "game_id": 22400067,
+      "team_id": 1610612739,
+      "game_date": "2024-10-23",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "d07beebbaf51aa5504cc5aa5ed0ea8f155a9a1fc8cb918233f75307bb12773df",
+      "source_files": {
+        "raw/player_game_availability_sources/8a1e55565ec7977e2cb46312a2102f64655eedcd68b2af43483569de7bfb9969.structured.json": "8a1e55565ec7977e2cb46312a2102f64655eedcd68b2af43483569de7bfb9969",
+        "raw/player_game_availability_sources/041efa1242a35779f9706949c52dfbeb428d02a9b29200bdfd691f01753896ff.json": "041efa1242a35779f9706949c52dfbeb428d02a9b29200bdfd691f01753896ff",
+        "raw/player_game_availability_sources/c63749c007a090544a749798d7fcc264ccf3e251c465c6896194f3c0c1dfed04.json": "c63749c007a090544a749798d7fcc264ccf3e251c465c6896194f3c0c1dfed04"
+      }
+    },
+    {
+      "game_id": 22400080,
+      "team_id": 1610612739,
+      "game_date": "2024-10-25",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "2b692d946bf9b91421d5efb64894491c46a3b05c5b333921e4a480e13e697b18",
+      "source_files": {
+        "raw/player_game_availability_sources/939ebc8f90cbe95aa3bc6426c90748b8a3839c8de5c3a45ec3ad864413c9ab64.structured.json": "939ebc8f90cbe95aa3bc6426c90748b8a3839c8de5c3a45ec3ad864413c9ab64",
+        "raw/player_game_availability_sources/087c73248a6d5a185ec87591083044091993c50a575fde83a538ce50ca5a0836.json": "087c73248a6d5a185ec87591083044091993c50a575fde83a538ce50ca5a0836",
+        "raw/player_game_availability_sources/7559058d3daef2cf137d9cac94468f3a40afeea61ada045b8d15e0d234a7ee8b.json": "7559058d3daef2cf137d9cac94468f3a40afeea61ada045b8d15e0d234a7ee8b"
+      }
+    },
+    {
+      "game_id": 22400090,
+      "team_id": 1610612739,
+      "game_date": "2024-10-26",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "0b504d28b810df2d29624efe6696fa4400daf3d6c32e1384e82fb7591e8a2544",
+      "source_files": {
+        "raw/player_game_availability_sources/df7fe855560a513bc82ccdba947db7ba63367a9aae0ba9ef4df110ecfaf26d30.structured.json": "df7fe855560a513bc82ccdba947db7ba63367a9aae0ba9ef4df110ecfaf26d30",
+        "raw/player_game_availability_sources/d70b8c6bb4759736216cac150bad7642ec956657fd9aa6aa66ce263ed8a46c2c.json": "d70b8c6bb4759736216cac150bad7642ec956657fd9aa6aa66ce263ed8a46c2c",
+        "raw/player_game_availability_sources/faf5d5559e59cd5e6f98a0fd9228fb88fc2cd09451459a5d4b91887caf808fea.json": "faf5d5559e59cd5e6f98a0fd9228fb88fc2cd09451459a5d4b91887caf808fea"
+      }
+    },
+    {
+      "game_id": 22400106,
+      "team_id": 1610612739,
+      "game_date": "2024-10-28",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596
+      ],
+      "observation_sha256": "faf8b6007a4af7f3d5aff2710d4a629df1dec653b0b29dd1c1e3819eb398d865",
+      "source_files": {
+        "raw/player_game_availability_sources/972d0d75700d065c4060ee840443f5a89c4354a486560973f4263ec0151f62ee.structured.json": "972d0d75700d065c4060ee840443f5a89c4354a486560973f4263ec0151f62ee",
+        "raw/player_game_availability_sources/9a9433dcd37e76ea9112004aa7fab328952b155c674c955e25593cce71abf8f2.json": "9a9433dcd37e76ea9112004aa7fab328952b155c674c955e25593cce71abf8f2",
+        "raw/player_game_availability_sources/4193373b3ba68c8649e4a0e24f0bcd4375e1af2c84bfcebc823a23076e90fbb7.json": "4193373b3ba68c8649e4a0e24f0bcd4375e1af2c84bfcebc823a23076e90fbb7"
+      }
+    },
+    {
+      "game_id": 22400118,
+      "team_id": 1610612739,
+      "game_date": "2024-10-30",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596,
+        1642281
+      ],
+      "observation_sha256": "3d2135f29944554f9b39aa81752dceea81ddf3b1f5667599ef43974db42b3609",
+      "source_files": {
+        "raw/player_game_availability_sources/238cc93a6aa2325a3b68ef0993066e5a1eeacf310206fab0765545c5577f4513.structured.json": "238cc93a6aa2325a3b68ef0993066e5a1eeacf310206fab0765545c5577f4513",
+        "raw/player_game_availability_sources/87203863738824e7fb4ac5d029227eac5cb3c50607cf05eb1e8969862284589e.json": "87203863738824e7fb4ac5d029227eac5cb3c50607cf05eb1e8969862284589e",
+        "raw/player_game_availability_sources/4b44913e8bacd151304417427f49bd4e45f2168e66cf56e068fbfe46951b3c89.json": "4b44913e8bacd151304417427f49bd4e45f2168e66cf56e068fbfe46951b3c89"
+      }
+    },
+    {
+      "game_id": 22400133,
+      "team_id": 1610612739,
+      "game_date": "2024-11-01",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596,
+        1631247
+      ],
+      "observation_sha256": "5c58d080d87621346b62485ae791a61bed9f0d4cb73817835699af99081469c2",
+      "source_files": {
+        "raw/player_game_availability_sources/c07dec5132b40e009d3fd8683db994fc407c83eb62e5fea96817489cf1195245.structured.json": "c07dec5132b40e009d3fd8683db994fc407c83eb62e5fea96817489cf1195245",
+        "raw/player_game_availability_sources/dc3e7ba084b448c4734027176f1465ee4cf9b1a3ee4e2762dfc6ca4c2cf18a92.json": "dc3e7ba084b448c4734027176f1465ee4cf9b1a3ee4e2762dfc6ca4c2cf18a92",
+        "raw/player_game_availability_sources/5177023621e5dca78a14a6ec7e4bc8c9b22bda57070618250078ac6e9dc6a4a9.json": "5177023621e5dca78a14a6ec7e4bc8c9b22bda57070618250078ac6e9dc6a4a9"
+      }
+    },
+    {
+      "game_id": 22400145,
+      "team_id": 1610612739,
+      "game_date": "2024-11-02",
+      "played_ids": [
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596,
+        1641854
+      ],
+      "observation_sha256": "bd358f5abdcc3d4944c76f1d25e6cf2e1a1ccb4120a980ee56cd8f058ea4f4ca",
+      "source_files": {
+        "raw/player_game_availability_sources/6766701d3f6c6182f791374c95018aec7ed5d207c3f8e125f8c813b5250a5efe.structured.json": "6766701d3f6c6182f791374c95018aec7ed5d207c3f8e125f8c813b5250a5efe",
+        "raw/player_game_availability_sources/02a974ed1823c7c2264ceac06e3ae569c5ef32aaf3945fa4e8288cbc27bfa6b3.json": "02a974ed1823c7c2264ceac06e3ae569c5ef32aaf3945fa4e8288cbc27bfa6b3",
+        "raw/player_game_availability_sources/5a58fb1b561f9757bbf49aa0e73495449a9c571bcb87fcf4cb9b786d476ec0ca.json": "5a58fb1b561f9757bbf49aa0e73495449a9c571bcb87fcf4cb9b786d476ec0ca"
+      }
+    },
+    {
+      "game_id": 22400154,
+      "team_id": 1610612739,
+      "game_date": "2024-11-04",
+      "played_ids": [
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1630171,
+        1630241,
+        1630596,
+        1631247,
+        1641854
+      ],
+      "observation_sha256": "b89330f6fce1983ca1e26a30000a8dbc33ab7a6047da2ed2b3de65e62421a381",
+      "source_files": {
+        "raw/player_game_availability_sources/2d695050d09524c0fd54b769e611870d4cb9bb6f06e3ec9df645b185a3fea04c.structured.json": "2d695050d09524c0fd54b769e611870d4cb9bb6f06e3ec9df645b185a3fea04c",
+        "raw/player_game_availability_sources/bfb18815fe8405ca04138562d484999268bfe10e75e0465a831bb8c3b0920397.json": "bfb18815fe8405ca04138562d484999268bfe10e75e0465a831bb8c3b0920397",
+        "raw/player_game_availability_sources/de2f33705fc8a22c4f84069609dbd8777ac463d74e4465359ec9258aab6e06cd.json": "de2f33705fc8a22c4f84069609dbd8777ac463d74e4465359ec9258aab6e06cd"
+      }
+    },
+    {
+      "game_id": 22400175,
+      "team_id": 1610612739,
+      "game_date": "2024-11-06",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1630171,
+        1630241,
+        1630596,
+        1641854
+      ],
+      "observation_sha256": "417e9f19c2682afc1ab0f2be889d26cc8695d35ef87d3497e1b6a05e33fc6cab",
+      "source_files": {
+        "raw/player_game_availability_sources/25176de5d182dd1b3d9109b03a33a8351a4835d8ebe9be8750dd2bdd9d0b3a13.structured.json": "25176de5d182dd1b3d9109b03a33a8351a4835d8ebe9be8750dd2bdd9d0b3a13",
+        "raw/player_game_availability_sources/e7694788365af783406fecdb6abae0f7bad657a1dab6f19691de325a99d64c28.json": "e7694788365af783406fecdb6abae0f7bad657a1dab6f19691de325a99d64c28",
+        "raw/player_game_availability_sources/6c8fc61de4c85c40c972ae9ce4609439ccef9c582e219d0d0bae6fe9716e9907.json": "6c8fc61de4c85c40c972ae9ce4609439ccef9c582e219d0d0bae6fe9716e9907"
+      }
+    },
+    {
+      "game_id": 22400188,
+      "team_id": 1610612739,
+      "game_date": "2024-11-08",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "7bb0adcd65025350dd403cf9514f85b198a6af7da90134a88e511ebf3f2f473f",
+      "source_files": {
+        "raw/player_game_availability_sources/bc568e756157e218da2e3746ccb220f07e1ef9753d4eeb5274ee6df6dfe7c5cc.structured.json": "bc568e756157e218da2e3746ccb220f07e1ef9753d4eeb5274ee6df6dfe7c5cc",
+        "raw/player_game_availability_sources/007f4a691dcc15f061befeabb1b80850594f2b4121b7f45bef0d8bb686086f61.json": "007f4a691dcc15f061befeabb1b80850594f2b4121b7f45bef0d8bb686086f61",
+        "raw/player_game_availability_sources/c14d74de3a69edecb8b7c63fbf4b5a4ceb3e93f694ba16dfc13276edc559a222.json": "c14d74de3a69edecb8b7c63fbf4b5a4ceb3e93f694ba16dfc13276edc559a222"
+      }
+    },
+    {
+      "game_id": 22400199,
+      "team_id": 1610612739,
+      "game_date": "2024-11-09",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596
+      ],
+      "observation_sha256": "6eed3d6ee92596c2161e7aaae74dba9e636d3200ba180cb72a4a74f88873474a",
+      "source_files": {
+        "raw/player_game_availability_sources/20241109_BKNCLE.json": "bee2b51fd84adfa8727063e7fe55e24b0a36da8caecbae86fa15a53c41ac0031",
+        "raw/player_game_availability_sources/1c4cbfff3e080c033409867b5c18c378913a78cffbbc4fdb916e69a4e8770afd.pdf": "1c4cbfff3e080c033409867b5c18c378913a78cffbbc4fdb916e69a4e8770afd"
+      }
+    },
+    {
+      "game_id": 22400212,
+      "team_id": 1610612739,
+      "game_date": "2024-11-11",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596
+      ],
+      "observation_sha256": "d3a74fdb1aec35c46ca8b77ee901f59926a7aab10a33f15cb473eda342b6cbf8",
+      "source_files": {
+        "raw/player_game_availability_sources/359defcf55a70eb8ca410acb7b23ebbce2fdd4251079df10e5882db9ab935f71.structured.json": "359defcf55a70eb8ca410acb7b23ebbce2fdd4251079df10e5882db9ab935f71",
+        "raw/player_game_availability_sources/973ec7d2de80c0c23cdda8b2dda8114b59846c84b0834e60747cb386693217b0.json": "973ec7d2de80c0c23cdda8b2dda8114b59846c84b0834e60747cb386693217b0",
+        "raw/player_game_availability_sources/f090690b7b9d4a62ecf53919644530c074ec486114c0f82ca047e8563713dd76.json": "f090690b7b9d4a62ecf53919644530c074ec486114c0f82ca047e8563713dd76"
+      }
+    },
+    {
+      "game_id": 22400220,
+      "team_id": 1610612739,
+      "game_date": "2024-11-13",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630596,
+        1641854
+      ],
+      "observation_sha256": "045c6fccef67461edf147a83a6fda61251c0a623e835dc7b4caa3cfea4f1804f",
+      "source_files": {
+        "raw/player_game_availability_sources/22dd7d1f744648e41b2d50e29628c27ec2217f3596755ad6b63ea98bdebd204e.structured.json": "22dd7d1f744648e41b2d50e29628c27ec2217f3596755ad6b63ea98bdebd204e",
+        "raw/player_game_availability_sources/a9e145abe544a6089229b0ad11e715063dd51316f4d3c68f09255812abcdde69.json": "a9e145abe544a6089229b0ad11e715063dd51316f4d3c68f09255812abcdde69",
+        "raw/player_game_availability_sources/f741b73ccdc06c46b7ed947a00f8937a1dced3ce2b7b7c82aef3bddbd9797124.json": "f741b73ccdc06c46b7ed947a00f8937a1dced3ce2b7b7c82aef3bddbd9797124"
+      }
+    },
+    {
+      "game_id": 22400236,
+      "team_id": 1610612739,
+      "game_date": "2024-11-17",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630550,
+        1630596,
+        1631247,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "15654044051bdb006df8f6c048c23c1972dbc0606e4762ea83153485acb8bf2d",
+      "source_files": {
+        "raw/player_game_availability_sources/9c9f220d1eb8f7ccb1fd8b3455b3feb7e8ae6550866bda96e85b454538b34731.structured.json": "9c9f220d1eb8f7ccb1fd8b3455b3feb7e8ae6550866bda96e85b454538b34731",
+        "raw/player_game_availability_sources/283623c59e2f6b3e18d6ee491d299fe94da9aed94ccedc41ac2719d4032181fd.json": "283623c59e2f6b3e18d6ee491d299fe94da9aed94ccedc41ac2719d4032181fd",
+        "raw/player_game_availability_sources/c24ddd429d9abb8380e2435424dcc582e0393fe33d9875f7f6dcf9646058444b.json": "c24ddd429d9abb8380e2435424dcc582e0393fe33d9875f7f6dcf9646058444b"
+      }
+    },
+    {
+      "game_id": 22400252,
+      "team_id": 1610612739,
+      "game_date": "2024-11-20",
+      "played_ids": [
+        202684,
+        1627777,
+        1628378,
+        1628386,
+        1629660,
+        1630550,
+        1630596,
+        1631247,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "348bfb9bfa7abd66d561f387636ed63f4d7832268d57f754adfd8fb06d6acabd",
+      "source_files": {
+        "raw/player_game_availability_sources/d2e8da284f09051d89085efa68e3b1fc9f3c08901bed13a49edd87bc132770be.structured.json": "d2e8da284f09051d89085efa68e3b1fc9f3c08901bed13a49edd87bc132770be",
+        "raw/player_game_availability_sources/bf3830bc972ba3019f9918172a124a1af5aa2a77307811cc12b94393f70f3da4.json": "bf3830bc972ba3019f9918172a124a1af5aa2a77307811cc12b94393f70f3da4",
+        "raw/player_game_availability_sources/5193dcc0c7859c7de8e2e046281eba5e6f89d003d46093d42225e3b343f605e2.json": "5193dcc0c7859c7de8e2e046281eba5e6f89d003d46093d42225e3b343f605e2"
+      }
+    },
+    {
+      "game_id": 22400275,
+      "team_id": 1610612739,
+      "game_date": "2024-11-24",
+      "played_ids": [
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1630171,
+        1630241,
+        1630596,
+        1631247,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "7fb7848432ef00ef72ff4e585864788d0eefa507d3a07423d5c95d8225beaf73",
+      "source_files": {
+        "raw/player_game_availability_sources/052fb72ceabd12872e00d3eb9eec91fe09a147757536e795a6efcf6e8a50e392.structured.json": "052fb72ceabd12872e00d3eb9eec91fe09a147757536e795a6efcf6e8a50e392",
+        "raw/player_game_availability_sources/76dae765c0dad2d60ff0382e16b47a716d0774f5a88da52aaca2c7a0738d9ff6.json": "76dae765c0dad2d60ff0382e16b47a716d0774f5a88da52aaca2c7a0738d9ff6",
+        "raw/player_game_availability_sources/1e76d2934b0c9f331a96997e77c1aaee070555dd82a681588fbad82798f86f80.json": "1e76d2934b0c9f331a96997e77c1aaee070555dd82a681588fbad82798f86f80"
+      }
+    },
+    {
+      "game_id": 22400287,
+      "team_id": 1610612739,
+      "game_date": "2024-11-27",
+      "played_ids": [
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1630171,
+        1630241,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "b4d15d779b93ed62321a3e6d3707f911c6ab3647601a287362325a18dac74efd",
+      "source_files": {
+        "raw/player_game_availability_sources/d3c75b3bdb7a629c37487f97090abd2d400a00846d13463b7801716ccf529761.structured.json": "d3c75b3bdb7a629c37487f97090abd2d400a00846d13463b7801716ccf529761",
+        "raw/player_game_availability_sources/15b9a917fafec2c5218c3633901fce2d72b1a047c8bf8972655bdd5673963efa.json": "15b9a917fafec2c5218c3633901fce2d72b1a047c8bf8972655bdd5673963efa",
+        "raw/player_game_availability_sources/1028101fcfb309c57b0ce72e1e446f8e95cbe596e1a9b7305d2908caa11cb84a.json": "1028101fcfb309c57b0ce72e1e446f8e95cbe596e1a9b7305d2908caa11cb84a"
+      }
+    },
+    {
+      "game_id": 22400307,
+      "team_id": 1610612739,
+      "game_date": "2024-12-01",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1630171,
+        1630241,
+        1630596,
+        1642281
+      ],
+      "observation_sha256": "ee87629c0646454dfeb8af4129796864fd30978e8e693f0d7887b850d1ccdd3e",
+      "source_files": {
+        "raw/player_game_availability_sources/f7b7622241c71dcd62a2d587e10f9f4ce36f83062b6cdaaee2f16bc26d67dd22.structured.json": "f7b7622241c71dcd62a2d587e10f9f4ce36f83062b6cdaaee2f16bc26d67dd22",
+        "raw/player_game_availability_sources/b2d1cb28a452f70c77810efa7f28a165e0ccf3e00c846b96880ea7808fa3a9b1.json": "b2d1cb28a452f70c77810efa7f28a165e0ccf3e00c846b96880ea7808fa3a9b1",
+        "raw/player_game_availability_sources/fd637570c79b29b5febf9567ec5214cfd72664b8feb9e582f390f056c18b96d9.json": "fd637570c79b29b5febf9567ec5214cfd72664b8feb9e582f390f056c18b96d9"
+      }
+    },
+    {
+      "game_id": 22400325,
+      "team_id": 1610612739,
+      "game_date": "2024-12-05",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596
+      ],
+      "observation_sha256": "173ae7100c381e71a96d4ba2047f66ceeac068a7d447351b93e389a7e4c2f544",
+      "source_files": {
+        "raw/player_game_availability_sources/eb2d8155d119b06af06aaad53c860c15e6eed2c94eb60d1756feaefc644a7f73.structured.json": "eb2d8155d119b06af06aaad53c860c15e6eed2c94eb60d1756feaefc644a7f73",
+        "raw/player_game_availability_sources/f2b92bf006a5c2f47e6df73fd455902ee2b683731cbc1107be529ff54505e1c1.json": "f2b92bf006a5c2f47e6df73fd455902ee2b683731cbc1107be529ff54505e1c1",
+        "raw/player_game_availability_sources/10bb8e03b281f18a487bb07bf529f055e2d6a46accdcc22ff787b573ff1afbb4.json": "10bb8e03b281f18a487bb07bf529f055e2d6a46accdcc22ff787b573ff1afbb4"
+      }
+    },
+    {
+      "game_id": 22400340,
+      "team_id": 1610612739,
+      "game_date": "2024-12-07",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630241,
+        1630596,
+        1642281
+      ],
+      "observation_sha256": "819be16db1d1f3a33ee23d610eaebdd2481118b8dbee2db10ac24cf004c329d6",
+      "source_files": {
+        "raw/player_game_availability_sources/801d16885de135aeaf769b3b35b5883624b7b5983e907da667fb13b51ca620c4.structured.json": "801d16885de135aeaf769b3b35b5883624b7b5983e907da667fb13b51ca620c4",
+        "raw/player_game_availability_sources/15c0ff54c6028f3f13af3e9aa2bd076f072e0ed9d648055a5dfee0aa2b225f5f.json": "15c0ff54c6028f3f13af3e9aa2bd076f072e0ed9d648055a5dfee0aa2b225f5f",
+        "raw/player_game_availability_sources/f779f13a83254eebc11440780e662f5bae9f1ec752b236de3a15704018c94c64.json": "f779f13a83254eebc11440780e662f5bae9f1ec752b236de3a15704018c94c64"
+      }
+    },
+    {
+      "game_id": 22400351,
+      "team_id": 1610612739,
+      "game_date": "2024-12-08",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630241,
+        1630550,
+        1630596,
+        1631247,
+        1642281
+      ],
+      "observation_sha256": "6fe940243728900955820fbe9f6b938a49503b603643a39aac4094cd11e3edd0",
+      "source_files": {
+        "raw/player_game_availability_sources/5c1b3c27d0e9477ad77e7e363065e357075727345ef141490f88aeddca89bc97.structured.json": "5c1b3c27d0e9477ad77e7e363065e357075727345ef141490f88aeddca89bc97",
+        "raw/player_game_availability_sources/d1d718ae58cd7195ef65f4a040a13358fc3167f2cbe319e11eecd77447125c0c.json": "d1d718ae58cd7195ef65f4a040a13358fc3167f2cbe319e11eecd77447125c0c",
+        "raw/player_game_availability_sources/93aa9b531267d1bd7b4162f16c3610889c400a74c77363d18447670a2cd3e795.json": "93aa9b531267d1bd7b4162f16c3610889c400a74c77363d18447670a2cd3e795"
+      }
+    },
+    {
+      "game_id": 22400374,
+      "team_id": 1610612739,
+      "game_date": "2024-12-20",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1629731,
+        1630241,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "b20fafd91a5cbb925af50afaba02a5efa530b7db35ea8fcef63d9bcdbc69e5f5",
+      "source_files": {
+        "raw/player_game_availability_sources/813de4253b6f119cc0f05d8eaf3e877166c620b410314a53b8c33a08882e11a8.structured.json": "813de4253b6f119cc0f05d8eaf3e877166c620b410314a53b8c33a08882e11a8",
+        "raw/player_game_availability_sources/3ecef05b330c0272544c4e3d6a5662e08a26044348dfe2c1517087fceb4dd8e2.json": "3ecef05b330c0272544c4e3d6a5662e08a26044348dfe2c1517087fceb4dd8e2",
+        "raw/player_game_availability_sources/76d8dabb55829cf9607432494819edda66152bbe3645199ab9ebf622834d5a84.json": "76d8dabb55829cf9607432494819edda66152bbe3645199ab9ebf622834d5a84"
+      }
+    },
+    {
+      "game_id": 22400380,
+      "team_id": 1610612739,
+      "game_date": "2024-12-21",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630241,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "8521eff816ec459a28fa7f6142c172373571f345243017df3b0ae3c16bb6b6dc",
+      "source_files": {
+        "raw/player_game_availability_sources/9430b2b45cf0a3ea777d97d76544574adfc90abcbf1ee4cec31e4ea0761c7ddd.structured.json": "9430b2b45cf0a3ea777d97d76544574adfc90abcbf1ee4cec31e4ea0761c7ddd",
+        "raw/player_game_availability_sources/ca04a9316bafa806ba99043dbc6c1e02b4934014532fbce75e280b21e16daa11.json": "ca04a9316bafa806ba99043dbc6c1e02b4934014532fbce75e280b21e16daa11",
+        "raw/player_game_availability_sources/62a1087583bbc86fd1100184f07450577a34670c989727544f050e9397170b6a.json": "62a1087583bbc86fd1100184f07450577a34670c989727544f050e9397170b6a"
+      }
+    },
+    {
+      "game_id": 22400392,
+      "team_id": 1610612739,
+      "game_date": "2024-12-23",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1630241,
+        1630596,
+        1642281
+      ],
+      "observation_sha256": "cacd8ca3f3333235c1fccd4b5dc5ce701c71ca00b5a61fc5b39f001f709920b1",
+      "source_files": {
+        "raw/player_game_availability_sources/a119982b2aac26ec9208e9ad7fcb2f0de8d1aa702331c4024830112bdbf2dff7.structured.json": "a119982b2aac26ec9208e9ad7fcb2f0de8d1aa702331c4024830112bdbf2dff7",
+        "raw/player_game_availability_sources/3680c89719126d24e4f1325a825c5a434510c5c267209652e4e0851b18dd776a.json": "3680c89719126d24e4f1325a825c5a434510c5c267209652e4e0851b18dd776a",
+        "raw/player_game_availability_sources/7ea31857df9279ad765382821a8806fb130af5a9778a3d525cc1215fe3e0505f.json": "7ea31857df9279ad765382821a8806fb130af5a9778a3d525cc1215fe3e0505f"
+      }
+    },
+    {
+      "game_id": 22400424,
+      "team_id": 1610612739,
+      "game_date": "2024-12-27",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1629731,
+        1630241,
+        1630596,
+        1642281
+      ],
+      "observation_sha256": "209c7fe5efa9b400c87ef86c36f5ffd9436b39056eabd2702291f50cc2a27df3",
+      "source_files": {
+        "raw/player_game_availability_sources/ed463bec0ad8dbe320fa54096ffdf608532e449b647d14b8268f7315690f02a5.structured.json": "ed463bec0ad8dbe320fa54096ffdf608532e449b647d14b8268f7315690f02a5",
+        "raw/player_game_availability_sources/6aa696704a435e05096f914c93cba28803e62d22c7f8c1ebe82876b0830c4c43.json": "6aa696704a435e05096f914c93cba28803e62d22c7f8c1ebe82876b0830c4c43",
+        "raw/player_game_availability_sources/3fe5e14311974f69f1819d2d488e6ded7e67340613ba7bd6ad416ba2ed630a38.json": "3fe5e14311974f69f1819d2d488e6ded7e67340613ba7bd6ad416ba2ed630a38"
+      }
+    },
+    {
+      "game_id": 22400446,
+      "team_id": 1610612739,
+      "game_date": "2024-12-30",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1629731,
+        1630241,
+        1630550,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "f6f50073e72f35606d63342c2edab5bc9c640c287cc59e1ae97f3db24383aa0c",
+      "source_files": {
+        "raw/player_game_availability_sources/8798fe73c42378223e99de8fd1710b97c0f299c44282967f986ac695642a3715.structured.json": "8798fe73c42378223e99de8fd1710b97c0f299c44282967f986ac695642a3715",
+        "raw/player_game_availability_sources/c51d4968f58a14ff2c92b5a63333fe6459a029eb5842502399ad37b04271821c.json": "c51d4968f58a14ff2c92b5a63333fe6459a029eb5842502399ad37b04271821c",
+        "raw/player_game_availability_sources/7d2a1c31a884145df41226ee39ee9a2d513664da2e6855aba6c004672e9370c6.json": "7d2a1c31a884145df41226ee39ee9a2d513664da2e6855aba6c004672e9370c6"
+      }
+    },
+    {
+      "game_id": 22400454,
+      "team_id": 1610612739,
+      "game_date": "2024-12-31",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1629731,
+        1630241,
+        1630596
+      ],
+      "observation_sha256": "17e5362ba5c429d85630e1c42e9f027e59a29959825d5565919b8578b2d399fb",
+      "source_files": {
+        "raw/player_game_availability_sources/547be562c275816552f0098adafb2ad5c051a882123c3ea325b1c735d25bad81.structured.json": "547be562c275816552f0098adafb2ad5c051a882123c3ea325b1c735d25bad81",
+        "raw/player_game_availability_sources/8ee747661a372ba49e4a8cbb98e9fa6b00c3d89553b2ae0fe544c40a25a9c4dc.json": "8ee747661a372ba49e4a8cbb98e9fa6b00c3d89553b2ae0fe544c40a25a9c4dc",
+        "raw/player_game_availability_sources/52015c603cc7b6e2d46fea3b1d05493cab88a2248251cd8a57cd76c9470afd83.json": "52015c603cc7b6e2d46fea3b1d05493cab88a2248251cd8a57cd76c9470afd83"
+      }
+    },
+    {
+      "game_id": 22400474,
+      "team_id": 1610612739,
+      "game_date": "2025-01-03",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1629731,
+        1630550,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "597293d5053f89e05dadee50f28660f64293ee69feea8cdb7f0d68485d7ea82f",
+      "source_files": {
+        "raw/player_game_availability_sources/cfb761f76ae860a55c00d528aff9c973bc19048160f55376e8bc911115761dfe.structured.json": "cfb761f76ae860a55c00d528aff9c973bc19048160f55376e8bc911115761dfe",
+        "raw/player_game_availability_sources/027d8b6c9ddd7037b0d35edbd1d8e1a9a71b0c003c7d0ae40033e25016fe3c2e.json": "027d8b6c9ddd7037b0d35edbd1d8e1a9a71b0c003c7d0ae40033e25016fe3c2e",
+        "raw/player_game_availability_sources/dc7d097be9f6a32cd4d6f514179286dd4422ff69fa740061ae4021fedf250cf9.json": "dc7d097be9f6a32cd4d6f514179286dd4422ff69fa740061ae4021fedf250cf9"
+      }
+    },
+    {
+      "game_id": 22400488,
+      "team_id": 1610612739,
+      "game_date": "2025-01-05",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1629731,
+        1630550,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "51ef35bb16d5ee7eab0f57b9f4e81e1fc75e3d7104eddbabfb6c4dfdaed2241d",
+      "source_files": {
+        "raw/player_game_availability_sources/710972f2e1b4b2c43d92c702f0603751b7150a3833da6a1bfdb000c8bee445e6.structured.json": "710972f2e1b4b2c43d92c702f0603751b7150a3833da6a1bfdb000c8bee445e6",
+        "raw/player_game_availability_sources/54c031ea673adc3b7ad397f759d8532eb527518b329277e725a7498ae1fe2f3e.json": "54c031ea673adc3b7ad397f759d8532eb527518b329277e725a7498ae1fe2f3e",
+        "raw/player_game_availability_sources/5a1ebfafb789d34d2707dc0c6ca056f0b1c3d21ad484c802fa29031f42b8b46e.json": "5a1ebfafb789d34d2707dc0c6ca056f0b1c3d21ad484c802fa29031f42b8b46e"
+      }
+    },
+    {
+      "game_id": 22400509,
+      "team_id": 1610612739,
+      "game_date": "2025-01-08",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630596
+      ],
+      "observation_sha256": "698072abfcbc6588999d2277d25ea0225c7158f6d3056ce72ecfa79a2d884741",
+      "source_files": {
+        "raw/player_game_availability_sources/144b97be7847016a1e34b31f4a2ba6f3cf29ad40982ea5176805f9524e6e43f9.structured.json": "144b97be7847016a1e34b31f4a2ba6f3cf29ad40982ea5176805f9524e6e43f9",
+        "raw/player_game_availability_sources/836934a1853ac1353d06c1b6b8c51aea58861e6bd640b35100fd95d921f05e2b.json": "836934a1853ac1353d06c1b6b8c51aea58861e6bd640b35100fd95d921f05e2b",
+        "raw/player_game_availability_sources/258156717a5576b7dadfce7a8cc1d6e05b644f6d7f975cc4220bd8b2ccc3e2f9.json": "258156717a5576b7dadfce7a8cc1d6e05b644f6d7f975cc4220bd8b2ccc3e2f9"
+      }
+    },
+    {
+      "game_id": 22400517,
+      "team_id": 1610612739,
+      "game_date": "2025-01-09",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596
+      ],
+      "observation_sha256": "6d66c4b9298e962a5ae9ac2b7f40006150a03a67c4c199df91de60b88163e84a",
+      "source_files": {
+        "raw/player_game_availability_sources/92647d46acc8d4fd7453f26d4aca319345751242d04e41dc8f0996aff51a680a.structured.json": "92647d46acc8d4fd7453f26d4aca319345751242d04e41dc8f0996aff51a680a",
+        "raw/player_game_availability_sources/df6de0f7b027cfddb6ad720804b686c2b16ee9b3654eb2416f80b25f51959488.json": "df6de0f7b027cfddb6ad720804b686c2b16ee9b3654eb2416f80b25f51959488",
+        "raw/player_game_availability_sources/b7cb9af5f7a4126185739e7f2ac769aa9a6a649897a441423e72e9bc8f0b4f67.json": "b7cb9af5f7a4126185739e7f2ac769aa9a6a649897a441423e72e9bc8f0b4f67"
+      }
+    },
+    {
+      "game_id": 22400543,
+      "team_id": 1610612739,
+      "game_date": "2025-01-12",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629731,
+        1630171,
+        1630241,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "90f0c00635b0b5c592ab44d0ffde6606dac7129727390aafd8a10c1a92855cbd",
+      "source_files": {
+        "raw/player_game_availability_sources/20f422b226d6348b9ecd9704cd3a6cea752ebe8b478308e5c820ce304055e5ac.structured.json": "20f422b226d6348b9ecd9704cd3a6cea752ebe8b478308e5c820ce304055e5ac",
+        "raw/player_game_availability_sources/9721ec474f6631337b03ac9d236f74f4ae3d14a3c1200befcb0cade722493e4c.json": "9721ec474f6631337b03ac9d236f74f4ae3d14a3c1200befcb0cade722493e4c",
+        "raw/player_game_availability_sources/d51f573dff20378a83d07f1d19501be71ec87dda9447ebe1b323fee677c4807f.json": "d51f573dff20378a83d07f1d19501be71ec87dda9447ebe1b323fee677c4807f"
+      }
+    },
+    {
+      "game_id": 22400554,
+      "team_id": 1610612739,
+      "game_date": "2025-01-14",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629731,
+        1630171,
+        1630241,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "b24f16b4191a320d7892b320886a7213b22359feb46382715e5d02b634c1ecc7",
+      "source_files": {
+        "raw/player_game_availability_sources/af161b4eb901a40ae60295ebb5d26549f0658908bf1fd8aabb06ee61f4564514.structured.json": "af161b4eb901a40ae60295ebb5d26549f0658908bf1fd8aabb06ee61f4564514",
+        "raw/player_game_availability_sources/5f1a78c67b8ccc219c6d36ebf7f22a9e8bcc0b9cd5776fb8d159025fc27ba0b9.json": "5f1a78c67b8ccc219c6d36ebf7f22a9e8bcc0b9cd5776fb8d159025fc27ba0b9",
+        "raw/player_game_availability_sources/813e1bb4b613fa88adc6507caa379c0cf10fc7f94ecf649bedf6d6dec7925e89.json": "813e1bb4b613fa88adc6507caa379c0cf10fc7f94ecf649bedf6d6dec7925e89"
+      }
+    },
+    {
+      "game_id": 22400574,
+      "team_id": 1610612739,
+      "game_date": "2025-01-16",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "a3c3cb48c14f0de8e973139b2897f1a3f06c280c602b1f3622f6898d62daf97f",
+      "source_files": {
+        "raw/player_game_availability_sources/0ef97cd22235bfdae996f427f705ac95803e1578cc1e71a9c39d0880e3baedeb.structured.json": "0ef97cd22235bfdae996f427f705ac95803e1578cc1e71a9c39d0880e3baedeb",
+        "raw/player_game_availability_sources/40898e4451a8e7af64ca2b98370d67c85d53f9e974732cd8e8fe1d312a8e32d5.json": "40898e4451a8e7af64ca2b98370d67c85d53f9e974732cd8e8fe1d312a8e32d5",
+        "raw/player_game_availability_sources/b95b649b1000960a3388516f2712664e3faa15e88cbb341a750c3abff56ecd63.json": "b95b649b1000960a3388516f2712664e3faa15e88cbb341a750c3abff56ecd63"
+      }
+    },
+    {
+      "game_id": 22400590,
+      "team_id": 1610612739,
+      "game_date": "2025-01-18",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1629731,
+        1630241
+      ],
+      "observation_sha256": "0c466644406114cdb351b9bf28d0cc3d6df431c5983dc09336431669f73c0ddc",
+      "source_files": {
+        "raw/player_game_availability_sources/f7a80758a6213de66db7893988e74cd2da2f6b6c880bcc2fd24ccbb4e004de64.structured.json": "f7a80758a6213de66db7893988e74cd2da2f6b6c880bcc2fd24ccbb4e004de64",
+        "raw/player_game_availability_sources/cf7d96524772e699edb11794ba38f7a13aca69ba3b32182501196a331ea6a374.json": "cf7d96524772e699edb11794ba38f7a13aca69ba3b32182501196a331ea6a374",
+        "raw/player_game_availability_sources/fc4b65bc03b214c5cb0b600fdfaf1319280978e552832c1641a37e25d13b904c.json": "fc4b65bc03b214c5cb0b600fdfaf1319280978e552832c1641a37e25d13b904c"
+      }
+    },
+    {
+      "game_id": 22400603,
+      "team_id": 1610612739,
+      "game_date": "2025-01-20",
+      "played_ids": [
+        202684,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1629731,
+        1630241,
+        1630550,
+        1641734,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "6eaf2c801b211dc27c0fcadbdc2b162d67c32d44a39695e8ce74c4b2f5e36660",
+      "source_files": {
+        "raw/player_game_availability_sources/7796853533c5b9263c545f96c6559526a5c6533e5a248bed02008547473d8c1c.structured.json": "7796853533c5b9263c545f96c6559526a5c6533e5a248bed02008547473d8c1c",
+        "raw/player_game_availability_sources/09b36dbc08cc42108a5e1ce0df366695c233ebbdb8406af515f8e07de1a0d993.json": "09b36dbc08cc42108a5e1ce0df366695c233ebbdb8406af515f8e07de1a0d993",
+        "raw/player_game_availability_sources/7a971adb2681db8e99c405ee43857c6fcf7fc2a89976eea25672d8f3b06fb937.json": "7a971adb2681db8e99c405ee43857c6fcf7fc2a89976eea25672d8f3b06fb937"
+      }
+    },
+    {
+      "game_id": 22400615,
+      "team_id": 1610612739,
+      "game_date": "2025-01-22",
+      "played_ids": [
+        202684,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1629731,
+        1630241,
+        1642281
+      ],
+      "observation_sha256": "0bb6b990e5f0246e2505cd4def60e6af6a1a31d515763fb356084cff6f09eb66",
+      "source_files": {
+        "raw/player_game_availability_sources/ef3102000792a1fbca641ce0bd6c25ab5ebba940f70fef8d3bb80da92d1352da.structured.json": "ef3102000792a1fbca641ce0bd6c25ab5ebba940f70fef8d3bb80da92d1352da",
+        "raw/player_game_availability_sources/e1fd17c05fbd16f69674c10db6fa89384497d4f5f14cc9b16fec27ec197abcc9.json": "e1fd17c05fbd16f69674c10db6fa89384497d4f5f14cc9b16fec27ec197abcc9",
+        "raw/player_game_availability_sources/9c532826f35818cef7dacdf55db2f60c934af58b0afeb84993395a3e2aba7683.json": "9c532826f35818cef7dacdf55db2f60c934af58b0afeb84993395a3e2aba7683"
+      }
+    },
+    {
+      "game_id": 22400631,
+      "team_id": 1610612739,
+      "game_date": "2025-01-24",
+      "played_ids": [
+        202684,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1629731,
+        1630241,
+        1642281
+      ],
+      "observation_sha256": "31cbb7107e27d583ef010bdc849e1a9be123127e9f0a96fa74eaa3961cc2ba4b",
+      "source_files": {
+        "raw/player_game_availability_sources/fd5c63fab2ec35142922194bbf9fb9c367b964fd4f5d203e0c2518ad8002cf64.structured.json": "fd5c63fab2ec35142922194bbf9fb9c367b964fd4f5d203e0c2518ad8002cf64",
+        "raw/player_game_availability_sources/51d34509ec21fcb83ff2bb10d06d142fdc256c266782e00583e28cd587a22c75.json": "51d34509ec21fcb83ff2bb10d06d142fdc256c266782e00583e28cd587a22c75",
+        "raw/player_game_availability_sources/cd6bcd5ad1f5b6fcd968fcf118960194ff8008fd8a111ba92656b63a5f63d3f4.json": "cd6bcd5ad1f5b6fcd968fcf118960194ff8008fd8a111ba92656b63a5f63d3f4"
+      }
+    },
+    {
+      "game_id": 22400640,
+      "team_id": 1610612739,
+      "game_date": "2025-01-25",
+      "played_ids": [
+        202684,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1630241,
+        1630596,
+        1641854
+      ],
+      "observation_sha256": "58352c2a900fca866f4449da7dc1e86f2122a41ef83aef5a073c1e98ffce3ff1",
+      "source_files": {
+        "raw/player_game_availability_sources/4b1a11b0e4527bbc0ee64c09147da2ccdf446a6f05141f0bdfe3ebc88cc28603.structured.json": "4b1a11b0e4527bbc0ee64c09147da2ccdf446a6f05141f0bdfe3ebc88cc28603",
+        "raw/player_game_availability_sources/c3e1672c59dde26d664454a7c962f1674272f5a40763ed0e7080e7521e8ecbf7.json": "c3e1672c59dde26d664454a7c962f1674272f5a40763ed0e7080e7521e8ecbf7",
+        "raw/player_game_availability_sources/0b6293ec075bc8b7126c51b54a2b1ec8e4aa14a372cf63f744e4393e95b46932.json": "0b6293ec075bc8b7126c51b54a2b1ec8e4aa14a372cf63f744e4393e95b46932"
+      }
+    },
+    {
+      "game_id": 22400649,
+      "team_id": 1610612739,
+      "game_date": "2025-01-27",
+      "played_ids": [
+        202684,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1630241,
+        1630596,
+        1641734,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "65b7ef40a636ad2049f6fffac4f4d6c6cb392b2b8752125fbf2dde37a940682a",
+      "source_files": {
+        "raw/player_game_availability_sources/42a3e8205b3b13baef7e5aa27ce9c742f80656203e46fed9d6ddb103661473bb.structured.json": "42a3e8205b3b13baef7e5aa27ce9c742f80656203e46fed9d6ddb103661473bb",
+        "raw/player_game_availability_sources/cc8cbbcf0a54ee31b040093375b423a47481e2692313547e8e0a57ca0cce4e89.json": "cc8cbbcf0a54ee31b040093375b423a47481e2692313547e8e0a57ca0cce4e89",
+        "raw/player_game_availability_sources/1b78c0e49a0d95d6dbe0ebb6e6e8b9256c3db595780f2d5d68e85258bb2fdc98.json": "1b78c0e49a0d95d6dbe0ebb6e6e8b9256c3db595780f2d5d68e85258bb2fdc98"
+      }
+    },
+    {
+      "game_id": 22400667,
+      "team_id": 1610612739,
+      "game_date": "2025-01-29",
+      "played_ids": [
+        202684,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629660,
+        1630596,
+        1641734,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "0578882164bbf730e5006c4d790bf76f2e0858927d40202b41e9940c1acad1b1",
+      "source_files": {
+        "raw/player_game_availability_sources/d5b670a86f2cf4952334e94664fdbbd3afbb7d4a31425f26d89b6599216c64c7.structured.json": "d5b670a86f2cf4952334e94664fdbbd3afbb7d4a31425f26d89b6599216c64c7",
+        "raw/player_game_availability_sources/8782fc2023c14ee956e9365c502ab9410832db3a58536a00b1d9824828c7ea93.json": "8782fc2023c14ee956e9365c502ab9410832db3a58536a00b1d9824828c7ea93",
+        "raw/player_game_availability_sources/a331d568c5ed495e9ea019001179d2533fc872f9e38f22ad09dd44b17be8cd06.json": "a331d568c5ed495e9ea019001179d2533fc872f9e38f22ad09dd44b17be8cd06"
+      }
+    },
+    {
+      "game_id": 22400675,
+      "team_id": 1610612739,
+      "game_date": "2025-01-30",
+      "played_ids": [
+        202684,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1630241,
+        1630550,
+        1630596,
+        1641734,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "437550be6da4e53194f6d5e864583d7cf8583d37421269c9172124fb79b91784",
+      "source_files": {
+        "raw/player_game_availability_sources/deb64eb88777592f2dd411b95a91c4d670c06d258fa1b0beba74b7426810a4d5.structured.json": "deb64eb88777592f2dd411b95a91c4d670c06d258fa1b0beba74b7426810a4d5",
+        "raw/player_game_availability_sources/76fa9a1272eca639928cd86b9cab409b466aef6f4b1cf6690d6a69426d613fc9.json": "76fa9a1272eca639928cd86b9cab409b466aef6f4b1cf6690d6a69426d613fc9",
+        "raw/player_game_availability_sources/c3a67858c334888b2734cdd0d401003770a44f9f7ba01a4c5862d8058edd6502.json": "c3a67858c334888b2734cdd0d401003770a44f9f7ba01a4c5862d8058edd6502"
+      }
+    },
+    {
+      "game_id": 22400696,
+      "team_id": 1610612739,
+      "game_date": "2025-02-02",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1630241,
+        1630596,
+        1642281
+      ],
+      "observation_sha256": "95c2703435264ce56abb34097a5295beaa2c5634cb6671ff25deef5d25136b51",
+      "source_files": {
+        "raw/player_game_availability_sources/616bf0a1ddd9cd0e59facffbbb4835abeb5f105f0c1874633fd22bb0c9169395.structured.json": "616bf0a1ddd9cd0e59facffbbb4835abeb5f105f0c1874633fd22bb0c9169395",
+        "raw/player_game_availability_sources/d0dccf39d1e986e209597bf870d4cde8f56dcf56eefd79b3e329b5fc0f880a09.json": "d0dccf39d1e986e209597bf870d4cde8f56dcf56eefd79b3e329b5fc0f880a09",
+        "raw/player_game_availability_sources/c9f3d9c77e3e81af43a2a521d0ff02fccb0759b5df21b8a1da8bf446869712bb.json": "c9f3d9c77e3e81af43a2a521d0ff02fccb0759b5df21b8a1da8bf446869712bb"
+      }
+    },
+    {
+      "game_id": 22400710,
+      "team_id": 1610612739,
+      "game_date": "2025-02-04",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1630241,
+        1630596
+      ],
+      "observation_sha256": "184bba518153fef4e384455983e7cd4f6265a0b9e5a232003d353efb72c7ad78",
+      "source_files": {
+        "raw/player_game_availability_sources/00a71bce9af87dab0550264282023b35b26f7aa11dc670fa001c38e7d2f4f89d.structured.json": "00a71bce9af87dab0550264282023b35b26f7aa11dc670fa001c38e7d2f4f89d",
+        "raw/player_game_availability_sources/b915e70a9317aceed5c04476dfcd957e94c6ccffa27cf8aa5a1d41d5adaa96e9.json": "b915e70a9317aceed5c04476dfcd957e94c6ccffa27cf8aa5a1d41d5adaa96e9",
+        "raw/player_game_availability_sources/b493f1135630a6c9b78999bd8c630278eaed9d97d3d55b323cf67e77250bdfd0.json": "b493f1135630a6c9b78999bd8c630278eaed9d97d3d55b323cf67e77250bdfd0"
+      }
+    },
+    {
+      "game_id": 22400718,
+      "team_id": 1610612739,
+      "game_date": "2025-02-05",
+      "played_ids": [
+        1627747,
+        1627777,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1630241,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "4d1f33cffeaf998f13fea5b6f6f1fc9851bd89a881bad4017b3e49015df58796",
+      "source_files": {
+        "raw/player_game_availability_sources/613ead1b45e9c36f7afeacef98f25b05f040813476f692a7fbd2d5da34bea777.structured.json": "613ead1b45e9c36f7afeacef98f25b05f040813476f692a7fbd2d5da34bea777",
+        "raw/player_game_availability_sources/cc57754d45dd42d09edebff4faaaaded210c6569320293a35a6950223122add3.json": "cc57754d45dd42d09edebff4faaaaded210c6569320293a35a6950223122add3",
+        "raw/player_game_availability_sources/97b838b0267138f2bf1fe9c672a58bd9792756c9baac7fa27892624be45f1b2b.json": "97b838b0267138f2bf1fe9c672a58bd9792756c9baac7fa27892624be45f1b2b"
+      }
+    },
+    {
+      "game_id": 22400735,
+      "team_id": 1610612739,
+      "game_date": "2025-02-07",
+      "played_ids": [
+        202684,
+        1628378,
+        1628386,
+        1629622,
+        1629636,
+        1629660,
+        1630596,
+        1641734,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "155d68955eece79e4488308f2af1c18a92cc8e5bf3809c0349e53405dd17c586",
+      "source_files": {
+        "raw/player_game_availability_sources/6f89d906158a8459e515c2b81af269d6ab2f30b1f1e34cfe463e06a8b8be83ef.structured.json": "6f89d906158a8459e515c2b81af269d6ab2f30b1f1e34cfe463e06a8b8be83ef",
+        "raw/player_game_availability_sources/15c496f37a4ba8bb4bd213f0f0da2b842dc684e91701c32e21cead9e8b1ddfc9.json": "15c496f37a4ba8bb4bd213f0f0da2b842dc684e91701c32e21cead9e8b1ddfc9",
+        "raw/player_game_availability_sources/e1fd0f4cb6a31ca4d11d3e80385f60e252df1d4588659f72fad21cd67d6f635b.json": "e1fd0f4cb6a31ca4d11d3e80385f60e252df1d4588659f72fad21cd67d6f635b"
+      }
+    },
+    {
+      "game_id": 22400755,
+      "team_id": 1610612739,
+      "game_date": "2025-02-10",
+      "played_ids": [
+        202684,
+        1628378,
+        1628386,
+        1629631,
+        1629636,
+        1629660,
+        1630241,
+        1630596,
+        1631247,
+        1641734,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "83b214be8da0486fad5d22470142c473f0f08484dfd8f0887d28cf0972d227d7",
+      "source_files": {
+        "raw/player_game_availability_sources/a151fb27839a20235f91a733c1a6b11cc03475a8ddfac385886a6b38191ffca5.structured.json": "a151fb27839a20235f91a733c1a6b11cc03475a8ddfac385886a6b38191ffca5",
+        "raw/player_game_availability_sources/8e16f7c8e30b2b0cb37ab7c9c02bdd2efef252024f6ca28d9e325d6e7a3a6c2e.json": "8e16f7c8e30b2b0cb37ab7c9c02bdd2efef252024f6ca28d9e325d6e7a3a6c2e",
+        "raw/player_game_availability_sources/ec5b2dc4b3af39e1a80158bf7c7ea1af75952ae2209ad9369c37eedc2fd5d707.json": "ec5b2dc4b3af39e1a80158bf7c7ea1af75952ae2209ad9369c37eedc2fd5d707"
+      }
+    },
+    {
+      "game_id": 22400774,
+      "team_id": 1610612739,
+      "game_date": "2025-02-12",
+      "played_ids": [
+        202684,
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1630241,
+        1630596,
+        1631247,
+        1641734,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "e96caa5a052dc85307881ed23bd6098ec7b369bde5a3e5c5f0c2274545b706ea",
+      "source_files": {
+        "raw/player_game_availability_sources/2465438feff596312cdee64d83a7dfa4c16371a94007236b59827e8a8516408b.structured.json": "2465438feff596312cdee64d83a7dfa4c16371a94007236b59827e8a8516408b",
+        "raw/player_game_availability_sources/844e60da19ecabfef2a64a9810044dd54d9b124ad562a4d51d3daf23b84aacf1.json": "844e60da19ecabfef2a64a9810044dd54d9b124ad562a4d51d3daf23b84aacf1",
+        "raw/player_game_availability_sources/633ef93ed9c361e0a179ad2731a66b390e87acf1df0faac1d354917f99ca215c.json": "633ef93ed9c361e0a179ad2731a66b390e87acf1df0faac1d354917f99ca215c"
+      }
+    },
+    {
+      "game_id": 22400791,
+      "team_id": 1610612739,
+      "game_date": "2025-02-20",
+      "played_ids": [
+        202684,
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629660,
+        1630171,
+        1630241,
+        1630596,
+        1631247,
+        1641772,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "44881d18bf157b7a3893d45792a7a610fbd5022299cf30b0e2acd5f966430f4e",
+      "source_files": {
+        "raw/player_game_availability_sources/4da06e268f240dc76b0a353064d0f23c2a0fda1b1df9d080e3451edc520a8081.structured.json": "4da06e268f240dc76b0a353064d0f23c2a0fda1b1df9d080e3451edc520a8081",
+        "raw/player_game_availability_sources/6cf751f42de44cb8e16a9e7c779e99a9d001a71093b3ecbebeeebeeb36be443c.json": "6cf751f42de44cb8e16a9e7c779e99a9d001a71093b3ecbebeeebeeb36be443c",
+        "raw/player_game_availability_sources/0eb66183589b867ebc3341adc353ab0c5d9d6a5dd01e5ae13ae869789be9a13a.json": "0eb66183589b867ebc3341adc353ab0c5d9d6a5dd01e5ae13ae869789be9a13a"
+      }
+    },
+    {
+      "game_id": 22400797,
+      "team_id": 1610612739,
+      "game_date": "2025-02-21",
+      "played_ids": [
+        202684,
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596,
+        1641772,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "2fceb33c6dcc98d5b107af31186586142601d41c70db0996cda8ce0017d07986",
+      "source_files": {
+        "raw/player_game_availability_sources/ab124b32630d326fcfe9cb2e3d5e729855ed256e9dcfb6effa4792a03a4c46b0.structured.json": "ab124b32630d326fcfe9cb2e3d5e729855ed256e9dcfb6effa4792a03a4c46b0",
+        "raw/player_game_availability_sources/af759dc0a1fc4d97486f07e1655cfae47ccdde65c13730d91a99eb1745f6d13a.json": "af759dc0a1fc4d97486f07e1655cfae47ccdde65c13730d91a99eb1745f6d13a",
+        "raw/player_game_availability_sources/25ab6b4f9303d26757ee4361ee96562fb49dd76cac263a2ccd38490f911b32ac.json": "25ab6b4f9303d26757ee4361ee96562fb49dd76cac263a2ccd38490f911b32ac"
+      }
+    },
+    {
+      "game_id": 22400819,
+      "team_id": 1610612739,
+      "game_date": "2025-02-23",
+      "played_ids": [
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596,
+        1641854
+      ],
+      "observation_sha256": "d7ab918b5546a49370e44ee7fb74c7af56260bbe705806a27f7757d7fee1ce17",
+      "source_files": {
+        "raw/player_game_availability_sources/80879ec65f3341b298a7e204b50b25d2e56e433712c1602c6a8448475a49ee46.structured.json": "80879ec65f3341b298a7e204b50b25d2e56e433712c1602c6a8448475a49ee46",
+        "raw/player_game_availability_sources/0df7a30593538b2b123c6c207f19e7648266efb62aa2cb00a14d0893688ee671.json": "0df7a30593538b2b123c6c207f19e7648266efb62aa2cb00a14d0893688ee671",
+        "raw/player_game_availability_sources/eff348ea94ebc0ed861fc2a4dc9a54fc37d960a51f11452a3505e63e74cdeba6.json": "eff348ea94ebc0ed861fc2a4dc9a54fc37d960a51f11452a3505e63e74cdeba6"
+      }
+    },
+    {
+      "game_id": 22400830,
+      "team_id": 1610612739,
+      "game_date": "2025-02-25",
+      "played_ids": [
+        202684,
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629660,
+        1629731,
+        1629750,
+        1630171,
+        1630241,
+        1630596,
+        1641772,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "b8c577802a8d7583df21c1584ca3b3b62c0d418d09478569220d87100f8d3e55",
+      "source_files": {
+        "raw/player_game_availability_sources/0f7b97d7741be5f72eee1f0420bff9e91ba439aa8ca06de9baaa267cc98121c7.structured.json": "0f7b97d7741be5f72eee1f0420bff9e91ba439aa8ca06de9baaa267cc98121c7",
+        "raw/player_game_availability_sources/d53b29270e610ae0f9676c041124d6cde863e1c28db80929eafc77af14b68eaf.json": "d53b29270e610ae0f9676c041124d6cde863e1c28db80929eafc77af14b68eaf",
+        "raw/player_game_availability_sources/cb97aba7f3fd4a104e95459b71ecce8cd8765c1cd363f9ceb33eca3afc8eb7ec.json": "cb97aba7f3fd4a104e95459b71ecce8cd8765c1cd363f9ceb33eca3afc8eb7ec"
+      }
+    },
+    {
+      "game_id": 22400852,
+      "team_id": 1610612739,
+      "game_date": "2025-02-28",
+      "played_ids": [
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596
+      ],
+      "observation_sha256": "ce5b4433d83e33d78b50a1e327d5a5b3db1f19e302121d8336174fbef4a60c61",
+      "source_files": {
+        "raw/player_game_availability_sources/53d6161bb925a7b4cf92a604c680a6616931010d1be8a0c6751933af8ae5975f.structured.json": "53d6161bb925a7b4cf92a604c680a6616931010d1be8a0c6751933af8ae5975f",
+        "raw/player_game_availability_sources/c8cb81192a7f3b819b17d98503d84f84041b602ff6018542b8bcbb4052967fad.json": "c8cb81192a7f3b819b17d98503d84f84041b602ff6018542b8bcbb4052967fad",
+        "raw/player_game_availability_sources/5d362b3e2fe0ff2541d6d513e3f848d123d90eb8a13c031104c2ca98058641f7.json": "5d362b3e2fe0ff2541d6d513e3f848d123d90eb8a13c031104c2ca98058641f7"
+      }
+    },
+    {
+      "game_id": 22400867,
+      "team_id": 1610612739,
+      "game_date": "2025-03-02",
+      "played_ids": [
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596,
+        1641854
+      ],
+      "observation_sha256": "64fac18e388c9f075486991c6b838c0523a4a00881948b55654970bc3d37b24a",
+      "source_files": {
+        "raw/player_game_availability_sources/17f31657234f28c3f09972de70ad90becb02e59816f351bf5099ac2027c1a0d6.structured.json": "17f31657234f28c3f09972de70ad90becb02e59816f351bf5099ac2027c1a0d6",
+        "raw/player_game_availability_sources/adfe9590c39dcd90a2bf1ae9c5b89015c813b400aba3644c4fe7f0de7d5d5311.json": "adfe9590c39dcd90a2bf1ae9c5b89015c813b400aba3644c4fe7f0de7d5d5311",
+        "raw/player_game_availability_sources/9f983ceac6bbecfa75aed7370435f10cb2e04c79f8bd0c9dc2a0571eb5fe0a9a.json": "9f983ceac6bbecfa75aed7370435f10cb2e04c79f8bd0c9dc2a0571eb5fe0a9a"
+      }
+    },
+    {
+      "game_id": 22400886,
+      "team_id": 1610612739,
+      "game_date": "2025-03-04",
+      "played_ids": [
+        202684,
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629660,
+        1629731,
+        1629750,
+        1630171,
+        1630241,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "de6cce1de4cd998a18fec9526051285c599e5eff8b1ad6346ce29848184a2982",
+      "source_files": {
+        "raw/player_game_availability_sources/e297daf815560168aca652a4c5929fd0143b73980aeca1267a8f2228b7a69660.structured.json": "e297daf815560168aca652a4c5929fd0143b73980aeca1267a8f2228b7a69660",
+        "raw/player_game_availability_sources/c401cee65d2ef91a1ade85c647b66c90b915419a23a578e37ff1be19174aa1f3.json": "c401cee65d2ef91a1ade85c647b66c90b915419a23a578e37ff1be19174aa1f3",
+        "raw/player_game_availability_sources/9058e152a3f0b1df5a654ae7d4db479cfed721d988a387e259138f1c6f35e85c.json": "9058e152a3f0b1df5a654ae7d4db479cfed721d988a387e259138f1c6f35e85c"
+      }
+    },
+    {
+      "game_id": 22400893,
+      "team_id": 1610612739,
+      "game_date": "2025-03-05",
+      "played_ids": [
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596
+      ],
+      "observation_sha256": "cac95d42a836fee10c19b31963872c697870f56442a53c8cb30aaf85486ab0a3",
+      "source_files": {
+        "raw/player_game_availability_sources/20250305_MIACLE.json": "93d76e69343655db2b4cf93e2d93d4595ca0c647381eca1e794408658edd7fd3",
+        "raw/player_game_availability_sources/ff271ede5f6c125767259eb17cc7d4fe03a9f121fc2194b4b25179dc46233ef2.pdf": "ff271ede5f6c125767259eb17cc7d4fe03a9f121fc2194b4b25179dc46233ef2"
+      }
+    },
+    {
+      "game_id": 22400904,
+      "team_id": 1610612739,
+      "game_date": "2025-03-07",
+      "played_ids": [
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596
+      ],
+      "observation_sha256": "3f39d06f18ecc1ec72fb942371dab43dc6487528d53d29b1fc542b0edfb7bc51",
+      "source_files": {
+        "raw/player_game_availability_sources/a242cf7a04c70b7f0216c86e3568813db7f67e57f80596858d0da56c7ec73ab2.structured.json": "a242cf7a04c70b7f0216c86e3568813db7f67e57f80596858d0da56c7ec73ab2",
+        "raw/player_game_availability_sources/34d0e3338edf5648fa012580faf562999e2245610163a8817c002fcb47f0bd8a.json": "34d0e3338edf5648fa012580faf562999e2245610163a8817c002fcb47f0bd8a",
+        "raw/player_game_availability_sources/7d8c846e47fd852304208664687475c7e39ca29e13a476d0ea5af4dbaaf0563b.json": "7d8c846e47fd852304208664687475c7e39ca29e13a476d0ea5af4dbaaf0563b"
+      }
+    },
+    {
+      "game_id": 22400922,
+      "team_id": 1610612739,
+      "game_date": "2025-03-09",
+      "played_ids": [
+        202684,
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629660,
+        1629731,
+        1629750,
+        1630171,
+        1630241,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "12cee76f9c1ef1c8bd39535f1cb961cd8c9f3491ad85a1fcd21579a326940ca5",
+      "source_files": {
+        "raw/player_game_availability_sources/3f1ed91117ef204086fba1bff818f157f851a668996254abc4b752923ddeb6be.structured.json": "3f1ed91117ef204086fba1bff818f157f851a668996254abc4b752923ddeb6be",
+        "raw/player_game_availability_sources/f66935840e46b322680b7c84859bddb11c4840c9e0eba3bc23d3be422e3522fa.json": "f66935840e46b322680b7c84859bddb11c4840c9e0eba3bc23d3be422e3522fa",
+        "raw/player_game_availability_sources/548bf1ce2465158cca7ed897a74212c4b7816eebd318601dc9b5a8df15066e52.json": "548bf1ce2465158cca7ed897a74212c4b7816eebd318601dc9b5a8df15066e52"
+      }
+    },
+    {
+      "game_id": 22400940,
+      "team_id": 1610612739,
+      "game_date": "2025-03-11",
+      "played_ids": [
+        1628386,
+        1629622,
+        1629636,
+        1629731,
+        1629750,
+        1630171,
+        1630241,
+        1630596,
+        1641854
+      ],
+      "observation_sha256": "1e56477721effa77adb1630faaeeca173c83cdc892126840f578e0e0d10a4ae4",
+      "source_files": {
+        "raw/player_game_availability_sources/8db26e2e644c258c15f7488eafb62c80c38632f8adefe2009a7b8f00c2a71e92.structured.json": "8db26e2e644c258c15f7488eafb62c80c38632f8adefe2009a7b8f00c2a71e92",
+        "raw/player_game_availability_sources/ae9ffbd6c3f1941947865288c6f48771648160b3717a9b624b52b8275245a11e.json": "ae9ffbd6c3f1941947865288c6f48771648160b3717a9b624b52b8275245a11e",
+        "raw/player_game_availability_sources/7c5a949148206780a851eaaba7bde8fe14f7b15e899deff6e5774b5d1210e521.json": "7c5a949148206780a851eaaba7bde8fe14f7b15e899deff6e5774b5d1210e521"
+      }
+    },
+    {
+      "game_id": 22400962,
+      "team_id": 1610612739,
+      "game_date": "2025-03-14",
+      "played_ids": [
+        202684,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629660,
+        1629731,
+        1629750,
+        1630171,
+        1630241,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "0723d605549dc7ce7d4e8829820163976f79d030b42a93559457cdd88f9f4f82",
+      "source_files": {
+        "raw/player_game_availability_sources/6261f0755a620b5b05ce95dac9515cbeac0a40384cd072eeebbda033fa9dae0a.structured.json": "6261f0755a620b5b05ce95dac9515cbeac0a40384cd072eeebbda033fa9dae0a",
+        "raw/player_game_availability_sources/fafcc2b51f0bd488b8fde255ec13caa53c952ca71380f66591ec3347881c3722.json": "fafcc2b51f0bd488b8fde255ec13caa53c952ca71380f66591ec3347881c3722",
+        "raw/player_game_availability_sources/b7e86907ea5900c53a3945b1d14e75d4ae679c2f15b191e5de72de7244ec5a78.json": "b7e86907ea5900c53a3945b1d14e75d4ae679c2f15b191e5de72de7244ec5a78"
+      }
+    },
+    {
+      "game_id": 22400979,
+      "team_id": 1610612739,
+      "game_date": "2025-03-16",
+      "played_ids": [
+        202684,
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241
+      ],
+      "observation_sha256": "7a3530a0368c990d6f5e5eb31115b4e2e9c035e06ccce0d9e5446b1b5e2f6960",
+      "source_files": {
+        "raw/player_game_availability_sources/43f0e172182c374decf590be43b3999b01ef93ae57342f85e0694153498a8cd1.structured.json": "43f0e172182c374decf590be43b3999b01ef93ae57342f85e0694153498a8cd1",
+        "raw/player_game_availability_sources/02de1d2b106278ce2102cd54213941925b9e8677b84345f530e814e2c41d049c.json": "02de1d2b106278ce2102cd54213941925b9e8677b84345f530e814e2c41d049c",
+        "raw/player_game_availability_sources/770964af57ea45ea3a793968bc776dbb311c0bde1783e5cef4b9e09f273ce4c6.json": "770964af57ea45ea3a793968bc776dbb311c0bde1783e5cef4b9e09f273ce4c6"
+      }
+    },
+    {
+      "game_id": 22400997,
+      "team_id": 1610612739,
+      "game_date": "2025-03-18",
+      "played_ids": [
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629660,
+        1629731,
+        1629750,
+        1630171,
+        1630241,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "cd306048806bced857c55231dbcbca619f50a7fd703002a9dac4d73510cb7f16",
+      "source_files": {
+        "raw/player_game_availability_sources/a7b88f6a5d8441ea640082c49c242e7e30450014a7061ff362cf8393ece0f522.structured.json": "a7b88f6a5d8441ea640082c49c242e7e30450014a7061ff362cf8393ece0f522",
+        "raw/player_game_availability_sources/151a2b338f368c792f26e90a88b64219a604b8096beaf2afd16186e0e44b3c19.json": "151a2b338f368c792f26e90a88b64219a604b8096beaf2afd16186e0e44b3c19",
+        "raw/player_game_availability_sources/d49953de6c24a0fb771d9f17d1f7fa7ebb7d55a784d068a3deec472030091f47.json": "d49953de6c24a0fb771d9f17d1f7fa7ebb7d55a784d068a3deec472030091f47"
+      }
+    },
+    {
+      "game_id": 22401009,
+      "team_id": 1610612739,
+      "game_date": "2025-03-19",
+      "played_ids": [
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596,
+        1641854
+      ],
+      "observation_sha256": "fa5ef9ab86fa5333bae14647f7293ff659d315c53ad59cb4839f4ee9e51dd84a",
+      "source_files": {
+        "raw/player_game_availability_sources/460ca687dafebf46a3dbd4322acb8bf8d694d31cdb076b99fd6fefea35e431a7.structured.json": "460ca687dafebf46a3dbd4322acb8bf8d694d31cdb076b99fd6fefea35e431a7",
+        "raw/player_game_availability_sources/cebec80f374d65bdf12981196cf5c82331333af9b8bbadb56c91a42ecfecd28b.json": "cebec80f374d65bdf12981196cf5c82331333af9b8bbadb56c91a42ecfecd28b",
+        "raw/player_game_availability_sources/e34186493e3d892e3c241940ea89c2a3b4c1467a4d8fbc5a348db21b7656c5b3.json": "e34186493e3d892e3c241940ea89c2a3b4c1467a4d8fbc5a348db21b7656c5b3"
+      }
+    },
+    {
+      "game_id": 22401021,
+      "team_id": 1610612739,
+      "game_date": "2025-03-21",
+      "played_ids": [
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629660,
+        1629731,
+        1629750,
+        1630171,
+        1630241,
+        1630596
+      ],
+      "observation_sha256": "c0d64554e04a7baf37ab06240b8ad2f283d60c9a69f13294b254d7e6c7d2334c",
+      "source_files": {
+        "raw/player_game_availability_sources/e5ec9d9c4edf554bf4de5f5996dba7b5117cdd6236f33b32515ac18e17debd7d.structured.json": "e5ec9d9c4edf554bf4de5f5996dba7b5117cdd6236f33b32515ac18e17debd7d",
+        "raw/player_game_availability_sources/b27f7e84d52e942b437348317798f9ef2374904ec7c17c42bffa808dfedf117e.json": "b27f7e84d52e942b437348317798f9ef2374904ec7c17c42bffa808dfedf117e",
+        "raw/player_game_availability_sources/311b3225da1be8cf4f85f6df654c5e2ed881bd4ee89597ed1d47b143f6e1a078.json": "311b3225da1be8cf4f85f6df654c5e2ed881bd4ee89597ed1d47b143f6e1a078"
+      }
+    },
+    {
+      "game_id": 22401030,
+      "team_id": 1610612739,
+      "game_date": "2025-03-23",
+      "played_ids": [
+        202684,
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629660,
+        1629731,
+        1629750,
+        1630171,
+        1630241,
+        1630596,
+        1641854
+      ],
+      "observation_sha256": "9a9ba914a6bd58ac4cfdc06bdd7ceab2319b94455cf566c9d9a44f00a4e0d0a1",
+      "source_files": {
+        "raw/player_game_availability_sources/e4caebf4c39e221f4ada6bff5de0488cd8934b3827d8d0fbb4660318b75dccda.structured.json": "e4caebf4c39e221f4ada6bff5de0488cd8934b3827d8d0fbb4660318b75dccda",
+        "raw/player_game_availability_sources/d3234df9350e2bb29f78377afb21adbde332e370a25ccb7135a77657b07be110.json": "d3234df9350e2bb29f78377afb21adbde332e370a25ccb7135a77657b07be110",
+        "raw/player_game_availability_sources/bdfb6f926cf9f228d0e478bdcda89c4a51acaef91e3ad815daf8142989b3ce1d.json": "bdfb6f926cf9f228d0e478bdcda89c4a51acaef91e3ad815daf8142989b3ce1d"
+      }
+    },
+    {
+      "game_id": 22401051,
+      "team_id": 1610612739,
+      "game_date": "2025-03-25",
+      "played_ids": [
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629660,
+        1629731,
+        1629750,
+        1630171,
+        1630241,
+        1630596
+      ],
+      "observation_sha256": "aa6f4d20516886afb85a5cef3bd775993bf5780700ec90d9996e4d447019a1a0",
+      "source_files": {
+        "raw/player_game_availability_sources/f4f0091129a93ba2055c6784126a4bc34d7d6001858bf9cc389f7a5c289cf33f.structured.json": "f4f0091129a93ba2055c6784126a4bc34d7d6001858bf9cc389f7a5c289cf33f",
+        "raw/player_game_availability_sources/f2df4c187126326d0c39c6051b075015b6a56e4e14b881930ce04eea471e948e.json": "f2df4c187126326d0c39c6051b075015b6a56e4e14b881930ce04eea471e948e",
+        "raw/player_game_availability_sources/83bc5a30e353e1747bbe374598e183693d58aa90df6598d3ee1d84da08330dde.json": "83bc5a30e353e1747bbe374598e183693d58aa90df6598d3ee1d84da08330dde"
+      }
+    },
+    {
+      "game_id": 22401059,
+      "team_id": 1610612739,
+      "game_date": "2025-03-27",
+      "played_ids": [
+        202684,
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629731,
+        1629750,
+        1630171,
+        1630241
+      ],
+      "observation_sha256": "a96bd515631093eed8e6baad006a516de7947d863c56dae1e3ba6689da79331b",
+      "source_files": {
+        "raw/player_game_availability_sources/6db2533c0de6f0b0ae6bccf1bd95a424dfcddb798539e990fe3296168fb22b5e.structured.json": "6db2533c0de6f0b0ae6bccf1bd95a424dfcddb798539e990fe3296168fb22b5e",
+        "raw/player_game_availability_sources/4de34be651f49cd42033fb90affdf550487f3e5536153aacf4dcfb27d5db804d.json": "4de34be651f49cd42033fb90affdf550487f3e5536153aacf4dcfb27d5db804d",
+        "raw/player_game_availability_sources/1c3da72fb6d76adb1723f5b5ead9b7ed31d0569dd28e58a0f8c908f457a20ea1.json": "1c3da72fb6d76adb1723f5b5ead9b7ed31d0569dd28e58a0f8c908f457a20ea1"
+      }
+    },
+    {
+      "game_id": 22401067,
+      "team_id": 1610612739,
+      "game_date": "2025-03-28",
+      "played_ids": [
+        202684,
+        1628378,
+        1628386,
+        1629631,
+        1629636,
+        1629731,
+        1629750,
+        1630171,
+        1630241,
+        1630596,
+        1641854
+      ],
+      "observation_sha256": "41d97b1505006fc52b8d1553557aa6c86c1544df708abd629823dbc5055cb47a",
+      "source_files": {
+        "raw/player_game_availability_sources/38ab08baf6cf835c0748cc927c7f7d4ef6707866a5c638913ac0c5f4950f3146.structured.json": "38ab08baf6cf835c0748cc927c7f7d4ef6707866a5c638913ac0c5f4950f3146",
+        "raw/player_game_availability_sources/a43c470d1da51fbda9b7d24a28e04ffaefbe9018a012d500d38634a225796410.json": "a43c470d1da51fbda9b7d24a28e04ffaefbe9018a012d500d38634a225796410",
+        "raw/player_game_availability_sources/e08a3e6b6dc20a4aae40ec67ff77266ae0e78963335bfc37f6ad82999a7e6f38.json": "e08a3e6b6dc20a4aae40ec67ff77266ae0e78963335bfc37f6ad82999a7e6f38"
+      }
+    },
+    {
+      "game_id": 22401081,
+      "team_id": 1610612739,
+      "game_date": "2025-03-30",
+      "played_ids": [
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629731,
+        1629750,
+        1630171,
+        1630241,
+        1630596
+      ],
+      "observation_sha256": "5159df8c642b6d69aa142877e0c0b9bdc3f6b4e8dcf69a56cc081168acbb637e",
+      "source_files": {
+        "raw/player_game_availability_sources/b44e0cca79e888aaeb960d8a0b3a82127e64416c316daaadd82d94769b0b00f4.structured.json": "b44e0cca79e888aaeb960d8a0b3a82127e64416c316daaadd82d94769b0b00f4",
+        "raw/player_game_availability_sources/043183401945fae9945c20177d1fb34bd76b8a8077119a158cff5b23a1f8524c.json": "043183401945fae9945c20177d1fb34bd76b8a8077119a158cff5b23a1f8524c",
+        "raw/player_game_availability_sources/0ef5944da9b226694e0f29c2b125df1f214f6cea378028ad8b72a840104faa2c.json": "0ef5944da9b226694e0f29c2b125df1f214f6cea378028ad8b72a840104faa2c"
+      }
+    },
+    {
+      "game_id": 22401103,
+      "team_id": 1610612739,
+      "game_date": "2025-04-02",
+      "played_ids": [
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629750,
+        1630171,
+        1630241,
+        1630596,
+        1631247,
+        1641734,
+        1641772,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "12c8d854eb55fb989dd1543f5008b9ed79828fdc6cdbd88c3493526072064556",
+      "source_files": {
+        "raw/player_game_availability_sources/1ebc042cccfbf3e97151be130d80bf0faf122ea109742a1ffcb8b6a380cd3f04.structured.json": "1ebc042cccfbf3e97151be130d80bf0faf122ea109742a1ffcb8b6a380cd3f04",
+        "raw/player_game_availability_sources/3c456f42b5cbcd5eb74be296a01809fe6faee821f452f5cb2e8c2801d792dbd7.json": "3c456f42b5cbcd5eb74be296a01809fe6faee821f452f5cb2e8c2801d792dbd7",
+        "raw/player_game_availability_sources/568574ea46d55163a081e915a61f4f6c17010e1f85a3ff9e8f913814694996ed.json": "568574ea46d55163a081e915a61f4f6c17010e1f85a3ff9e8f913814694996ed"
+      }
+    },
+    {
+      "game_id": 22401124,
+      "team_id": 1610612739,
+      "game_date": "2025-04-04",
+      "played_ids": [
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629750,
+        1630171,
+        1630241,
+        1630596,
+        1641854
+      ],
+      "observation_sha256": "d0349aefab59cd20a22bd8df52db089d4be058435e56ec26f2d901efbff83d1e",
+      "source_files": {
+        "raw/player_game_availability_sources/f02c98c69efe0db712fde28891c199db2b7ed589a5feb4ad0687b20a36ed32cf.structured.json": "f02c98c69efe0db712fde28891c199db2b7ed589a5feb4ad0687b20a36ed32cf",
+        "raw/player_game_availability_sources/8e48f72802bdaa44c4347b242df02c26c9e4d9891665f80f0e92461a9d3d0dca.json": "8e48f72802bdaa44c4347b242df02c26c9e4d9891665f80f0e92461a9d3d0dca",
+        "raw/player_game_availability_sources/d6ebabf375895f17bccbe9e5aa74c1ae549c6fcdf0b30e64db49d2173d57287a.json": "d6ebabf375895f17bccbe9e5aa74c1ae549c6fcdf0b30e64db49d2173d57287a"
+      }
+    },
+    {
+      "game_id": 22401138,
+      "team_id": 1610612739,
+      "game_date": "2025-04-06",
+      "played_ids": [
+        1628378,
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630596
+      ],
+      "observation_sha256": "831315d795bd9c161b2aa267cfc185be0e0f6d5baa145a6f289e65bc402128be",
+      "source_files": {
+        "raw/player_game_availability_sources/0da1d06934f0c6b9f3b146b140690fc4f860005bacf652834dd8f6276f481b0e.structured.json": "0da1d06934f0c6b9f3b146b140690fc4f860005bacf652834dd8f6276f481b0e",
+        "raw/player_game_availability_sources/60a498eb89d9478050c1727d0c4170b672a361736a3c4f7ee523df8c6d2bd470.json": "60a498eb89d9478050c1727d0c4170b672a361736a3c4f7ee523df8c6d2bd470",
+        "raw/player_game_availability_sources/d1e8e7ba34523aac966bf327bac1bcc7d62b7534953d72e9bb5163f2d02516f6.json": "d1e8e7ba34523aac966bf327bac1bcc7d62b7534953d72e9bb5163f2d02516f6"
+      }
+    },
+    {
+      "game_id": 22401147,
+      "team_id": 1610612739,
+      "game_date": "2025-04-08",
+      "played_ids": [
+        1628386,
+        1629622,
+        1629631,
+        1629636,
+        1629643,
+        1629660,
+        1629731,
+        1629750,
+        1630171,
+        1630241,
+        1630596,
+        1631247,
+        1641734,
+        1642281
+      ],
+      "observation_sha256": "6a08d77b87ba06f67ec0e7daf70ddb71b003169c4153dfa127d8ead97f0f5106",
+      "source_files": {
+        "raw/player_game_availability_sources/f5368a629501c38da974555b50a9b0179b6f5a4567442176abce1abd2d936dfc.structured.json": "f5368a629501c38da974555b50a9b0179b6f5a4567442176abce1abd2d936dfc",
+        "raw/player_game_availability_sources/418ab5af5ef30c973b2b74146e50916b7451cd968461540cc6c7fc090644390d.json": "418ab5af5ef30c973b2b74146e50916b7451cd968461540cc6c7fc090644390d",
+        "raw/player_game_availability_sources/e084737e907a039e9b9f0d826b436f420853bcfae18d1ba3618efdea9ec55a72.json": "e084737e907a039e9b9f0d826b436f420853bcfae18d1ba3618efdea9ec55a72"
+      }
+    },
+    {
+      "game_id": 22401168,
+      "team_id": 1610612739,
+      "game_date": "2025-04-10",
+      "played_ids": [
+        202684,
+        1628386,
+        1629631,
+        1629660,
+        1629731,
+        1629750,
+        1630171,
+        1630241,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "60687675c3fe040536783f1965b7064c6aeb3c78a1ff9cac4940d045d37ca5d3",
+      "source_files": {
+        "raw/player_game_availability_sources/b6685b52fd8125ca2df1c7fe1ce7ca7306490ec1e802bc8339c773ed34f1fdac.structured.json": "b6685b52fd8125ca2df1c7fe1ce7ca7306490ec1e802bc8339c773ed34f1fdac",
+        "raw/player_game_availability_sources/e959a76ff8683f5fa6dd99843c0d7f6444c1c04fa1ac9ca65b7dba2147fd573f.json": "e959a76ff8683f5fa6dd99843c0d7f6444c1c04fa1ac9ca65b7dba2147fd573f",
+        "raw/player_game_availability_sources/766a31a8697cb1dd1ee58de1ba2dfc591abc439b52c7f844f4651a2b03605db8.json": "766a31a8697cb1dd1ee58de1ba2dfc591abc439b52c7f844f4651a2b03605db8"
+      }
+    },
+    {
+      "game_id": 22401175,
+      "team_id": 1610612739,
+      "game_date": "2025-04-11",
+      "played_ids": [
+        1628386,
+        1629622,
+        1629636,
+        1629731,
+        1629750,
+        1630171,
+        1630596,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "f09de70baa76499af0590394fa53275e8f93929e5fcbca2ae89edcbbdb0af1dd",
+      "source_files": {
+        "raw/player_game_availability_sources/cb3991daaab6d7058d7350489795e20945804938ce1a882543975a8c600288b8.structured.json": "cb3991daaab6d7058d7350489795e20945804938ce1a882543975a8c600288b8",
+        "raw/player_game_availability_sources/619b475d4175fcd6e7be3b4bed2317f10762372bfc3f52b596f3336a1ec86180.json": "619b475d4175fcd6e7be3b4bed2317f10762372bfc3f52b596f3336a1ec86180",
+        "raw/player_game_availability_sources/cedb30740341bde1877cfbd40c2fb30958fbb66128b3fcc781372a9fd6f3e0dd.json": "cedb30740341bde1877cfbd40c2fb30958fbb66128b3fcc781372a9fd6f3e0dd"
+      }
+    },
+    {
+      "game_id": 22401189,
+      "team_id": 1610612739,
+      "game_date": "2025-04-13",
+      "played_ids": [
+        202684,
+        1628386,
+        1629643,
+        1629750,
+        1631247,
+        1641734,
+        1641772,
+        1641854,
+        1642281
+      ],
+      "observation_sha256": "fc3c6d479b8972fd1635998d8640065db7ee7d219f0619c8e2ac90669dfaab96",
+      "source_files": {
+        "raw/player_game_availability_sources/e2aa483c35541b9f8306774802ff71ccd99b0bb992a43fa06569c186b1da0f65.structured.json": "e2aa483c35541b9f8306774802ff71ccd99b0bb992a43fa06569c186b1da0f65",
+        "raw/player_game_availability_sources/4f59f6684c34b780a9f4a7e76ed109b327d716a215b40c49a570b6f01621b670.json": "4f59f6684c34b780a9f4a7e76ed109b327d716a215b40c49a570b6f01621b670",
+        "raw/player_game_availability_sources/b8a35843b350f42aad108bce3afd47bd36d0cee082b81051ea842e7d2ba9981a.json": "b8a35843b350f42aad108bce3afd47bd36d0cee082b81051ea842e7d2ba9981a"
+      }
+    },
+    {
+      "game_id": 22401208,
+      "team_id": 1610612739,
+      "game_date": "2024-12-13",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241
+      ],
+      "observation_sha256": "66b62a872c26531bd10190b67546891de7767d7dc9587a0be80fe5b7fc084290",
+      "source_files": {
+        "raw/player_game_availability_sources/002dd6143b55ea99a867ab35b6bfa629fd2cf08f55a315fafd751ba7b9b0967c.structured.json": "002dd6143b55ea99a867ab35b6bfa629fd2cf08f55a315fafd751ba7b9b0967c",
+        "raw/player_game_availability_sources/0df8a0c363bd0a775fe60936f0f360407bf561a21db154f00f3a19f746447b14.json": "0df8a0c363bd0a775fe60936f0f360407bf561a21db154f00f3a19f746447b14",
+        "raw/player_game_availability_sources/c48394633925bc1b8690bdd02f17e2ae7b82b3337af045c670de0b45493fc0f8.json": "c48394633925bc1b8690bdd02f17e2ae7b82b3337af045c670de0b45493fc0f8"
+      }
+    },
+    {
+      "game_id": 22401224,
+      "team_id": 1610612739,
+      "game_date": "2024-12-16",
+      "played_ids": [
+        202684,
+        1627747,
+        1627777,
+        1628378,
+        1628386,
+        1629636,
+        1629660,
+        1629731,
+        1630171,
+        1630241,
+        1630550,
+        1630596
+      ],
+      "observation_sha256": "dab8d91914812d0cf496ac7f636e64ecc43ca5dcd7e624e93a3f082a0515978f",
+      "source_files": {
+        "raw/player_game_availability_sources/55cedde0fe972402eb7c08e7063f87d76e825d9864deebb8641b1d1eb98c6731.structured.json": "55cedde0fe972402eb7c08e7063f87d76e825d9864deebb8641b1d1eb98c6731",
+        "raw/player_game_availability_sources/d76046808fcd5237760ec824a8f624fc59720d0cd81f792af550b634ddb10258.json": "d76046808fcd5237760ec824a8f624fc59720d0cd81f792af550b634ddb10258",
+        "raw/player_game_availability_sources/08df6b3ee755bd83d64196fa20657b478b990d71f0915cb0798c88836c6f1b89.json": "08df6b3ee755bd83d64196fa20657b478b990d71f0915cb0798c88836c6f1b89"
+      }
+    }
+  ],
+  "unqualified": [],
+  "source_requests": 0
+}

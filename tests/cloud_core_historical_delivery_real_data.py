@@ -47,7 +47,7 @@ S4 = PROGRAM / "source-evidence/paired-missing-20261107/r2-final/composed-accept
 OWNED = PROGRAM / "source-evidence/distinct-player-or-20261106/independent/oracle.json"
 LEBRON = PROGRAM / "source-evidence/k08-lebron-remaining/qualification.json"
 APPLICABILITY = EVIDENCE / "historical-applicability-20261110.json"
-APPLICABILITY_SHA256 = "e5b3ba6f8b4e456fce18f90290d1334ec93c40b3d7b2ee227706a5974f4f128d"
+APPLICABILITY_SHA256 = "bf104c4150bc9547ddd8c06f7697d25482e5398c0268ae3fec65276aefb8692b"
 
 
 def _sha(raw):
@@ -103,7 +103,7 @@ def _retained_applicability(binding, *, path=APPLICABILITY, expected_sha=APPLICA
         "data_quality" not in c["payload"]["result"]["metadata"] for c in captures["receipts"]
     )
     reviewed = {change["path"]: change for change in proof["changes"]}
-    assert len(reviewed) == len(proof["changes"]) == 34
+    assert len(reviewed) == len(proof["changes"]) == 35
     changed = {}
     for relative, old_digest in binding["application_file_sha256"].items():
         actual = _sha((ROOT / relative).read_bytes())
@@ -117,9 +117,20 @@ def _retained_applicability(binding, *, path=APPLICABILITY, expected_sha=APPLICA
         assert item["reviewed_functions"] and item["semantic_reach"]
         assert item["eligible_existing_case_ids"] == [case["id"] for case in cases]
     inventory = sorted(str(p.relative_to(ROOT)) for p in (ROOT / "src").rglob("*.py"))
-    assert inventory == proof["original_src_python_inventory"], (
-        "Unreviewed source module addition/deletion"
-    )
+    added = proof["reviewed_added_source_modules"]
+    assert len(added) == len({item["path"] for item in added}) == 3
+    for item in added:
+        assert item["path"] not in proof["original_src_python_inventory"]
+        assert item["path"].startswith("src/") and item["path"].endswith(".py")
+        assert _sha((ROOT / item["path"]).read_bytes()) == item["reviewed_sha256"], (
+            "Unreviewed added module change"
+        )
+        assert item["semantic_reach"] and item["eligible_existing_case_ids"] == [
+            c["id"] for c in cases
+        ]
+    assert inventory == sorted(
+        proof["original_src_python_inventory"] + [item["path"] for item in added]
+    ), "Unreviewed source module addition/deletion"
     parser_path = "src/nbatools/commands/_parse_helpers.py"
     original = _parser_predicates(proof["original_parser_predicates"])
     current = _parser_predicates((ROOT / parser_path).read_text())

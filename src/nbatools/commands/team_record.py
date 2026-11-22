@@ -274,6 +274,7 @@ def build_team_record_result(
     series_situation: str | None = None,
     without_player_reason: str | None = None,
     _reported_reason_evidence: dict | None = None,
+    participation_scope: str | None = None,
 ) -> SummaryResult | NoResult:
     """Build a record-focused summary for a single team.
 
@@ -287,6 +288,50 @@ def build_team_record_result(
     from nbatools.commands.data_utils import validate_last_n_scope
 
     validate_last_n_scope(last_n_scope, allow_original_window=True)
+    from nbatools.commands._team_participation_query import participation_scope_for
+
+    participation_scope = participation_scope_for(
+        dict(
+            participation_scope=participation_scope,
+            with_player=with_player,
+            without_player=without_player,
+            opponent=opponent,
+        )
+    )
+    if participation_scope not in {"team", "rostered", "opponent", "game", "legacy"}:
+        raise ValueError("Unknown participation scope")
+
+    def _with_filter(frame, names, years, kind, **options):
+        if participation_scope == "legacy":
+            return filter_with_player(frame, names, years, kind, **options)
+        if participation_scope == "rostered":
+            from nbatools.commands._participation_observations import filter_played
+
+            return filter_played(frame, names, years, kind)
+        from nbatools.commands._team_appearances import select_appearances
+
+        return select_appearances(frame, names, years, kind, played=True, scope=participation_scope)
+
+    def _without_filter(frame, names, years, kind, **options):
+        if participation_scope == "legacy" or options.get("without_player_reason"):
+            return filter_without_player(frame, names, years, kind, **options)
+        if participation_scope == "rostered":
+            from nbatools.commands._participation_observations import filter_absent
+
+            return filter_absent(frame, names, years, kind)
+        from nbatools.commands._team_appearances import select_appearances
+
+        return select_appearances(
+            frame, names, years, kind, played=False, scope=participation_scope
+        )
+
+    def _qualify_mixed(frame):
+        # A false sibling must not hide unknowns in another predicate, including
+        # original and qualifying last-N windows. No change to legacy filters.
+        if participation_scope in {"team", "opponent", "game"} and with_player and without_player:
+            _with_filter(frame, with_player, seasons, season_type)
+            _without_filter(frame, without_player, seasons, season_type)
+
     from nbatools.commands.entity_resolution import (
         ALL_TEAM_ABBRS,
         player_ids_for_name,
@@ -409,7 +454,7 @@ def build_team_record_result(
                 start_date=start_date,
                 end_date=end_date,
             )
-            base_df = filter_without_player(
+            base_df = _without_filter(
                 scoped,
                 without_player,
                 seasons,
@@ -459,7 +504,7 @@ def build_team_record_result(
             end_date=end_date,
         )
         if with_player:
-            coverage_base = filter_with_player(
+            coverage_base = _with_filter(
                 coverage_base,
                 with_player,
                 seasons,
@@ -468,7 +513,7 @@ def build_team_record_result(
                 strict_team_match=True,
                 opponent=opponent,
             )
-            coverage_period = filter_with_player(
+            coverage_period = _with_filter(
                 coverage_period,
                 with_player,
                 seasons,
@@ -478,7 +523,7 @@ def build_team_record_result(
                 opponent=opponent,
             )
         if without_player:
-            coverage_base = filter_without_player(
+            coverage_base = _without_filter(
                 coverage_base,
                 without_player,
                 seasons,
@@ -487,7 +532,7 @@ def build_team_record_result(
                 strict_team_match=True,
                 opponent=opponent,
             )
-            coverage_period = filter_without_player(
+            coverage_period = _without_filter(
                 coverage_period,
                 without_player,
                 seasons,
@@ -533,8 +578,10 @@ def build_team_record_result(
             start_date=start_date,
             end_date=end_date,
         )
+        if not original_window:
+            _qualify_mixed(sample)
         if without_player and not sample.empty and not original_window:
-            sample = filter_without_player(
+            sample = _without_filter(
                 sample,
                 without_player,
                 seasons,
@@ -544,7 +591,7 @@ def build_team_record_result(
                 opponent=opponent,
             )
         if with_player and not sample.empty and not original_window:
-            sample = filter_with_player(
+            sample = _with_filter(
                 sample,
                 with_player,
                 seasons,
@@ -571,8 +618,9 @@ def build_team_record_result(
         # complete original window before a false sibling predicate can hide
         # missing evidence; older out-of-window rows are not required.
         df = apply_last_n_sample(sample, last_n, window_game_ids)
+        _qualify_mixed(df)
         if without_player and not df.empty:
-            df = filter_without_player(
+            df = _without_filter(
                 df,
                 without_player,
                 seasons,
@@ -584,7 +632,7 @@ def build_team_record_result(
                 reason_evidence=_reported_reason_evidence,
             )
         if with_player and not df.empty:
-            df = filter_with_player(
+            df = _with_filter(
                 df,
                 with_player,
                 seasons,
@@ -630,10 +678,13 @@ def build_team_record_result(
         else:
             clutch_executed = True
 
+    if not original_window:
+        _qualify_mixed(df)
+
     # Absence must be known across the original scoped candidates. A played
     # sibling that is false cannot conceal an unknown nonparticipation state.
     if without_player and not df.empty and not original_window:
-        df = filter_without_player(
+        df = _without_filter(
             df,
             without_player,
             seasons,
@@ -643,7 +694,7 @@ def build_team_record_result(
             opponent=opponent,
         )
     if with_player and not df.empty and not original_window:
-        df = filter_with_player(
+        df = _with_filter(
             df,
             with_player,
             seasons,
@@ -732,6 +783,15 @@ def build_team_record_result(
     )
 
     caveats: list[str] = []
+    if (with_player or without_player) and without_player_reason is None:
+        labels = {
+            "team": "appearances FOR the selected team, including before joining and after leaving",
+            "rostered": "qualified nonparticipation while rostered; nonmembers excluded",
+            "legacy": "qualified team membership and explicit participation",
+            "opponent": "appearances FOR the opposing team",
+            "game": "appearances anywhere in the selected game",
+        }
+        caveats.append("Participation basis: " + labels[participation_scope])
     if franchise_note := franchise_caveat(df, team):
         caveats.append(franchise_note)
     used_seasons = sample_season_span(df, seasons, last_n)
