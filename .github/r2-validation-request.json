@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "cfbc21b8c4a352517226b3e38ad433dedff395fe",
+  "generation": "availability-season-inactive-2024-v1-20261116",
+  "tests": ["tests/test_team_appearance_hosted_smoke_real_data.py::test_post_merge_team_appearance_scopes"],
+  "raw_qa_cases": []
+}
