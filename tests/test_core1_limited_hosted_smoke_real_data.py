@@ -69,20 +69,18 @@ def test_post_merge_four_participation_explanations(tmp_path):
         check=True,
         timeout=180,
     )
-    subprocess.run(
-        ["npx", "playwright", "install", "chromium"],
-        cwd=ROOT / "frontend",
-        env=env,
-        check=True,
-        timeout=180,
-    )
     script = r"""
 import {chromium} from 'playwright';
 import fs from 'node:fs';
 const [base, output] = process.argv.slice(1);
 const queries = ['Lakers record without Davis', 'Lakers record with Davis and Reaves both out',
  'LeBron James 30 point games with Davis', 'Lakers record vs Celtics and Knicks without Tatum'];
-const browser = await chromium.launch({headless:true,args:['--no-sandbox']});
+let executablePath;
+for (const file of ['/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser']) {
+ if (fs.existsSync(file)) { executablePath=file; break; }
+}
+if(!executablePath) throw new Error('Runner browser unavailable; required check cannot skip');
+const browser = await chromium.launch({executablePath,headless:true,args:['--no-sandbox']});
 const receipts = [];
 try {
  for (const width of [1280,390]) for (const [i,query] of queries.entries()) {
