@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "830929e4a2b0d3b414cf4a85e89cb70478ed3f98",
+  "generation": "availability-season-inactive-2024-v1-20261116",
+  "tests": ["tests/test_team_role_boundary_hosted_smoke_real_data.py::test_post_merge_scalar_role_boundary"],
+  "raw_qa_cases": []
+}
