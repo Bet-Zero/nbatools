@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "31ee624418e81a73a5d5d03d6d837941606505da",
+  "generation": "availability-season-inactive-2024-v1-20261116",
+  "tests": [
+    "tests/test_team_appearance_scope_real_data.py::test_retained_complete_team_lists_unlock_real_team_records",
+    "tests/test_core1_limited_participation_real_data.py::test_published_membership_distinctions_and_original_blockers"
+  ],
+  "raw_qa_cases": []
+}
