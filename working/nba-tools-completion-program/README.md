@@ -11,8 +11,8 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**Lead: Codex. Baseline main `59a4dabe` (merged PR632); branch
-`codex/team-scoped-participation`, [PR633](https://github.com/Bet-Zero/nbatools/pull/633).** The limited Core-1 snapshot remains closed;
+**Lead: Codex. Baseline main `36d7d00a` (merged [PR633](https://github.com/Bet-Zero/nbatools/pull/633));
+branch `codex/team-participation-role-boundary`.** The limited Core-1 snapshot remains closed;
 full original acceptance and league-wide participation remain unfinished.
 The owner separately approved a new November 22 product meaning: default team
 WITH/WITHOUT records concern appearances **FOR the selected team**, including
@@ -28,6 +28,13 @@ without Hunter 44–11, without Curry 64–18, including Curry's two GSW appeara
 WITH Curry is a known-empty sample, not 0–0. Rostered-only Cleveland coverage stays
 14/21 complete, seven cases/318 unknown cells. BKN0022400199 stays uncertified;
 malformed originals, quarantines and disputed observations remain intact.
+
+**Bounded follow-up:** final unfamiliar wording exposed an explicit-opponent
+translation that could retarget a retained actor and drop another. Scope now
+requires one fully consumed actor/polarity/clause; mixed roles remain explicitly
+unfinished. Same-team conjunctions and accepted legacy matchup pairs remain.
+Focused actual-catalog and source-derived positive checks cover this correction;
+exact revision, independent review and required gates are recorded in its PR.
 
 **Shared behavior:** explicit rostered absence retains qualified membership/DNP;
 opposing-player, anywhere-in-game, player-stat teammate ownership and accepted
@@ -52,12 +59,12 @@ membership/publication and 24-hour freshness/readiness; K12 cold timing. Known
 2026-27 readiness503/new_season_not_loaded, original failure receipts and 484
 unavailable rate values remain unchanged. DQ-005/source hunts stay parked.
 
-**Next after PR633's gated merge:** perform only its affected deployed checks,
+**Next after the role-guard PR's gated merge:** verify only its new deployed boundary,
 then preserve the proof for a future combined protected release. Source replay
 took about16s cold locally against a20s query budget; hosted cold loading of the
 staged proof is not yet qualified and must precede any activation. Do not activate
 data, expand historical collection or begin Live without separately scoped
-authority. No new costs or automatic refresh. Final receipts live in PR633.
+authority. No new costs or automatic refresh. PR633 keeps its original passing receipts; the guard PR holds its own execution.
 
 **Preserved:** production **0abc**, its 69 complete 2024-25 plus 93 prior 2023-24
 cases, verified backup/restore, Cleveland qualified v2 ZIP SHA256

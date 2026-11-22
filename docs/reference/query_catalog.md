@@ -457,6 +457,12 @@ Common combinations:
   `team` (default), `rostered`, `opponent`, `game`, and `legacy` (original strict
   interpretation for historical controls). These new defaults do not retroactively
   establish any original Core-1 real-NBA acceptance case.
+  Natural explicit opponent/anywhere scope must bind one fully consumed player
+  and polarity. Mixed roles such as `without LeVert when opponent Curry plays`
+  remain unfinished: the whole request is refused rather than retargeting one
+  actor or dropping the other. Existing same-team conjunctions and accepted
+  legacy matchup pairs retain their separate consumers; numeric team-stat bounds
+  may accompany a qualified scalar opponent condition.
 - exact full names listed only in qualified participation observations can identify
   single or two-player presence/absence conditions, while the team/player being
   asked about remains the primary subject. On the published qualified 2014-10-28
