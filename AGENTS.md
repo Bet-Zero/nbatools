@@ -33,9 +33,14 @@ Data scope is the 1996-97 season onward.
 - **Participation is not injury, status or on-court presence.** A missing game
   row does not prove a player was injured or out; a played row does not prove
   healthy or available. Never infer team nonmembership or a DNP from missing
-  rows, a roster snapshot or another game on the same date. Qualify absence
-  against team membership and complete participation coverage; games before a
-  player joined, and unknown data, are not verified missed games. Do not encode
+  rows, a roster snapshot or another game on the same date. Default team records
+  WITH/WITHOUT mean appearances FOR the selected team, including before joining
+  and after leaving; an opponent appearance is WITHOUT for the selected team.
+  Negative answers require exact-game evidence or a qualified complete side's
+  appearance list. Separately, games missed while rostered require qualified
+  membership and nonparticipation; pre-join games are not missed games. Unknown
+  data never becomes absence. Keep explicit opponent, anywhere-in-game and
+  player-stat teammate ownership distinct. Do not encode
   `available = played` in code or tests.
 - **Keep safety regressions** until verified positive support deliberately
   replaces them.

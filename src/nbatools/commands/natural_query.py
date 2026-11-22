@@ -6539,12 +6539,17 @@ def _route_parsed_query(parsed: dict) -> dict:
                 route_kwargs.update(
                     with_player=mixed.name("with"), without_player=mixed.name("without")
                 )
+                if opponent and re.search(r"\b(?:while|when)\b", q):
+                    # Accepted explicit-matchup participant clauses keep each
+                    # actor's qualified side; bare WITH/WITHOUT stays TEAM.
+                    route_kwargs["participation_scope"] = "legacy"
             else:
                 route_kwargs[f"{pair.mode}_player"] = pair.players
             applied_pair = pair
             if played_pair:
                 # The named players are predicates of the explicit team record.
                 parsed.update(player=None, with_player=pair.players, without_player=None)
+                route_kwargs["participation_scope"] = "legacy"
             notes.pop()
             original_mixed_window = bool(mixed and explicit_original_pair_marker)
             if original_mixed_window:
@@ -12334,7 +12339,14 @@ def parse_query(query: str) -> dict:
     since = _games_since(query)
     if since is not None:
         return since
+    from nbatools.commands._team_participation_query import (
+        apply_team_participation_scope,
+        clean_scope_words,
+    )
+
     out = _parse_query_once(query)
+    if out.get("route") == "team_record" and clean_scope_words(query) != query:
+        out = _parse_query_once(clean_scope_words(query))
     from nbatools.commands._parse_helpers import invalid_stat_equality
 
     if invalid_stat_equality(query):
@@ -12367,7 +12379,7 @@ def parse_query(query: str) -> dict:
         dropped = _season_split_drops(one_season, out)
         if dropped:
             return _season_split_refusal(out, dropped)
-    return out
+    return apply_team_participation_scope(query, out)
 
 
 _QUERY_NUMBER = re.compile(r"(?<![\w.-])(\d+(?:\.\d+)?)(?![\w-]|\.\d)")

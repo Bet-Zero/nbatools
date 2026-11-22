@@ -89,7 +89,8 @@ def test_published_membership_distinctions_and_original_blockers():
         if ident.startswith("davis"):
             assert "Missing records establish neither a missed game nor nonmembership" in notes
         else:
-            assert "Incomplete game-day participation coverage for Jayson Tatum" in notes
+            assert body["result"]["metadata"]["participation_scope"] == "team"
+            assert "Incomplete team appearance coverage for Jayson Tatum" in notes
 
     # Owner-approved clarification changes meaning descriptions, not real-NBA
     # qualification or the denominator. ID39's WITH variant and current40 remain.

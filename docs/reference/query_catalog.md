@@ -436,7 +436,27 @@ Common combinations:
 
 - opponent team filters
 - opponent player filters (`vs Kevin Durant`, `against Stephen Curry`) — filters to games where the specified opponent player appeared on the opposing team
-- without player filters (`without LeBron`, `without Steph Curry`) — excludes games where the specified player played; clears the player from entity detection so the query routes to the team path
+- team-record WITH/WITHOUT defaults (owner decision, November 22, 2026):
+  `Cavaliers record without Caris LeVert in 2024-25` counts every selected
+  Cleveland game where LeVert did not appear **for Cleveland**, including before
+  joining and after leaving. An appearance for the opponent counts as WITHOUT
+  for Cleveland. WITH requires an appearance for Cleveland. Complete team-side
+  appearance lists or exact-game observations must establish each predicate;
+  missing player rows alone never establish absence. Empty samples are not 0–0.
+- `without Player while on the team` / `while rostered` retains strict qualified
+  membership and nonparticipation. Explicit `when opponent Player plays` uses
+  the opposing side; `without Player anywhere in the game` checks both sides.
+  Player-stat teammate conditions and other routes retain their existing owned
+  predicates. Explicit OUT/DNP and medical/reported-reason wording retain their
+  prior boundaries. The accepted explicit-matchup two-player played clauses and
+  mixed WHEN/WHILE clauses retain their original side qualification, labeled
+  `legacy`; a scalar `with Player` against an opponent still means FOR the selected
+  team. A structured explicit-matchup two-player WITH predicate retains that same
+  legacy default; pass `participation_scope=team` to explicitly request both FOR
+  the selected team. Structured `team_record` accepts `participation_scope` values
+  `team` (default), `rostered`, `opponent`, `game`, and `legacy` (original strict
+  interpretation for historical controls). These new defaults do not retroactively
+  establish any original Core-1 real-NBA acceptance case.
 - exact full names listed only in qualified participation observations can identify
   single or two-player presence/absence conditions, while the team/player being
   asked about remains the primary subject. On the published qualified 2014-10-28

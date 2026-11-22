@@ -817,6 +817,7 @@ class TestBuildTeamRecordResult:
             team="ALP",
             season="2098-99",
             without_player="Stephen Curry",
+            participation_scope="legacy",  # Original rostered-absence capability.
         )
 
         assert isinstance(result, NoResult)

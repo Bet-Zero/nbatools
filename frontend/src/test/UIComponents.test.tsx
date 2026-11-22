@@ -72,6 +72,19 @@ describe("SampleQueries", () => {
 });
 
 describe("NoResultDisplay", () => {
+  it.each([ ["game", "appearances anywhere in each game"], ["opponent", "appearances for the opposing team"] ])("labels an empty %s appearance sample", (scope, explanation) => {
+    render(<NoResultDisplay reason="no_match" status="no_result" metadata={{without_player: "Stephen Curry", participation_scope: scope}} />);
+    expect(screen.getByText(new RegExp(explanation))).toBeInTheDocument();
+    expect(screen.queryByText(/Verified nonmembers are excluded|0-0/)).not.toBeInTheDocument();
+  });
+  it("labels a known-empty team-scoped sample without excluding nonmembers", () => {
+    render(<NoResultDisplay reason="no_match" status="no_result"
+      metadata={{season: "2024-25", with_player: "Stephen Curry", participation_scope: "team"}} />);
+    expect(screen.getByText(/No selected games matched this team-appearance condition/)).toBeInTheDocument();
+    expect(screen.getByText(/Before joining and after leaving are included/)).toBeInTheDocument();
+    expect(screen.queryByText(/Verified nonmembers are excluded|0-0/)).not.toBeInTheDocument();
+  });
+
   it("keeps an empty eligible participation sample distinct from no NBA games or a zero record", () => {
     render(<NoResultDisplay reason="no_match" status="no_result"
       metadata={{season: "2025-26", without_player: "Jimmy Butler", start_date: "2025-10-29", end_date: "2025-10-29"}} />);
@@ -84,6 +97,7 @@ describe("NoResultDisplay", () => {
     ["filter_not_supported", ["unresolved_player_availability"], []],
     ["filter_not_supported", ["multi_player_availability"], []],
     ["unsupported", [], ["Incomplete game-day participation coverage for Jayson Tatum"]],
+    ["unsupported", [], ["Incomplete team appearance coverage for Stephen Curry"]],
   ])("explains unverified participation rather than an unavailable statistic (%s)", (reason, filters, notes) => {
     render(<NoResultDisplay reason={reason as string} status="no_result"
       metadata={{season: "2025-26", stat: "pts", unsupported_filters: filters as string[]}}

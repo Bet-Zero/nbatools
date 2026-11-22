@@ -261,6 +261,15 @@ export function readableNoResultMessage(
   }
 
   if (reason === "no_match" && (metadata?.with_player || metadata?.without_player)) {
+    if (metadata?.participation_scope === "team") {
+      return "No selected games matched this team-appearance condition. Before joining and after leaving are included; opponent appearances do not count as appearances for the selected team.";
+    }
+    if (metadata?.participation_scope === "game") {
+      return "No selected games matched this game-wide appearance condition. This checks appearances anywhere in each game, for either team.";
+    }
+    if (metadata?.participation_scope === "opponent") {
+      return "No selected games matched this opponent-appearance condition. Only appearances for the opposing team count.";
+    }
     const scope = noResultDateRange(metadata);
     const season = typeof metadata?.season === "string" ? ` Requested season: ${metadata.season}.` : "";
     return `No eligible games matched all requested conditions${scope ? ` for ${scope}` : ""}. Verified nonmembers are excluded from participation samples.${season}`;
@@ -492,7 +501,7 @@ export function hasUnverifiedParticipation(
   if (filters.includes("availability_status")) return false;
   return filters.includes("unresolved_player_availability") ||
     isMultiPlayerAvailabilityUnsupported(metadata, detailTexts) ||
-    detailTexts.some((text) => /^(Incomplete|Unqualified) game-day participation coverage for /i.test(text));
+    detailTexts.some((text) => /^(?:Incomplete|Unqualified) (?:game-day participation|team appearance) coverage for /i.test(text));
 }
 
 export function isColumnUnavailableReason(

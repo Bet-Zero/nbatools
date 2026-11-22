@@ -124,7 +124,16 @@ def test_prejoining_is_excluded_but_unknown_member_game_blocks(qualified_pair):
     ledger.drop(ledger.index[ledger.game_id.eq(a) & ledger.player_id.eq(AD)], inplace=True)
     selected = filter_absent(teams, "Anthony Davis", [SEASON], "Regular Season")
     assert set(selected.game_id) == {c}
-    result = execute_natural_query(f"Lakers record without Anthony Davis in {SEASON}")
+    query = f"Lakers record without Anthony Davis in {SEASON}"
+    from nbatools.commands.natural_query import parse_query
+
+    parsed = parse_query(query)
+    # Preserve this original rostered capability and question. The newly
+    # approved TEAM default cannot treat its omitted first row as absence.
+    result = execute_structured_query(
+        "team_record", **{**parsed["route_kwargs"], "participation_scope": "legacy"}
+    )
+    assert execute_natural_query(query).result_status == "no_result"
     assert result.result_status == "ok", result.metadata
     summary = result.result.to_dict()["sections"]["summary"][0]
     expected = teams.loc[teams.game_id.eq(c)].iloc[0]
