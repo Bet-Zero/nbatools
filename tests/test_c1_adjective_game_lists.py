@@ -267,7 +267,19 @@ def test_team_stat_bound_and_later_presence_both_select_the_sample(tmp_path, mon
     monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(root))
     reset_data_source_cache()
     try:
-        result = _run(query)
+        from nbatools.commands.natural_query import parse_query
+        from nbatools.query_service import execute_natural_query, execute_structured_query
+
+        # The original positive-only control remains executable explicitly.
+        # The removed appearance has no new complete-list qualification, so
+        # the new default must withhold a complete record for that sample.
+        parsed = parse_query(query)
+        result = execute_structured_query(
+            "team_record", **{**parsed["route_kwargs"], "participation_scope": "legacy"}
+        )
+        assert result.result_status == "ok"
+        new_default = execute_natural_query(query)
+        assert new_default.result_status == "no_result" and new_default.result_reason != "no_match"
         sections = result.result.to_dict()["sections"]
         actual = sections["game_log"]
         assert {int(row["game_id"]) for row in actual} == set(expected.game_id.astype(int))

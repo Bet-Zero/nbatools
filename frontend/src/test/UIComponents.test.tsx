@@ -72,6 +72,11 @@ describe("SampleQueries", () => {
 });
 
 describe("NoResultDisplay", () => {
+  it.each([ ["game", "appearances anywhere in each game"], ["opponent", "appearances for the opposing team"] ])("labels an empty %s appearance sample", (scope, explanation) => {
+    render(<NoResultDisplay reason="no_match" status="no_result" metadata={{without_player: "Stephen Curry", participation_scope: scope}} />);
+    expect(screen.getByText(new RegExp(explanation))).toBeInTheDocument();
+    expect(screen.queryByText(/Verified nonmembers are excluded|0-0/)).not.toBeInTheDocument();
+  });
   it("labels a known-empty team-scoped sample without excluding nonmembers", () => {
     render(<NoResultDisplay reason="no_match" status="no_result"
       metadata={{season: "2024-25", with_player: "Stephen Curry", participation_scope: "team"}} />);

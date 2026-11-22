@@ -53,6 +53,24 @@ def test_complete_name_clause_can_resolve_globally_without_presumed_membership()
     assert "unsupported_filters" not in out["route_kwargs"]
 
 
+def test_single_catalog_surname_does_not_override_unresolved_team_context(monkeypatch):
+    from types import SimpleNamespace
+
+    from nbatools.commands import _team_participation_query as scope
+
+    monkeypatch.setattr(
+        scope,
+        "resolve_player",
+        lambda _: SimpleNamespace(resolved="John Smith", source="last_name"),
+    )
+    parsed = {
+        "route": "team_record",
+        "route_kwargs": {"unsupported_filters": ["unresolved_player_availability"]},
+    }
+    out = scope.apply_team_participation_scope("Cavaliers record without Smith in 2024-25", parsed)
+    assert out["route_kwargs"]["unsupported_filters"] == ["unresolved_player_availability"]
+
+
 def test_actual_unless_query_does_not_enable_an_unread_condition():
     from nbatools.commands.natural_query import parse_query
 
@@ -152,6 +170,15 @@ def test_team_without_includes_opponent_appearance_and_unlisted_complete_game(sa
 def test_explicit_opponent_and_anywhere_keep_distinct_roles(sample):
     assert selected(sample.iloc[:4], played=True, scope="opponent") == {2}
     assert selected(sample.iloc[:4], scope="game") == {3, 4}
+
+
+def test_own_side_exact_fact_needs_no_opponent_but_other_side_scope_does(sample):
+    own = sample.iloc[:1].drop(columns="opponent_team_id")
+    assert selected(own, played=True) == {1}
+    with pytest.raises(ValueError, match="opponent identity"):
+        selected(own, scope="opponent")
+    with pytest.raises(ValueError, match="Conflicting"):
+        selected(sample.iloc[1:2].drop(columns="opponent_team_id"))
 
 
 def test_verified_catalog_identity_can_have_no_season_appearances(sample):

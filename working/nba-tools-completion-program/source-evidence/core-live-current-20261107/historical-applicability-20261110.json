@@ -1098,7 +1098,7 @@
     {
       "path": "frontend/src/components/noResultDisplayUtils.ts",
       "old_sha256": "b3f5623ea70f0c054b6ffcb4f479fc0c73f890929e8e3e31ed1b28bab09ce992",
-      "reviewed_sha256": "b95669d076251fa1b5de54a89643707f0532f0b890ab1a0d9439e6604725795c",
+      "reviewed_sha256": "f159f2125ca7cf0ec728466eb817c8b576ece3f245b653e89933bd3ae9532049",
       "reviewed_functions": "readableNoResultMessage; hasUnverifiedParticipation",
       "semantic_reach": "New TEAM empty-sample and incomplete-appearance wording only. None of original22 is an empty TEAM appearance sample or new complete-list refusal; original fallback and historical captures preserved.",
       "eligible_existing_case_ids": [
@@ -1129,7 +1129,7 @@
     {
       "path": "frontend/src/test/UIComponents.test.tsx",
       "old_sha256": "928e50583895c307bb3990a4aef6c7593d106c6c70521f968710a87fc7501543",
-      "reviewed_sha256": "83ea3774cfef50a4aa7d2fb6a13b33715fc16c51c0fdfed87555ab781bcff3a9",
+      "reviewed_sha256": "89a6665b89014b818bc8e02be7c4d31dd3268465eee8be959e83fd642fc07307",
       "reviewed_functions": "New TEAM empty-sample and incomplete-proof controls",
       "semantic_reach": "Test-only assertions, not bundled runtime; old22 expected text and original capture bodies unchanged.",
       "eligible_existing_case_ids": [
@@ -1360,7 +1360,7 @@
   "reviewed_added_source_modules": [
     {
       "path": "src/nbatools/commands/_team_appearances.py",
-      "reviewed_sha256": "0ec5be5941ab9424f2fc838fed0478f1cedea694a4b31237427d3e7de4a94645",
+      "reviewed_sha256": "a64c9b7658a0068b6aa677802f2be1a30fa86b899cd6866c6c042a620c7baa02",
       "semantic_reach": "New explicit team_record appearance scope only; original22 have no team_record with/without combination. Offline qualification makes no source requests or writes to existing data. Split/player/finder strict predicates unchanged.",
       "eligible_existing_case_ids": [
         "k12-s1",
@@ -1389,7 +1389,7 @@
     },
     {
       "path": "src/nbatools/commands/_team_participation_query.py",
-      "reviewed_sha256": "3fa8d5bb541fc22eed093223704c2966dff76719895d48c2a8263c3ceadca375",
+      "reviewed_sha256": "b2a9b748f8f2d330306ff02d03a014139e8d0f37a7f8dda939e47ba6098f84c8",
       "semantic_reach": "New explicit team_record appearance scope only; original22 have no team_record with/without combination. Offline qualification makes no source requests or writes to existing data. Split/player/finder strict predicates unchanged.",
       "eligible_existing_case_ids": [
         "k12-s1",

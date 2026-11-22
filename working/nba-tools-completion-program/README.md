@@ -12,7 +12,7 @@ evidence; don't extend it.
 ## Resume checkpoint
 
 **Lead: Codex. Baseline main `59a4dabe` (merged PR632); branch
-`codex/team-scoped-participation`.** The limited Core-1 snapshot remains closed;
+`codex/team-scoped-participation`, [PR633](https://github.com/Bet-Zero/nbatools/pull/633).** The limited Core-1 snapshot remains closed;
 full original acceptance and league-wide participation remain unfinished.
 The owner separately approved a new November 22 product meaning: default team
 WITH/WITHOUT records concern appearances **FOR the selected team**, including
@@ -52,10 +52,12 @@ membership/publication and 24-hour freshness/readiness; K12 cold timing. Known
 2026-27 readiness503/new_season_not_loaded, original failure receipts and 484
 unavailable rate values remain unchanged. DQ-005/source hunts stay parked.
 
-**Next:** finish the feature PR's required gates and merge only with independent
-review and actual targeted numerical passes. Preserve the proof for a future
-combined protected release; do not activate data, expand historical collection or
-begin Live without separately scoped authority. No new costs or automatic refresh.
+**Next after PR633's gated merge:** perform only its affected deployed checks,
+then preserve the proof for a future combined protected release. Source replay
+took about16s cold locally against a20s query budget; hosted cold loading of the
+staged proof is not yet qualified and must precede any activation. Do not activate
+data, expand historical collection or begin Live without separately scoped
+authority. No new costs or automatic refresh. Final receipts live in PR633.
 
 **Preserved:** production **0abc**, its 69 complete 2024-25 plus 93 prior 2023-24
 cases, verified backup/restore, Cleveland qualified v2 ZIP SHA256

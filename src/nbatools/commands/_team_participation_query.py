@@ -82,9 +82,13 @@ def apply_team_participation_scope(query, parsed):
         if match:
             fragment = name_before_scope(match[2].lower())
             parts = re.split(r"\s+and\s+", fragment)
-            resolved = [resolve_player(name).resolved for name in parts]
+            resolutions = [resolve_player(name) for name in parts]
+            resolved = [r.resolved for r in resolutions]
             if 1 <= len(parts) <= 2 and all(
-                name and _only_the_name(part, name) for part, name in zip(parts, resolved)
+                name
+                and result.source in {"full_name", "full_name_alias"}
+                and _only_the_name(part, name)
+                for part, name, result in zip(parts, resolved, resolutions)
             ):
                 kwargs[match[1].lower() + "_player"] = " and ".join(resolved)
                 kwargs.pop("unsupported_filters", None)

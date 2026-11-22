@@ -158,6 +158,12 @@ def select_appearances(candidates, names, seasons, kind, *, played, scope="team"
         mask = []
         for row in candidates.itertuples():
             gid = int(row.game_id)
+            opponent = getattr(row, "opponent_team_id", None)
+            if scope != "team" and (opponent is None or pd.isna(opponent)):
+                raise ValueError("Unavailable game opponent identity")
+            valid_teams = {int(row.team_id)}
+            if opponent is not None and not pd.isna(opponent):
+                valid_teams.add(int(opponent))
             teams = (
                 [int(row.team_id)]
                 if scope == "team"
@@ -178,10 +184,7 @@ def select_appearances(candidates, names, seasons, kind, *, played, scope="team"
                     raise ValueError("Appearance observation date mismatch")
                 known = exact.loc[exact.participation_state.isin(["played", "did_not_play"])]
                 if len(known):
-                    if len(known) != 1 or int(known.team_id.iloc[0]) not in {
-                        int(row.team_id),
-                        int(row.opponent_team_id),
-                    }:
+                    if len(known) != 1 or int(known.team_id.iloc[0]) not in valid_teams:
                         raise ValueError("Conflicting exact-game appearance sides")
                     states.append(
                         bool(
