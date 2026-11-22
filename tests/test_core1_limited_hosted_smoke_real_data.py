@@ -10,8 +10,8 @@ from pathlib import Path
 import pytest
 import requests
 
-from tests.core1_k08_runtime_binding import ROOT, _github, _local_build_tree, non_build
 from tests.cloud_core_historical_delivery_real_data import LIVE, _readiness
+from tests.core1_k08_runtime_binding import ROOT, _github, _local_build_tree, non_build
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.query]
 
