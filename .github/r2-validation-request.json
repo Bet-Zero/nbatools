@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "c723e25ba23c23a209d75d174b85c28e6e5dfd38",
+  "generation": "availability-season-inactive-2024-v1-20261116",
+  "tests": [
+    "tests/cloud_cleveland_two_game_capture_real_data.py::test_read_only_retained_two_report_artifact"
+  ],
+  "raw_qa_cases": []
+}
