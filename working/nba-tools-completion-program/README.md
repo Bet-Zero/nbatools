@@ -11,52 +11,59 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**Lead: Codex. Baseline main `fc595139` (PR629).**
-[PR630](https://github.com/Bet-Zero/nbatools/pull/630), branch
-`codex/cleveland-two-game-closeout`, closes the authorized two-game follow-up.
-Source/data revision `22f4a16f`; only the checkpoint follows. Qualified staging
-version **`cleveland-full-boxscore-2024-v2`**, ZIP SHA256
-`a8a9ecfdd447a513498d5ae9a0333357711618e6abeacd2a7fb16b1d0807c298`.
-The accepted PR629 v1 ZIP `6be56cee…` and every original remain unchanged.
+**Lead: Codex. Reviewed merged main `d9a96865` (PR630).** Core-1
+reconciliation is closed: no confirmed remaining software or web-delivery defect
+in the original acceptance scope was found that held evidence can correct.
+**STOP on missing factual evidence; no further investigation or test campaign.**
 
-**Now answers in staging:** Cleveland **10 → 14 complete /21 candidate cases**;
-expanded cohort still 21. New: Tristan Thompson, Luke Travers, Craig Porter Jr.
-and Jaylon Tyson. Both with/without answers cover all 82 games; no league-wide
-completion or Core-1 acceptance upgrade. **Seven Cleveland cases /318 player-game
-cells remain unknown**; missing rows never establish DNP or nonmembership.
+**What works:** identity, explicit seasons/windows, summaries/records, find/count,
+rankings, owned conditions, comparisons, splits, sequences, history/populations
+and functional delivery have retained independent numerical/language/browser
+proof within their bindings. PR615's [R2 43582685873](https://github.com/Bet-Zero/nbatools/actions/runs/43582685873)
+passed all 126 non-K08 checks. PR617's final
+[22-question desktop/mobile run 43602403345](https://github.com/Bet-Zero/nbatools/actions/runs/43602403345)
+and [50-query K08 desktop/mobile run 43602584850](https://github.com/Bet-Zero/nbatools/actions/runs/43602584850)
+passed. Its earlier failed team-cell expectation was already corrected; it is
+not an open application defect. Older K03/K05 delivery notes are superseded by
+that proof and retained PR593–605 evidence, not a new work queue.
+PR618's shared interpretation repairs passed [17 focused real-data checks](https://github.com/Bet-Zero/nbatools/actions/runs/43658225359),
+with the original 22 historical parser inputs unchanged and applicability resealed.
+These are reused results at their stated revisions, not fresh runs on PR630.
 
-**Bounded work closed:** two official one-page Final Box PDFs, 52,597 bytes,
-qualified through the existing cached-report importer. Merrill is 20:00, but
-Robinson is 28:59: blindly carrying 28:60 to 29:00 would be wrong. Both malformed
-JSON originals stay quarantined. Accepted 52 report rows cover CLE on both dates
-and MIA on 0022400893; BKN on 0022400199 stays unqualified for the existing
-Cui identity conflict. No alias, clock normalization or new parser/infrastructure.
-All 3,119 parent cells/90 imports and the seven prior disputed observations survive.
-Source originals, independent arithmetic and the reusable staging overlay are in
-[source-evidence/cleveland-two-game-2024](source-evidence/cleveland-two-game-2024/).
-Exact review and focused execution/CI evidence are in PR630; reuse PR629 proof.
+**Core-1 is not fully accepted:** K08 remains **16 PASS /26 MISSING DATA /4 LIVE**.
+Twenty-five mapped Davis-family cases need dated official Davis club membership
+(or complete official game-day evidence) for every selected **2025-26 Lakers**
+date under the served default. His DAL appearances and a season-end WAS roster
+do not establish those dates. ID26 needs Tatum's Knicks-side membership or
+nonmembership on every selected Knicks date; Boston observations cannot supply it.
+ID40 also contains a literal-current variant; retain its mapping and all original
+questions. No refusal, absent row, first/last appearance or season roster is a pass.
+The existing membership engine cannot create these missing facts.
 
-**Historical participation expansion is stopped.** Preserve v2 for an appropriate
-later combined release. Do not prepare a standalone Cleveland production package,
-collect more seasons, refresh automatically, spend money or reopen player/PDF
-research. No production activation occurred; any future activation needs exact
-protected approval. Existing production 0abc, 69 complete 2024-25 cases and 93 prior 2023-24 cases,
-its independent verification/backup and failed-readiness receipt remain intact.
+**Live / other boundaries:** literal-current IDs4/5/19/38 and current40,
+24-hour freshness/readiness, current cross-club membership/current publication
+(owner Nov11), and K12 cold timing (owner Nov14) belong to Live. The 484 unknown
+USG%/TOV% cells remain labeled unavailable and do not block the release (Nov14).
+No new code fix or broad test rerun was warranted. The supported snapshot is
+otherwise supported by the existing release evidence; it is not full Core-1
+acceptance or an all-green historical real-data suite. Existing stale-generation,
+source-acquisition and readiness failures are not silently closed. Development
+security remains informational red; blocking safeguards are unchanged.
 
-**Core-1 reassessment / next:** return to the original question-to-web-answer
-flows on held qualified data. Prioritize the shared Davis/default-season and
-cross-team applicability family, rather than more game collection or another
-audit. Most of the 26 MISSING DATA labels share the Davis 2025-26 Lakers membership gap;
-Tatum/Knicks dates are the other explicit dependency. The membership engine
-exists; missing dated source proof is not a parser defect or permission to infer
-tenure. Keep that shared blocker explicit while closing other original consumer
-and delivery gaps. Do not change original questions or count refusals as passes.
+**Next product decision:** recommend an explicitly limited snapshot milestone
+with documented participation coverage, followed by Live. Only B can defer the
+26 unmet original positives; until that scope decision, Core-1 stays blocked.
+Do not invent implementation work, resume source hunts or begin Live refresh.
+No publication, spending, backfill, automatic refresh or scope approval is assumed.
 
-Core-1 K08 limited status remains **16 PASS /26 MISSING DATA /4 LIVE**. Current
-2026-27 freshness/readiness stays separate. K12 cold, DQ-005 and 484-rate hunts stay
-parked; preserve their requirements. The existing development-security advisory
-remains informational red; all blocking safeguards remain required. No owner
-publication approval is requested for this small staging gain.
+**Preserve completed data work:** Cleveland staging **`cleveland-full-boxscore-2024-v2`**,
+ZIP SHA256 `a8a9ecfdd447a513498d5ae9a0333357711618e6abeacd2a7fb16b1d0807c298`,
+remains **14 complete /21 cases**, with seven cases /318 unknown player-game cells.
+Keep all originals, v1, quarantines and disputes unchanged for a future combined
+release. Historical expansion is closed; no standalone Cleveland publication.
+Production **0abc** (69 complete 2024-25 cases plus 93 prior 2023-24 cases), its
+verified backup/restore and original failed-readiness receipt are unchanged.
+DQ-005 and 484-rate source hunts stay parked. No background work continues.
 
 ## Preserved scope
 
