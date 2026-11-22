@@ -181,6 +181,12 @@ def test_missing_member_participation_stays_unknown_and_blocks_missed_count(sour
     assert result.result_status == "no_result" and result.result_reason != "no_match"
 
 
+def test_verified_nonmember_is_an_empty_eligible_sample_not_a_zero_record(source):
+    result = execute_natural_query("Heat record without Jimmy Butler on 2025-10-29")
+    assert result.result_status == "no_result" and result.result_reason == "no_match"
+    assert result.to_dict()["sections"] == {}
+
+
 def test_player_statistical_and_teammate_filters_keep_subject(source):
     result = execute_structured_query(
         "player_game_summary",

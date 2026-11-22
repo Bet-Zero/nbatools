@@ -746,8 +746,9 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
         )
     if filter_id == "multi_player_availability":
         return (
-            "multi-player availability filters are not supported with current data; "
-            "try a single-player absence query such as 'Lakers record without LeBron' "
+            "The requested player participation conditions could not be verified together "
+            "for this sample. Missing records establish neither a missed game nor "
+            "nonmembership; no partial record was returned "
             f"(blocked: {', '.join(all_filters)})"
         )
     if filter_id == "teammate_stat_condition":
@@ -770,8 +771,9 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
         )
     if filter_id == "unresolved_player_availability":
         return (
-            "the requested availability player could not be resolved confidently; "
-            "no broad team record was returned "
+            "The requested player's identity, team membership and participation could not "
+            "all be verified for this sample. Missing records establish neither a missed "
+            "game nor nonmembership; no unfiltered answer was returned "
             f"(blocked: {', '.join(all_filters)})"
         )
     if filter_id in ("with_player", "unresolved_with_player"):

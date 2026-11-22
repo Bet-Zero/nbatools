@@ -25,7 +25,7 @@
       "tests": [
         "tests/test_k03_find_count_real_data.py"
       ],
-      "note": "Paths changed since the binding still need fresh language and rendering checks."
+      "note": "Retained numerical/language and final PR617 desktop/mobile proof supersedes the older changed-path note; reuse within its reviewed code/data scope."
     },
     "K04": {
       "name": "Rankings and leaderboards",
@@ -38,7 +38,7 @@
       "tests": [
         "tests/test_k05_subject_ownership_real_data.py"
       ],
-      "note": "Paths changed since the binding still need fresh language and rendering checks."
+      "note": "Retained numerical/language and final PR617 desktop/mobile proof supersedes the older changed-path note; reuse within its reviewed code/data scope."
     },
     "K06": {
       "name": "Compare players or teams",
@@ -653,5 +653,15 @@
         ]
       }
     }
-  ]
+  ],
+  "participation_expectations": {
+    "owner_decision": "2026-11-22: clarify membership outcomes; close LIMITED snapshot only. Original questions, controlled positive tests, and full Core-1 obligations survive.",
+    "member_did_not_play": "A verified member with explicit nonparticipation qualifies for without. Membership alone does not establish a DNP.",
+    "verified_nonmember": "Exclude from both with and without. A fully qualified empty eligible sample is no_match, never a 0-0 record or missed game. Require evidence for every applicable date before reclassifying an original real-NBA outcome.",
+    "unknown_membership_or_participation": "Unfinished. Withhold complete absence totals; missing rows, roster snapshots and isolated trade events cannot establish nonmembership or DNP.",
+    "fixture_vs_real_nba": "The original controlled positives stipulate membership and test software capability. They do not certify that Davis belonged to the Lakers in the served 2025-26 default season.",
+    "mixed_opponents": "Original26 keeps the full BOS/NYK union. Verified Knicks nonmembership excludes those games; unknown Knicks dates block a complete union answer. Do not substitute the Boston subset.",
+    "variant_scope": "Original39 also includes WITH Davis, a positive coappearance question. Original40 includes a literal-current variant that remains Live. Do not silently change seasons or collapse these meanings.",
+    "real_nba_reclassification": "None authorized by new factual qualification in this change: 16 pass /26 missing_data /4 live remain unchanged."
+  }
 }

@@ -128,7 +128,11 @@ export function productFacingNotice(text: string): string | null {
   }
 
   if (/^multi-player availability filters are not supported/i.test(trimmed)) {
-    return "These player participation conditions cannot be combined yet.";
+    return "The requested participation conditions could not be verified for this sample.";
+  }
+
+  if (/^unsupported_boundary: (multi-player availability|requested availability player)/i.test(trimmed)) {
+    return "The requested participation conditions could not be verified for this sample.";
   }
 
   if (/^bare player-vs-player queries are ambiguous/i.test(trimmed)) {
@@ -235,12 +239,13 @@ export function readableNoResultMessage(
   const unsupportedBoundary = unsupportedBoundaryMessage(metadata);
   if (unsupportedBoundary) return unsupportedBoundary;
 
-  if (unsupportedFilters(metadata).includes("availability_status")) {
-    return "The requested filter or metric is not available in the current dataset.";
+  if ((reason === "unsupported" || reason === "filter_not_supported") && hasUnverifiedParticipation(metadata, detailTexts)) {
+    const season = typeof metadata?.season === "string" ? ` Requested season: ${metadata.season}.` : "";
+    return `The requested player participation conditions could not be verified for this sample. Missing records establish neither a missed game nor nonmembership.${season}`;
   }
 
-  if (isMultiPlayerAvailabilityUnsupported(metadata, detailTexts)) {
-    return "These player participation conditions are not supported together yet. Try one condition at a time.";
+  if (unsupportedFilters(metadata).includes("availability_status")) {
+    return "The requested filter or metric is not available in the current dataset.";
   }
 
   if (isBarePlayerVsPlayerAmbiguity(reason, metadata)) {
@@ -253,6 +258,12 @@ export function readableNoResultMessage(
     if (typeof subject === "string" && subject.trim() && typeof season === "string" && season.trim()) {
       return `Data is not available for ${subject} in ${season}.`;
     }
+  }
+
+  if (reason === "no_match" && (metadata?.with_player || metadata?.without_player)) {
+    const scope = noResultDateRange(metadata);
+    const season = typeof metadata?.season === "string" ? ` Requested season: ${metadata.season}.` : "";
+    return `No eligible games matched all requested conditions${scope ? ` for ${scope}` : ""}. Verified nonmembers are excluded from participation samples.${season}`;
   }
 
   if (isDateNoMatch(reason, metadata)) {
@@ -471,6 +482,17 @@ function isMultiPlayerAvailabilityUnsupported(
       text,
     ),
   );
+}
+
+export function hasUnverifiedParticipation(
+  metadata: ResultMetadata | null | undefined,
+  detailTexts: string[],
+): boolean {
+  const filters = unsupportedFilters(metadata);
+  if (filters.includes("availability_status")) return false;
+  return filters.includes("unresolved_player_availability") ||
+    isMultiPlayerAvailabilityUnsupported(metadata, detailTexts) ||
+    detailTexts.some((text) => /^(Incomplete|Unqualified) game-day participation coverage for /i.test(text));
 }
 
 export function isColumnUnavailableReason(
