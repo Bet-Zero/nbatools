@@ -6,7 +6,11 @@ from nbatools.commands.entity_resolution import resolve_player
 
 ROSTERED = re.compile(r"\bwhile (?:rostered|on (?:the|this) team)\b", re.I)
 ANYWHERE = re.compile(r"\b(?:anywhere in (?:the )?game|on either team|for either team)\b", re.I)
-OPPOSING = re.compile(r"\b(?:when (?:the )?opponent|(?:with|without) (?:the )?opponent)\b", re.I)
+OPPOSING = re.compile(
+    r"\b(?:when (?:the )?opponent(?=\s+[\w .'’\-]+?\s+(?:plays?|played|playing)\b)"
+    r"|(?:with|without) (?:the )?opponent)\b",
+    re.I,
+)
 
 
 def _scalar_role_clause(query, kwargs, scope):
