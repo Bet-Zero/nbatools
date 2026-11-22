@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "a99da0757d91a5e27e90a2536b587cf74fee875d",
+  "generation": "availability-season-inactive-2024-v1-20261116",
+  "tests": ["tests/test_team_appearance_scope_real_data.py::test_explicit_role_cannot_reduce_a_mixed_request_on_published_catalog"],
+  "raw_qa_cases": []
+}
