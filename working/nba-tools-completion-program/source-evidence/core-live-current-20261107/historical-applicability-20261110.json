@@ -1067,9 +1067,9 @@
     {
       "path": "frontend/src/components/NoResultDisplay.tsx",
       "old_sha256": "0fb36acd50789c659d79195e3b2c56271c819604864320cde410e5ba7ed766d9",
-      "reviewed_sha256": "b37756c4166a0624dca3795838666f7b3c5bd0cec45dc5a6ec192088dca54be0",
+      "reviewed_sha256": "3e164316c5b7f010940842d0387d9ee0191134ed03eb7b4cf7f28b8965dcb7fb",
       "reviewed_functions": "stateProfile; NoResultDisplay",
-      "semantic_reach": "Only recognized participation refusals gain a participation-specific title. All original22 successful, no_data and qualified-empty outcomes keep their existing profiles; no original22 case has either participation blocker or incomplete game-day participation note.",
+      "semantic_reach": "Only recognized participation refusals gain a participation-specific title. All original22 successful, no_data and qualified-empty outcomes keep their existing profiles; no original22 case has either participation blocker or incomplete game-day participation note. Participation explanations require unsupported/filter_not_supported; stale flags cannot relabel no_match/no_data/error outcomes.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1098,9 +1098,9 @@
     {
       "path": "frontend/src/components/noResultDisplayUtils.ts",
       "old_sha256": "b3f5623ea70f0c054b6ffcb4f479fc0c73f890929e8e3e31ed1b28bab09ce992",
-      "reviewed_sha256": "1ee1a41451e6fb93d51a7f4ec24202d89677390aa372a06d06c27ccef19a855d",
+      "reviewed_sha256": "e0edf5d95aa66b74d5766a63929c827511479748e5e535988594f110bce921c3",
       "reviewed_functions": "productFacingNotice; readableNoResultMessage; hasUnverifiedParticipation",
-      "semantic_reach": "Only unverified participation explanations and top-level no_match with a player-participation condition change. Original22 has no participation refusal or top-level participation no_match (the four S4 results are successful splits with an empty bucket); all original22 labels, values and scopes remain unchanged.",
+      "semantic_reach": "Only unverified participation explanations and top-level no_match with a player-participation condition change. Original22 has no participation refusal or top-level participation no_match (the four S4 results are successful splits with an empty bucket); all original22 labels, values and scopes remain unchanged. Participation explanations require unsupported/filter_not_supported; stale flags cannot relabel no_match/no_data/error outcomes.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",

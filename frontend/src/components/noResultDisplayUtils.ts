@@ -239,7 +239,7 @@ export function readableNoResultMessage(
   const unsupportedBoundary = unsupportedBoundaryMessage(metadata);
   if (unsupportedBoundary) return unsupportedBoundary;
 
-  if (hasUnverifiedParticipation(metadata, detailTexts)) {
+  if ((reason === "unsupported" || reason === "filter_not_supported") && hasUnverifiedParticipation(metadata, detailTexts)) {
     const season = typeof metadata?.season === "string" ? ` Requested season: ${metadata.season}.` : "";
     return `The requested player participation conditions could not be verified for this sample. Missing records establish neither a missed game nor nonmembership.${season}`;
   }

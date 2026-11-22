@@ -197,7 +197,8 @@ export default function NoResultDisplay({
     status,
     isMetricUnavailableNoResult(reason, metadata, detailTexts),
     unsupportedBoundaryTitle(metadata),
-    hasUnverifiedParticipation(metadata, detailTexts),
+    (reason === "unsupported" || reason === "filter_not_supported") &&
+      hasUnverifiedParticipation(metadata, detailTexts),
   );
   const message = readableNoResultMessage(
     profile.message,
