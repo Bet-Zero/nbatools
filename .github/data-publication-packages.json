@@ -2265,11 +2265,11 @@
       ]
     },
     "cleveland-team-appearances-2024-v1": {
-      "publisher_sha": "fd702202448f9ca185651137c1cbf6b6afba60fd",
+      "publisher_sha": "93a0fbf2735253c458e8026e84728ea3c7a3cfa4",
       "script": "working/nba-tools-completion-program/prepare-cleveland-candidate.py",
       "script_sha256": "a0bd1c9cb2bcaa9d0c93f90f8c2c30d84f30fd3006d58d0bc072955f553301b2",
       "inventory": "working/nba-tools-completion-program/cleveland-candidate-inventory.json",
-      "inventory_sha256": "42a4e3610fdfd5d24a4a0e9a0f8e8bfd10642f1a13e5fe57530385bdf4c4b8a4",
+      "inventory_sha256": "79d6e702871fe72cc2d708b453b3abbe74f1954f0b280c8982107be2207299a7",
       "generation_id": "availability-cleveland-2024-v3-20261124",
       "operations": [
         "validate",
