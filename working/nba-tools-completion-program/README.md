@@ -83,7 +83,13 @@ season identity dependencies absent from the frozen proof. The new publisher
 hook now validates in the exact hash-bound dependency context already used by
 the runtime; the strict qualifier, accepted proof and NBA facts are unchanged.
 A focused extra-file/mutated-dependency regression passes. No remote data write
-occurred. This failed run is not numerical acceptance.
+occurred. This failed run is not numerical acceptance. Corrected run45374109293
+passed full-snapshot preparation/source/proof validation, then failed at the first
+consumer query because the new test adapter pointed NBATOOLS_DATA_ROOT at the
+data directory instead of its parent. Only that test adapter is corrected to use
+the existing publication-test consumer/data symlink; runtime, package, assertions
+and frozen source data are unchanged. Neither failed run counts as a numerical
+pass. One corrected same-selector execution remains required.
 
 **Next:** independently review the compatibility correction, run the one
 required no-write complete-snapshot check, pass exact-head gates and merge,

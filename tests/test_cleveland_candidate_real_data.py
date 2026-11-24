@@ -80,8 +80,11 @@ def test_exact_cleveland_candidate_snapshot_and_registered_answers(tmp_path, mon
     for report in replacement["reports"]:
         games[report["game_id"]]["points_by_team"] = report["points_by_team"]
     assert len(games) == 82
+    consumer = tmp_path / "consumer"
+    consumer.mkdir()
+    (consumer / "data").symlink_to(work / "validation", target_is_directory=True)
     monkeypatch.setenv("DATA_SOURCE", "local")
-    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(work / "validation"))
+    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(consumer))
     monkeypatch.setenv("NBATOOLS_DATA_GENERATION", GENERATION)
     reset_data_source_cache()
     clear_frame_cache()
