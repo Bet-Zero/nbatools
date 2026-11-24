@@ -11,98 +11,78 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**Lead: Codex. Live main `997efe5d`; prior accepted application code `b041c4cc`, merged
-[PR633](https://github.com/Bet-Zero/nbatools/pull/633) and
-[PR634](https://github.com/Bet-Zero/nbatools/pull/634). Implementation complete, November 22.**
-The limited Core-1 snapshot remains closed. Full original acceptance and
-league-wide participation remain unfinished. No background collection runs.
+**Lead: Codex, November 24.** [PR637](https://github.com/Bet-Zero/nbatools/pull/637)
+and [PR638](https://github.com/Bet-Zero/nbatools/pull/638) are merged; workflow
+main `c90e4ee6`. Production runtime `997efe5d` is READY. Production data remains
+**availability-season-inactive-2024-v1-20261116 (0abc)**; no candidate upload,
+active-pointer change, protection/access change or backup operation occurred.
+The limited Core-1 snapshot remains closed; full original acceptance and
+league-wide participation remain unfinished.
 
-**Now works:** owner-approved default team WITH/WITHOUT means appearances
-**FOR the selected team**, including before joining and after leaving. Opponent
-appearances are WITHOUT for that team. Explicit rostered absence retains strict
-membership/DNP rules; opposing-player, anywhere-in-game and player-stat teammate
-ownership remain separate. Accepted legacy matchup pairs remain supported.
-A scalar explicit role must consume its actor, polarity and clause completely;
-unrepresented mixed roles and unread negation return no reduced answer.
+**Qualified improvement:** all82 Cleveland 2024-25 regular-season side lists
+support complete TEAM WITH/WITHOUT for the21 original pilot candidates. Without
+LeVert31–13, Hunter44–11, Curry64–18; WITH Curry is known-empty, not0–0. Team
+scope means appeared FOR Cleveland, including pre-join/post-leave games and
+opponent appearances. Rostered missed games retain strict membership/DNP rules:
+14/21 complete,7 cases/318 cells unknown. BKN0022400199, malformed originals,
+disputed observations, zero-minute ambiguity and missing membership stay guarded.
 
-**Verified qualified staging:** `team-appearances-cleveland-2024-v1` certifies
-all 82 Cleveland 2024-25 regular-season side lists from retained official sources,
-with zero new collection. All 21 original pilot candidates have complete TEAM
-WITH/WITHOUT answers. Examples: without LeVert 31–13, Hunter 44–11, Curry 64–18.
-WITH Curry is known-empty, not 0–0. These full-season gains are **not activated**.
-Proof SHA256 `fd637c6d36c4fd9ce30b9e3f769c9ba806f535b9a943dc4be3fc6314529df86a`.
-Rostered-only coverage stays 14/21; seven cases/318 unknown cells. BKN0022400199,
-malformed originals, disputes and ambiguous zero-minute records remain protected.
+**Exact upload-only approval packet — actually prepared and independently read:**
+- Package `cleveland-team-appearances-2024-v1`; publisher `564f2e05`.
+- Generation `availability-cleveland-2024-v3-20261124`.
+- Manifest `d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034`.
+- Base `availability-season-inactive-2024-v1-20261116`, manifest
+  `0abce6f8261957df6cffc19ce24a4ed408a548e1292a33456ce55c0481903ecc`.
+- 1,461 manifest-listed files/423,517,896 bytes. Bucket3,615,096,504 bytes;
+ conservative projection4,048,614,400 bytes including10MB headroom, below10GB.
+- Upload ceiling1,462 candidate-object PUTs, **0 pointer PUTs**; candidate SDK
+ one attempt, at most100,000 reads/100 LIST pages per inventory. Preview bound:
+ two deployments/eight queries. No automatic publication retry or refresh.
+- Reuses exact v2 ZIP `a8a9ecfdd447a513498d5ae9a0333357711618e6abeacd2a7fb16b1d0807c298`
+ and appearance proof `fd637c6d36c4fd9ce30b9e3f769c9ba806f535b9a943dc4be3fc6314529df86a`.
 
-**Verification complete:** independent reviews have zero open findings; all
-blocking pre/post-merge CI passed on the exact application revisions, including
-all three post-merge full Python jobs. Existing development-security advisory
-remains informational red. Targeted authenticated runs actually executed with
-zero required skips: [qualification + Core-1 API 45081061855](https://github.com/Bet-Zero/nbatools/actions/runs/45081061855),
-[role correctness 45083468571](https://github.com/Bet-Zero/nbatools/actions/runs/45083468571),
-[six actual desktop/mobile checks 45081877451](https://github.com/Bet-Zero/nbatools/actions/runs/45081877451),
-and [final three deployed API checks 45084724456](https://github.com/Bet-Zero/nbatools/actions/runs/45084724456).
-Each remains attributed to its original revision/scope in PR633/634; no broad
-manual release audit was repeated. Live app answers CLE without Curry vs GSW
-2024-25 as 2–0; the game-wide version is empty; full-season LeVert stays unknown
-on the published data. Exact deployed build and original readiness503/0abc
-passed before/after. No production data, pointer or backup change occurred.
+**Verification:** independent checker `/root/coverage_checker`, zero open findings.
+Required real-data run[45375696531](https://github.com/Bet-Zero/nbatools/actions/runs/45375696531)
+actually selected/executed/passed1 test with zero required skips: complete-source
+preservation,45 prior registered checks,44 TEAM answer controls and7 rostered
+unknown controls. Source/deployed evidence from PR633–635 is reused at its original
+scope. All blocking pre/post CI passed for637/638 (including three main Python
+jobs each); the existing development-security advisory remains informational red.
+Protected[validate45383154974](https://github.com/Bet-Zero/nbatools/actions/runs/45383154974)
+passed on mainc90; its literal `prepared_no_writes` JSON matches the exact tuple
+above, and all writer/activation/backup jobs were skipped. Earlier failed tests,
+their focused fixes and the initially unread453787 receipt remain recorded in
+the PRs; none is relabeled as a pass. Logging the existing nonsecret tuple resolved
+artifact readback without new access or infrastructure. No broad audit was run.
 
-**Original Core-1:** K08 stays **16 PASS /26 MISSING DATA /4 LIVE** under its
-original contract. The 25 Davis-family defaults and entire Tatum Celtics/Knicks
-union remain unqualified as recorded in `core1-acceptance-map.json`; original
-questions, controlled positives, baseline and historical evidence are preserved.
-The new product meaning does not automatically upgrade any original outcome.
+**Next — needs owner approval:** protected **candidate upload only**, plus the
+private preview access prerequisites. Vercel Authentication/password protection
+is currently OFF. This workspace's published network policy permits only GitHub
+and package-manager hosts and rejects runtime grants for other hosts. Request
+explicit permission for zero-cost preview-only Vercel Authentication and one
+temporary deployment-only test link through the existing connection; the owner
+must allow Vercel preview hosts in the published environment network settings.
+No new paid feature, broad credential or public development override is allowed.
 
-**Separate Live:** current-season membership/publication, 24-hour freshness,
-literal-current cases and K12 cold timing. Known 2026-27 readiness
-503/new_season_not_loaded, original failure receipts and 484 unavailable rate
-values stay unchanged. DQ-005 and historical source hunts remain parked.
+After approval, establish protected access, reconfirm the exact packet/base/budget
+and use existing `upload_candidate` with its required owner environment approval.
+Independently verify every uploaded body and unchanged production pointer. Then
+qualify an actual new protected preview's first query/loader miss within20s;
+GitHub-runner/local timing cannot qualify it. Stop on failure. If it passes,
+prepare a separately approved activation using **the same uploaded objects**,
+with one pointer CAS and zero snapshot PUTs. Activation is not exposed before
+that qualification. Original strict readiness and separate data/backup/restore
+verification remain required after any future approved activation.
 
-**Current task — November 24:** [PR637](https://github.com/Bet-Zero/nbatools/pull/637)
-merged as `997efe5d`; candidate upload and preview qualification are implemented.
-All blocking pre/post-merge CI passed (including three main full Python jobs;
-existing development-security advisory remains informational red). Independent
-checker `/root/coverage_checker` approved with zero open findings. Authenticated
-read-only run45375696531 actually selected/executed/passed1 test, zero skips:
-complete snapshot/source preservation,45 prior registered answers,44 Cleveland
-TEAM answer controls and7 rostered unknown controls. Earlier failed runs and
-fixes remain recorded in PR637; neither is counted as acceptance.
-
-**Candidate:** `cleveland-team-appearances-2024-v1`, generation
-`availability-cleveland-2024-v3-20261124`, pinned publisher `564f2e05`.
-Numerical preparation yielded1,461 files/423,517,896 bytes, manifest
-`d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034`.
-Active base remains0abc. Measured bucket3,615,096,504 bytes; conservative full-copy
-projection4,048,614,400 bytes against10GB. This is the qualified source result,
-not an invented protected-receipt readback or hosted cold result.
-
-**Protected no-write validate45378715164 passed:** resolve and preparation
-succeeded; upload, verification, backup and publication receipt jobs were skipped.
-Artifact14911973839 checksum34ebf506743145bcb080d0f1624e1e07f01a0715a6ba1d4aa9eaf64562f46cd9.
-Its actual prepared.json is held behind an artifact/file host that this selected
-workspace cannot access; the managed environment rejected a narrow host grant
-because its published configuration forbids it. No access change occurred.
-One small follow-up logs the existing nonsecret approval JSON alongside its job
-summary, through the already permitted GitHub connection; no gate/data change.
-
-**Next:** merge/review that readback correction with focused checks and gates,
-then run existing `validate` only and inspect its actual approval tuple. Present
-one exact upload-only approval request with storage/operation limits. Upload and
-production activation remain unapproved. Before any candidate-serving preview,
-resolve genuine access prerequisites: Vercel Authentication/password protection
-is currently off, and this workspace permits only GitHub/package-manager hosts.
-Do not create a public candidate override, bypass link, change settings or weaken
-gates implicitly. A protected preview needs explicit access approval and an
-actual first-query loader miss within20s; local/runner results cannot qualify it.
-Activation stays separately approved and must reuse already uploaded bytes.
-No new NBA collection, source research, spending, data publication, pointer write,
-automatic refresh, historical expansion or Live implementation occurred.
-
-**Preserved:** active production **0abc**, its 69 qualified 2024-25 and 93 prior
-2023-24 cases at their original scope, verified backup/restore, all safeguards,
-and Cleveland v2 ZIP SHA256
-`a8a9ecfdd447a513498d5ae9a0333357711618e6abeacd2a7fb16b1d0807c298`.
+**Separate unfinished requirements:** original K08 remains16 PASS/26 MISSING
+DATA/4 LIVE; no original question, controlled positive, baseline or acceptance
+outcome was changed. The new product meaning does not upgrade the26 unsupported
+cases. Live still includes current-season publication/membership,24-hour
+freshness, literal-current cases and K12 timing;2026-27 readiness remains
+503/new_season_not_loaded. Original failure receipts, verified backups, DQ-005
+and484 unavailable rates remain preserved. No new NBA collection, historical
+research/backfill, spending, automatic refresh, wider season expansion or Live
+implementation is authorized by this checkpoint.
 
 ## Preserved scope
 
