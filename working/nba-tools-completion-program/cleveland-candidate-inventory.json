@@ -53,8 +53,8 @@
     },
     {
       "path": "src/nbatools/commands/pipeline/generation_publication.py",
-      "sha256": "3b090aef881f3d69d35b265b4fe95130fca7fc6b93d0cc0a0f04400c8f7691a8",
-      "size_bytes": 41211
+      "sha256": "738231e1ca4f69349ad7391f8e87f0541d857e3d23bdb7a83a9d897ab4a07ca5",
+      "size_bytes": 42851
     },
     {
       "path": "src/nbatools/commands/pipeline/generation_refresh.py",

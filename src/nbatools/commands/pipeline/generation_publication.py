@@ -361,15 +361,46 @@ def validate_staged_generation(stage: Path, generation_id: str) -> dict[str, Any
         except (ValueError, KeyError, OSError, TypeError, AttributeError) as exc:
             raise GenerationValidationError(f"Availability validation failed: {exc}") from exc
     for proof in sorted((stage / "raw/team_game_appearances").glob("*.json")):
-        from nbatools.commands.pipeline.team_appearance_coverage import (
-            validate_complete_appearance_proof,
-        )
-
         try:
-            validate_complete_appearance_proof(stage, json.loads(proof.read_bytes()))
+            _validate_staged_appearance_proof(stage, json.loads(proof.read_bytes()))
         except (ValueError, KeyError, OSError, TypeError, AttributeError) as exc:
             raise GenerationValidationError(f"Appearance proof validation failed: {exc}") from exc
     return document
+
+
+def _validate_staged_appearance_proof(stage: Path, proof: dict) -> None:
+    """Replay the exact frozen dependency context used by the runtime reader.
+
+    A complete snapshot also contains optional previous-season identity files.
+    Those were not used to qualify this proof and must not enter its replay.
+    No dependency or source hash is dropped, substituted or re-qualified.
+    """
+    from nbatools.commands.pipeline.team_appearance_coverage import (
+        validate_complete_appearance_proof,
+    )
+
+    files = dict(proof["dependencies"])
+    for side in proof["sides"]:
+        for relative, digest in side["source_files"].items():
+            if relative in files and files[relative] != digest:
+                raise ValueError("Conflicting appearance source dependencies")
+            files[relative] = digest
+    with tempfile.TemporaryDirectory(prefix="nbatools-appearance-proof-") as temp:
+        root = Path(temp)
+        for relative, digest in files.items():
+            path = _safe_relative_path(relative)
+            if not relative.startswith("raw/") or _file_sha256(stage / path) != digest:
+                raise ValueError("Stale or altered complete appearance dependency")
+            target = root / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(stage / path, target)
+        suffix = proof["season"] + "_" + proof["season_type"].lower().replace(" ", "_")
+        for ending in (".csv", ".imports.json"):
+            path = _safe_relative_path(f"raw/player_game_availability/{suffix}{ending}")
+            target = root / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(stage / path, target)
+        validate_complete_appearance_proof(root, proof)
 
 
 def _build_staged_generation(source: Path, staged: Path, generation: str) -> None:
