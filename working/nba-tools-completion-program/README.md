@@ -15,7 +15,8 @@ evidence; don't extend it.
 and [PR638](https://github.com/Bet-Zero/nbatools/pull/638) are merged; workflow
 main `c90e4ee6`. Production runtime `997efe5d` is READY. Production data remains
 **availability-season-inactive-2024-v1-20261116 (0abc)**; no candidate upload,
-active-pointer change, protection/access change or backup operation occurred.
+active-pointer change or backup operation occurred. Owner-approved preview-only
+Vercel Authentication is now enabled; the Hobby plan is unchanged.
 The limited Core-1 snapshot remains closed; full original acceptance and
 league-wide participation remain unfinished.
 
@@ -55,17 +56,45 @@ their focused fixes and the initially unread 453787 receipt remain recorded in
 the PRs; none is relabeled as a pass. Logging the existing nonsecret tuple resolved
 artifact readback without new access or infrastructure. No broad audit was run.
 
-**Next — needs owner approval:** protected **candidate upload only**, plus the
-private preview access prerequisites. Vercel Authentication/password protection
-is currently OFF. This workspace's published network policy permits only GitHub
-and package-manager hosts and rejects runtime grants for other hosts. Request
-explicit permission for zero-cost preview-only Vercel Authentication and one
-temporary deployment-only test link through the existing connection; the owner
-must allow Vercel preview hosts in the published environment network settings.
-No new paid feature, broad credential or public development override is allowed.
+**Owner authorization received November 24:** the owner replied “yes i approve”
+to the exact upload-only packet above and bounded $0 private-preview access.
+This authorization persists; do not request the same chat approval again.
+Production activation remains UNAPPROVED.
 
-After approval, establish protected access, reconfirm the exact packet/base/budget
-and use existing `upload_candidate` with its required owner environment approval.
+**Upload is queued, not performed:** existing protected
+[run45391469130](https://github.com/Bet-Zero/nbatools/actions/runs/45391469130)
+is pinned to main `11ab5aad1db7897fec0b871e6d9dba77dd6929e3`, mode
+`upload_candidate`. Fresh resolve/preparation passed and its actual receipt was
+independently read: exact approved manifest/base/publisher/registry, 1,461 files,
+423,517,896 bytes and unchanged 4,048,614,400-byte projection. The protected
+writer is WAITING for `Bet-Zero` to use **Review deployments → r2-publication →
+Approve**. A transparent delegated approval attempt through the existing owner
+connection returned GitHub403 “Resource not accessible by integration”; no
+approval was accepted, no R2 write occurred, and no broader credential or gate
+change was attempted. Use the existing owner UI, not another upload run.
+
+**Freeze main while this operation is pending/running.** The writer verifies
+live main still equals its workflow revision. Do not merge this checkpoint or
+any other PR until the upload/independent verification/receipt finishes (or an
+explicitly approved cancellation). The handoff branch is
+`codex/cleveland-upload-approved`; a draft docs PR preserves these facts without
+invalidating the queued protected operation.
+
+**Private-preview access:** fresh Vercel readback confirms project
+`prj_luTVKSLCFRQP3BYwk93XETz9WwCy` has `ssoProtection.enabled=true`,
+`deploymentType=preview`; password protection remains off and public production
+protection is unchanged. Official Vercel pricing confirms Authentication is
+included on Hobby. No candidate preview or temporary access link was created.
+The workspace still enforces GitHub/package-manager hosts only. The authorized
+request to add `*.vercel.app` was rejected by the managed environment because its
+published configuration does not allow that access. The owner must add that
+approved rule to the published network settings, preserve existing grants, and
+apply it to this task. Chat approval alone did not edit the configuration.
+No paid feature, broad credential or public development override is allowed.
+
+After the existing owner environment gate is approved, let this same upload run
+complete; do not repeat publication. The exact packet/base/budget are already
+reconfirmed. Keep the active production pointer unchanged.
 Independently verify every uploaded body and unchanged production pointer. Then
 qualify an actual new protected preview's first query/loader miss within 20 seconds;
 GitHub-runner/local timing cannot qualify it. Stop on failure. If it passes,
