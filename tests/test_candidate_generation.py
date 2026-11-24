@@ -180,3 +180,102 @@ def test_cold_evidence_survives_real_admitted_executor(tmp_path, monkeypatch):
     assert proof["frame_entries_before"] == 0
     assert proof["appearance_loads"] == proof["appearance_loads_completed"] == 1
     assert proof["succeeded"]
+
+
+@pytest.mark.parametrize(
+    "damage",
+    [
+        None,
+        "warm",
+        "disk",
+        "no_loader",
+        "incomplete_loader",
+        "generation",
+        "manifest",
+        "slow",
+        "unknown",
+        "wrong_answer",
+    ],
+)
+def test_cold_verifier_requires_actual_cold_positive_answer(damage):
+    from types import SimpleNamespace
+
+    from tools.r2_publication import verify_candidate_cold_response
+
+    proof = dict(
+        worker="a" * 32,
+        invocation=1,
+        disk_cache_empty=True,
+        frame_entries_before=0,
+        appearance_loads=1,
+        appearance_loads_completed=1,
+        succeeded=True,
+        generation="candidate",
+        manifest_sha256="b" * 64,
+        elapsed_ms=100,
+    )
+    case = dict(
+        query="Cavaliers record without Caris LeVert in 2024-25",
+        summary=dict(games=44, wins=31, losses=13),
+    )
+    answer = dict(result_status="ok", result=dict(sections=dict(summary=[dict(case["summary"])])))
+    elapsed = 0.2
+    if damage == "warm":
+        proof["invocation"] = 2
+    if damage == "disk":
+        proof["disk_cache_empty"] = False
+    if damage == "no_loader":
+        proof["appearance_loads"] = 0
+    if damage == "incomplete_loader":
+        proof["appearance_loads_completed"] = 0
+    if damage == "generation":
+        proof["generation"] = "other"
+    if damage == "manifest":
+        proof["manifest_sha256"] = "c" * 64
+    if damage == "slow":
+        elapsed = 20.01
+    if damage == "unknown":
+        answer["result_status"] = "no_result"
+    if damage == "wrong_answer":
+        answer["result"]["sections"]["summary"][0]["games"] = 45
+    response = SimpleNamespace(
+        status_code=200,
+        json=lambda: answer,
+        headers={"X-NBATools-Candidate-Qualification": json.dumps(proof)},
+    )
+    if damage:
+        with pytest.raises(ValueError):
+            verify_candidate_cold_response(
+                response,
+                generation="candidate",
+                manifest_sha256="b" * 64,
+                elapsed_seconds=elapsed,
+                case=case,
+            )
+    else:
+        result = verify_candidate_cold_response(
+            response,
+            generation="candidate",
+            manifest_sha256="b" * 64,
+            elapsed_seconds=elapsed,
+            case=case,
+        )
+        assert result["answer"]["summary"] == case["summary"]
+
+
+def test_candidate_package_forbids_combined_publish(tmp_path, monkeypatch):
+    from tools import r2_publication as gate
+
+    monkeypatch.setattr(gate, "check_main_revision", lambda *args: None)
+    monkeypatch.setattr(gate, "environment_audit", lambda: {})
+    monkeypatch.setattr(gate, "check_approval", lambda *args: None)
+    monkeypatch.setattr(gate, "api", lambda *args: [])
+    monkeypatch.setenv("GITHUB_SHA", "code")
+    monkeypatch.setenv("GITHUB_RUN_ID", "run")
+    monkeypatch.setattr(
+        gate, "prepare", lambda *args, **kwargs: pytest.fail("Combined publish reached")
+    )
+    prepared = tmp_path / "prepared.json"
+    prepared.write_text("{}")
+    with pytest.raises(ValueError, match="forbids"):
+        gate.publish("cleveland-team-appearances-2024-v1", tmp_path, tmp_path / "work", prepared)

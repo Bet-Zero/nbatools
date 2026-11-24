@@ -141,7 +141,13 @@ def test_prepare_rejects_changed_reviewed_base_before_publisher(tmp_path, monkey
         gate.prepare("package", tmp_path, tmp_path / "work")
 
 
-def test_publication_cannot_reach_prepare_or_writer_without_approval(tmp_path, monkeypatch):
+@pytest.mark.parametrize("operation", ["publish", "upload_candidate"])
+def test_publication_cannot_reach_prepare_or_writer_without_approval(
+    tmp_path, monkeypatch, operation
+):
+    registry = tmp_path / "registry.json"
+    registry.write_text(json.dumps({"packages": {"package": {"operations": [operation]}}}))
+    monkeypatch.setattr(gate, "REGISTRY", registry)
     prepared = tmp_path / "prepared.json"
     prepared.write_text("{}")
     monkeypatch.setenv("GITHUB_SHA", "abc")
@@ -153,7 +159,7 @@ def test_publication_cannot_reach_prepare_or_writer_without_approval(tmp_path, m
         gate, "prepare", lambda *a, **k: pytest.fail("Preparation reached without approval")
     )
     with pytest.raises(ValueError, match="unverified"):
-        gate.publish("package", tmp_path, tmp_path / "work", prepared)
+        getattr(gate, operation)("package", tmp_path, tmp_path / "work", prepared)
 
 
 def test_publisher_workflow_is_manual_and_credentials_are_job_and_step_scoped():
