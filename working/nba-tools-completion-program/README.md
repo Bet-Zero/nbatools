@@ -11,78 +11,76 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**Lead: Codex, November 24.** [PR637](https://github.com/Bet-Zero/nbatools/pull/637)
-and [PR638](https://github.com/Bet-Zero/nbatools/pull/638) are merged; workflow
-main `c90e4ee6`. Production runtime `997efe5d` is READY. Production data remains
-**availability-season-inactive-2024-v1-20261116 (0abc)**; no candidate upload,
-active-pointer change, protection/access change or backup operation occurred.
+**Lead: Codex, November 24.** PR637–639 are merged. Workflow main is
+`11ab5aad1db7897fec0b871e6d9dba77dd6929e3`; production runtime `997efe5d` is READY.
 The limited Core-1 snapshot remains closed; full original acceptance and
 league-wide participation remain unfinished.
 
-**Qualified improvement:** all 82 Cleveland 2024-25 regular-season side lists
-support complete TEAM WITH/WITHOUT for the 21 original pilot candidates. Without
-LeVert 31–13, Hunter 44–11, Curry 64–18; WITH Curry is known-empty, not 0–0. Team
-scope means appeared FOR Cleveland, including pre-join/post-leave games and
-opponent appearances. Rostered missed games retain strict membership/DNP rules:
-14/21 complete, with seven cases/318 cells unknown. BKN 0022400199, malformed originals,
-disputed observations, zero-minute ambiguity and missing membership stay guarded.
-
-**Exact upload-only approval packet — actually prepared and independently read:**
+**Candidate uploaded and independently verified, NOT ACTIVATED:** owner-approved
+[run45391469130](https://github.com/Bet-Zero/nbatools/actions/runs/45391469130)
+completed preparation, protected upload, separate read-only verification and
+[durable receipt](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-45391469130).
+The actual receipt is `candidate_independently_verified_not_activated`, SHA256
+`b49eed924b26a6c2d5ad0cd0d8c654e37a811a657b8a889548f615c38ebfbd70`.
 - Package `cleveland-team-appearances-2024-v1`; publisher `564f2e05`.
-- Generation `availability-cleveland-2024-v3-20261124`.
-- Manifest `d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034`.
-- Base `availability-season-inactive-2024-v1-20261116`, manifest
-  `0abce6f8261957df6cffc19ce24a4ed408a548e1292a33456ce55c0481903ecc`.
-- 1,461 manifest-listed files/423,517,896 bytes. Bucket 3,615,096,504 bytes;
- conservative projection 4,048,614,400 bytes including 10 MB headroom, below 10 GB.
-- Upload ceiling 1,462 candidate-object PUTs, **0 pointer PUTs**; candidate SDK
- one attempt, at most 100,000 reads / 100 LIST pages per inventory. Preview bound:
- two deployments/eight queries. No automatic publication retry or refresh.
-- Reuses exact v2 ZIP `a8a9ecfdd447a513498d5ae9a0333357711618e6abeacd2a7fb16b1d0807c298`
- and appearance proof `fd637c6d36c4fd9ce30b9e3f769c9ba806f535b9a943dc4be3fc6314529df86a`.
+- Generation `availability-cleveland-2024-v3-20261124`; manifest
+  `d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034`.
+- 1,461 manifest-listed files/423,517,896 bytes; upload ceiling 1,462 candidate
+  PUTs and **zero pointer PUTs**. Approved conservative storage projection
+  4,048,614,400 bytes is below the unchanged 10 GB limit.
+- The production pointer stayed on `availability-season-inactive-2024-v1-20261116`,
+  manifest `0abce6f8261957df6cffc19ce24a4ed408a548e1292a33456ce55c0481903ecc`.
+  Every uploaded body passed independent readback. Existing data and backups
+  remain intact; candidate upload intentionally skipped production backup.
+- The owner approved the existing environment gate as `Bet-Zero`; no bypass,
+  broader credential or repeat upload occurred. The pending-run main freeze has
+  ended. The exact packet and source lineage remain in PR637–639 and the receipt.
 
-**Verification:** independent checker `/root/coverage_checker`, zero open findings.
-Required real-data run[45375696531](https://github.com/Bet-Zero/nbatools/actions/runs/45375696531)
-actually selected/executed/passed one test with zero required skips: complete-source
-preservation, 45 prior registered checks, 44 TEAM answer controls and seven rostered
-unknown controls. Source/deployed evidence from PR633–635 is reused at its original
-scope. All blocking pre/post CI passed for PR637/638 (including three main Python
-jobs each); the existing development-security advisory remains informational red.
-Protected[validate 45383154974](https://github.com/Bet-Zero/nbatools/actions/runs/45383154974)
-passed on main c90; its literal `prepared_no_writes` JSON matches the exact tuple
-above, and all writer/activation/backup jobs were skipped. Earlier failed tests,
-their focused fixes and the initially unread 453787 receipt remain recorded in
-the PRs; none is relabeled as a pass. Logging the existing nonsecret tuple resolved
-artifact readback without new access or infrastructure. No broad audit was run.
+**Functional improvement still unavailable on the public website:** all 82
+Cleveland 2024-25 side lists support TEAM WITH/WITHOUT for all 21 original pilot
+candidates. Without LeVert 31–13, Hunter 44–11, Curry 64–18; WITH Curry is
+known-empty, not 0–0. Rostered missed games remain 14/21 complete, seven cases /
+318 cells unknown. Compatible v2 sources are included; quarantines, original
+source authority and unknowns are preserved. Production has not selected this
+candidate.
 
-**Next — needs owner approval:** protected **candidate upload only**, plus the
-private preview access prerequisites. Vercel Authentication/password protection
-is currently OFF. This workspace's published network policy permits only GitHub
-and package-manager hosts and rejects runtime grants for other hosts. Request
-explicit permission for zero-cost preview-only Vercel Authentication and one
-temporary deployment-only test link through the existing connection; the owner
-must allow Vercel preview hosts in the published environment network settings.
-No new paid feature, broad credential or public development override is allowed.
+**Verification reused:** numerical run45375696531 actually executed/passed its
+one required test with zero required skips: source preservation, 45 prior checks,
+44 TEAM controls and seven rostered unknown controls. Blocking pre/post CI for
+PR637/638 passed; PR639 took its passing light path. Source/deployed evidence
+from PR633–635 retains its original scope. Historical failed receipts and the
+informational development-security failure are preserved. No full-suite rerun
+or new NBA acquisition was needed for upload verification.
 
-After approval, establish protected access, reconfirm the exact packet/base/budget
-and use existing `upload_candidate` with its required owner environment approval.
-Independently verify every uploaded body and unchanged production pointer. Then
-qualify an actual new protected preview's first query/loader miss within 20 seconds;
-GitHub-runner/local timing cannot qualify it. Stop on failure. If it passes,
-prepare a separately approved activation using **the same uploaded objects**,
-with one pointer CAS and zero snapshot PUTs. Activation is not exposed before
-that qualification. Original strict readiness and separate data/backup/restore
-verification remain required after any future approved activation.
+**Remaining blocker — apply already approved access to this running task:**
+preview-only Vercel Authentication is enabled on Hobby at $0. The owner reports
+adding `*.vercel.app`, but after environment restarts the actual task still
+reports enforced revision1, custom host `api.github.com` plus package managers.
+A fresh Vercel connection failed at the proxy with CONNECT403. The requested
+runtime change did not produce a confirmed applied grant. Do not repeat identical
+requests or confuse a future-task configuration change with this instance's
+policy. No candidate preview, temporary share link or cold query was created.
+Chat permission for the exact upload and bounded private-preview access is
+already recorded; do not ask for it again.
+
+**Next:** once this task's settings show the approved preview-host grant applied,
+create an isolated protected preview pinned to the uploaded generation and full
+manifest. Qualify its actual first query/loader miss within 20 seconds; maximum
+two deployments/eight queries. Reuse the uploaded bytes. Stop on failure; no
+optimization campaign. Only a passing hosted qualification permits preparation
+of a separate protected activation approval (one pointer CAS, zero snapshot
+PUTs). **Production activation remains UNAPPROVED.** Strict readiness and
+separate data/backup/restore verification remain required after any later
+approved activation.
 
 **Separate unfinished requirements:** original K08 remains 16 PASS / 26 MISSING
-DATA / 4 LIVE; no original question, controlled positive, baseline or acceptance
-outcome was changed. The new product meaning does not upgrade the 26 unsupported
-cases. Live still includes current-season publication/membership, 24-hour
-freshness, literal-current cases and K12 timing; 2026-27 readiness remains
-503/new_season_not_loaded. Original failure receipts, verified backups, DQ-005
-and 484 unavailable rates remain preserved. No new NBA collection, historical
-research/backfill, spending, automatic refresh, wider season expansion or Live
-implementation is authorized by this checkpoint.
+DATA / 4 LIVE; original questions, controlled positives and acceptance baseline
+are unchanged. The new semantics do not upgrade the 26 cases. Current-season
+readiness remains 503/new_season_not_loaded; Live collection/publication,
+24-hour freshness, literal-current cases and K12 timing are separate. DQ-005,
+484 unavailable rates and original failure receipts remain preserved. No new
+collection, historical backfill, spending, automatic refresh or Live work is
+authorized.
 
 ## Preserved scope
 
