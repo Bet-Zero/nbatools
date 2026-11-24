@@ -196,7 +196,7 @@
       "path": ".github/workflows/r2-publication-readonly.yml",
       "old_sha256": "14ef3a2c41bc587e4d05a1bd76b7c2382507ebf1e54997cd573ed96aa49a35b7",
       "reviewed_functions": "read-only candidate verification",
-      "semantic_reach": "Adds the candidate byte-verification branch with existing read-only credentials. Existing strict production verification remains unchanged; no historical query interpretation or arithmetic changes. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed.",
+      "semantic_reach": "Adds the candidate byte-verification branch with existing read-only credentials. Existing strict production verification remains unchanged; no historical query interpretation or arithmetic changes. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Emits the same nonsecret prepared approval JSON in existing authenticated job logs as well as the job summary so agents can inspect its actual bytes without an additional artifact-host permission. No gate, source, snapshot, credential or activation behavior changes.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -221,7 +221,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "1d9fa68972dcb60f65d50aba863f1491ac95b2f558044f1aa6d3b042ee11c40c"
+      "reviewed_sha256": "49a985f7f83ff41a83b2a72d0c3b505a6e74917773768c96ca6a9e39bce2be7a"
     },
     {
       "path": "CLAUDE.md",

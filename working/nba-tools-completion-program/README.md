@@ -11,7 +11,7 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**Lead: Codex. Live main `e808bb41`; application code `b041c4cc`, merged
+**Lead: Codex. Live main `997efe5d`; prior accepted application code `b041c4cc`, merged
 [PR633](https://github.com/Bet-Zero/nbatools/pull/633) and
 [PR634](https://github.com/Bet-Zero/nbatools/pull/634). Implementation complete, November 22.**
 The limited Core-1 snapshot remains closed. Full original acceptance and
@@ -59,47 +59,45 @@ literal-current cases and K12 cold timing. Known 2026-27 readiness
 503/new_season_not_loaded, original failure receipts and 484 unavailable rate
 values stay unchanged. DQ-005 and historical source hunts remain parked.
 
-**Current task — November 24:** owner approved implementing candidate upload and
-preview qualification, **not remote upload or activation**. Work branch
-`codex/cleveland-candidate-publication`, based on merged PR636 `e808bb41`.
-The protected workflow gains `upload_candidate`: exact retained v2 + appearance
-proof, full-snapshot/source preservation checks, immutable upload, independent
-read-only body verification, and **no pointer write**. Existing combined publish
-remains unchanged for old packages and forbidden for the Cleveland candidate.
-Low-level activation reuses candidate bytes and writes only the pointer; it is
-not workflow-accessible until successful hosted qualification is reviewed.
+**Current task — November 24:** [PR637](https://github.com/Bet-Zero/nbatools/pull/637)
+merged as `997efe5d`; candidate upload and preview qualification are implemented.
+All blocking pre/post-merge CI passed (including three main full Python jobs;
+existing development-security advisory remains informational red). Independent
+checker `/root/coverage_checker` approved with zero open findings. Authenticated
+read-only run45375696531 actually selected/executed/passed1 test, zero skips:
+complete snapshot/source preservation,45 prior registered answers,44 Cleveland
+TEAM answer controls and7 rostered unknown controls. Earlier failed runs and
+fixes remain recorded in PR637; neither is counted as acceptance.
 
-Preview pins are per-deployment, nonsecret generation/manifest values, fail
-closed outside Vercel preview, and emit actual first-query/cache-miss evidence
-through the existing admitted executor. No local data bundle or public request
-override is introduced. **Execution prerequisite:** actual Vercel project reads
-report SSO/password protection disabled; an approved protected-access route must
-be established before any candidate-serving preview. No project settings,
-credentials, protection or production data have changed.
+**Candidate:** `cleveland-team-appearances-2024-v1`, generation
+`availability-cleveland-2024-v3-20261124`, pinned publisher `564f2e05`.
+Numerical preparation yielded1,461 files/423,517,896 bytes, manifest
+`d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034`.
+Active base remains0abc. Measured bucket3,615,096,504 bytes; conservative full-copy
+projection4,048,614,400 bytes against10GB. This is the qualified source result,
+not an invented protected-receipt readback or hosted cold result.
 
-**Preparation check:** initial read-only run45371905824 executed one required
-test and failed before upload: full-snapshot replay introduced optional prior-
-season identity dependencies absent from the frozen proof. The new publisher
-hook now validates in the exact hash-bound dependency context already used by
-the runtime; the strict qualifier, accepted proof and NBA facts are unchanged.
-A focused extra-file/mutated-dependency regression passes. No remote data write
-occurred. This failed run is not numerical acceptance. Corrected run45374109293
-passed full-snapshot preparation/source/proof validation, then failed at the first
-consumer query because the new test adapter pointed NBATOOLS_DATA_ROOT at the
-data directory instead of its parent. Only that test adapter is corrected to use
-the existing publication-test consumer/data symlink; runtime, package, assertions
-and frozen source data are unchanged. Neither failed run counts as a numerical
-pass. One corrected same-selector execution remains required.
+**Protected no-write validate45378715164 passed:** resolve and preparation
+succeeded; upload, verification, backup and publication receipt jobs were skipped.
+Artifact14911973839 checksum34ebf506743145bcb080d0f1624e1e07f01a0715a6ba1d4aa9eaf64562f46cd9.
+Its actual prepared.json is held behind an artifact/file host that this selected
+workspace cannot access; the managed environment rejected a narrow host grant
+because its published configuration forbids it. No access change occurred.
+One small follow-up logs the existing nonsecret approval JSON alongside its job
+summary, through the already permitted GitHub connection; no gate/data change.
 
-**Next:** independently review the compatibility correction, run the one
-required no-write complete-snapshot check, pass exact-head gates and merge,
-then obtain exact candidate-upload approval (manifest/base/storage/operations).
-After approved upload, independently verify bytes and unchanged production
-pointer, then qualify an actually protected hosted cold load within 20s. Stop
-on access or qualification failure; activation needs a separate explicit
-approval and original readiness/backup safeguards. No remote upload is yet
-authorized. Reuse PR633–635 numerical/source/deployment evidence; do not repeat
-publication/backup audits, collect data, expand seasons or implement Live.
+**Next:** merge/review that readback correction with focused checks and gates,
+then run existing `validate` only and inspect its actual approval tuple. Present
+one exact upload-only approval request with storage/operation limits. Upload and
+production activation remain unapproved. Before any candidate-serving preview,
+resolve genuine access prerequisites: Vercel Authentication/password protection
+is currently off, and this workspace permits only GitHub/package-manager hosts.
+Do not create a public candidate override, bypass link, change settings or weaken
+gates implicitly. A protected preview needs explicit access approval and an
+actual first-query loader miss within20s; local/runner results cannot qualify it.
+Activation stays separately approved and must reuse already uploaded bytes.
+No new NBA collection, source research, spending, data publication, pointer write,
+automatic refresh, historical expansion or Live implementation occurred.
 
 **Preserved:** active production **0abc**, its 69 qualified 2024-25 and 93 prior
 2023-24 cases at their original scope, verified backup/restore, all safeguards,

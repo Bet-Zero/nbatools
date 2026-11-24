@@ -88,9 +88,11 @@ jobs:
           python - <<'PY'
           import os
           from pathlib import Path
+          prepared = Path('work/prepared/prepared.json').read_text()
+          print(prepared)
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
               output.write('### Prepared snapshot: no production writes\n\n```json\n')
-              output.write(Path('work/prepared/prepared.json').read_text())
+              output.write(prepared)
               output.write('```\n')
           PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
