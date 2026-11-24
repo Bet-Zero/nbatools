@@ -19,12 +19,12 @@ active-pointer change, protection/access change or backup operation occurred.
 The limited Core-1 snapshot remains closed; full original acceptance and
 league-wide participation remain unfinished.
 
-**Qualified improvement:** all82 Cleveland 2024-25 regular-season side lists
-support complete TEAM WITH/WITHOUT for the21 original pilot candidates. Without
-LeVert31–13, Hunter44–11, Curry64–18; WITH Curry is known-empty, not0–0. Team
+**Qualified improvement:** all 82 Cleveland 2024-25 regular-season side lists
+support complete TEAM WITH/WITHOUT for the 21 original pilot candidates. Without
+LeVert 31–13, Hunter 44–11, Curry 64–18; WITH Curry is known-empty, not 0–0. Team
 scope means appeared FOR Cleveland, including pre-join/post-leave games and
 opponent appearances. Rostered missed games retain strict membership/DNP rules:
-14/21 complete,7 cases/318 cells unknown. BKN0022400199, malformed originals,
+14/21 complete, with seven cases/318 cells unknown. BKN 0022400199, malformed originals,
 disputed observations, zero-minute ambiguity and missing membership stay guarded.
 
 **Exact upload-only approval packet — actually prepared and independently read:**
@@ -33,25 +33,25 @@ disputed observations, zero-minute ambiguity and missing membership stay guarded
 - Manifest `d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034`.
 - Base `availability-season-inactive-2024-v1-20261116`, manifest
   `0abce6f8261957df6cffc19ce24a4ed408a548e1292a33456ce55c0481903ecc`.
-- 1,461 manifest-listed files/423,517,896 bytes. Bucket3,615,096,504 bytes;
- conservative projection4,048,614,400 bytes including10MB headroom, below10GB.
-- Upload ceiling1,462 candidate-object PUTs, **0 pointer PUTs**; candidate SDK
- one attempt, at most100,000 reads/100 LIST pages per inventory. Preview bound:
+- 1,461 manifest-listed files/423,517,896 bytes. Bucket 3,615,096,504 bytes;
+ conservative projection 4,048,614,400 bytes including 10 MB headroom, below 10 GB.
+- Upload ceiling 1,462 candidate-object PUTs, **0 pointer PUTs**; candidate SDK
+ one attempt, at most 100,000 reads / 100 LIST pages per inventory. Preview bound:
  two deployments/eight queries. No automatic publication retry or refresh.
 - Reuses exact v2 ZIP `a8a9ecfdd447a513498d5ae9a0333357711618e6abeacd2a7fb16b1d0807c298`
  and appearance proof `fd637c6d36c4fd9ce30b9e3f769c9ba806f535b9a943dc4be3fc6314529df86a`.
 
 **Verification:** independent checker `/root/coverage_checker`, zero open findings.
 Required real-data run[45375696531](https://github.com/Bet-Zero/nbatools/actions/runs/45375696531)
-actually selected/executed/passed1 test with zero required skips: complete-source
-preservation,45 prior registered checks,44 TEAM answer controls and7 rostered
+actually selected/executed/passed one test with zero required skips: complete-source
+preservation, 45 prior registered checks, 44 TEAM answer controls and seven rostered
 unknown controls. Source/deployed evidence from PR633–635 is reused at its original
-scope. All blocking pre/post CI passed for637/638 (including three main Python
+scope. All blocking pre/post CI passed for PR637/638 (including three main Python
 jobs each); the existing development-security advisory remains informational red.
-Protected[validate45383154974](https://github.com/Bet-Zero/nbatools/actions/runs/45383154974)
-passed on mainc90; its literal `prepared_no_writes` JSON matches the exact tuple
+Protected[validate 45383154974](https://github.com/Bet-Zero/nbatools/actions/runs/45383154974)
+passed on main c90; its literal `prepared_no_writes` JSON matches the exact tuple
 above, and all writer/activation/backup jobs were skipped. Earlier failed tests,
-their focused fixes and the initially unread453787 receipt remain recorded in
+their focused fixes and the initially unread 453787 receipt remain recorded in
 the PRs; none is relabeled as a pass. Logging the existing nonsecret tuple resolved
 artifact readback without new access or infrastructure. No broad audit was run.
 
@@ -67,20 +67,20 @@ No new paid feature, broad credential or public development override is allowed.
 After approval, establish protected access, reconfirm the exact packet/base/budget
 and use existing `upload_candidate` with its required owner environment approval.
 Independently verify every uploaded body and unchanged production pointer. Then
-qualify an actual new protected preview's first query/loader miss within20s;
+qualify an actual new protected preview's first query/loader miss within 20 seconds;
 GitHub-runner/local timing cannot qualify it. Stop on failure. If it passes,
 prepare a separately approved activation using **the same uploaded objects**,
 with one pointer CAS and zero snapshot PUTs. Activation is not exposed before
 that qualification. Original strict readiness and separate data/backup/restore
 verification remain required after any future approved activation.
 
-**Separate unfinished requirements:** original K08 remains16 PASS/26 MISSING
-DATA/4 LIVE; no original question, controlled positive, baseline or acceptance
-outcome was changed. The new product meaning does not upgrade the26 unsupported
-cases. Live still includes current-season publication/membership,24-hour
-freshness, literal-current cases and K12 timing;2026-27 readiness remains
+**Separate unfinished requirements:** original K08 remains 16 PASS / 26 MISSING
+DATA / 4 LIVE; no original question, controlled positive, baseline or acceptance
+outcome was changed. The new product meaning does not upgrade the 26 unsupported
+cases. Live still includes current-season publication/membership, 24-hour
+freshness, literal-current cases and K12 timing; 2026-27 readiness remains
 503/new_season_not_loaded. Original failure receipts, verified backups, DQ-005
-and484 unavailable rates remain preserved. No new NBA collection, historical
+and 484 unavailable rates remain preserved. No new NBA collection, historical
 research/backfill, spending, automatic refresh, wider season expansion or Live
 implementation is authorized by this checkpoint.
 
