@@ -380,10 +380,12 @@ def prepare(name, publisher, work, *, expected=None):
             "candidate_object_puts": local["file_count"] + 1,
             "active_pointer_puts": 0,
             "maximum_bucket_list_requests_per_inventory": 100,
-            "read_requests_ceiling": 50_000,
+            "read_requests_ceiling": 100_000,
+            "candidate_writer_sdk_max_attempts": 1,
+            "preparation_read_retries": "existing bounded SDK policy",
             "preview_deployments_ceiling": 2,
             "preview_query_requests_ceiling": 8,
-            "automatic_retries_or_refresh": False,
+            "automatic_publication_retries_or_refresh": False,
         }
     if expected is not None:
         keys = set(receipt) - {"budget", "publication_state", "base_pointer"}

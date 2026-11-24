@@ -632,7 +632,11 @@ def upload_r2_candidate(
     """Upload an exact immutable candidate. This operation never writes a pointer."""
     generation = _validated_generation_id(generation_id)
     client, bucket = _resolve_r2_target(
-        client=client, bucket_name=bucket_name, env=None, env_file=env_file
+        client=client,
+        bucket_name=bucket_name,
+        env=None,
+        env_file=env_file,
+        disable_retries=True,
     )
     start = _candidate_base(
         client, bucket, generation, expected_base, expected_base_manifest_sha256
@@ -710,7 +714,11 @@ def activate_r2_candidate(
     """
     generation = _validated_generation_id(generation_id)
     client, bucket = _resolve_r2_target(
-        client=client, bucket_name=bucket_name, env=None, env_file=env_file
+        client=client,
+        bucket_name=bucket_name,
+        env=None,
+        env_file=env_file,
+        disable_retries=True,
     )
     start = _candidate_base(
         client, bucket, generation, expected_base, expected_base_manifest_sha256
@@ -929,6 +937,7 @@ def _resolve_r2_target(
     bucket_name: str | None,
     env: Mapping[str, str] | None,
     env_file: Path | None,
+    disable_retries: bool = False,
 ) -> tuple[Any, str]:
     if client is not None and bucket_name:
         return client, bucket_name
@@ -936,7 +945,12 @@ def _resolve_r2_target(
         raise GenerationPublicationError("client and bucket_name must be provided together")
     try:
         config = load_r2_config(env=env, env_file=env_file)
-        return create_r2_client(config), config.bucket_name
+        client = (
+            create_r2_client(config, disable_retries=True)
+            if disable_retries
+            else create_r2_client(config)
+        )
+        return client, config.bucket_name
     except R2SyncError as exc:
         raise GenerationPublicationError(str(exc)) from exc
 

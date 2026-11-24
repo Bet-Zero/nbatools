@@ -279,3 +279,18 @@ def test_candidate_package_forbids_combined_publish(tmp_path, monkeypatch):
     prepared.write_text("{}")
     with pytest.raises(ValueError, match="forbids"):
         gate.publish("cleveland-team-appearances-2024-v1", tmp_path, tmp_path / "work", prepared)
+
+
+def test_candidate_client_disables_sdk_retries_without_changing_legacy(monkeypatch):
+    from types import SimpleNamespace
+
+    monkeypatch.setattr(pub, "load_r2_config", lambda **kwargs: SimpleNamespace(bucket_name="b"))
+    calls = []
+    monkeypatch.setattr(
+        pub, "create_r2_client", lambda config, **kwargs: calls.append(kwargs) or "client"
+    )
+    pub._resolve_r2_target(
+        client=None, bucket_name=None, env=None, env_file=None, disable_retries=True
+    )
+    pub._resolve_r2_target(client=None, bucket_name=None, env=None, env_file=None)
+    assert calls == [{"disable_retries": True}, {}]

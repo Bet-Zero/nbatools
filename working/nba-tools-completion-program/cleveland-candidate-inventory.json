@@ -53,8 +53,8 @@
     },
     {
       "path": "src/nbatools/commands/pipeline/generation_publication.py",
-      "sha256": "fabbc140a32ff7eaedcaa82181b4c395a586aa845f5fabd961a9a91b4b7eba98",
-      "size_bytes": 40923
+      "sha256": "3b090aef881f3d69d35b265b4fe95130fca7fc6b93d0cc0a0f04400c8f7691a8",
+      "size_bytes": 41211
     },
     {
       "path": "src/nbatools/commands/pipeline/generation_refresh.py",
@@ -123,8 +123,8 @@
     },
     {
       "path": "tools/r2_publication.py",
-      "sha256": "5a3d144bb1e833d45aa7979d167ff30cfb3ac0cbdf5d568514914b3ba15a33f4",
-      "size_bytes": 34390
+      "sha256": "543540533ec8536bc37ddb0c920356fb7448deca992e422edc6311e2aea26c17",
+      "size_bytes": 34526
     },
     {
       "path": "working/nba-tools-completion-program/prepare-cleveland-candidate.py",
