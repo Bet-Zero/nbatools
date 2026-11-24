@@ -70,7 +70,7 @@ jobs:
       - name: Audit environment policy without modifying settings
         run: python tools/r2_publication.py audit --work work/policy
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        if: inputs.publication_mode == 'verify'
+        if: inputs.publication_mode == 'verify' || inputs.publication_mode == 'verify_candidate'
         with:
           name: publication-result-${{ github.run_id }}
           path: published
@@ -79,6 +79,7 @@ jobs:
           case "$MODE" in
             prepare) python tools/r2_publication.py prepare --package "$PACKAGE" --publisher publisher --work work/prepared ;;
             verify) python tools/r2_publication.py verify --package "$PACKAGE" --publisher publisher --prepared published/publication.json --work work/verified ;;
+            verify_candidate) python tools/r2_publication.py verify_candidate --package "$PACKAGE" --publisher publisher --prepared published/publication.json --work work/verified ;;
             *) echo 'Unsupported read-only publication operation' >&2; exit 1 ;;
           esac
       - name: Show the immutable approval tuple
@@ -105,7 +106,7 @@ jobs:
           retention-days: 30
           if-no-files-found: error
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        if: always() && inputs.publication_mode == 'verify'
+        if: always() && (inputs.publication_mode == 'verify' || inputs.publication_mode == 'verify_candidate')
         with:
           name: publication-verified-${{ github.run_id }}
           path: work/verified/receipt.json

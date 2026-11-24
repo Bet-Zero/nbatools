@@ -249,6 +249,67 @@ filter sweep, and queues only behind an earlier targeted run of the same ref,
 so it reports in minutes. Its run name says `targeted`; a green targeted run
 is evidence for that change, not a full validation.
 
+### Isolated candidate upload and hosted qualification
+
+The owner authorized this split process on 2026-11-24. It supplements, rather
+than bypasses, the protected publication process below. Existing packages keep
+their reviewed `publish` behavior. The Cleveland candidate permits only
+`validate` and `upload_candidate`; combined publication is rejected.
+
+1. Run the existing **Protected R2 Data Publication** workflow on merged main
+   with mode `validate`. This reads the authenticated active base, composes the
+   exact Git-retained Cleveland v2 ZIP and appearance proof, validates the whole
+   snapshot, checks bucket capacity, and emits the immutable approval tuple.
+   No source acquisition, remote upload or active-pointer write occurs.
+2. Obtain explicit owner approval for that package, base, manifest, full-copy
+   storage projection and operation budget. Only then dispatch
+   `upload_candidate` and request the existing `r2-publication` environment
+   approval. Its writer rechecks the exact preparation, owner approval, main,
+   source hashes and base; uploads only `generations/<candidate>/...`; verifies
+   every object body; and leaves the active pointer unchanged. A separate
+   read-only job repeats byte verification. The durable release receipt reports
+   candidate status, never production publication. Failure stops the sequence;
+   no automatic retry, pruning, rollback or repeated upload is authorized.
+3. **Protected preview access is an execution prerequisite.** Inspect the actual
+   Vercel project/deployment protections before creating a candidate-serving
+   deployment. SSO and password protection were reported disabled on November
+   24; do not assume protection exists, expose a public development override,
+   create a bypass/share link or change settings implicitly. If no existing
+   approved access route is available, stop and consolidate the owner action.
+4. Once access is approved, use the existing Git deployment route with a tiny
+   isolated preview branch whose versioned `vercel.json` sets only the nonsecret
+   `NBATOOLS_DATA_GENERATION=<candidate>` and
+   `NBATOOLS_PREVIEW_CANDIDATE_MANIFEST=<approved manifest SHA256>` environment
+   values. Preserve all other deployment configuration, exclusions, protection
+   and read-only runtime credentials. Bind the branch SHA, immutable deployment
+   URL/ID, READY build and protection evidence. Never merge/promote this preview
+   pin or assign a production alias. A pin used outside `VERCEL_ENV=preview`,
+   an empty pin, or a mismatching R2 manifest fails closed. No request parameter
+   can select a generation; no local data is uploaded into Vercel.
+5. On at most two fresh deployments, make the **first query POST**, before any
+   readiness/query warm-up: `Cavaliers record without Caris LeVert in 2024-25`.
+   Save the actual HTTP response, request/deployment identifiers and external
+   monotonic elapsed time. `verify_candidate_cold_response` in
+   `tools/r2_publication.py` requires the approved generation/manifest, first
+   invocation, empty disk/frame caches, one completed appearance-loader miss,
+   a correct positive answer (44 games, 31–13), and HTTP elapsed at most 20s.
+   The preview-only response header carries worker/cache evidence through the
+   existing admitted executor; it does not bypass admission or timeouts.
+   Follow with at most six semantic checks: Hunter without 44–11, Curry without
+   64–18, Curry WITH known-empty, Curry opposing appearances against GSW, an
+   unresolved rostered case and an unqualified side. Keep total preview queries
+   at most eight. Runner/TestClient timings and warm responses cannot qualify
+   the hosted cold limit. Record the independent review and source expectations
+   already accepted in PR633–635; do not recollect or rebuild source proof.
+6. Only after successful hosted qualification, register its exact frozen proof
+   and prepare a **separate** protected activation approval. The low-level
+   `activate_r2_candidate` verifies the already uploaded bodies and changes only
+   the active pointer with same-base CAS: zero snapshot PUTs and one pointer
+   PUT. It is intentionally not exposed in the workflow before that review.
+   Do not use legacy `publish` or create another copy. Original strict
+   production readiness, registered answers and backup/restore safeguards still
+   apply after activation; the known 2026-27 readiness failure stays separate.
+
 ### Agent-initiated targeted requests
 
 The owner authorized automatic targeted validation on 2026-10-15. An agent with

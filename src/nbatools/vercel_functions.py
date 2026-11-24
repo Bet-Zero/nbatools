@@ -82,10 +82,11 @@ def query_response(
     start_time = time.monotonic()
     if client_id is not None:
         from nbatools.admission_control import ADMISSION_CONTROLLER
+        from nbatools.candidate_preview import bind_qualification
 
         payload = ADMISSION_CONTROLLER.run_query(
             client_id,
-            lambda: natural_query_payload(request.query),
+            bind_qualification(lambda: natural_query_payload(request.query)),
         )
     else:
         payload = natural_query_payload(request.query)

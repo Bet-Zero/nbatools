@@ -481,6 +481,10 @@ def _resolve_active_data_generation() -> str:
     if snapshot is not None:
         return "development-" + snapshot.manifest_sha256
     configured = os.environ.get(DATA_GENERATION_ENV, "").strip()
+    from nbatools.candidate_preview import MANIFEST_ENV, verify_pin
+
+    if MANIFEST_ENV in os.environ:
+        verify_pin(_get_data_source(), configured)
     if configured:
         return validate_data_generation_id(configured)
     return _get_data_source().active_generation()

@@ -47,7 +47,7 @@ S4 = PROGRAM / "source-evidence/paired-missing-20261107/r2-final/composed-accept
 OWNED = PROGRAM / "source-evidence/distinct-player-or-20261106/independent/oracle.json"
 LEBRON = PROGRAM / "source-evidence/k08-lebron-remaining/qualification.json"
 APPLICABILITY = EVIDENCE / "historical-applicability-20261110.json"
-APPLICABILITY_SHA256 = "755aeb112b2a891c2285a8ed0a91ba3a6b06fc6c2f1e118badbe0c6de8cd79b8"
+APPLICABILITY_SHA256 = "3bbdc5a209516efb60ad3888df378895809c70a89c3243a9d7b42c2629009992"
 
 
 def _sha(raw):
@@ -103,7 +103,7 @@ def _retained_applicability(binding, *, path=APPLICABILITY, expected_sha=APPLICA
         "data_quality" not in c["payload"]["result"]["metadata"] for c in captures["receipts"]
     )
     reviewed = {change["path"]: change for change in proof["changes"]}
-    assert len(reviewed) == len(proof["changes"]) == 35
+    assert len(reviewed) == len(proof["changes"]) == 43
     changed = {}
     for relative, old_digest in binding["application_file_sha256"].items():
         actual = _sha((ROOT / relative).read_bytes())
@@ -118,7 +118,7 @@ def _retained_applicability(binding, *, path=APPLICABILITY, expected_sha=APPLICA
         assert item["eligible_existing_case_ids"] == [case["id"] for case in cases]
     inventory = sorted(str(p.relative_to(ROOT)) for p in (ROOT / "src").rglob("*.py"))
     added = proof["reviewed_added_source_modules"]
-    assert len(added) == len({item["path"] for item in added}) == 3
+    assert len(added) == len({item["path"] for item in added}) == 4
     for item in added:
         assert item["path"] not in proof["original_src_python_inventory"]
         assert item["path"].startswith("src/") and item["path"].endswith(".py")

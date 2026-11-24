@@ -360,7 +360,47 @@ def validate_staged_generation(stage: Path, generation_id: str) -> dict[str, Any
             validate_publication(stage)
         except (ValueError, KeyError, OSError, TypeError, AttributeError) as exc:
             raise GenerationValidationError(f"Availability validation failed: {exc}") from exc
+    for proof in sorted((stage / "raw/team_game_appearances").glob("*.json")):
+        try:
+            _validate_staged_appearance_proof(stage, json.loads(proof.read_bytes()))
+        except (ValueError, KeyError, OSError, TypeError, AttributeError) as exc:
+            raise GenerationValidationError(f"Appearance proof validation failed: {exc}") from exc
     return document
+
+
+def _validate_staged_appearance_proof(stage: Path, proof: dict) -> None:
+    """Replay the exact frozen dependency context used by the runtime reader.
+
+    A complete snapshot also contains optional previous-season identity files.
+    Those were not used to qualify this proof and must not enter its replay.
+    No dependency or source hash is dropped, substituted or re-qualified.
+    """
+    from nbatools.commands.pipeline.team_appearance_coverage import (
+        validate_complete_appearance_proof,
+    )
+
+    files = dict(proof["dependencies"])
+    for side in proof["sides"]:
+        for relative, digest in side["source_files"].items():
+            if relative in files and files[relative] != digest:
+                raise ValueError("Conflicting appearance source dependencies")
+            files[relative] = digest
+    with tempfile.TemporaryDirectory(prefix="nbatools-appearance-proof-") as temp:
+        root = Path(temp)
+        for relative, digest in files.items():
+            path = _safe_relative_path(relative)
+            if not relative.startswith("raw/") or _file_sha256(stage / path) != digest:
+                raise ValueError("Stale or altered complete appearance dependency")
+            target = root / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(stage / path, target)
+        suffix = proof["season"] + "_" + proof["season_type"].lower().replace(" ", "_")
+        for ending in (".csv", ".imports.json"):
+            path = _safe_relative_path(f"raw/player_game_availability/{suffix}{ending}")
+            target = root / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(stage / path, target)
+        validate_complete_appearance_proof(root, proof)
 
 
 def _build_staged_generation(source: Path, staged: Path, generation: str) -> None:
@@ -609,6 +649,132 @@ def _local_pointer_lock(path: Path) -> Iterator[None]:
             fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
+def upload_r2_candidate(
+    generation_id: str,
+    *,
+    source_dir: Path,
+    expected_base: str,
+    expected_base_manifest_sha256: str,
+    expected_manifest_sha256: str,
+    client: Any | None = None,
+    bucket_name: str | None = None,
+    env_file: Path | None = None,
+) -> GenerationPublicationResult:
+    """Upload an exact immutable candidate. This operation never writes a pointer."""
+    generation = _validated_generation_id(generation_id)
+    client, bucket = _resolve_r2_target(
+        client=client,
+        bucket_name=bucket_name,
+        env=None,
+        env_file=env_file,
+        disable_retries=True,
+    )
+    start = _candidate_base(
+        client, bucket, generation, expected_base, expected_base_manifest_sha256
+    )
+    with tempfile.TemporaryDirectory(prefix="nbatools-candidate-") as temp:
+        staged = Path(temp) / generation
+        _build_staged_generation(source_dir.resolve(), staged, generation)
+        manifest = validate_staged_generation(staged, generation)
+        if _file_sha256(staged / GENERATION_MANIFEST_PATH) != expected_manifest_sha256:
+            raise GenerationValidationError("Candidate differs from approved manifest")
+        if _read_r2_pointer(client, bucket) != start:
+            raise GenerationConflictError("Active base changed before candidate upload")
+        _publish_r2_files(client, bucket, staged, generation)
+    verify_r2_candidate(client, bucket, generation, expected_manifest_sha256)
+    if _read_r2_pointer(client, bucket) != start:
+        raise GenerationConflictError("Active base changed during candidate upload")
+    return GenerationPublicationResult(
+        target="r2",
+        generation_id=generation,
+        previous_generation_id=expected_base,
+        file_count=len(manifest["files"]),
+        total_bytes=sum(item["size_bytes"] for item in manifest["files"]),
+        manifest_sha256=expected_manifest_sha256,
+        pointer=ACTIVE_GENERATION_PATH.as_posix(),
+        action="candidate_upload",
+    )
+
+
+def verify_r2_candidate(client, bucket, generation, expected_manifest_sha256):
+    """Verify retained candidate bodies, including corruption masked by metadata."""
+    manifest, actual = _validate_r2_rollback_target(client, bucket, generation)
+    if actual != expected_manifest_sha256:
+        raise GenerationValidationError("Candidate manifest differs from approved checksum")
+    for item in manifest["files"]:
+        key = f"{GENERATIONS_DIR}/{generation}/{item['path']}"
+        raw = client.get_object(Bucket=bucket, Key=key)["Body"].read()
+        if len(raw) != item["size_bytes"] or hashlib.sha256(raw).hexdigest() != item["sha256"]:
+            raise GenerationValidationError(f"Candidate object checksum differs: {key}")
+    return manifest
+
+
+def _candidate_base(client, bucket, generation, expected_base, expected_hash):
+    start = _read_r2_pointer(client, bucket)
+    if start.generation_id != expected_base or generation == expected_base:
+        raise GenerationConflictError("Candidate requires its distinct approved active base")
+    raw = client.get_object(
+        Bucket=bucket, Key=f"{GENERATIONS_DIR}/{expected_base}/{GENERATION_MANIFEST_PATH}"
+    )["Body"].read()
+    pointer = json.loads(
+        client.get_object(Bucket=bucket, Key=ACTIVE_GENERATION_PATH.as_posix())["Body"].read()
+    )
+    if (
+        hashlib.sha256(raw).hexdigest() != expected_hash
+        or pointer.get("manifest_sha256") != expected_hash
+        or pointer.get("generation_id") != expected_base
+    ):
+        raise GenerationValidationError("Candidate base manifest is not authenticated")
+    return start
+
+
+def activate_r2_candidate(
+    generation_id: str,
+    *,
+    expected_base: str,
+    expected_base_manifest_sha256: str,
+    expected_manifest_sha256: str,
+    client: Any | None = None,
+    bucket_name: str | None = None,
+    env_file: Path | None = None,
+) -> GenerationPublicationResult:
+    """Activate already uploaded bytes with one CAS; never upload snapshot objects.
+
+    The protected caller must separately authorize activation and qualify preview.
+    This low-level operation is deliberately not exposed by the general CLI.
+    """
+    generation = _validated_generation_id(generation_id)
+    client, bucket = _resolve_r2_target(
+        client=client,
+        bucket_name=bucket_name,
+        env=None,
+        env_file=env_file,
+        disable_retries=True,
+    )
+    start = _candidate_base(
+        client, bucket, generation, expected_base, expected_base_manifest_sha256
+    )
+    manifest = verify_r2_candidate(client, bucket, generation, expected_manifest_sha256)
+    if _read_r2_pointer(client, bucket) != start:
+        raise GenerationConflictError("Active base changed before candidate activation")
+    _write_r2_pointer_atomic(
+        client,
+        bucket,
+        _pointer_payload(generation, expected_base, expected_manifest_sha256),
+        expected_etag=start.etag,
+    )
+    return GenerationPublicationResult(
+        target="r2",
+        generation_id=generation,
+        previous_generation_id=expected_base,
+        file_count=len(manifest["files"]),
+        total_bytes=sum(item["size_bytes"] for item in manifest["files"]),
+        manifest_sha256=expected_manifest_sha256,
+        pointer=ACTIVE_GENERATION_PATH.as_posix(),
+        action="candidate_activation",
+    )
+
+
 def _publish_r2_files(client: Any, bucket: str, staged: Path, generation: str) -> None:
     for path in _iter_snapshot_files(staged):
         relative = path.relative_to(staged).as_posix()
@@ -802,6 +968,7 @@ def _resolve_r2_target(
     bucket_name: str | None,
     env: Mapping[str, str] | None,
     env_file: Path | None,
+    disable_retries: bool = False,
 ) -> tuple[Any, str]:
     if client is not None and bucket_name:
         return client, bucket_name
@@ -809,7 +976,12 @@ def _resolve_r2_target(
         raise GenerationPublicationError("client and bucket_name must be provided together")
     try:
         config = load_r2_config(env=env, env_file=env_file)
-        return create_r2_client(config), config.bucket_name
+        client = (
+            create_r2_client(config, disable_retries=True)
+            if disable_retries
+            else create_r2_client(config)
+        )
+        return client, config.bucket_name
     except R2SyncError as exc:
         raise GenerationPublicationError(str(exc)) from exc
 

@@ -2263,6 +2263,1020 @@
           }
         }
       ]
+    },
+    "cleveland-team-appearances-2024-v1": {
+      "publisher_sha": "564f2e054638df854fd7e15db22b4b04aee1c53f",
+      "script": "working/nba-tools-completion-program/prepare-cleveland-candidate.py",
+      "script_sha256": "a0bd1c9cb2bcaa9d0c93f90f8c2c30d84f30fd3006d58d0bc072955f553301b2",
+      "inventory": "working/nba-tools-completion-program/cleveland-candidate-inventory.json",
+      "inventory_sha256": "01ffaeb87c028354d0b42fbed78738f430165cd29c653f8a57aeb1639f85c62d",
+      "generation_id": "availability-cleveland-2024-v3-20261124",
+      "operations": [
+        "validate",
+        "upload_candidate"
+      ],
+      "deployed_checks": [
+        {
+          "query": "Lakers record without LeBron James on October 21 2025",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "games": 1,
+            "wins": 0,
+            "losses": 1,
+            "pts_avg": 109.0
+          }
+        },
+        {
+          "query": "Warriors record without Moses Moody on October 21 2025",
+          "summary": {
+            "team_name": "Golden State Warriors",
+            "games": 1,
+            "wins": 1,
+            "losses": 0,
+            "pts_avg": 119.0
+          }
+        },
+        {
+          "query": "Celtics record vs Lakers with Jayson Tatum in 2023-24",
+          "summary": {
+            "team_name": "Boston Celtics",
+            "season_start": "2023-24",
+            "season_end": "2023-24",
+            "season_type": "Regular Season",
+            "games": 2,
+            "wins": 1,
+            "losses": 1,
+            "pts_avg": 115.5,
+            "reb_avg": 49.0,
+            "ast_avg": 30.5
+          }
+        },
+        {
+          "query": "Celtics record vs Lakers without Jayson Tatum in 2025-26",
+          "summary": {
+            "team_name": "Boston Celtics",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "games": 2,
+            "wins": 2,
+            "losses": 0,
+            "pts_avg": 118.5,
+            "reb_avg": 44.0,
+            "ast_avg": 30.0
+          }
+        },
+        {
+          "query": "Jaylen Brown averages vs Lakers with Jayson Tatum in 2023-24",
+          "summary": {
+            "player_name": "Jaylen Brown",
+            "season_start": "2023-24",
+            "season_end": "2023-24",
+            "season_type": "Regular Season",
+            "games": 2,
+            "wins": 1,
+            "losses": 1,
+            "pts_avg": 13.5,
+            "reb_avg": 6.5,
+            "ast_avg": 4.5
+          }
+        },
+        {
+          "query": "Jaylen Brown averages vs Lakers without Jayson Tatum in 2025-26",
+          "summary": {
+            "player_name": "Jaylen Brown",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "games": 2,
+            "wins": 2,
+            "losses": 0,
+            "pts_avg": 31.0,
+            "reb_avg": 8.0,
+            "ast_avg": 7.5
+          }
+        },
+        {
+          "query": "Nets record without Kerry Kittles and Keith Van Horn in 1997-98 from 1997-10-31 to 1997-10-31",
+          "summary": {
+            "team_name": "New Jersey Nets",
+            "games": 1,
+            "wins": 1,
+            "losses": 0,
+            "pts_avg": 97
+          }
+        },
+        {
+          "query": "Pistons record without Darko Milicic in 2004-05 from 2004-11-02 to 2004-11-02",
+          "summary": {
+            "team_name": "Detroit Pistons",
+            "games": 1,
+            "wins": 1,
+            "losses": 0,
+            "pts_avg": 87
+          }
+        },
+        {
+          "query": "Pelicans record without Darius Miller and Patric Young in 2014-15 from 2014-10-28 to 2014-10-28",
+          "summary": {
+            "team_name": "New Orleans Pelicans",
+            "games": 1,
+            "wins": 1,
+            "losses": 0,
+            "pts_avg": 101
+          }
+        },
+        {
+          "query": "Lakers record without LeBron James from 2025-10-24 to 2025-10-27 in 2025-26",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "games": 3,
+            "wins": 2,
+            "losses": 1,
+            "pts_avg": 121
+          }
+        },
+        {
+          "query": "how many games did LeBron James miss on October 24 and October 27 in 2025-26",
+          "expected_route": "game_finder",
+          "sections": {
+            "count": [
+              {
+                "count": 2
+              }
+            ],
+            "finder": [
+              {
+                "game_id": 22500122,
+                "team_name": "Los Angeles Lakers"
+              },
+              {
+                "game_id": 22500019,
+                "team_name": "Los Angeles Lakers"
+              }
+            ]
+          }
+        },
+        {
+          "query": "Without Darius Miller and Patric Young, Anthony Davis games with at least 20 points in 2014-15 from 2014-10-28 to 2014-10-28",
+          "expected_route": "player_game_finder",
+          "sections": {
+            "finder": [
+              {
+                "game_id": 21400001,
+                "player_name": "Anthony Davis",
+                "pts": 26
+              }
+            ]
+          }
+        },
+        {
+          "query": "Austin Reaves games with at least 40 points without LeBron James and Luka Doncic from 2025-10-24 to 2025-10-27 in 2025-26",
+          "expected_route": "player_game_finder",
+          "sections": {
+            "finder": [
+              {
+                "game_id": 22500113,
+                "player_name": "Austin Reaves",
+                "pts": 51,
+                "reb": 11,
+                "ast": 9
+              },
+              {
+                "game_id": 22500122,
+                "player_name": "Austin Reaves",
+                "pts": 41,
+                "reb": 4,
+                "ast": 5
+              }
+            ]
+          }
+        },
+        {
+          "query": "how many games did LeBron James miss in 2025-26",
+          "expected_route": "game_finder",
+          "sections": {
+            "count": [
+              {
+                "count": 22
+              }
+            ]
+          }
+        },
+        {
+          "query": "how many home games did LeBron James miss in 2025-26",
+          "expected_route": "game_finder",
+          "sections": {
+            "count": [
+              {
+                "count": 11
+              }
+            ]
+          }
+        },
+        {
+          "query": "Lakers record without LeBron James in 2025-26",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "games": 22,
+            "wins": 14,
+            "losses": 8,
+            "pts_avg": 114.091
+          }
+        },
+        {
+          "query": "Lakers record without Anthony Davis in 2023-24",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "season_start": "2023-24",
+            "season_end": "2023-24",
+            "season_type": "Regular Season",
+            "games": 6,
+            "wins": 2,
+            "losses": 4,
+            "pts_avg": 116.833
+          }
+        },
+        {
+          "query": "Lakers record without Anthony Davis and with LeBron James in 2023-24",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "season_start": "2023-24",
+            "season_end": "2023-24",
+            "season_type": "Regular Season",
+            "games": 5,
+            "wins": 1,
+            "losses": 4,
+            "pts_avg": 117.4
+          }
+        },
+        {
+          "query": "how many games did LeBron James miss in 2023-24",
+          "expected_route": "game_finder",
+          "sections": {
+            "count": [
+              {
+                "count": 11
+              }
+            ]
+          }
+        },
+        {
+          "query": "how many games did Austin Reaves miss in 2023-24",
+          "expected_route": "game_finder",
+          "sections": {
+            "count": [
+              {
+                "count": 0
+              }
+            ]
+          }
+        },
+        {
+          "query": "how many games did Jayson Tatum miss in 2024-25",
+          "expected_route": "game_finder",
+          "sections": {
+            "count": [
+              {
+                "count": 10
+              }
+            ]
+          }
+        },
+        {
+          "query": "Celtics record without Jayson Tatum in 2024-25",
+          "summary": {
+            "team_name": "Boston Celtics",
+            "season_start": "2024-25",
+            "season_end": "2024-25",
+            "season_type": "Regular Season",
+            "games": 10,
+            "wins": 8,
+            "losses": 2,
+            "pts_avg": 112.8
+          }
+        },
+        {
+          "query": "how many games did Luka Doncic miss in 2025-26",
+          "expected_route": "game_finder",
+          "sections": {
+            "count": [
+              {
+                "count": 18
+              }
+            ]
+          }
+        },
+        {
+          "query": "how many games did Austin Reaves miss in 2025-26",
+          "expected_route": "game_finder",
+          "sections": {
+            "count": [
+              {
+                "count": 31
+              }
+            ]
+          }
+        },
+        {
+          "query": "How many games did Luka Doncic rest in 2025-26?",
+          "expected_route": "game_finder",
+          "sections": {
+            "count": [
+              {
+                "count": 0
+              }
+            ]
+          }
+        },
+        {
+          "query": "Lakers record without Luka Doncic in 2025-26",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "games": 18,
+            "wins": 10,
+            "losses": 8,
+            "pts_avg": 114.389
+          }
+        },
+        {
+          "query": "Lakers record when Luka Doncic sits",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "games": 18,
+            "wins": 10,
+            "losses": 8,
+            "pts_avg": 114.389
+          }
+        },
+        {
+          "query": "Lakers record without Reaves",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "games": 31,
+            "wins": 17,
+            "losses": 14,
+            "pts_avg": 114.419
+          }
+        },
+        {
+          "query": "Celtics record with Tatum and Brown missing in 2025-26",
+          "summary": {
+            "team_name": "Boston Celtics",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "games": 8,
+            "wins": 7,
+            "losses": 1,
+            "pts_avg": 112.25
+          }
+        },
+        {
+          "query": "Seattle SuperSonics record without Kevin Durant in 2007-08",
+          "summary": {
+            "team_name": "Seattle SuperSonics",
+            "season_start": "2007-08",
+            "season_end": "2007-08",
+            "season_type": "Regular Season",
+            "games": 2,
+            "wins": 1,
+            "losses": 1,
+            "pts_avg": 99.0
+          }
+        },
+        {
+          "query": "Thunder record in 2007-08 with Kevin Durant playing",
+          "summary": {
+            "team_name": "Seattle SuperSonics",
+            "season_start": "2007-08",
+            "season_end": "2007-08",
+            "season_type": "Regular Season",
+            "games": 80,
+            "wins": 19,
+            "losses": 61,
+            "pts_avg": 97.512
+          }
+        },
+        {
+          "query": "Atlanta Hawks record without Saddiq Bey in 2023-24",
+          "summary": {
+            "team_name": "Atlanta Hawks",
+            "games": 19,
+            "wins": 8,
+            "losses": 11
+          }
+        },
+        {
+          "query": "Boston Celtics record without Jrue Holiday in 2023-24",
+          "summary": {
+            "team_name": "Boston Celtics",
+            "games": 13,
+            "wins": 11,
+            "losses": 2
+          }
+        },
+        {
+          "query": "Cleveland Cavaliers record without Jarrett Allen in 2023-24",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 5,
+            "wins": 2,
+            "losses": 3
+          }
+        },
+        {
+          "query": "Denver Nuggets record without Vlatko Cancar in 2023-24",
+          "summary": {
+            "team_name": "Denver Nuggets",
+            "games": 82,
+            "wins": 57,
+            "losses": 25
+          }
+        },
+        {
+          "query": "Houston Rockets record without Alperen Sengun in 2023-24",
+          "summary": {
+            "team_name": "Houston Rockets",
+            "games": 19,
+            "wins": 12,
+            "losses": 7
+          }
+        },
+        {
+          "query": "Minnesota Timberwolves record without Jaylen Clark in 2023-24",
+          "summary": {
+            "team_name": "Minnesota Timberwolves",
+            "games": 82,
+            "wins": 56,
+            "losses": 26
+          }
+        },
+        {
+          "query": "Phoenix Suns record without Damion Lee in 2023-24",
+          "summary": {
+            "team_name": "Phoenix Suns",
+            "games": 82,
+            "wins": 49,
+            "losses": 33
+          }
+        },
+        {
+          "query": "Boston Celtics record without Jayson Tatum in 2024-25",
+          "summary": {
+            "team_name": "Boston Celtics",
+            "season_start": "2024-25",
+            "season_end": "2024-25",
+            "season_type": "Regular Season",
+            "games": 10,
+            "wins": 8,
+            "losses": 2
+          }
+        },
+        {
+          "query": "Cleveland Cavaliers record without Donovan Mitchell in 2024-25",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "season_start": "2024-25",
+            "season_end": "2024-25",
+            "season_type": "Regular Season",
+            "games": 11,
+            "wins": 9,
+            "losses": 2
+          }
+        },
+        {
+          "query": "New Orleans Pelicans record without Dejounte Murray in 2024-25",
+          "summary": {
+            "team_name": "New Orleans Pelicans",
+            "season_start": "2024-25",
+            "season_end": "2024-25",
+            "season_type": "Regular Season",
+            "games": 51,
+            "wins": 12,
+            "losses": 39
+          }
+        },
+        {
+          "query": "Chicago Bulls record without Patrick Williams in 2024-25",
+          "summary": {
+            "team_name": "Chicago Bulls",
+            "season_start": "2024-25",
+            "season_end": "2024-25",
+            "season_type": "Regular Season",
+            "games": 19,
+            "wins": 8,
+            "losses": 11
+          }
+        },
+        {
+          "query": "Denver Nuggets record without Russell Westbrook in 2024-25",
+          "summary": {
+            "team_name": "Denver Nuggets",
+            "season_start": "2024-25",
+            "season_end": "2024-25",
+            "season_type": "Regular Season",
+            "games": 7,
+            "wins": 7,
+            "losses": 0
+          }
+        },
+        {
+          "query": "LA Clippers record without Nicolas Batum in 2024-25",
+          "summary": {
+            "team_name": "LA Clippers",
+            "season_start": "2024-25",
+            "season_end": "2024-25",
+            "season_type": "Regular Season",
+            "games": 4,
+            "wins": 3,
+            "losses": 1
+          }
+        },
+        {
+          "query": "Oklahoma City Thunder record without Nikola Topic in 2024-25",
+          "summary": {
+            "team_name": "Oklahoma City Thunder",
+            "season_start": "2024-25",
+            "season_end": "2024-25",
+            "season_type": "Regular Season",
+            "games": 82,
+            "wins": 68,
+            "losses": 14
+          }
+        },
+        {
+          "query": "Cavaliers record with Tristan Thompson in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 40,
+            "wins": 31,
+            "losses": 9,
+            "pts_avg": 124.2
+          }
+        },
+        {
+          "query": "Cavaliers record without Tristan Thompson in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 42,
+            "wins": 33,
+            "losses": 9,
+            "pts_avg": 119.786
+          }
+        },
+        {
+          "query": "Cavaliers record with Caris LeVert in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 38,
+            "wins": 33,
+            "losses": 5,
+            "pts_avg": 122.421
+          }
+        },
+        {
+          "query": "Cavaliers record without Caris LeVert in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 44,
+            "wins": 31,
+            "losses": 13,
+            "pts_avg": 121.523
+          }
+        },
+        {
+          "query": "Cavaliers record with Georges Niang in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 51,
+            "wins": 41,
+            "losses": 10,
+            "pts_avg": 122.196
+          }
+        },
+        {
+          "query": "Cavaliers record without Georges Niang in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 31,
+            "wins": 23,
+            "losses": 8,
+            "pts_avg": 121.516
+          }
+        },
+        {
+          "query": "Cavaliers record with Donovan Mitchell in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 71,
+            "wins": 55,
+            "losses": 16,
+            "pts_avg": 121.845
+          }
+        },
+        {
+          "query": "Cavaliers record without Donovan Mitchell in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 11,
+            "wins": 9,
+            "losses": 2,
+            "pts_avg": 122.545
+          }
+        },
+        {
+          "query": "Cavaliers record with Jarrett Allen in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 82,
+            "wins": 64,
+            "losses": 18,
+            "pts_avg": 121.939
+          }
+        },
+        {
+          "query": "Cavaliers record with Max Strus in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 50,
+            "wins": 39,
+            "losses": 11,
+            "pts_avg": 122.26
+          }
+        },
+        {
+          "query": "Cavaliers record without Max Strus in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 32,
+            "wins": 25,
+            "losses": 7,
+            "pts_avg": 121.438
+          }
+        },
+        {
+          "query": "Cavaliers record with De'Andre Hunter in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 27,
+            "wins": 20,
+            "losses": 7,
+            "pts_avg": 122.148
+          }
+        },
+        {
+          "query": "Cavaliers record without De'Andre Hunter in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 55,
+            "wins": 44,
+            "losses": 11,
+            "pts_avg": 121.836
+          }
+        },
+        {
+          "query": "Cavaliers record with Darius Garland in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 75,
+            "wins": 60,
+            "losses": 15,
+            "pts_avg": 121.933
+          }
+        },
+        {
+          "query": "Cavaliers record without Darius Garland in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 7,
+            "wins": 4,
+            "losses": 3,
+            "pts_avg": 122.0
+          }
+        },
+        {
+          "query": "Cavaliers record with Chuma Okeke in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 2,
+            "wins": 1,
+            "losses": 1,
+            "pts_avg": 126.5
+          }
+        },
+        {
+          "query": "Cavaliers record without Chuma Okeke in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 80,
+            "wins": 63,
+            "losses": 17,
+            "pts_avg": 121.825
+          }
+        },
+        {
+          "query": "Cavaliers record with Ty Jerome in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 70,
+            "wins": 55,
+            "losses": 15,
+            "pts_avg": 122.629
+          }
+        },
+        {
+          "query": "Cavaliers record without Ty Jerome in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 12,
+            "wins": 9,
+            "losses": 3,
+            "pts_avg": 117.917
+          }
+        },
+        {
+          "query": "Cavaliers record with Dean Wade in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 59,
+            "wins": 47,
+            "losses": 12,
+            "pts_avg": 121.881
+          }
+        },
+        {
+          "query": "Cavaliers record without Dean Wade in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 23,
+            "wins": 17,
+            "losses": 6,
+            "pts_avg": 122.087
+          }
+        },
+        {
+          "query": "Cavaliers record with Javonte Green in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 18,
+            "wins": 13,
+            "losses": 5,
+            "pts_avg": 120.667
+          }
+        },
+        {
+          "query": "Cavaliers record without Javonte Green in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 64,
+            "wins": 51,
+            "losses": 13,
+            "pts_avg": 122.297
+          }
+        },
+        {
+          "query": "Cavaliers record with Isaac Okoro in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 55,
+            "wins": 44,
+            "losses": 11,
+            "pts_avg": 121.036
+          }
+        },
+        {
+          "query": "Cavaliers record without Isaac Okoro in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 27,
+            "wins": 20,
+            "losses": 7,
+            "pts_avg": 123.778
+          }
+        },
+        {
+          "query": "Cavaliers record with Sam Merrill in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 71,
+            "wins": 54,
+            "losses": 17,
+            "pts_avg": 121.423
+          }
+        },
+        {
+          "query": "Cavaliers record without Sam Merrill in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 11,
+            "wins": 10,
+            "losses": 1,
+            "pts_avg": 125.273
+          }
+        },
+        {
+          "query": "Cavaliers record with JT Thor in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 9,
+            "wins": 8,
+            "losses": 1,
+            "pts_avg": 124.0
+          }
+        },
+        {
+          "query": "Cavaliers record without JT Thor in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 73,
+            "wins": 56,
+            "losses": 17,
+            "pts_avg": 121.685
+          }
+        },
+        {
+          "query": "Cavaliers record with Evan Mobley in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 71,
+            "wins": 58,
+            "losses": 13,
+            "pts_avg": 122.042
+          }
+        },
+        {
+          "query": "Cavaliers record without Evan Mobley in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 11,
+            "wins": 6,
+            "losses": 5,
+            "pts_avg": 121.273
+          }
+        },
+        {
+          "query": "Cavaliers record with Luke Travers in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 12,
+            "wins": 10,
+            "losses": 2,
+            "pts_avg": 122.75
+          }
+        },
+        {
+          "query": "Cavaliers record without Luke Travers in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 70,
+            "wins": 54,
+            "losses": 16,
+            "pts_avg": 121.8
+          }
+        },
+        {
+          "query": "Cavaliers record with Emoni Bates in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 10,
+            "wins": 9,
+            "losses": 1,
+            "pts_avg": 126.1
+          }
+        },
+        {
+          "query": "Cavaliers record without Emoni Bates in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 72,
+            "wins": 55,
+            "losses": 17,
+            "pts_avg": 121.361
+          }
+        },
+        {
+          "query": "Cavaliers record with Nae'Qwan Tomlin in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 5,
+            "wins": 4,
+            "losses": 1,
+            "pts_avg": 123.2
+          }
+        },
+        {
+          "query": "Cavaliers record without Nae'Qwan Tomlin in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 77,
+            "wins": 60,
+            "losses": 17,
+            "pts_avg": 121.857
+          }
+        },
+        {
+          "query": "Cavaliers record with Craig Porter Jr. in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 51,
+            "wins": 40,
+            "losses": 11,
+            "pts_avg": 122.373
+          }
+        },
+        {
+          "query": "Cavaliers record without Craig Porter Jr. in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 31,
+            "wins": 24,
+            "losses": 7,
+            "pts_avg": 121.226
+          }
+        },
+        {
+          "query": "Cavaliers record with Jaylon Tyson in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 47,
+            "wins": 37,
+            "losses": 10,
+            "pts_avg": 123.298
+          }
+        },
+        {
+          "query": "Cavaliers record without Jaylon Tyson in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 35,
+            "wins": 27,
+            "losses": 8,
+            "pts_avg": 120.114
+          }
+        },
+        {
+          "query": "Cavaliers record without Stephen Curry in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 82,
+            "wins": 64,
+            "losses": 18,
+            "pts_avg": 121.939
+          }
+        }
+      ]
     }
   }
 }

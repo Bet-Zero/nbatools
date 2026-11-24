@@ -291,6 +291,27 @@ def test_retained_full_container_produces_complete_side_proof(source):
     assert proof["source_requests"] == 0 and proof["unqualified"] == []
 
 
+def test_full_snapshot_publication_replays_only_frozen_dependency_context(source):
+    from nbatools.commands.pipeline.generation_publication import _validate_staged_appearance_proof
+
+    run(source)
+    root = source[0]
+    proof = qualify_retained_appearances(root, "2025-26", "Regular Season")
+    frozen = copy.deepcopy(proof)
+    # Full snapshots have additional optional identity inputs absent from the
+    # original bounded qualification. They cannot silently alter that proof.
+    extra = root / "raw/player_game_stats/2024-25_regular_season.csv"
+    extra.write_bytes((root / "raw/player_game_stats/2025-26_regular_season.csv").read_bytes())
+    with pytest.raises(ValueError, match="dependencies differ"):
+        validate_complete_appearance_proof(root, proof)
+    _validate_staged_appearance_proof(root, proof)
+    assert proof == frozen
+    dependency = root / next(iter(proof["dependencies"]))
+    dependency.write_bytes(dependency.read_bytes() + b"\n")
+    with pytest.raises(ValueError, match="Stale or altered"):
+        _validate_staged_appearance_proof(root, proof)
+
+
 def test_precise_positive_source_clock_overrides_rounded_canonical_zero(source):
     path = source[0] / "raw/player_game_stats/2025-26_regular_season.csv"
     frame = pd.read_csv(path)

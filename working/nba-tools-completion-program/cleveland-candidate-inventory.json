@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "base_generation": "availability-season-inactive-2024-v1-20261116",
+  "base_manifest_sha256": "0abce6f8261957df6cffc19ce24a4ed408a548e1292a33456ce55c0481903ecc",
+  "generation_id": "availability-cleveland-2024-v3-20261124",
+  "retained_files": [
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/cleveland-two-game-2024/qualified-overlay-v2.zip",
+      "sha256": "a8a9ecfdd447a513498d5ae9a0333357711618e6abeacd2a7fb16b1d0807c298",
+      "size_bytes": 716343
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/team-appearances-cleveland-2024-v1/2024-25_regular_season.json",
+      "sha256": "fd637c6d36c4fd9ce30b9e3f769c9ba806f535b9a943dc4be3fc6314529df86a",
+      "size_bytes": 83572
+    }
+  ],
+  "source_qualification": {
+    "classification": "reuse_accepted_frozen_sources_no_acquisition",
+    "team_appearance_run_id": 45081061855,
+    "role_correctness_run_id": 45083468571,
+    "source_proof_sha256": "fd637c6d36c4fd9ce30b9e3f769c9ba806f535b9a943dc4be3fc6314529df86a",
+    "v2_overlay_sha256": "a8a9ecfdd447a513498d5ae9a0333357711618e6abeacd2a7fb16b1d0807c298",
+    "team_complete_cases": 21,
+    "rostered_complete_cases": 14,
+    "rostered_unknown_cases": 7
+  },
+  "code_files": [
+    {
+      "path": "api/query.py",
+      "sha256": "1394c08040f1af81b776c17dcd49ad82ba3abb0f5efd64eff7fffdacee849154",
+      "size_bytes": 1307
+    },
+    {
+      "path": "src/nbatools/candidate_preview.py",
+      "sha256": "ac472860bf50d605a85e92014f043d4af8281ee90055ae577c0c44c416f12d3c",
+      "size_bytes": 3667
+    },
+    {
+      "path": "src/nbatools/commands/_participation_observations.py",
+      "sha256": "4fa592b1938202d9861e196a7cec3cf1a967302d684451fccf7d0078e0116693",
+      "size_bytes": 17102
+    },
+    {
+      "path": "src/nbatools/commands/_reported_absence_reasons.py",
+      "sha256": "757496d14da34e10dc2e8a485fd9ac3e38a1a72e5c3dfd1694f7bcc63f1aebe3",
+      "size_bytes": 12932
+    },
+    {
+      "path": "src/nbatools/commands/_team_appearances.py",
+      "sha256": "3364c56ef5ddb2b3ade99fa0bfba44e438256e804129cdefdb734b96654eee10",
+      "size_bytes": 10461
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/generation_publication.py",
+      "sha256": "738231e1ca4f69349ad7391f8e87f0541d857e3d23bdb7a83a9d897ab4a07ca5",
+      "size_bytes": 42851
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/generation_refresh.py",
+      "sha256": "678e515898e9318789f88d2f621fb7fa34944df94260e6c25072cee047d79ca5",
+      "size_bytes": 10787
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/player_game_availability_espn.py",
+      "sha256": "7c1b8618cc228fac780d331865b8e7c5db0255499d03a0fcea36c65aee7c18f5",
+      "size_bytes": 9236
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/player_game_availability_profiles.py",
+      "sha256": "509271a504e105343a0fe87ffd0ac561afc1d29647151b0cf48087d07b65a334",
+      "size_bytes": 5007
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/player_game_availability_report.py",
+      "sha256": "0cc2c293406647816f298a06135808007f5f4554b28aa4b38af6d61c92e65d6b",
+      "size_bytes": 21574
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/pull_player_game_availability.py",
+      "sha256": "8fa5b3b6dbbd7a4b9cad81cdf1b0dddd9ad506941f197fb940d3c0fbbcfe18fd",
+      "size_bytes": 31713
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/pull_player_game_starter_roles.py",
+      "sha256": "2403c697d4c5121826ae3ff5074084244857d19f96773925e7135c9281935d7e",
+      "size_bytes": 10847
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/structured_participation.py",
+      "sha256": "21ba9b722cf6573ae02a2f69c2859a117b10ac3930ec18bc95d9649391df334e",
+      "size_bytes": 31176
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/team_appearance_coverage.py",
+      "sha256": "d367a392f2c1e846cc23f9ce99aeab731972fec5ad013edc6ec6f0fd0a853892",
+      "size_bytes": 8076
+    },
+    {
+      "path": "src/nbatools/data_source.py",
+      "sha256": "663db7b188aba3b212b80c68d0c8a28e5b7336fd60e04d58bcd0f64920945eab",
+      "size_bytes": 20773
+    },
+    {
+      "path": "src/nbatools/query_service.py",
+      "sha256": "038f2f1ff6c183278793a6fb6bcb84bb74bab993797bb28f774d47de6d79e9d4",
+      "size_bytes": 166088
+    },
+    {
+      "path": "src/nbatools/vercel_functions.py",
+      "sha256": "bc4605a8395cd7d1dca55537b84b820b533a271dfc7c0ae0054866590c99293f",
+      "size_bytes": 4775
+    },
+    {
+      "path": "tools/availability_overlay.py",
+      "sha256": "ea1fa2ab4f86a8d6336f0e0700607e0eff1fa9e5413cd3318e5043e12d4a3977",
+      "size_bytes": 6253
+    },
+    {
+      "path": "tools/compose_participation_overlays.py",
+      "sha256": "f2b0971b021e73c370d2bba9e2fc5c60c93db162d77f99b9628f4cdde40804e7",
+      "size_bytes": 18548
+    },
+    {
+      "path": "tools/r2_publication.py",
+      "sha256": "543540533ec8536bc37ddb0c920356fb7448deca992e422edc6311e2aea26c17",
+      "size_bytes": 34526
+    },
+    {
+      "path": "working/nba-tools-completion-program/prepare-cleveland-candidate.py",
+      "sha256": "a0bd1c9cb2bcaa9d0c93f90f8c2c30d84f30fd3006d58d0bc072955f553301b2",
+      "size_bytes": 4864
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/season-inactive-2024/product-results.json",
+      "sha256": "b10feaaa4ebf9d7d4b7016e3c5f5a02d5de87b4c1a612dcccf126d96aea75a9c",
+      "size_bytes": 24642
+    }
+  ]
+}

@@ -10,11 +10,11 @@ on:
         required: true
         default: opening-availability-v1
       mode:
-        description: "Validate never writes. Publish additionally requires owner environment approval."
+        description: "Validate is read-only. Upload candidate never activates; both write modes require owner approval."
         type: choice
         required: true
         default: validate
-        options: [validate, publish]
+        options: [validate, publish, upload_candidate]
 
 permissions:
   contents: read
@@ -64,7 +64,7 @@ jobs:
   publish:
     name: "Owner approval: ${{ inputs.package }} → ${{ needs.resolve.outputs.generation_id }}"
     needs: [resolve, prepare]
-    if: inputs.mode == 'publish'
+    if: inputs.mode == 'publish' || inputs.mode == 'upload_candidate'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment:
@@ -92,12 +92,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           PACKAGE: ${{ inputs.package }}
+          WRITE_MODE: ${{ inputs.mode }}
           R2_BUCKET_NAME: nbatools-data
           R2_ACCOUNT_ID: ${{ secrets.R2_PUBLICATION_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_PUBLICATION_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_PUBLICATION_SECRET_ACCESS_KEY }}
         run: >-
-          python tools/r2_publication.py publish --package "$PACKAGE"
+          python tools/r2_publication.py "$WRITE_MODE" --package "$PACKAGE"
           --publisher publisher --prepared approved/prepared/prepared.json --work work/published
       - name: Retain publication outcome without credentials or full snapshot
         if: always()
@@ -112,11 +113,11 @@ jobs:
 
   verify:
     needs: [resolve, publish]
-    if: inputs.mode == 'publish' && needs.publish.result == 'success'
+    if: (inputs.mode == 'publish' || inputs.mode == 'upload_candidate') && needs.publish.result == 'success'
     uses: ./.github/workflows/r2-publication-readonly.yml
     with:
       publication_package: ${{ inputs.package }}
-      publication_mode: verify
+      publication_mode: ${{ inputs.mode == 'upload_candidate' && 'verify_candidate' || 'verify' }}
       publication_publisher_sha: ${{ needs.resolve.outputs.publisher_sha }}
     secrets:
       R2_VALIDATION_ACCOUNT_ID: ${{ secrets.R2_VALIDATION_ACCOUNT_ID }}
@@ -144,7 +145,7 @@ jobs:
   receipt:
     name: Preserve durable publication receipt
     needs: [publish, verify]
-    if: always() && inputs.mode == 'publish' && (needs.publish.result == 'success' || needs.publish.result == 'failure')
+    if: always() && (inputs.mode == 'publish' || inputs.mode == 'upload_candidate') && (needs.publish.result == 'success' || needs.publish.result == 'failure')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -166,6 +167,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: Bet-Zero/nbatools
           VERIFIED: ${{ needs.verify.result }}
+          WRITE_MODE: ${{ inputs.mode }}
         run: |
           python - <<'PY'
           import json, os
@@ -174,8 +176,10 @@ jobs:
           value = json.loads((source if source.exists() else Path('outcome/publication.json')).read_text())
           if value['workflow_run_id'] != os.environ['GITHUB_RUN_ID'] or value['workflow_sha'] != os.environ['GITHUB_SHA']:
               raise ValueError('Receipt does not belong to this reviewed workflow')
-          if os.environ['VERIFIED'] != 'success' and value['publication_state'] != 'publication_started_outcome_unknown':
+          if os.environ['WRITE_MODE'] == 'publish' and os.environ['VERIFIED'] != 'success' and value['publication_state'] != 'publication_started_outcome_unknown':
               value['publication_state'] = 'published_verification_failed'
+          if os.environ['WRITE_MODE'] == 'upload_candidate' and os.environ['VERIFIED'] != 'success' and value['publication_state'] != 'candidate_upload_started_outcome_unknown':
+              value['publication_state'] = 'candidate_independent_verification_failed'
           Path('receipt.json').write_text(json.dumps(value, indent=2, sort_keys=True) + '\n')
           Path('receipt.md').write_text('Publication outcome: ' + value['publication_state'] + '\n\nRun: https://github.com/Bet-Zero/nbatools/actions/runs/' + os.environ['GITHUB_RUN_ID'] + '\n\nThe attached receipt records source, code, snapshot checksums and verification. Previous generation is retained; no pruning was performed.\n')
           PY

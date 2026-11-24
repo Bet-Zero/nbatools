@@ -11,7 +11,7 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**Lead: Codex. Live main `b0670c67`; application code `b041c4cc`, merged
+**Lead: Codex. Live main `e808bb41`; application code `b041c4cc`, merged
 [PR633](https://github.com/Bet-Zero/nbatools/pull/633) and
 [PR634](https://github.com/Bet-Zero/nbatools/pull/634). Implementation complete, November 22.**
 The limited Core-1 snapshot remains closed. Full original acceptance and
@@ -59,26 +59,47 @@ literal-current cases and K12 cold timing. Known 2026-27 readiness
 503/new_season_not_loaded, original failure receipts and 484 unavailable rate
 values stay unchanged. DQ-005 and historical source hunts remain parked.
 
-**Current attempt — stopped November 23:** hosted cold qualification was **not
-executed**, and no publication tuple or storage projection was prepared. Independent
-read-only review confirmed that the existing Vercel route reads only an existing
-R2 generation; the unpublished Cleveland proof/v2 data is absent from active 0abc.
-The deployment runbook requires publication before preview smoke and forbids
-uploading local data into a deployment. Development snapshots explicitly reject
-Vercel. Protected validation creates local artifacts, not a staging Vercel runtime;
-publish uploads and activates together. GitHub-runner timing cannot qualify
-Vercel's 20s limit. The selected workspace also failed startup HTTP503; this is separate
-from the data-routing blocker and supplies no performance evidence.
+**Current task — November 24:** owner approved implementing candidate upload and
+preview qualification, **not remote upload or activation**. Work branch
+`codex/cleveland-candidate-publication`, based on merged PR636 `e808bb41`.
+The protected workflow gains `upload_candidate`: exact retained v2 + appearance
+proof, full-snapshot/source preservation checks, immutable upload, independent
+read-only body verification, and **no pointer write**. Existing combined publish
+remains unchanged for old packages and forbidden for the Cleveland candidate.
+Low-level activation reuses candidate bytes and writes only the pointer; it is
+not workflow-accessible until successful hosted qualification is reviewed.
 
-**Next:** stop within the owner's bound. The smallest proposed correction is a
-separately authorized protected candidate-generation upload without activation,
-then a protected preview pinned to that exact candidate for cold qualification.
-This needs a new isolated route/sequence decision; do not improvise a data bundle,
-enable a public development override, change protections or publish to make the
-test run. Existing qualified data and passing reviews/results remain preserved.
-No new source collection, R2 write, pointer change, spending, refresh, backfill or
-Live implementation occurred. The 21 full-season gains remain staged; the original
-26 unsupported cases and limited snapshot status are unchanged.
+Preview pins are per-deployment, nonsecret generation/manifest values, fail
+closed outside Vercel preview, and emit actual first-query/cache-miss evidence
+through the existing admitted executor. No local data bundle or public request
+override is introduced. **Execution prerequisite:** actual Vercel project reads
+report SSO/password protection disabled; an approved protected-access route must
+be established before any candidate-serving preview. No project settings,
+credentials, protection or production data have changed.
+
+**Preparation check:** initial read-only run45371905824 executed one required
+test and failed before upload: full-snapshot replay introduced optional prior-
+season identity dependencies absent from the frozen proof. The new publisher
+hook now validates in the exact hash-bound dependency context already used by
+the runtime; the strict qualifier, accepted proof and NBA facts are unchanged.
+A focused extra-file/mutated-dependency regression passes. No remote data write
+occurred. This failed run is not numerical acceptance. Corrected run45374109293
+passed full-snapshot preparation/source/proof validation, then failed at the first
+consumer query because the new test adapter pointed NBATOOLS_DATA_ROOT at the
+data directory instead of its parent. Only that test adapter is corrected to use
+the existing publication-test consumer/data symlink; runtime, package, assertions
+and frozen source data are unchanged. Neither failed run counts as a numerical
+pass. One corrected same-selector execution remains required.
+
+**Next:** independently review the compatibility correction, run the one
+required no-write complete-snapshot check, pass exact-head gates and merge,
+then obtain exact candidate-upload approval (manifest/base/storage/operations).
+After approved upload, independently verify bytes and unchanged production
+pointer, then qualify an actually protected hosted cold load within 20s. Stop
+on access or qualification failure; activation needs a separate explicit
+approval and original readiness/backup safeguards. No remote upload is yet
+authorized. Reuse PR633–635 numerical/source/deployment evidence; do not repeat
+publication/backup audits, collect data, expand seasons or implement Live.
 
 **Preserved:** active production **0abc**, its 69 qualified 2024-25 and 93 prior
 2023-24 cases at their original scope, verified backup/restore, all safeguards,
