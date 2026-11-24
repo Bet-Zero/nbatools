@@ -11,7 +11,7 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**Lead: Codex. Live main `b0670c67`; application code `b041c4cc`, merged
+**Lead: Codex. Live main `e808bb41`; application code `b041c4cc`, merged
 [PR633](https://github.com/Bet-Zero/nbatools/pull/633) and
 [PR634](https://github.com/Bet-Zero/nbatools/pull/634). Implementation complete, November 22.**
 The limited Core-1 snapshot remains closed. Full original acceptance and
@@ -77,9 +77,17 @@ report SSO/password protection disabled; an approved protected-access route must
 be established before any candidate-serving preview. No project settings,
 credentials, protection or production data have changed.
 
-**Next:** freeze/review the implementation, run focused unit and targeted
-read-only complete-snapshot checks, register the exact package, then obtain the
-owner's exact candidate-upload approval (manifest/base/storage/operations).
+**Preparation check:** initial read-only run45371905824 executed one required
+test and failed before upload: full-snapshot replay introduced optional prior-
+season identity dependencies absent from the frozen proof. The new publisher
+hook now validates in the exact hash-bound dependency context already used by
+the runtime; the strict qualifier, accepted proof and NBA facts are unchanged.
+A focused extra-file/mutated-dependency regression passes. No remote data write
+occurred. This failed run is not numerical acceptance.
+
+**Next:** independently review the compatibility correction, run the one
+required no-write complete-snapshot check, pass exact-head gates and merge,
+then obtain exact candidate-upload approval (manifest/base/storage/operations).
 After approved upload, independently verify bytes and unchanged production
 pointer, then qualify an actually protected hosted cold load within 20s. Stop
 on access or qualification failure; activation needs a separate explicit

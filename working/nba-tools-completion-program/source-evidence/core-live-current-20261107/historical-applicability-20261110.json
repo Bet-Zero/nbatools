@@ -102,7 +102,7 @@
     {
       "path": ".github/data-publication-packages.json",
       "old_sha256": "cc2042c866c201a9d764865ab3961f38ef878ea217f35b439d06cff605670c55",
-      "reviewed_sha256": "991d9d1105e86bd7d5f6f86482305c6c57a47d5a3219f702458e45643118509e",
+      "reviewed_sha256": "bfddef6d76747166d4a4d3db905e38be191d3877fc61b7885073b7877f960e7b",
       "reviewed_functions": "protected publication registry",
       "semantic_reach": "Adds separately pinned protected-workflow publication packages through the exact 2024 season inactive overlay. Every prior package/check and all storage/approval limits remain unchanged. Registry is read by manual protected publication, not historical query execution; no original22 query, data, parser or arithmetic semantics change. All22 existing cases remain eligible; no new capture or broader acceptance is claimed. The Cleveland addition pins one upload-only candidate, preserves all prior45 registered expectations and adds42 independently source-derived nonempty checks. It cannot trigger activation or affect the original22 computations.",
       "eligible_existing_case_ids": [
@@ -941,8 +941,8 @@
     {
       "path": "src/nbatools/commands/pipeline/generation_publication.py",
       "old_sha256": "c555573acca4d29bbad74dd3029fbf6b77f5bf8163046123d925eb6846254da7",
-      "reviewed_functions": "upload_r2_candidate, activate_r2_candidate, verify_r2_candidate, validate_staged_generation, _resolve_r2_target",
-      "semantic_reach": "Adds immutable-prefix upload without pointer mutation and separately callable existing-byte pointer CAS, with manifest/body/base guards and disabled candidate writer SDK retries. Adds offline proof validation only when a new appearance proof is staged. Existing runtime queries do not import/call these publication operations; legacy client behavior is unchanged. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed.",
+      "reviewed_functions": "upload_r2_candidate, activate_r2_candidate, verify_r2_candidate, validate_staged_generation, _resolve_r2_target, _validate_staged_appearance_proof",
+      "semantic_reach": "Adds immutable-prefix upload without pointer mutation and separately callable existing-byte pointer CAS, with manifest/body/base guards and disabled candidate writer SDK retries. Adds offline proof validation only when a new appearance proof is staged. Existing runtime queries do not import/call these publication operations; legacy client behavior is unchanged. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. The publication hook hash-checks and replays only the frozen proof dependencies and original source bodies in the same isolated context already used by the runtime; unrelated optional previous-season files in a full snapshot cannot alter replay. The strict qualifier and frozen proof are unchanged.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -967,7 +967,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "3b090aef881f3d69d35b265b4fe95130fca7fc6b93d0cc0a0f04400c8f7691a8"
+      "reviewed_sha256": "738231e1ca4f69349ad7391f8e87f0541d857e3d23bdb7a83a9d897ab4a07ca5"
     },
     {
       "path": "src/nbatools/commands/pipeline/player_game_availability_report.py",
