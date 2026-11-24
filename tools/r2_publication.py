@@ -1,7 +1,8 @@
 """Manual publication gates around the reviewed overlay script and immutable publisher.
 
 No arbitrary refs/artifacts/commands are accepted. The registry is reviewed code.
-Only ``publish`` can call the existing writer; all other modes are read-only.
+Only protected ``publish`` and ``upload_candidate`` can write. Candidate upload
+cannot activate a generation. Activation requires a later reviewed qualification.
 """
 
 from __future__ import annotations
@@ -280,7 +281,11 @@ def bucket_budget(client, bucket, policy, local):
     ):
         raise ValueError("Complete generation exceeds the reviewed size/object limit")
     used = 0
+    pages = 0
     for page in client.get_paginator("list_objects_v2").paginate(Bucket=bucket):
+        pages += 1
+        if pages > 100:
+            raise ValueError("Bucket inventory exceeds the bounded operation budget")
         used += sum(item["Size"] for item in page.get("Contents", []))
     projected = used + local["total_bytes"] + 10_000_000
     if projected > policy["max_bucket_bytes"]:
@@ -291,6 +296,7 @@ def bucket_budget(client, bucket, policy, local):
         "current_bytes": used,
         "conservative_projected_bytes": projected,
         "limit_bytes": policy["max_bucket_bytes"],
+        "inventory_list_requests": pages,
     }
 
 
@@ -299,7 +305,24 @@ def prepare(name, publisher, work, *, expected=None):
     if work.exists():
         raise ValueError("Preparation requires a new workspace")
     work.mkdir(parents=True)
-    summary = acquire_overlay(inventory, work / "overlay")
+    if "retained_files" in inventory:
+        # These are already accepted, Git-retained source bodies, not a new
+        # acquisition or an untrusted archive supplied by workflow input.
+        for item in inventory["retained_files"]:
+            relative = PurePosixPath(item["path"])
+            if relative.is_absolute() or ".." in relative.parts:
+                raise ValueError("Unsafe retained source path")
+            source = publisher / relative
+            if source.is_symlink() or digest(source.read_bytes()) != item["sha256"]:
+                raise ValueError("Exact retained qualification input differs")
+            target = work / "overlay" / relative.name
+            if target.exists():
+                raise ValueError("Duplicate retained input name")
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(source.read_bytes())
+        summary = inventory["source_qualification"]
+    else:
+        summary = acquire_overlay(inventory, work / "overlay")
     publication = publisher_modules(publisher)
     client, bucket = publication._resolve_r2_target(
         client=None, bucket_name=None, env=None, env_file=None
@@ -335,9 +358,10 @@ def prepare(name, publisher, work, *, expected=None):
         "publisher_sha": package["publisher_sha"],
         "script_sha256": package["script_sha256"],
         "inventory_sha256": package["inventory_sha256"],
-        "artifact_id": inventory["artifact_id"],
-        "artifact_zip_sha256": inventory["artifact_zip_sha256"],
-        "source_run_id": inventory["run_id"],
+        "artifact_id": inventory.get("artifact_id"),
+        "artifact_zip_sha256": inventory.get("artifact_zip_sha256"),
+        "source_run_id": inventory.get("run_id"),
+        "retained_files": inventory.get("retained_files"),
         "base_generation": inventory["base_generation"],
         "base_manifest_sha256": base_hash,
         "generation_id": package["generation_id"],
@@ -351,6 +375,16 @@ def prepare(name, publisher, work, *, expected=None):
         "publication_state": "prepared_no_writes",
         "base_pointer": pointer,
     }
+    if "upload_candidate" in package.get("operations", []):
+        receipt["operation_budget"] = {
+            "candidate_object_puts": local["file_count"] + 1,
+            "active_pointer_puts": 0,
+            "maximum_bucket_list_requests_per_inventory": 100,
+            "read_requests_ceiling": 50_000,
+            "preview_deployments_ceiling": 2,
+            "preview_query_requests_ceiling": 8,
+            "automatic_retries_or_refresh": False,
+        }
     if expected is not None:
         keys = set(receipt) - {"budget", "publication_state", "base_pointer"}
         if any(receipt[k] != expected.get(k) for k in keys):
@@ -365,6 +399,9 @@ def publish(name, publisher, work, prepared_path):
     audit = environment_audit()
     approvals = api(f"/actions/runs/{os.environ['GITHUB_RUN_ID']}/approvals")
     check_approval(audit, approvals)
+    policy = json.loads(REGISTRY.read_text())
+    if "publish" not in policy["packages"].get(name, {}).get("operations", ["validate", "publish"]):
+        raise ValueError("Package forbids combined upload and activation")
     # This rebuild reads with the separate publisher token; no mutation occurs
     # until every source/base/code/manifest/cost/approval check has succeeded.
     receipt, publication, _, _ = prepare(name, publisher, work, expected=expected)
@@ -391,6 +428,103 @@ def publish(name, publisher, work, prepared_path):
         write_json(work / "publication.json", receipt)
 
     return receipt
+
+
+def upload_candidate(name, publisher, work, prepared_path):
+    """Protected upload only; every write is confined to the candidate prefix."""
+    policy = json.loads(REGISTRY.read_text())
+    if "upload_candidate" not in policy["packages"][name].get("operations", []):
+        raise ValueError("Package does not authorize candidate upload")
+    expected = json.loads(prepared_path.read_text())
+    check_main_revision(os.environ["GITHUB_SHA"])
+    audit = environment_audit()
+    approvals = api(f"/actions/runs/{os.environ['GITHUB_RUN_ID']}/approvals")
+    check_approval(audit, approvals)
+    receipt, publication, _, _ = prepare(name, publisher, work, expected=expected)
+    receipt.update(
+        publication_state="candidate_upload_started_outcome_unknown",
+        environment_audit=audit,
+        owner_approval=approvals,
+    )
+    write_json(work / "publication.json", receipt)
+    try:
+        result = publication.upload_r2_candidate(
+            receipt["generation_id"],
+            source_dir=work / "staging/data",
+            expected_base=receipt["base_generation"],
+            expected_base_manifest_sha256=receipt["base_manifest_sha256"],
+            expected_manifest_sha256=receipt["prepared_manifest_sha256"],
+            env_file=None,
+        )
+        receipt.update(
+            publication_state="candidate_verified_not_activated", publication=asdict(result)
+        )
+    finally:
+        write_json(work / "publication.json", receipt)
+    return receipt
+
+
+def verify_candidate(name, publisher, work, published_path):
+    _, package, inventory = load_package(name, publisher)
+    receipt = json.loads(published_path.read_text())
+    if any(
+        (
+            receipt.get("package") != name,
+            receipt.get("registry_sha256") != digest(REGISTRY.read_bytes()),
+            receipt.get("publisher_sha") != package["publisher_sha"],
+            receipt.get("workflow_sha") != os.environ.get("GITHUB_SHA"),
+            receipt.get("workflow_run_id") != os.environ.get("GITHUB_RUN_ID"),
+            receipt.get("generation_id") != package["generation_id"],
+            receipt.get("publication_state") != "candidate_verified_not_activated",
+        )
+    ):
+        raise ValueError("Candidate receipt differs from this protected operation")
+    publication = publisher_modules(publisher)
+    client, bucket = publication._resolve_r2_target(
+        client=None, bucket_name=None, env=None, env_file=None
+    )
+    before = publication._candidate_base(
+        client,
+        bucket,
+        package["generation_id"],
+        inventory["base_generation"],
+        inventory["base_manifest_sha256"],
+    )
+    publication.verify_r2_candidate(
+        client, bucket, package["generation_id"], receipt["prepared_manifest_sha256"]
+    )
+    if publication._read_r2_pointer(client, bucket) != before:
+        raise ValueError("Production pointer changed during independent candidate verification")
+    receipt["publication_state"] = "candidate_independently_verified_not_activated"
+    write_json(work / "receipt.json", receipt)
+    return receipt
+
+
+def verify_candidate_cold_response(response, *, generation, manifest_sha256, elapsed_seconds, case):
+    """An actual hosted first-query miss is required; runner timings cannot qualify."""
+    if response.status_code != 200 or not 0 < elapsed_seconds <= 20:
+        raise ValueError("Candidate cold query exceeded the existing hosted budget or failed")
+    proof = json.loads(response.headers.get("X-NBATools-Candidate-Qualification", "null"))
+    if (
+        not isinstance(proof, dict)
+        or proof.get("generation") != generation
+        or proof.get("manifest_sha256") != manifest_sha256
+        or proof.get("invocation") != 1
+        or proof.get("disk_cache_empty") is not True
+        or proof.get("frame_entries_before") != 0
+        or proof.get("appearance_loads") != 1
+        or proof.get("appearance_loads_completed") != 1
+        or proof.get("succeeded") is not True
+        or not re.fullmatch(r"[0-9a-f]{32}", str(proof.get("worker")))
+        or type(proof.get("elapsed_ms")) is not int
+        or not 0 < proof["elapsed_ms"] <= elapsed_seconds * 1000
+    ):
+        raise ValueError("Candidate response does not prove a cold complete-appearance load")
+    return {
+        "cold_proof": proof,
+        "http_elapsed_seconds": elapsed_seconds,
+        "answer": verify_answer(case, response.json()),
+    }
 
 
 def verify_answer(case, answer):
@@ -574,7 +708,18 @@ def verify_published_snapshot(package, inventory, publication, work, receipt):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("mode", choices=["resolve", "audit", "prepare", "publish", "verify"])
+    parser.add_argument(
+        "mode",
+        choices=[
+            "resolve",
+            "audit",
+            "prepare",
+            "publish",
+            "verify",
+            "upload_candidate",
+            "verify_candidate",
+        ],
+    )
     parser.add_argument("--package", default="opening-availability-v1")
     parser.add_argument("--publisher", type=Path, default=Path("publisher"))
     parser.add_argument("--work", type=Path, default=Path("work/publication"))
@@ -582,7 +727,7 @@ def main():
     args = parser.parse_args()
     if args.mode == "resolve":
         check_main_revision(os.environ["GITHUB_SHA"])
-        if os.environ.get("PUBLICATION_MODE") == "publish":
+        if os.environ.get("PUBLICATION_MODE") in {"publish", "upload_candidate"}:
             audit = environment_audit()
             if not audit.get("publication_ready"):
                 raise ValueError(
@@ -592,6 +737,9 @@ def main():
         if args.package not in policy["packages"]:
             raise ValueError("Package is not reviewed")
         package = policy["packages"][args.package]
+        mode = os.environ.get("PUBLICATION_MODE", "validate")
+        if mode not in package.get("operations", ["validate", "publish"]):
+            raise ValueError("Operation is not approved for this package")
         with open(os.environ["GITHUB_OUTPUT"], "a") as output:
             output.write(f"publisher_sha={package['publisher_sha']}\n")
             output.write(f"generation_id={package['generation_id']}\n")
@@ -601,6 +749,10 @@ def main():
         prepare(args.package, args.publisher.resolve(), args.work.resolve())
     elif args.mode == "publish":
         publish(args.package, args.publisher.resolve(), args.work.resolve(), args.prepared)
+    elif args.mode == "upload_candidate":
+        upload_candidate(args.package, args.publisher.resolve(), args.work.resolve(), args.prepared)
+    elif args.mode == "verify_candidate":
+        verify_candidate(args.package, args.publisher.resolve(), args.work.resolve(), args.prepared)
     else:
         verify(args.package, args.publisher.resolve(), args.work.resolve(), args.prepared)
 

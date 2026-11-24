@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from nbatools.admission_control import AdmissionRejected
+from nbatools.candidate_preview import ColdQualification
 from nbatools.vercel_functions import query_response
 from nbatools.vercel_http import JsonHandler
 
@@ -18,11 +19,12 @@ class handler(JsonHandler):
     def do_POST(self) -> None:
         try:
             body = self.read_json_body("/query")
-            status, payload = query_response(
-                body,
-                source_page=self.headers.get("X-NBATools-Source-Page"),
-                client_id=self.client_identifier(),
-            )
+            with ColdQualification() as qualification:
+                status, payload = query_response(
+                    body,
+                    source_page=self.headers.get("X-NBATools-Source-Page"),
+                    client_id=self.client_identifier(),
+                )
         except AdmissionRejected as exc:
             self.send_json(exc.payload(), status=exc.status, headers=exc.headers())
             return
@@ -32,4 +34,4 @@ class handler(JsonHandler):
         except Exception as exc:
             self.send_unexpected_error(exc, endpoint="/query")
             return
-        self.send_json(payload, status=status)
+        self.send_json(payload, status=status, headers=qualification.headers)

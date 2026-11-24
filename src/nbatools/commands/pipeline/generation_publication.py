@@ -360,6 +360,15 @@ def validate_staged_generation(stage: Path, generation_id: str) -> dict[str, Any
             validate_publication(stage)
         except (ValueError, KeyError, OSError, TypeError, AttributeError) as exc:
             raise GenerationValidationError(f"Availability validation failed: {exc}") from exc
+    for proof in sorted((stage / "raw/team_game_appearances").glob("*.json")):
+        from nbatools.commands.pipeline.team_appearance_coverage import (
+            validate_complete_appearance_proof,
+        )
+
+        try:
+            validate_complete_appearance_proof(stage, json.loads(proof.read_bytes()))
+        except (ValueError, KeyError, OSError, TypeError, AttributeError) as exc:
+            raise GenerationValidationError(f"Appearance proof validation failed: {exc}") from exc
     return document
 
 
@@ -607,6 +616,124 @@ def _local_pointer_lock(path: Path) -> Iterator[None]:
             yield
         finally:
             fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+def upload_r2_candidate(
+    generation_id: str,
+    *,
+    source_dir: Path,
+    expected_base: str,
+    expected_base_manifest_sha256: str,
+    expected_manifest_sha256: str,
+    client: Any | None = None,
+    bucket_name: str | None = None,
+    env_file: Path | None = None,
+) -> GenerationPublicationResult:
+    """Upload an exact immutable candidate. This operation never writes a pointer."""
+    generation = _validated_generation_id(generation_id)
+    client, bucket = _resolve_r2_target(
+        client=client, bucket_name=bucket_name, env=None, env_file=env_file
+    )
+    start = _candidate_base(
+        client, bucket, generation, expected_base, expected_base_manifest_sha256
+    )
+    with tempfile.TemporaryDirectory(prefix="nbatools-candidate-") as temp:
+        staged = Path(temp) / generation
+        _build_staged_generation(source_dir.resolve(), staged, generation)
+        manifest = validate_staged_generation(staged, generation)
+        if _file_sha256(staged / GENERATION_MANIFEST_PATH) != expected_manifest_sha256:
+            raise GenerationValidationError("Candidate differs from approved manifest")
+        if _read_r2_pointer(client, bucket) != start:
+            raise GenerationConflictError("Active base changed before candidate upload")
+        _publish_r2_files(client, bucket, staged, generation)
+    verify_r2_candidate(client, bucket, generation, expected_manifest_sha256)
+    if _read_r2_pointer(client, bucket) != start:
+        raise GenerationConflictError("Active base changed during candidate upload")
+    return GenerationPublicationResult(
+        target="r2",
+        generation_id=generation,
+        previous_generation_id=expected_base,
+        file_count=len(manifest["files"]),
+        total_bytes=sum(item["size_bytes"] for item in manifest["files"]),
+        manifest_sha256=expected_manifest_sha256,
+        pointer=ACTIVE_GENERATION_PATH.as_posix(),
+        action="candidate_upload",
+    )
+
+
+def verify_r2_candidate(client, bucket, generation, expected_manifest_sha256):
+    """Verify retained candidate bodies, including corruption masked by metadata."""
+    manifest, actual = _validate_r2_rollback_target(client, bucket, generation)
+    if actual != expected_manifest_sha256:
+        raise GenerationValidationError("Candidate manifest differs from approved checksum")
+    for item in manifest["files"]:
+        key = f"{GENERATIONS_DIR}/{generation}/{item['path']}"
+        raw = client.get_object(Bucket=bucket, Key=key)["Body"].read()
+        if len(raw) != item["size_bytes"] or hashlib.sha256(raw).hexdigest() != item["sha256"]:
+            raise GenerationValidationError(f"Candidate object checksum differs: {key}")
+    return manifest
+
+
+def _candidate_base(client, bucket, generation, expected_base, expected_hash):
+    start = _read_r2_pointer(client, bucket)
+    if start.generation_id != expected_base or generation == expected_base:
+        raise GenerationConflictError("Candidate requires its distinct approved active base")
+    raw = client.get_object(
+        Bucket=bucket, Key=f"{GENERATIONS_DIR}/{expected_base}/{GENERATION_MANIFEST_PATH}"
+    )["Body"].read()
+    pointer = json.loads(
+        client.get_object(Bucket=bucket, Key=ACTIVE_GENERATION_PATH.as_posix())["Body"].read()
+    )
+    if (
+        hashlib.sha256(raw).hexdigest() != expected_hash
+        or pointer.get("manifest_sha256") != expected_hash
+        or pointer.get("generation_id") != expected_base
+    ):
+        raise GenerationValidationError("Candidate base manifest is not authenticated")
+    return start
+
+
+def activate_r2_candidate(
+    generation_id: str,
+    *,
+    expected_base: str,
+    expected_base_manifest_sha256: str,
+    expected_manifest_sha256: str,
+    client: Any | None = None,
+    bucket_name: str | None = None,
+    env_file: Path | None = None,
+) -> GenerationPublicationResult:
+    """Activate already uploaded bytes with one CAS; never upload snapshot objects.
+
+    The protected caller must separately authorize activation and qualify preview.
+    This low-level operation is deliberately not exposed by the general CLI.
+    """
+    generation = _validated_generation_id(generation_id)
+    client, bucket = _resolve_r2_target(
+        client=client, bucket_name=bucket_name, env=None, env_file=env_file
+    )
+    start = _candidate_base(
+        client, bucket, generation, expected_base, expected_base_manifest_sha256
+    )
+    manifest = verify_r2_candidate(client, bucket, generation, expected_manifest_sha256)
+    if _read_r2_pointer(client, bucket) != start:
+        raise GenerationConflictError("Active base changed before candidate activation")
+    _write_r2_pointer_atomic(
+        client,
+        bucket,
+        _pointer_payload(generation, expected_base, expected_manifest_sha256),
+        expected_etag=start.etag,
+    )
+    return GenerationPublicationResult(
+        target="r2",
+        generation_id=generation,
+        previous_generation_id=expected_base,
+        file_count=len(manifest["files"]),
+        total_bytes=sum(item["size_bytes"] for item in manifest["files"]),
+        manifest_sha256=expected_manifest_sha256,
+        pointer=ACTIVE_GENERATION_PATH.as_posix(),
+        action="candidate_activation",
+    )
 
 
 def _publish_r2_files(client: Any, bucket: str, staged: Path, generation: str) -> None:

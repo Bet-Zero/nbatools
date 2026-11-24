@@ -20,6 +20,9 @@ def _coverage(seasons, kind):
     from nbatools.commands.pipeline.pull_player_game_availability import _game_digest
 
     def load():
+        from nbatools.candidate_preview import appearance_load_event
+
+        appearance_load_event()
         result = {}
         checked = {}
         for season in seasons:
@@ -128,9 +131,11 @@ def _coverage(seasons, kind):
                 if set(positive.player_id.astype(int)) - ids:
                     raise ValueError("Appearance proof contradicts a positive appearance")
                 result[gid, team] = (side["game_date"], ids)
-        return pd.DataFrame(
+        frame = pd.DataFrame(
             [dict(game_id=g, team_id=t, day=d, players=ids) for (g, t), (d, ids) in result.items()]
         )
+        appearance_load_event(completed=True)
+        return frame
 
     frame = FRAME_CACHE.get_or_load(
         ("team-appearance-coverage", data_source_cache_key(), tuple(seasons), kind), load

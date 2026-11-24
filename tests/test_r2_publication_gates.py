@@ -164,13 +164,19 @@ def test_publisher_workflow_is_manual_and_credentials_are_job_and_step_scoped():
     assert workflow["permissions"] == {"contents": "read", "actions": "read"}
     jobs = workflow["jobs"]
     assert jobs["publish"]["environment"]["name"] == "r2-publication"
-    assert jobs["publish"]["if"] == "inputs.mode == 'publish'"
+    assert jobs["publish"]["if"] == "inputs.mode == 'publish' || inputs.mode == 'upload_candidate'"
+    assert triggers["workflow_dispatch"]["inputs"]["mode"]["options"] == [
+        "validate",
+        "publish",
+        "upload_candidate",
+    ]
     assert "env" not in jobs["publish"]
     secret_steps = [
         step for step in jobs["publish"]["steps"] if "R2_SECRET_ACCESS_KEY" in step.get("env", {})
     ]
     assert len(secret_steps) == 1
-    assert "r2_publication.py publish" in secret_steps[0]["run"]
+    assert 'r2_publication.py "$WRITE_MODE"' in secret_steps[0]["run"]
+    assert secret_steps[0]["env"]["WRITE_MODE"] == "${{ inputs.mode }}"
     assert (
         "secrets.R2_PUBLICATION_SECRET_ACCESS_KEY" in secret_steps[0]["env"]["R2_SECRET_ACCESS_KEY"]
     )
@@ -458,6 +464,10 @@ def test_postpublication_verifies_bytes_and_final_pointer(tmp_path, monkeypatch,
 
 def test_writer_failure_retains_durable_unknown_outcome(tmp_path, monkeypatch):
     from types import SimpleNamespace
+
+    registry = tmp_path / "registry.json"
+    registry.write_text(json.dumps({"packages": {"pkg": {}}}))
+    monkeypatch.setattr(gate, "REGISTRY", registry)
 
     monkeypatch.setenv("GITHUB_SHA", "code")
     monkeypatch.setenv("GITHUB_RUN_ID", "run")
