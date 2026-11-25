@@ -11,7 +11,7 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**Lead: Codex, November 24.** PR637–639 are merged. Workflow main is
+**Lead: Codex, November 25.** [PR #640](https://github.com/Bet-Zero/nbatools/pull/640) is merged. Workflow main is
 `11ab5aad1db7897fec0b871e6d9dba77dd6929e3`; production runtime `997efe5d` is READY.
 The limited Core-1 snapshot remains closed; full original acceptance and
 league-wide participation remain unfinished.
@@ -52,26 +52,28 @@ from PR633–635 retains its original scope. Historical failed receipts and the
 informational development-security failure are preserved. No full-suite rerun
 or new NBA acquisition was needed for upload verification.
 
-**Remaining blocker — apply already approved access to this running task:**
-preview-only Vercel Authentication is enabled on Hobby at $0. The owner reports
-adding `*.vercel.app`, but after environment restarts the actual task still
-reports enforced revision1, custom host `api.github.com` plus package managers.
-A fresh Vercel connection failed at the proxy with CONNECT403. The requested
-runtime change did not produce a confirmed applied grant. Do not repeat identical
-requests or confuse a future-task configuration change with this instance's
-policy. No candidate preview, temporary share link or cold query was created.
-Chat permission for the exact upload and bounded private-preview access is
-already recorded; do not ask for it again.
+**Preview host reachable; cold qualification blocked at sign-in.** The
+current Cloud environment enforces the approved `*.vercel.app` grant. Vercel
+Authentication is enabled for previews, and an unauthenticated request to the
+READY candidate preview returned HTTP 302 to Vercel sign-in.
+[Deployment dpl_4wvfXnjHx4Yqvxmu6Uzmffcf2Nad](https://vercel.com/zeros-projects-686e97fc/nbatools/4wvfXnjHx4Yqvxmu6Uzmffcf2Nad)
+was built from `e840848c42292c9c5b57f910cd78568e88c09b2b` on
+`codex/cleveland-hosted-qualification-20261125`. Its only change from PR #640's
+merge is to pin the generation and full manifest above in `vercel.json`.
 
-**Next:** once this task's settings show the approved preview-host grant applied,
-create an isolated protected preview pinned to the uploaded generation and full
-manifest. Qualify its actual first query/loader miss within 20 seconds; maximum
-two deployments/eight queries. Reuse the uploaded bytes. Stop on failure; no
-optimization campaign. Only a passing hosted qualification permits preparation
-of a separate protected activation approval (one pointer CAS, zero snapshot
-PUTs). **Production activation remains UNAPPROVED.** Strict readiness and
-separate data/backup/restore verification remain required after any later
-approved activation.
+Automatic review rejected creating a temporary Vercel link because anyone in
+possession of the link could view the preview until expiry. There is no signed-in
+Vercel client available in this session. One candidate deployment and zero
+query POSTs were used. The candidate upload was reused and the production
+pointer was not written.
+
+**Next:** obtain approved, authenticated access to the same immutable preview.
+Send the first query for the 2024-25 Cavaliers record without Caris LeVert
+before any readiness or query warm-up. The [runbook](../../docs/operations/deployment.md#isolated-candidate-upload-and-hosted-qualification)
+requires 44 games, 31–13, completed cold-loader evidence and at most 20 seconds.
+The two-deployment/eight-query total budget still applies. Stop on failure.
+Production activation requires a separate protected approval after a passing
+hosted result.
 
 **Separate unfinished requirements:** original K08 remains 16 PASS / 26 MISSING
 DATA / 4 LIVE; original questions, controlled positives and acceptance baseline
