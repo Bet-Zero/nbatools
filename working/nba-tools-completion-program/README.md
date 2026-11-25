@@ -52,28 +52,27 @@ from PR633–635 retains its original scope. Historical failed receipts and the
 informational development-security failure are preserved. No full-suite rerun
 or new NBA acquisition was needed for upload verification.
 
-**Hosted cold-load qualification failed.** The approved preview host is
-reachable and Vercel Authentication protects the READY preview.
-[Deployment dpl_4wvfXnjHx4Yqvxmu6Uzmffcf2Nad](https://vercel.com/zeros-projects-686e97fc/nbatools/4wvfXnjHx4Yqvxmu6Uzmffcf2Nad)
-runs `e840848c42292c9c5b57f910cd78568e88c09b2b` from
-`codex/cleveland-hosted-qualification-20261125`, with the uploaded generation
-and full manifest pinned. The access handoff is in
-[PR #641](https://github.com/Bet-Zero/nbatools/pull/641).
+**Hosted cold-load qualification passed.** [PR #643](https://github.com/Bet-Zero/nbatools/pull/643)
+fixes the serial original-source downloads and source replay in the query path.
+The published reader checks the pinned manifest and the bytes it consumes. The
+prior 22.85-second timeout remains recorded in [PR #642](https://github.com/Bet-Zero/nbatools/pull/642).
 
-On November 25 at 08:25:52 UTC, the first `POST /query` asked for the Cavaliers
-record without Caris LeVert in 2024-25. The response was HTTP 504
-`FUNCTION_INVOCATION_TIMEOUT` after **22.85 seconds** externally, over the
-20-second limit. It returned no answer or loader evidence. Vercel request ID
-`sfo1::j7htj-1795595153705-dfc05e61b854`. The response body SHA256 is
-`3df6e5ed6fccd0714fd09f9e15e7c13c3a90d1ee9a8aa4046c48c8c8a476f0c1`.
-The replacement five-minute link was revoked after the request and then
-returned HTTP 302 to Vercel sign-in. Total qualification use was one candidate
-deployment and one query POST, with the existing upload reused.
+The first POST on the [protected preview](https://vercel.com/zeros-projects-686e97fc/nbatools/2eQNvuDvCrnqUNebDxHWG9e6REYT)
+returned the Cavaliers' 2024-25 record without Caris LeVert, **31–13 in 44 games**,
+in **5.825 seconds** (20-second gate). Preview `5986dde5` adds only the existing
+candidate pins to independently reviewed runtime `ff0cb12b`. Evidence showed
+empty disk and frame caches, invocation one and one completed appearance load.
+Request `sfo1::iad1::kbzhj-1795601143376-324c21674a03`, response SHA256
+`ed8fbeb85f79354446dacb7bdad3a48ec9bcf585f7b8ddd86e8079646d09a956`.
+All six follow-up controls passed. The five-minute link was revoked. The
+[targeted R2 run](https://github.com/Bet-Zero/nbatools/actions/runs/45589761409)
+confirmed the exact game IDs and fetched no original source files.
 
-**Next:** stop at the failed
-[hosted gate](../../docs/operations/deployment.md#isolated-candidate-upload-and-hosted-qualification).
-The six follow-up controls were not run. Activation preparation requires a
-passing hosted result. No production pointer write was performed.
+**Public activation remains pending.** Reuse this exact upload and hosted proof
+for the separate protected activation gate. The current production pointer is
+still on the earlier generation. Production reports `new_season_not_loaded`
+for 2026-27, so strict publication verification cannot pass on the current
+inputs. No pointer write or additional data acquisition was authorized.
 
 **Separate unfinished requirements:** original K08 remains 16 PASS / 26 MISSING
 DATA / 4 LIVE; original questions, controlled positives and acceptance baseline
