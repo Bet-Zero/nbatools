@@ -1066,7 +1066,7 @@
       "path": "src/nbatools/commands/pipeline/structured_participation.py",
       "old_sha256": "e007ac61ef8ec28aa54747737b8bf06b1409d1b807a5bddf123057fb87281fc0",
       "reviewed_sha256": "1b99a375dd1fedc42a95c1e9790e965933688a9d0afd42d1308f99c450f28639",
-      "reviewed_functions": "inactive_dependencies, qualify_season_inactive, stage_season_inactive, validate_inactive_overlap, _inactive_replay, validate_season_inactive, load_season_inactive; load_season_inactive",
+      "reviewed_functions": "inactive_dependencies, qualify_season_inactive, stage_season_inactive, validate_inactive_overlap, _inactive_replay, validate_season_inactive, load_season_inactive",
       "semantic_reach": "Adds explicit archive-derived inactive producer/validator/loader and an opt-in known-name-conflict quarantine with exact replayed rejection ledger. Original capture generations contain no inactive namespace. Existing native qualifiers and default strict inactive qualification are unchanged; current published 2023 receipt has no opt-in policy. No parser, arithmetic, sample, original source or original-case semantics change. Archive qualification uses canonical participant sides for neutral games, verified against both canonical team-stat sides, without inferring home/away; old 2023 serialization remains byte-identical. The runtime can now read prepared inactive rows with the same publication-verified archive provenance and canonical dependencies. The original capture generation has no inactive namespace, so this branch is not used by its queries, including the LeBron James missed-games case. Legacy replay and publication qualification still apply in their existing contexts.",
       "eligible_existing_case_ids": [
         "k12-s1",
@@ -1638,7 +1638,7 @@
     {
       "path": "src/nbatools/commands/_team_appearances.py",
       "reviewed_sha256": "4ca20eabdf976b80055818631c1a34b697a065ab8aa715a9f7c3fe77c62d6c67",
-      "semantic_reach": "New explicit team_record appearance scope only; original22 have no team_record with/without combination. Offline qualification makes no source requests or writes to existing data. Split/player/finder strict predicates unchanged. Complete team lists now come from a manifest-authenticated proof or a replay in unverified contexts. The original capture generation has no complete team-side list for either selected season in the two Celtics/Jayson Tatum requests, so their existing positive and exact-game observations remain the basis for both records. The other original cases do not use this list loader.",
+      "semantic_reach": "Complete team lists now come from a manifest-authenticated proof or a replay in unverified contexts. The two original Celtics/Jayson Tatum cases route to season splits and use their existing split participation filters. None of the original 22 cases calls the complete team-list loader.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
