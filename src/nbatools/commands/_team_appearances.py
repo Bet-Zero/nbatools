@@ -12,21 +12,48 @@ import pandas as pd
 from nbatools.commands._participation_observations import combined_observations
 from nbatools.commands._player_identity import player_name_mask
 from nbatools.commands.entity_resolution import player_ids_for_name
-from nbatools.data_source import data_exists, data_path, data_read_csv, data_source_cache_key
+from nbatools.data_source import (
+    data_exists,
+    data_path,
+    data_source_cache_key,
+    verified_generation_files,
+)
 from nbatools.dataframe_cache import FRAME_CACHE
 
 
-def _coverage(seasons, kind):
-    from nbatools.commands.pipeline.pull_player_game_availability import _game_digest
+def _replay_unpublished_proof(proof, files, availability):
+    from nbatools.commands.pipeline.team_appearance_coverage import (
+        validate_complete_appearance_proof,
+    )
 
+    # Local and unverified generations still need original source qualification.
+    with tempfile.TemporaryDirectory() as temp:
+        root = Path(temp)
+        for relative, digest in files.items():
+            raw = data_path("data/" + relative).read_bytes()
+            if hashlib.sha256(raw).hexdigest() != digest:
+                raise ValueError("Stale or altered complete appearance proof")
+            target = root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(raw)
+        for relative in availability:
+            target = root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(data_path("data/" + relative), target)
+        validate_complete_appearance_proof(root, proof)
+
+
+def _coverage(seasons, kind, observations):
     def load():
         from nbatools.candidate_preview import appearance_load_event
 
         appearance_load_event()
         result = {}
-        checked = {}
+        manifest = verified_generation_files()
+        played_by_side = None
         for season in seasons:
-            suffix = season + "_" + kind.lower().replace(" ", "_")
+            season_type = kind.lower().replace(" ", "_")
+            suffix = f"{season}_{season_type}"
             path = f"data/raw/team_game_appearances/{suffix}.json"
             if not data_exists(path):
                 continue
@@ -47,90 +74,53 @@ def _coverage(seasons, kind):
             allowed = expected_dependencies | {
                 f"raw/rosters/{season}.csv",
                 f"raw/rosters/{previous}.csv",
-                f"raw/player_game_stats/{previous}_{kind.lower().replace(' ', '_')}.csv",
+                f"raw/player_game_stats/{previous}_{season_type}.csv",
             }
-            if (
-                not expected_dependencies <= set(proof["dependencies"])
-                or set(proof["dependencies"]) - allowed
-            ):
-                raise ValueError("Incomplete appearance proof dependencies")
-            from nbatools.commands.pipeline.team_appearance_coverage import (
-                validate_complete_appearance_proof,
-            )
-
             files = dict(proof["dependencies"])
+            if not expected_dependencies <= files.keys() <= allowed:
+                raise ValueError("Incomplete appearance proof dependencies")
             for side in proof["sides"]:
-                for relative, digest in side["source_files"].items():
-                    if relative in files and files[relative] != digest:
-                        raise ValueError("Conflicting appearance source dependencies")
-                    files[relative] = digest
-            with tempfile.TemporaryDirectory() as temp:
-                root = Path(temp)
-                for relative, digest in files.items():
-                    if not relative.startswith("raw/") or ".." in relative.split("/"):
-                        raise ValueError("Invalid appearance source path")
-                    raw = data_path("data/" + relative).read_bytes()
-                    if hashlib.sha256(raw).hexdigest() != digest:
-                        raise ValueError("Stale or altered complete appearance proof")
-                    target = root / relative
-                    target.parent.mkdir(parents=True, exist_ok=True)
-                    target.write_bytes(raw)
-                for relative in (
-                    f"raw/player_game_availability/{suffix}.csv",
-                    f"raw/player_game_availability/{suffix}.imports.json",
-                ):
-                    target = root / relative
-                    target.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copyfile(data_path("data/" + relative), target)
-                validate_complete_appearance_proof(root, proof)
-            observations, _ = combined_observations([season], kind)
-            listed = data_read_csv(f"data/raw/player_game_availability/{suffix}.csv")
-            for side in proof["sides"]:
-                for relative, digest in {**proof["dependencies"], **side["source_files"]}.items():
-                    if (
-                        not relative.startswith("raw/")
-                        or ".." in relative.split("/")
-                        or not re.fullmatch(r"[a-f0-9]{64}", digest)
-                    ):
-                        raise ValueError("Invalid appearance proof dependency")
-                    if relative not in checked:
-                        checked[relative] = hashlib.sha256(
-                            data_path("data/" + relative).read_bytes()
-                        ).hexdigest()
-                    if checked[relative] != digest:
-                        raise ValueError("Stale or altered complete appearance proof")
-                if not side["source_files"] or any(
-                    not p.startswith("raw/player_game_availability_sources/")
-                    for p in side["source_files"]
-                ):
+                if not side["source_files"]:
                     raise ValueError("Missing complete appearance original source")
-                if any(type(x) is not int or x <= 0 for x in side["played_ids"]) or len(
-                    side["played_ids"]
-                ) != len(set(side["played_ids"])):
+                for relative, digest in side["source_files"].items():
+                    if (
+                        not relative.startswith("raw/player_game_availability_sources/")
+                        or ".." in relative.split("/")
+                        or relative in files
+                        and files[relative] != digest
+                    ):
+                        raise ValueError("Invalid or conflicting appearance source dependency")
+                    files[relative] = digest
+            if any(not re.fullmatch(r"[a-f0-9]{64}", digest) for digest in files.values()):
+                raise ValueError("Invalid appearance proof dependency checksum")
+            availability = [
+                f"raw/player_game_availability/{suffix}{ending}"
+                for ending in (".csv", ".imports.json")
+            ]
+            if manifest is None:
+                _replay_unpublished_proof(proof, files, availability)
+            elif any(
+                relative not in manifest or manifest[relative].sha256 != digest
+                for relative, digest in files.items()
+            ) or any(relative not in manifest for relative in availability):
+                raise ValueError("Complete appearance provenance differs from published manifest")
+
+            # Publication proved each list complete against the original container.
+            # The pinned manifest authenticates the list and the rows used by this query.
+            if played_by_side is None:
+                positive = observations.loc[observations.participation_state.eq("played")]
+                played_by_side = positive.groupby(["game_id", "team_id"]).player_id.agg(set)
+            for side in proof["sides"]:
+                played_ids = side["played_ids"]
+                if any(type(x) is not int or x <= 0 for x in played_ids):
                     raise ValueError("Invalid complete appearance identities")
-                gid, team = int(side["game_id"]), int(side["team_id"])
-                # Bind primary full-container rows; separate inactive additions
-                # do not expand or replace this complete played-list proof.
-                rows = listed.loc[listed.game_id.eq(gid) & listed.team_id.eq(team)]
-                if (
-                    rows.empty
-                    or rows.participation_state.eq("unknown").any()
-                    or _game_digest(rows) != side["observation_sha256"]
-                ):
-                    raise ValueError(
-                        "Complete appearance proof does not match accepted source rows"
-                    )
-                ids = set(rows.loc[rows.participation_state.eq("played"), "player_id"].astype(int))
-                if ids != set(side["played_ids"]) or (gid, team) in result:
+                ids = frozenset(played_ids)
+                key = (int(side["game_id"]), int(side["team_id"]))
+                if len(ids) != len(played_ids) or key in result:
                     raise ValueError("Conflicting complete appearance lists")
-                positive = observations.loc[
-                    observations.game_id.eq(gid)
-                    & observations.team_id.eq(team)
-                    & observations.participation_state.eq("played")
-                ]
-                if set(positive.player_id.astype(int)) - ids:
+                if not ids.issuperset(played_by_side.get(key, ())):
                     raise ValueError("Appearance proof contradicts a positive appearance")
-                result[gid, team] = (side["game_date"], ids)
+                result[key] = (side["game_date"], ids)
         frame = pd.DataFrame(
             [dict(game_id=g, team_id=t, day=d, players=ids) for (g, t), (d, ids) in result.items()]
         )
@@ -150,7 +140,7 @@ def select_appearances(candidates, names, seasons, kind, *, played, scope="team"
     if candidates.empty:
         return candidates.copy()
     observations, _ = combined_observations(seasons, kind)
-    complete = _coverage(seasons, kind)
+    complete = _coverage(seasons, kind, observations)
     keep = pd.Series(True, index=candidates.index)
     for name in re.split(r"\s+and\s+", names, flags=re.I):
         ids = {int(x) for x in player_ids_for_name(name)} | set(

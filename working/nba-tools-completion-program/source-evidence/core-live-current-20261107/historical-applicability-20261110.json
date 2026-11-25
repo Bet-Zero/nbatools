@@ -1065,9 +1065,9 @@
     {
       "path": "src/nbatools/commands/pipeline/structured_participation.py",
       "old_sha256": "e007ac61ef8ec28aa54747737b8bf06b1409d1b807a5bddf123057fb87281fc0",
-      "reviewed_sha256": "21ba9b722cf6573ae02a2f69c2859a117b10ac3930ec18bc95d9649391df334e",
+      "reviewed_sha256": "1b99a375dd1fedc42a95c1e9790e965933688a9d0afd42d1308f99c450f28639",
       "reviewed_functions": "inactive_dependencies, qualify_season_inactive, stage_season_inactive, validate_inactive_overlap, _inactive_replay, validate_season_inactive, load_season_inactive",
-      "semantic_reach": "Adds explicit archive-derived inactive producer/validator/loader and an opt-in known-name-conflict quarantine with exact replayed rejection ledger. Original capture generations contain no inactive namespace. Existing native qualifiers and default strict inactive qualification are unchanged; current published 2023 receipt has no opt-in policy. No parser, arithmetic, sample, original source or original-case semantics change. Archive qualification uses canonical participant sides for neutral games, verified against both canonical team-stat sides, without inferring home/away; old 2023 serialization remains byte-identical.",
+      "semantic_reach": "Adds explicit archive-derived inactive producer/validator/loader and an opt-in known-name-conflict quarantine with exact replayed rejection ledger. Original capture generations contain no inactive namespace. Existing native qualifiers and default strict inactive qualification are unchanged; current published 2023 receipt has no opt-in policy. No parser, arithmetic, sample, original source or original-case semantics change. Archive qualification uses canonical participant sides for neutral games, verified against both canonical team-stat sides, without inferring home/away; old 2023 serialization remains byte-identical. The runtime can now read prepared inactive rows with the same publication-verified archive provenance and canonical dependencies. The original capture generation has no inactive namespace, so this branch is not used by its queries, including the LeBron James missed-games case. Legacy replay and publication qualification still apply in their existing contexts.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1189,8 +1189,8 @@
     {
       "path": "src/nbatools/data_source.py",
       "old_sha256": "cebe4cbd4e6a1451b0c383072eaaf47ef9b53e7b5a3148f4b5b921f04c1b9474",
-      "reviewed_functions": "_resolve_active_data_generation",
-      "semantic_reach": "Only a present preview manifest environment pin triggers the additional preview-only manifest check; an absent pin resolves the same existing request/environment/active generation. No original22 production request carries this pin, and no HTTP input can select it. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed.",
+      "reviewed_functions": "_resolve_active_data_generation; data_generation_context; data_source_cache_key; _R2DataSource manifest and object reads",
+      "semantic_reach": "Only a present preview manifest environment pin triggers the additional preview-only manifest check; an absent pin resolves the same existing request/environment/active generation. No original22 production request carries this pin, and no HTTP input can select it. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. The R2 request now pins the active generation and its published manifest checksum together. Manifest-listed data is the same byte-exact input to the original queries, and absent optional data stays absent, including the 2026-27 case. This adds integrity checks and generation-scoped cache binding without changing historical query inputs, arithmetic or labels.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1215,7 +1215,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "663db7b188aba3b212b80c68d0c8a28e5b7336fd60e04d58bcd0f64920945eab"
+      "reviewed_sha256": "0b65a2ae0d349e126fbb6d0ad056e9946e4609aaf9e5b98591e6449e252d9ea5"
     },
     {
       "path": "src/nbatools/development_data.py",
@@ -1608,7 +1608,7 @@
   "reviewed_added_source_modules": [
     {
       "path": "src/nbatools/candidate_preview.py",
-      "semantic_reach": "Read-only deployment-scoped candidate manifest verification and request-local cold-load evidence. With no environment pin, it returns the original callback, performs no data requests and emits no headers; no original22 production query has a candidate pin. No HTTP override, write credential, activation route or historical arithmetic is introduced. All22 existing cases remain eligible; no new capture or expanded acceptance is claimed.",
+      "semantic_reach": "Read-only deployment-scoped candidate manifest verification and request-local cold-load evidence. With no environment pin, it returns the original callback, performs no data requests and emits no headers; no original22 production query has a candidate pin. No HTTP override, write credential, activation route or historical arithmetic is introduced. All22 existing cases remain eligible; no new capture or expanded acceptance is claimed. The protected preview now shares the authenticated manifest reader with the R2 source and rejects a legacy-root pin. None of the 22 original production requests has a preview pin. The preview timing headers remain request-local.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1633,12 +1633,12 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "ac472860bf50d605a85e92014f043d4af8281ee90055ae577c0c44c416f12d3c"
+      "reviewed_sha256": "a683d9214994d5805a8bca29a36bd1d92dd8b9b04e48b75416af8567f7d66dbe"
     },
     {
       "path": "src/nbatools/commands/_team_appearances.py",
-      "reviewed_sha256": "3364c56ef5ddb2b3ade99fa0bfba44e438256e804129cdefdb734b96654eee10",
-      "semantic_reach": "New explicit team_record appearance scope only; original22 have no team_record with/without combination. Offline qualification makes no source requests or writes to existing data. Split/player/finder strict predicates unchanged.",
+      "reviewed_sha256": "4ca20eabdf976b80055818631c1a34b697a065ab8aa715a9f7c3fe77c62d6c67",
+      "semantic_reach": "Complete team lists now come from a manifest-authenticated proof or a replay in unverified contexts. The two original Celtics/Jayson Tatum cases route to season splits and use their existing split participation filters. None of the original 22 cases calls the complete team-list loader.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",

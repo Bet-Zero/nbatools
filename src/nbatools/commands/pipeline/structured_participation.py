@@ -671,8 +671,13 @@ def validate_season_inactive(root):
 
 
 def load_season_inactive(seasons):
-    """Serve only replayed source rows, cached by immutable generation identity."""
-    from nbatools.data_source import data_exists, data_path, data_source_cache_key
+    """Serve qualified inactive rows from the authenticated generation or replay."""
+    from nbatools.data_source import (
+        data_exists,
+        data_path,
+        data_source_cache_key,
+        verified_generation_files,
+    )
     from nbatools.dataframe_cache import FRAME_CACHE
 
     frames = []
@@ -689,10 +694,27 @@ def load_season_inactive(seasons):
             receipt = json.loads(data_path(provenance).read_bytes())
             if not re.fullmatch(r"[a-f0-9]{64}", str(receipt.get("sha256", ""))):
                 raise ValueError("Malformed inactive original digest")
-            original = f"data/{INACTIVE_SOURCES}/{receipt['sha256']}.csv"
+            original = f"{INACTIVE_SOURCES}/{receipt['sha256']}.csv"
+            manifest = verified_generation_files()
+            if manifest is not None:
+                dependencies = receipt["canonical_file_sha256"]
+                expected = {**dependencies, original: receipt["sha256"]}
+                if (
+                    set(dependencies) != set(paths)
+                    or any(
+                        path not in manifest or manifest[path].sha256 != digest
+                        for path, digest in expected.items()
+                    )
+                    or manifest[original].size_bytes != receipt["size_bytes"]
+                ):
+                    raise ValueError("Inactive provenance differs from published manifest")
+                rows = pd.read_csv(data_path(target), keep_default_na=False)
+                if set(rows) != set(COLUMNS):
+                    raise ValueError("Inactive derived schema differs from qualified source")
+                return rows[list(COLUMNS)].assign(source_minutes=None)
             return _inactive_replay(
                 pd.read_csv(data_path(target)),
-                data_path(original).read_bytes(),
+                data_path("data/" + original).read_bytes(),
                 receipt,
                 season,
                 {p: data_path("data/" + p).read_bytes() for p in paths},

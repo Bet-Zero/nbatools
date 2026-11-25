@@ -6,7 +6,6 @@ protected preview deployment; a production deployment carrying it fails closed.
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import re
@@ -15,7 +14,6 @@ import uuid
 from contextvars import ContextVar, copy_context
 
 MANIFEST_ENV = "NBATOOLS_PREVIEW_CANDIDATE_MANIFEST"
-_verified = {}
 _worker = uuid.uuid4().hex
 _requests = 0
 _current = ContextVar("candidate_cold_qualification", default=None)
@@ -25,27 +23,30 @@ def verify_pin(source, generation):
     expected = os.environ.get(MANIFEST_ENV, "")
     if MANIFEST_ENV not in os.environ:
         return
-    from nbatools.data_source import DataSourceConfigError
+    from nbatools.data_source import (
+        LEGACY_GENERATION,
+        DataSourceConfigError,
+        DataSourceError,
+        _Generation,
+        _R2DataSource,
+        validate_data_generation_id,
+    )
 
     if (
         os.environ.get("VERCEL_ENV") != "preview"
-        or os.environ.get("DATA_SOURCE") != "r2"
+        or not isinstance(source, _R2DataSource)
         or os.environ.get("NBATOOLS_DATA_GENERATION") != generation
+        or generation == LEGACY_GENERATION
         or not re.fullmatch(r"[0-9a-f]{64}", expected)
     ):
         raise DataSourceConfigError("Candidate pin requires an explicit R2 preview deployment")
-    key = (id(source), generation, expected)
-    if _verified.get(key) is not source:
-        raw = source.client.get_object(
-            Bucket=source.config.bucket_name,
-            Key=f"generations/{generation}/metadata/generation_manifest.json",
-        )["Body"].read()
-        if (
-            hashlib.sha256(raw).hexdigest() != expected
-            or json.loads(raw).get("generation_id") != generation
-        ):
-            raise DataSourceConfigError("Preview candidate manifest checksum differs")
-        _verified[key] = source
+    try:
+        source.verified_manifest(_Generation(validate_data_generation_id(generation), expected))
+    except (DataSourceError, FileNotFoundError) as exc:
+        raise DataSourceConfigError(
+            "Preview candidate manifest checksum or inventory differs"
+        ) from exc
+    return expected
 
 
 class ColdQualification:

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import fnmatch
+import hashlib
 import json
 import os
 import re
@@ -14,6 +15,7 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any
 
 import pandas as pd
@@ -44,7 +46,22 @@ REQUIRED_R2_ENV_VARS = (
 # Concurrent R2 downloads in data_prefetch; boto3's default pool holds 10.
 _PREFETCH_WORKERS = 8
 _GENERATION_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
-_REQUEST_GENERATION: ContextVar[str | None] = ContextVar(
+_SHA256_PATTERN = re.compile(r"[a-f0-9]{64}")
+
+
+@dataclass(frozen=True)
+class _Generation:
+    id: str
+    manifest_sha256: str | None = None
+
+
+@dataclass(frozen=True)
+class GenerationFile:
+    size_bytes: int
+    sha256: str
+
+
+_REQUEST_GENERATION: ContextVar[_Generation | None] = ContextVar(
     "nbatools_request_data_generation", default=None
 )
 
@@ -82,7 +99,17 @@ def data_source_mode(env: Mapping[str, str] | None = None) -> str:
 
 def data_source_cache_key() -> str:
     """Return a cache key for the source and the request-pinned generation."""
-    return f"{_data_source_config_key()}:{current_data_generation()}"
+    generation = _current_generation()
+    key = f"{_data_source_config_key()}:{generation.id}"
+    return f"{key}:{generation.manifest_sha256}" if generation.manifest_sha256 else key
+
+
+def verified_generation_files() -> Mapping[str, GenerationFile] | None:
+    """Return the authenticated R2 inventory, when selected by a trusted digest."""
+    generation = _current_generation()
+    if generation.manifest_sha256 is None:
+        return None
+    return _get_data_source().verified_manifest(generation)
 
 
 def season_file_order(path: object) -> tuple[str, int, str]:
@@ -97,10 +124,11 @@ def season_file_order(path: object) -> tuple[str, int, str]:
 
 def current_data_generation() -> str:
     """Return the request-pinned generation or resolve the current active one."""
-    pinned = _REQUEST_GENERATION.get()
-    if pinned is not None:
-        return pinned
-    return _resolve_active_data_generation()
+    return _current_generation().id
+
+
+def _current_generation() -> _Generation:
+    return _REQUEST_GENERATION.get() or _resolve_active_data_generation()
 
 
 @contextmanager
@@ -108,13 +136,13 @@ def data_generation_context() -> Iterator[str]:
     """Pin one immutable data generation for the duration of a request."""
     pinned = _REQUEST_GENERATION.get()
     if pinned is not None:
-        yield pinned
+        yield pinned.id
         return
 
     generation = _resolve_active_data_generation()
     token = _REQUEST_GENERATION.set(generation)
     try:
-        yield generation
+        yield generation.id
     finally:
         _REQUEST_GENERATION.reset(token)
 
@@ -292,11 +320,16 @@ class _R2DataSource:
         # changes. Answer from its file manifest (one GET) and remember HEAD
         # results, instead of a network round trip on every check.
         self._generation_files: dict[str, frozenset[str] | None] = {}
+        self._verified_manifests: dict[_Generation, Mapping[str, GenerationFile]] = {}
         self._known_keys: dict[str, bool] = {}
 
     def exists(self, path: str | Path) -> bool:
-        generation = current_data_generation()
+        selection = _current_generation()
         rel_path = _logical_relative_path(path).as_posix()
+        if selection.manifest_sha256 is not None:
+            files = self.verified_manifest(selection)
+            return rel_path == GENERATION_MANIFEST_PATH.as_posix() or rel_path in files
+        generation = selection.id
         key = self._generation_key(rel_path, generation=generation)
         immutable = generation != LEGACY_GENERATION
         if immutable:
@@ -340,18 +373,52 @@ class _R2DataSource:
         return files
 
     def resolve_path(self, path: str | Path) -> Path:
-        return self._fetch(_logical_relative_path(path), current_data_generation())
+        return self._fetch(_logical_relative_path(path), _current_generation())
+
+    def verified_manifest(self, generation: _Generation) -> Mapping[str, GenerationFile]:
+        """Load one inventory whose bytes match the pointer or preview digest."""
+        manifest = self._verified_manifests.get(generation)
+        if manifest is not None:
+            return manifest
+        raw = self._fetch(GENERATION_MANIFEST_PATH, generation).read_bytes()
+        try:
+            document = json.loads(raw)
+            if document["schema_version"] != 1 or document["generation_id"] != generation.id:
+                raise ValueError("Wrong schema or generation")
+            files = document["files"]
+            if not isinstance(files, list) or not files:
+                raise ValueError("Missing file inventory")
+            entries = {}
+            for item in files:
+                name, size, digest = item["path"], item["size_bytes"], item["sha256"]
+                path = Path(name)
+                if (
+                    path.is_absolute()
+                    or not path.parts
+                    or ".." in path.parts
+                    or path.as_posix() != name
+                    or name in entries
+                    or type(size) is not int
+                    or size < 0
+                    or not _SHA256_PATTERN.fullmatch(digest)
+                ):
+                    raise ValueError("Invalid file inventory record")
+                entries[name] = GenerationFile(size, digest)
+        except (ValueError, KeyError, TypeError) as exc:
+            raise DataSourceError("Invalid authenticated generation manifest") from exc
+        manifest = MappingProxyType(entries)
+        self._verified_manifests[generation] = manifest
+        return manifest
 
     def prefetch(self, paths: Iterable[str | Path]) -> None:
         # Worker threads don't inherit the request's pinned generation, so
         # resolve it here and hand it to each fetch.
-        generation = current_data_generation()
+        generation = _current_generation()
         pending = []
         for path in paths:
             rel_path = _logical_relative_path(path)
-            key = self._generation_key(rel_path, generation=generation)
-            cached = self.cache_root / generation / rel_path
-            if key not in self._downloaded_keys or not cached.exists():
+            cached = self._cache_path(rel_path, generation)
+            if str(cached) not in self._downloaded_keys or not cached.exists():
                 pending.append(rel_path)
         if len(pending) < 2:
             return
@@ -365,10 +432,23 @@ class _R2DataSource:
         with ThreadPoolExecutor(max_workers=min(_PREFETCH_WORKERS, len(pending))) as pool:
             list(pool.map(fetch, pending))
 
-    def _fetch(self, rel_path: Path, generation: str) -> Path:
-        key = self._generation_key(rel_path, generation=generation)
-        cache_path = self.cache_root / generation / rel_path
-        if key in self._downloaded_keys and cache_path.exists():
+    def _cache_path(self, path: Path, generation: _Generation) -> Path:
+        root = self.cache_root / generation.id
+        if generation.manifest_sha256 is not None:
+            root = root / f".verified-{generation.manifest_sha256}"
+        return root / path
+
+    def _fetch(self, rel_path: Path, generation: _Generation) -> Path:
+        expected_hash = generation.manifest_sha256
+        expected_size = None
+        if expected_hash is not None and rel_path != GENERATION_MANIFEST_PATH:
+            entry = self.verified_manifest(generation).get(rel_path.as_posix())
+            if entry is None:
+                raise FileNotFoundError(f"File is absent from the generation manifest: {rel_path}")
+            expected_hash, expected_size = entry.sha256, entry.size_bytes
+        key = self._generation_key(rel_path, generation=generation.id)
+        cache_path = self._cache_path(rel_path, generation)
+        if str(cache_path) in self._downloaded_keys and cache_path.exists():
             return cache_path
 
         try:
@@ -376,8 +456,16 @@ class _R2DataSource:
             body = response["Body"].read()
         except Exception as exc:
             if is_not_found(exc):
+                if expected_hash is not None:
+                    raise DataSourceError(f"Missing published R2 data object: {key}") from exc
                 raise FileNotFoundError(f"Missing R2 data object: {key}") from exc
             raise DataSourceError(f"Could not read R2 object {key}: {format_client_error(exc)}")
+
+        if expected_hash is not None and (
+            (expected_size is not None and len(body) != expected_size)
+            or hashlib.sha256(body).hexdigest() != expected_hash
+        ):
+            raise DataSourceError(f"R2 object checksum differs from its published digest: {key}")
 
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         # Write then rename: another process or thread sharing the cache may be
@@ -390,12 +478,18 @@ class _R2DataSource:
         except BaseException:
             Path(temp_name).unlink(missing_ok=True)
             raise
-        self._downloaded_keys.add(key)
+        self._downloaded_keys.add(str(cache_path))
         return cache_path
 
     def glob(self, pattern: str | Path) -> list[Path]:
         rel_pattern = _logical_relative_path(pattern).as_posix()
-        generation = current_data_generation()
+        selection = _current_generation()
+        if selection.manifest_sha256 is not None:
+            paths = self.verified_manifest(selection).keys() | {GENERATION_MANIFEST_PATH.as_posix()}
+            return [
+                Path("data") / path for path in sorted(paths) if fnmatch.fnmatch(path, rel_pattern)
+            ]
+        generation = selection.id
         generation_prefix = self._generation_prefix(generation)
         object_pattern = f"{generation_prefix}{rel_pattern}"
         prefix = _glob_prefix(object_pattern)
@@ -427,17 +521,28 @@ class _R2DataSource:
         return [Path("data") / key.removeprefix(generation_prefix) for key in sorted(keys)]
 
     def active_generation(self) -> str:
+        return self.active_generation_selection().id
+
+    def active_generation_selection(self) -> _Generation:
         key = ACTIVE_GENERATION_PATH.as_posix()
         try:
             response = self.client.get_object(Bucket=self.config.bucket_name, Key=key)
             payload = response["Body"].read().decode("utf-8")
         except Exception as exc:
             if is_not_found(exc):
-                return LEGACY_GENERATION
+                return _Generation(LEGACY_GENERATION)
             raise DataSourceError(
                 f"Could not read active generation pointer {key}: {format_client_error(exc)}"
             ) from exc
-        return _parse_generation_pointer(payload)
+        generation = _parse_generation_pointer(payload)
+        digest = json.loads(payload).get("manifest_sha256")
+        if digest is not None and (
+            generation == LEGACY_GENERATION
+            or not isinstance(digest, str)
+            or not _SHA256_PATTERN.fullmatch(digest)
+        ):
+            raise DataSourceError("Invalid manifest checksum in active generation pointer")
+        return _Generation(generation, digest)
 
     @staticmethod
     def _generation_prefix(generation: str) -> str:
@@ -476,18 +581,22 @@ def _get_data_source() -> _LocalDataSource | _R2DataSource:
     return source
 
 
-def _resolve_active_data_generation() -> str:
+def _resolve_active_data_generation() -> _Generation:
     snapshot = selected_snapshot()
     if snapshot is not None:
-        return "development-" + snapshot.manifest_sha256
+        return _Generation("development-" + snapshot.manifest_sha256)
     configured = os.environ.get(DATA_GENERATION_ENV, "").strip()
     from nbatools.candidate_preview import MANIFEST_ENV, verify_pin
 
     if MANIFEST_ENV in os.environ:
-        verify_pin(_get_data_source(), configured)
+        digest = verify_pin(_get_data_source(), configured)
+        return _Generation(configured, digest)
     if configured:
-        return validate_data_generation_id(configured)
-    return _get_data_source().active_generation()
+        return _Generation(validate_data_generation_id(configured))
+    source = _get_data_source()
+    if isinstance(source, _R2DataSource):
+        return source.active_generation_selection()
+    return _Generation(source.active_generation())
 
 
 def _parse_generation_pointer(payload: str) -> str:

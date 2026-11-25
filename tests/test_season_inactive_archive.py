@@ -11,12 +11,14 @@ from nbatools.commands._participation_observations import game_participation, lo
 from nbatools.commands.pipeline.structured_participation import (
     INACTIVE_FIELDS,
     inactive_dependencies,
+    load_season_inactive,
     qualify_season_inactive,
     stage_season_inactive,
     validate_season_inactive,
 )
 from nbatools.data_source import reset_data_source_cache
 from nbatools.dataframe_cache import clear_frame_cache
+from tests.test_data_source import FakeR2Client, _configure_r2, published_generation_objects
 
 
 @pytest.fixture
@@ -152,6 +154,30 @@ def test_source_is_one_explicit_inactive_fact_and_omission_stays_unknown(sample)
         )
         assert state == expected
         assert member.state == ("member" if day == 3 else "unknown")
+
+
+def test_published_inactive_rows_keep_qualified_facts_without_replaying_archive(
+    sample, tmp_path, monkeypatch
+):
+    from nbatools.data_source import data_generation_context
+
+    root, _, _, inputs = sample
+    expected = stage_season_inactive(root, *inputs(), "2023-24")
+    validate_season_inactive(root)
+    files = {p.relative_to(root).as_posix(): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+    objects, _ = published_generation_objects("inactive-proof", files)
+    client = FakeR2Client(objects)
+    _configure_r2(monkeypatch, tmp_path, client)
+    monkeypatch.delenv("NBATOOLS_DATA_GENERATION")
+    with data_generation_context():
+        actual = load_season_inactive(["2023-24"])
+    pd.testing.assert_frame_equal(actual, expected)
+    assert set(client.get_calls) == {
+        "metadata/active_generation.json",
+        "generations/inactive-proof/metadata/generation_manifest.json",
+        "generations/inactive-proof/raw/player_game_inactive/2023-24_regular_season.source.json",
+        "generations/inactive-proof/raw/player_game_inactive/2023-24_regular_season.csv",
+    }
 
 
 @pytest.mark.parametrize(
