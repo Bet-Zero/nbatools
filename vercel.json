@@ -11,7 +11,9 @@
   "outputDirectory": "src/nbatools/ui/dist",
   "env": {
     "DATA_SOURCE": "r2",
-    "R2_BUCKET_NAME": "nbatools-data"
+    "R2_BUCKET_NAME": "nbatools-data",
+    "NBATOOLS_DATA_GENERATION": "availability-cleveland-2024-v3-20261124",
+    "NBATOOLS_PREVIEW_CANDIDATE_MANIFEST": "d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034"
   },
   "functions": {
     "api/index.py": {
