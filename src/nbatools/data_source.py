@@ -100,7 +100,8 @@ def data_source_mode(env: Mapping[str, str] | None = None) -> str:
 def data_source_cache_key() -> str:
     """Return a cache key for the source and the request-pinned generation."""
     generation = _current_generation()
-    return f"{_data_source_config_key()}:{generation.id}:{generation.manifest_sha256 or ''}"
+    key = f"{_data_source_config_key()}:{generation.id}"
+    return f"{key}:{generation.manifest_sha256}" if generation.manifest_sha256 else key
 
 
 def verified_generation_files() -> Mapping[str, GenerationFile] | None:
