@@ -1,6 +1,7 @@
 """Controlled roles/coverage, not NBA membership or season evidence."""
 
 import copy
+import json
 
 import pandas as pd
 import pytest
@@ -10,6 +11,7 @@ from nbatools.commands.pipeline.team_appearance_coverage import (
     qualify_retained_appearances,
     validate_complete_appearance_proof,
 )
+from tests.test_data_source import FakeR2Client, _configure_r2, published_generation_objects
 from tests.test_qualified_played_pair import pair_sample as _pair_sample
 from tests.test_structured_participation import run
 from tests.test_structured_participation import source as _source
@@ -289,6 +291,38 @@ def test_retained_full_container_produces_complete_side_proof(source):
         (2, (21,)),
     }
     assert proof["source_requests"] == 0 and proof["unqualified"] == []
+
+
+def test_published_complete_lists_use_verified_rows_without_fetching_originals(
+    source, tmp_path, monkeypatch
+):
+    from nbatools.commands._participation_observations import load_observations
+    from nbatools.data_source import data_generation_context
+
+    run(source)
+    root = source[0]
+    season, kind = "2025-26", "Regular Season"
+    proof = qualify_retained_appearances(root, season, kind)
+    path = "raw/team_game_appearances/2025-26_regular_season.json"
+    files = {p.relative_to(root).as_posix(): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+    files[path] = json.dumps(proof).encode()
+    objects, _ = published_generation_objects("appearance-proof", files)
+    prefix = "generations/appearance-proof/"
+    original_paths = {prefix + p for side in proof["sides"] for p in side["source_files"]}
+    client = FakeR2Client(objects)
+    _configure_r2(monkeypatch, tmp_path, client)
+
+    with data_generation_context():
+        observed = load_observations([season], kind)
+        complete = appearances._coverage([season], kind, observed)
+
+    assert {(team, tuple(players)) for (_, team), (_, players) in complete.items()} == {
+        (1, (11,)),
+        (2, (21,)),
+    }
+    assert prefix + path in client.get_calls
+    assert not original_paths.intersection(client.get_calls)
+    assert not any(p.endswith(".imports.json") for p in client.get_calls)
 
 
 def test_full_snapshot_publication_replays_only_frozen_dependency_context(source):

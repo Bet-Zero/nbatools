@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -157,6 +158,59 @@ def _generation_objects(generation: str, files: dict[str, bytes], *, manifest: b
         document = {"generation_id": generation, "files": [{"path": path} for path in files]}
         objects[prefix + "metadata/generation_manifest.json"] = json.dumps(document).encode()
     return objects
+
+
+def published_generation_objects(generation, files):
+    prefix = f"generations/{generation}/"
+    manifest = json.dumps(
+        dict(
+            schema_version=1,
+            generation_id=generation,
+            files=[
+                dict(path=path, size_bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest())
+                for path, raw in files.items()
+            ],
+        )
+    ).encode()
+    digest = hashlib.sha256(manifest).hexdigest()
+    objects = {prefix + path: raw for path, raw in files.items()}
+    objects[prefix + data_source.GENERATION_MANIFEST_PATH.as_posix()] = manifest
+    objects[ACTIVE_GENERATION_PATH.as_posix()] = json.dumps(
+        dict(generation_id=generation, manifest_sha256=digest)
+    ).encode()
+    return objects, digest
+
+
+def test_published_reads_use_pointer_digest_and_only_manifested_bytes(tmp_path, monkeypatch):
+    objects, _ = published_generation_objects("published", {"raw/sample.csv": b"valid"})
+    prefix = "generations/published/"
+    objects[prefix + "raw/unlisted.csv"] = b"unlisted"
+    client = FakeR2Client(objects)
+    _configure_r2(monkeypatch, tmp_path, client)
+    with data_generation_context():
+        assert data_glob("raw/*.csv") == [Path("data/raw/sample.csv")]
+        assert data_exists("raw/sample.csv") and not data_exists("raw/unlisted.csv")
+        with pytest.raises(FileNotFoundError, match="absent from the generation manifest"):
+            data_path("raw/unlisted.csv")
+        # A same-length change must fail before the file reaches any consumer.
+        objects[prefix + "raw/sample.csv"] = b"wrong"
+        with pytest.raises(DataSourceError, match="checksum"):
+            data_path("raw/sample.csv")
+        objects[prefix + "raw/sample.csv"] = b"valid"
+        assert data_path("raw/sample.csv").read_bytes() == b"valid"
+    assert not client.head_calls
+    assert client.get_calls.count(prefix + "metadata/generation_manifest.json") == 1
+
+
+def test_published_reads_fail_closed_on_wrong_manifest(tmp_path, monkeypatch):
+    objects, _ = published_generation_objects("published", {"raw/sample.csv": b"valid"})
+    key = "generations/published/metadata/generation_manifest.json"
+    objects[key] += b" "
+    client = FakeR2Client(objects)
+    _configure_r2(monkeypatch, tmp_path, client)
+    with data_generation_context(), pytest.raises(DataSourceError, match="checksum"):
+        data_exists("raw/sample.csv")
+    assert client.get_calls == [ACTIVE_GENERATION_PATH.as_posix(), key]
 
 
 def test_r2_exists_answers_from_the_generation_manifest(

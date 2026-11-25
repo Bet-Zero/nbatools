@@ -1,6 +1,5 @@
 """Candidate isolation, integrity and pointer-only activation contracts."""
 
-import hashlib
 import json
 
 import pytest
@@ -113,17 +112,17 @@ def test_upload_rejects_corruption_of_an_existing_candidate(tmp_path):
         pub.upload_r2_candidate("candidate", source_dir=source, **args)
 
 
-def test_preview_pin_is_preview_only_and_authenticates_exact_manifest(monkeypatch):
-    from types import SimpleNamespace
-
+def test_preview_pin_is_preview_only_and_authenticates_exact_manifest(tmp_path, monkeypatch):
     from nbatools import candidate_preview as preview
-    from nbatools.data_source import DataSourceConfigError
+    from nbatools.data_source import DataSourceConfigError, R2Config, _R2DataSource
+    from tests.test_data_source import published_generation_objects
 
     client = FakeR2Client()
-    raw = json.dumps(dict(generation_id="candidate")).encode()
-    client.objects["generations/candidate/metadata/generation_manifest.json"] = raw
-    source = SimpleNamespace(client=client, config=SimpleNamespace(bucket_name="b"))
-    monkeypatch.setenv(preview.MANIFEST_ENV, hashlib.sha256(raw).hexdigest())
+    objects, digest = published_generation_objects("candidate", {"raw/sample.csv": b"published"})
+    client.objects.update(objects)
+    monkeypatch.setenv("NBATOOLS_R2_CACHE_DIR", str(tmp_path))
+    source = _R2DataSource(R2Config("account", "key", "secret", "b"), client=client)
+    monkeypatch.setenv(preview.MANIFEST_ENV, digest)
     monkeypatch.setenv("DATA_SOURCE", "r2")
     monkeypatch.setenv("NBATOOLS_DATA_GENERATION", "candidate")
     for mode in ("production", "development", ""):
