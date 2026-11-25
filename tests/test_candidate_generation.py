@@ -131,6 +131,10 @@ def test_preview_pin_is_preview_only_and_authenticates_exact_manifest(tmp_path, 
             preview.verify_pin(source, "candidate")
     monkeypatch.setenv("VERCEL_ENV", "preview")
     preview.verify_pin(source, "candidate")
+    monkeypatch.setenv("NBATOOLS_DATA_GENERATION", "legacy")
+    with pytest.raises(DataSourceConfigError, match="explicit R2 preview"):
+        preview.verify_pin(source, "legacy")
+    monkeypatch.setenv("NBATOOLS_DATA_GENERATION", "candidate")
     monkeypatch.setenv(preview.MANIFEST_ENV, "0" * 64)
     with pytest.raises(DataSourceConfigError, match="checksum"):
         preview.verify_pin(source, "candidate")

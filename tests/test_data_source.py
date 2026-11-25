@@ -192,6 +192,9 @@ def test_published_reads_use_pointer_digest_and_only_manifested_bytes(tmp_path, 
         assert data_exists("raw/sample.csv") and not data_exists("raw/unlisted.csv")
         with pytest.raises(FileNotFoundError, match="absent from the generation manifest"):
             data_path("raw/unlisted.csv")
+        del objects[prefix + "raw/sample.csv"]
+        with pytest.raises(DataSourceError, match="Missing published R2 data object"):
+            data_path("raw/sample.csv")
         # A same-length change must fail before the file reaches any consumer.
         objects[prefix + "raw/sample.csv"] = b"wrong"
         with pytest.raises(DataSourceError, match="checksum"):

@@ -455,6 +455,8 @@ class _R2DataSource:
             body = response["Body"].read()
         except Exception as exc:
             if is_not_found(exc):
+                if expected_hash is not None:
+                    raise DataSourceError(f"Missing published R2 data object: {key}") from exc
                 raise FileNotFoundError(f"Missing R2 data object: {key}") from exc
             raise DataSourceError(f"Could not read R2 object {key}: {format_client_error(exc)}")
 

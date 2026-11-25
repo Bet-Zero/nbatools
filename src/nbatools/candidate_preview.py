@@ -24,6 +24,7 @@ def verify_pin(source, generation):
     if MANIFEST_ENV not in os.environ:
         return
     from nbatools.data_source import (
+        LEGACY_GENERATION,
         DataSourceConfigError,
         DataSourceError,
         _Generation,
@@ -35,6 +36,7 @@ def verify_pin(source, generation):
         os.environ.get("VERCEL_ENV") != "preview"
         or not isinstance(source, _R2DataSource)
         or os.environ.get("NBATOOLS_DATA_GENERATION") != generation
+        or generation == LEGACY_GENERATION
         or not re.fullmatch(r"[0-9a-f]{64}", expected)
     ):
         raise DataSourceConfigError("Candidate pin requires an explicit R2 preview deployment")
