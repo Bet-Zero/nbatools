@@ -52,28 +52,28 @@ from PR633–635 retains its original scope. Historical failed receipts and the
 informational development-security failure are preserved. No full-suite rerun
 or new NBA acquisition was needed for upload verification.
 
-**Preview host reachable; cold qualification blocked at sign-in.** The
-current Cloud environment enforces the approved `*.vercel.app` grant. Vercel
-Authentication is enabled for previews, and an unauthenticated request to the
-READY candidate preview returned HTTP 302 to Vercel sign-in.
+**Hosted cold-load qualification failed.** The approved preview host is
+reachable and Vercel Authentication protects the READY preview.
 [Deployment dpl_4wvfXnjHx4Yqvxmu6Uzmffcf2Nad](https://vercel.com/zeros-projects-686e97fc/nbatools/4wvfXnjHx4Yqvxmu6Uzmffcf2Nad)
-was built from `e840848c42292c9c5b57f910cd78568e88c09b2b` on
-`codex/cleveland-hosted-qualification-20261125`. Its only change from PR #640's
-merge is to pin the generation and full manifest above in `vercel.json`.
+runs `e840848c42292c9c5b57f910cd78568e88c09b2b` from
+`codex/cleveland-hosted-qualification-20261125`, with the uploaded generation
+and full manifest pinned. The access handoff is in
+[PR #641](https://github.com/Bet-Zero/nbatools/pull/641).
 
-Automatic review rejected creating a temporary Vercel link because anyone in
-possession of the link could view the preview until expiry. There is no signed-in
-Vercel client available in this session. One candidate deployment and zero
-query POSTs were used. The candidate upload was reused and the production
-pointer was not written.
+On November 25 at 08:25:52 UTC, the first `POST /query` asked for the Cavaliers
+record without Caris LeVert in 2024-25. The response was HTTP 504
+`FUNCTION_INVOCATION_TIMEOUT` after **22.85 seconds** externally, over the
+20-second limit. It returned no answer or loader evidence. Vercel request ID
+`sfo1::j7htj-1795595153705-dfc05e61b854`. The response body SHA256 is
+`3df6e5ed6fccd0714fd09f9e15e7c13c3a90d1ee9a8aa4046c48c8c8a476f0c1`.
+The replacement five-minute link was revoked after the request and then
+returned HTTP 302 to Vercel sign-in. Total qualification use was one candidate
+deployment and one query POST, with the existing upload reused.
 
-**Next:** obtain approved, authenticated access to the same immutable preview.
-Send the first query for the 2024-25 Cavaliers record without Caris LeVert
-before any readiness or query warm-up. The [runbook](../../docs/operations/deployment.md#isolated-candidate-upload-and-hosted-qualification)
-requires 44 games, 31–13, completed cold-loader evidence and at most 20 seconds.
-The two-deployment/eight-query total budget still applies. Stop on failure.
-Production activation requires a separate protected approval after a passing
-hosted result.
+**Next:** stop at the failed
+[hosted gate](../../docs/operations/deployment.md#isolated-candidate-upload-and-hosted-qualification).
+The six follow-up controls were not run. Activation preparation requires a
+passing hosted result. No production pointer write was performed.
 
 **Separate unfinished requirements:** original K08 remains 16 PASS / 26 MISSING
 DATA / 4 LIVE; original questions, controlled positives and acceptance baseline
