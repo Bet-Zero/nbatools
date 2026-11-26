@@ -2273,8 +2273,28 @@
       "generation_id": "availability-cleveland-2024-v3-20261124",
       "operations": [
         "validate",
-        "upload_candidate"
+        "upload_candidate",
+        "activate_candidate"
       ],
+      "activation": {
+        "upload_run_id": 45391469130,
+        "upload_receipt_asset_id": 787603055,
+        "upload_receipt_sha256": "b49eed924b26a6c2d5ad0cd0d8c654e37a811a657b8a889548f615c38ebfbd70",
+        "manifest_sha256": "d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034",
+        "hosted": {
+          "pr": 643,
+          "runtime_sha": "718d4ac5877df2051e29fbdd2b610f8724dafb35",
+          "deployment_id": "dpl_2eQNvuDvCrnqUNebDxHWG9e6REYT",
+          "preview_sha": "5986dde5e8632f14ee684f7dceea15af01cead6c",
+          "generation_id": "availability-cleveland-2024-v3-20261124",
+          "manifest_sha256": "d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034",
+          "request_id": "sfo1::iad1::kbzhj-1795601143376-324c21674a03",
+          "response_sha256": "ed8fbeb85f79354446dacb7bdad3a48ec9bcf585f7b8ddd86e8079646d09a956",
+          "elapsed_seconds": 5.824782367000125,
+          "first_query_passed": true,
+          "followup_checks_passed": 6
+        }
+      },
       "deployed_checks": [
         {
           "query": "Lakers record without LeBron James on October 21 2025",

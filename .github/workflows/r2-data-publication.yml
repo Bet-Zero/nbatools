@@ -10,11 +10,11 @@ on:
         required: true
         default: opening-availability-v1
       mode:
-        description: "Validate is read-only. Upload candidate never activates; both write modes require owner approval."
+        description: "Validate is read-only. Upload and activation are separate owner-approved modes."
         type: choice
         required: true
         default: validate
-        options: [validate, publish, upload_candidate]
+        options: [validate, publish, upload_candidate, activate_candidate]
 
 permissions:
   contents: read
@@ -54,7 +54,7 @@ jobs:
     uses: ./.github/workflows/r2-publication-readonly.yml
     with:
       publication_package: ${{ inputs.package }}
-      publication_mode: prepare
+      publication_mode: ${{ inputs.mode == 'activate_candidate' && 'prepare_activation' || 'prepare' }}
       publication_publisher_sha: ${{ needs.resolve.outputs.publisher_sha }}
     secrets:
       R2_VALIDATION_ACCOUNT_ID: ${{ secrets.R2_VALIDATION_ACCOUNT_ID }}
@@ -64,7 +64,7 @@ jobs:
   publish:
     name: "Owner approval: ${{ inputs.package }} → ${{ needs.resolve.outputs.generation_id }}"
     needs: [resolve, prepare]
-    if: inputs.mode == 'publish' || inputs.mode == 'upload_candidate'
+    if: inputs.mode == 'publish' || inputs.mode == 'upload_candidate' || inputs.mode == 'activate_candidate'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment:
@@ -88,7 +88,7 @@ jobs:
         with:
           name: publication-prepared-${{ github.run_id }}
           path: approved
-      - name: Recheck owner approval and exact snapshot, then invoke existing immutable publisher
+      - name: Recheck owner approval and immutable identities, then run the selected operation
         env:
           GH_TOKEN: ${{ github.token }}
           PACKAGE: ${{ inputs.package }}
@@ -113,11 +113,11 @@ jobs:
 
   verify:
     needs: [resolve, publish]
-    if: (inputs.mode == 'publish' || inputs.mode == 'upload_candidate') && needs.publish.result == 'success'
+    if: (inputs.mode == 'publish' || inputs.mode == 'upload_candidate' || inputs.mode == 'activate_candidate') && needs.publish.result == 'success'
     uses: ./.github/workflows/r2-publication-readonly.yml
     with:
       publication_package: ${{ inputs.package }}
-      publication_mode: ${{ inputs.mode == 'upload_candidate' && 'verify_candidate' || 'verify' }}
+      publication_mode: ${{ inputs.mode == 'activate_candidate' && 'verify_activation' || inputs.mode == 'upload_candidate' && 'verify_candidate' || 'verify' }}
       publication_publisher_sha: ${{ needs.resolve.outputs.publisher_sha }}
     secrets:
       R2_VALIDATION_ACCOUNT_ID: ${{ secrets.R2_VALIDATION_ACCOUNT_ID }}
@@ -127,7 +127,7 @@ jobs:
   backup:
     name: Back up owner-approved generation after live verification
     needs: [resolve, verify]
-    if: inputs.mode == 'publish' && needs.verify.result == 'success'
+    if: (inputs.mode == 'publish' || inputs.mode == 'activate_candidate') && needs.verify.result == 'success'
     permissions:
       contents: write
       actions: read
@@ -145,7 +145,7 @@ jobs:
   receipt:
     name: Preserve durable publication receipt
     needs: [publish, verify]
-    if: always() && (inputs.mode == 'publish' || inputs.mode == 'upload_candidate') && (needs.publish.result == 'success' || needs.publish.result == 'failure')
+    if: always() && (inputs.mode == 'publish' || inputs.mode == 'upload_candidate' || inputs.mode == 'activate_candidate') && (needs.publish.result == 'success' || needs.publish.result == 'failure')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -180,6 +180,8 @@ jobs:
               value['publication_state'] = 'published_verification_failed'
           if os.environ['WRITE_MODE'] == 'upload_candidate' and os.environ['VERIFIED'] != 'success' and value['publication_state'] != 'candidate_upload_started_outcome_unknown':
               value['publication_state'] = 'candidate_independent_verification_failed'
+          if os.environ['WRITE_MODE'] == 'activate_candidate' and os.environ['VERIFIED'] != 'success' and value['publication_state'] != 'candidate_activation_started_outcome_unknown':
+              value['publication_state'] = 'candidate_activation_verification_failed'
           Path('receipt.json').write_text(json.dumps(value, indent=2, sort_keys=True) + '\n')
           Path('receipt.md').write_text('Publication outcome: ' + value['publication_state'] + '\n\nRun: https://github.com/Bet-Zero/nbatools/actions/runs/' + os.environ['GITHUB_RUN_ID'] + '\n\nThe attached receipt records source, code, snapshot checksums and verification. Previous generation is retained; no pruning was performed.\n')
           PY
