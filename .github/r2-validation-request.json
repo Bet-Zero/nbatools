@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "fc62a8aca05f39ac9200b7a9df00f4d542c83af8",
+  "generation": "availability-cleveland-2024-v3-20261124",
+  "tests": [
+    "tests/cloud_operations_real_data.py::test_live_player_identity_uses_authenticated_pointer",
+    "tests/test_player_identity_real_data.py::test_named_season_summary_matches_raw_rows",
+    "tests/test_player_identity_real_data.py::test_comparison_matches_raw_rows_for_each_player",
+    "tests/test_player_identity_real_data.py::test_shared_name_season_of_one_player_answers_about_him",
+    "tests/test_player_identity_real_data.py::test_shared_name_with_a_team_picks_that_teams_player"
+  ],
+  "raw_qa_cases": []
+}
