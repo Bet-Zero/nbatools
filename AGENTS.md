@@ -1,9 +1,9 @@
 # AGENTS.md
 
 Rules for coding agents in `Bet-Zero/nbatools` (NBA Tools, not ScoutZero).
-This file holds only current rules. Older dated layers were removed on 2026-11-12;
-their full text is in Git history (`git show 95cb705:AGENTS.md`). Shorter wording
-is not permission: where this file is silent, the older safeguard still applies.
+This file holds the standing execution rules. The Resume checkpoint records
+current work and links the active execution plan. Current explicit owner
+decisions control. Historical revisions are evidence of past decisions.
 
 ## Start of a session
 
@@ -12,7 +12,8 @@ is not permission: where this file is silent, the older safeguard still applies.
    choosing between milestones.
 2. Check live `main`, open PRs and any branch you are resuming. Preserve newer
    work; never reset or force-push another session's branch.
-3. Do the checkpoint's next action. Read only the code, docs and PRs it needs.
+3. Take the checkpoint's next action. Read the complete work package and its
+   relevant dependencies, contracts, code, PRs and runbooks.
    Do not restart a whole-project audit or ask the owner for test questions.
 
 ## The product
@@ -48,11 +49,19 @@ Data scope is the 1996-97 season onward.
   season, conditions and grain before checking values. Expected NBA values come
   from qualified source rows or controlled fixtures, never from the app's own
   calculation. Two engine paths agreeing is not an independent check.
+- Preserve explicit subjects, condition ownership, sample order, metric basis,
+  grouping, ranking and result grain. Ordinary shorthand and grammar variation
+  remain valid; do not silently omit clauses, invent metrics or force a phrase.
 - **Fix shared logic, not phrases.** Repair the shared interpretation or
   calculation; don't add per-question special cases. A third patch for the
   same root cause means the shared representation needs fixing.
 - **No rewrite.** Keep the engine, calculations, result contracts, React app,
-  immutable data generations and useful tests. Splitting files is not progress.
+  immutable data generations and useful tests. Use existing fields and helpers
+  first. Introduce a small typed representation only for a demonstrated problem.
+  Read [routing guardrails](docs/operations/parser_routing_growth_guardrails.md)
+  and [promotion rules](docs/operations/feature_promotion_rules.md) for relevant
+  changes. A language approach must be evaluated on verified engine capability.
+  It cannot invent NBA values or execute unrestricted generated code or SQL.
 
 ## Who decides what
 
@@ -68,12 +77,16 @@ recommendation and the smallest exact action. Never fake an approval.
 Standing limits until B changes them:
 
 - Routine, bounded collection of public NBA data through the existing approved
-  routes is allowed (owner, 2026-11-01). Automatic or unattended refresh is not.
+  routes, tools, credentials and cost limits is allowed for authorized work
+  (owner, 2026-11-01). This includes development staging. Automatic or unattended
+  refresh and publication require explicit authority.
 - Runtime and validation credentials stay read-only. Publication stays behind the
   existing protected approval. Fixed-plan limits and $0 metered overage stay.
 - Don't change Vercel settings, secrets, deployment protection, branch
-  protection or R2 publication gates. Public query-feedback persistence stays
-  disabled. No new paid service, model access or hosting migration.
+  protection or R2 publication gates. Resource, duration, access and cost
+  settings remain reserved even when represented in a repository file.
+  Public query-feedback persistence stays disabled. No new paid service,
+  model access or hosting migration.
 - Launch and branding are B's decisions. No commercial data-provider
   investigation. The acquisition laptop is for acquisition and transfer only,
   never a development dependency.
@@ -84,13 +97,15 @@ Standing limits until B changes them:
 
 - **One lead** owns integration and the checkpoint. **One writer** owns the
   shared parser/request/service code at a time. At most one other truly
-  independent lane, plus a separate checker. Don't invent parallel capacity, and
+  independent lane, plus a separate checker. Set file and contract ownership
+  first. Isolate concurrent worktrees, pin tested data and leave other writers'
+  active files alone. Don't invent parallel capacity, and
   never claim background work that isn't actually running.
 - One PR per logical unit. Reproduce the defect, fix it, run focused tests,
   get review where required, pass the gates, merge.
 - Before starting optional work, write one line in the PR saying which Core-1
-  requirement or confirmed defect it serves. Other discoveries go in the
-  checkpoint's carry-forward list, not a new tracker or ticket.
+  requirement, confirmed defect or necessary dependency it serves. Record other
+  discoveries in the checkpoint's carry-forward list.
 - Never merge a known wrong answer, or failing runtime just to land a handoff.
 - Report executed, skipped and unavailable tests honestly. A red advisory job
   is reported as advisory, not hidden or treated as blocking.
@@ -117,21 +132,35 @@ Freeze the candidate before broad validation or final independent review. Use an
 isolated checkout if another writer could move it, and don't edit, rebase or
 merge it while checks run. If a fix changes reviewed meaning or risk, repeat the
 affected checks and a focused delta review, plus the exact-head gates.
+Freeze every input that can rebuild or change the served result, including
+frontend, operations and documentation when the actual selector builds them.
+Record the built deployment, interpreter and available dependency inputs,
+relevant nonsecret configuration, immutable data and qualification conditions.
 
 Before merging, recheck the current head and base. GitHub letting you merge is
 not permission: all blocking CI, required numerical results and required review
 must be in place. Missing pre-merge coverage can't be supplied by a later
 main or nightly run. Fast or data-free CI is not equivalent to preflight or
 authenticated numerical validation. After merge, check post-merge CI and the
-deployed behavior when it's affected.
+deployed behavior when it's affected. Track code completion, deployment,
+verified delivery and milestone acceptance as distinct outcomes. The applicable
+deployed proof is required before claiming verified delivery.
 
 **Independent review** means a separate agent session, not self-review. Record
-the reviewer, the reviewed revision and any open findings in the PR. Green CI
-alone is not review. A bot comment is not review.
+the reviewer/session, reviewed revision, relevant data and open findings in the
+PR. The checker chooses independent meaning, failure and numerical probes.
+Consequential changes to authority, safety or verification policy require focused
+independent review for conflicts, invalidation and coverage equivalence. Prefer
+a separate model when available within existing cost and access authority.
+Green CI and bot comments do not establish independent review.
 
 **Reuse passing evidence** when the code, data and conditions it covered are
-unchanged, the required checks really ran and passed, and no open finding
-contradicts it. Say which revision it came from. Never claim an old run happened
+unchanged or demonstrably unaffected, exact-head and frozen-release requirements
+still hold, the required checks really ran and passed, and no open finding
+contradicts it. Check applicability on selection and after relevant changes.
+Use trustworthy execution and skip counts, and inspect underlying evidence for
+failures, contradictions or concrete integration questions. Say which revision
+it came from. Never claim an old run happened
 on a new head, or that another PR's green run with the same workflow name
 applies. Don't rerun a passing check without a reason to expect a different result.
 
@@ -164,16 +193,21 @@ good sample. Most past verifier rework came from skipping this.
 - Keep raw, processed and derived layers and each dataset's grain. New data
   needs source, row meaning, keys, coverage rules and missing-data behavior in
   `docs/reference/data_contracts.md`. Before data work, follow
-  `docs/operations/data_availability.md` and reuse qualified retained data.
+  `docs/operations/data_availability.md` and
+  `docs/operations/product_data_workflow.md`. Reuse qualified retained data.
   Qualify new data with source URLs, original bodies, hashes, capture times,
   statistical scope and explicit unknowns. Never fabricate a passed manifest or
   substitute different data. Don't retry a diagnosed blocked source without new
   evidence.
-  Corrections create new immutable versions; never mutate data a test is using.
+  Check the active generated inventory, verify receipt, identity and schema
+  before use, and preserve the existing source, clock, membership, readiness
+  and 24-hour freshness gates. Capture time or an indexed file alone doesn't
+  establish coverage. Corrections create new immutable versions. Never mutate
+  data a test is using.
   Fixtures are never published as real data. Never relabel old data as fresh.
 - Provisional development data must stay opt-in and isolated, carry a visible
-  provisional status through the API and exports, and never reach public or
-  production behavior. It is not a validator bypass.
+  provisional status through the API and exception exports, and stay out of
+  public and production behavior. It is not a validator bypass.
 - Useful commands: `make test-parser`, `test-query`, `test-engine`, `test-api`,
   `test-output` while editing; `make test-preflight` or `make test` for high
   fan-in changes; `make raw-query-answer-qa` is a failing gate.
@@ -183,12 +217,21 @@ good sample. Most past verifier rework came from skipping this.
 - The Resume checkpoint is the only active queue. **Replace** it with current
   state in plain English; keep it to about one screen. PR-specific detail stays
   in the PR. Update it before a merge that changes the next action, a block or a
-  session stop: branch and SHA, data version, what passed, open findings, the
-  one next action.
+  session stop. Record owner, branch and SHA, data version, completed evidence,
+  open findings, real blockers, actual active jobs and the one next action.
+  Preserve safe work on its branch where permitted and identify unpushed work.
+  Link a newer branch checkpoint from its PR if a merge is blocked. Carry the
+  checkpoint and receipts in the logical work PR. A separate record-only PR
+  needs a real stop without a work PR or a need to preserve a frozen candidate.
 - Durable docs go in `docs/reference/` (behavior), `docs/architecture/`,
   `docs/operations/` (runbooks), `docs/audits/` (history), per
   `docs/operations/working_and_archive_policy.md`. Task material goes in
-  `working/`. Don't create another status system.
+  `working/`. Don't create another status system. Keep
+  `working/nba-tools-completion-program/` tracked, including after plan closure
+  while any operational or evidence consumer depends on it. Before moving or
+  archiving it, migrate every affected consumer, retain required evidence and
+  prove clean checkout and independent restore. Any reserved archive or
+  destructive action still needs its actual authority.
 - Raw QA human-review fields keep their literal meaning. Never invent
   `human_review_complete` or a named human reviewer.
 - Owner updates lead with **Now answers; Still unfinished; Verification; Next;
