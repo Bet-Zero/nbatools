@@ -47,7 +47,7 @@ S4 = PROGRAM / "source-evidence/paired-missing-20261107/r2-final/composed-accept
 OWNED = PROGRAM / "source-evidence/distinct-player-or-20261106/independent/oracle.json"
 LEBRON = PROGRAM / "source-evidence/k08-lebron-remaining/qualification.json"
 APPLICABILITY = EVIDENCE / "historical-applicability-20261110.json"
-APPLICABILITY_SHA256 = "63ec6c5b36277475d5946f0e46facdf5c583971d53aaea2b25fe1a1cc0a784ad"
+APPLICABILITY_SHA256 = "853730aa6256ce30a78fb01237011d4a839260af8f93eac0f69673be8c12e690"
 
 
 def _sha(raw):

@@ -12,7 +12,7 @@ from nbatools.commands.pipeline.generation_publication import (
     _build_staged_generation,
 )
 from tools import cloud_backup
-from tools.cloud_backup import export_backup, restore_backup
+from tools.cloud_backup import candidate_backup_preflight, export_backup, restore_backup
 
 
 class ReadOnlyStore:
@@ -126,6 +126,38 @@ def test_byte_exact_export_and_offline_restore(tmp_path):
             assert (target / key.removeprefix("generations/backup-test/")).read_bytes() == value
     with pytest.raises(ValueError, match="must not exist"):
         restore_backup(output / "generation.zip", receipt, target)
+
+
+def test_candidate_preflight_measures_exact_zip_without_active_pointer(tmp_path, monkeypatch):
+    output, receipt, files = make_backup(tmp_path)
+    del files["metadata/active_generation.json"]
+    generation = receipt["generation_id"]
+    manifest = files[f"generations/{generation}/metadata/generation_manifest.json"]
+    store = ReadOnlyStore(files)
+    proof = candidate_backup_preflight(
+        store, "fixture", generation, receipt["manifest_sha256"], manifest
+    )
+    assert proof == {
+        "generation_id": generation,
+        "manifest_sha256": receipt["manifest_sha256"],
+        "files": receipt["files"],
+        "data_bytes": receipt["data_bytes"],
+        "archive_bytes": (output / "generation.zip").stat().st_size,
+        "r2_writes": 0,
+    }
+
+    monkeypatch.setattr(cloud_backup, "MAX_ARCHIVE", proof["archive_bytes"] - 1)
+    with pytest.raises(ValueError, match="Compressed candidate backup exceeds"):
+        candidate_backup_preflight(
+            store, "fixture", generation, receipt["manifest_sha256"], manifest
+        )
+
+    monkeypatch.setattr(cloud_backup, "MAX_ARCHIVE", proof["archive_bytes"])
+    files[f"generations/{generation}/raw/sample.csv"] = b"value\n43\n"
+    with pytest.raises(ValueError, match="backup object differs"):
+        candidate_backup_preflight(
+            store, "fixture", generation, receipt["manifest_sha256"], manifest
+        )
 
 
 @pytest.mark.parametrize(

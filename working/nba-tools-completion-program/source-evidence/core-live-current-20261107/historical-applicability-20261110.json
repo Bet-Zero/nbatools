@@ -195,8 +195,8 @@
     {
       "path": ".github/workflows/r2-data-publication.yml",
       "old_sha256": "562d94cdd02b0675f6df19d0441689e316c01be4615455e3de97345b1cc4ff67",
-      "reviewed_functions": "manual protected candidate upload workflow",
-      "semantic_reach": "Adds an explicitly owner-approved upload-only operation and independent read verification; it cannot activate the candidate. Legacy publication retains owner/main/CI/base gates. Workflow dispatch does not execute any original historical query or change its runtime data. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Adds the explicit Cleveland activation branch to the existing manual owner-protected workflow. This is outside the original public query and rendering execution paths.",
+      "reviewed_functions": "manual protected candidate upload workflow; same-run prepared receipt digest transfer",
+      "semantic_reach": "Adds an explicitly owner-approved upload-only operation and independent read verification; it cannot activate the candidate. Legacy publication retains owner/main/CI/base gates. Workflow dispatch does not execute any original historical query or change its runtime data. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Adds the explicit Cleveland activation branch to the existing manual owner-protected workflow. This is outside the original public query and rendering execution paths. The protected publication CLI receives the read-only job's exact preparation digest. Existing permissions and approval gate remain. Public historical queries never run this workflow.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -221,13 +221,13 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "7465cdc4a8187f11a4540df2bc42784406bbdd88497de2f1aafb4309512e1a20"
+      "reviewed_sha256": "a64c3589fdfdc919e11015dd2d35cdc3765d591b9168b64749027fb284872f9c"
     },
     {
       "path": ".github/workflows/r2-publication-readonly.yml",
       "old_sha256": "14ef3a2c41bc587e4d05a1bd76b7c2382507ebf1e54997cd573ed96aa49a35b7",
-      "reviewed_functions": "read-only candidate verification",
-      "semantic_reach": "Adds the candidate byte-verification branch with existing read-only credentials. Existing strict production verification remains unchanged; no historical query interpretation or arithmetic changes. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Emits the same nonsecret prepared approval JSON in existing authenticated job logs as well as the job summary so agents can inspect its actual bytes without an additional artifact-host permission. No gate, source, snapshot, credential or activation behavior changes. Adds prepare and verify commands for the exact activation mode. The read-only Actions jobs are outside the original query and rendering paths.",
+      "reviewed_functions": "read-only candidate verification; no-write candidate sizing and prepared digest output",
+      "semantic_reach": "Adds the candidate byte-verification branch with existing read-only credentials. Existing strict production verification remains unchanged; no historical query interpretation or arithmetic changes. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Emits the same nonsecret prepared approval JSON in existing authenticated job logs as well as the job summary so agents can inspect its actual bytes without an additional artifact-host permission. No gate, source, snapshot, credential or activation behavior changes. Adds prepare and verify commands for the exact activation mode. The read-only Actions jobs are outside the original query and rendering paths. Processes only reviewed publication operations. The read-only job computes the exact approval tuple and its digest. It does not serve public queries.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -252,7 +252,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "a1ed5e619a116e55440865f5752dd26e6f6a04cd4f9dce3f5d6efa7636efa380"
+      "reviewed_sha256": "8d408d9994854c93ffe67da0aba167af84cef21cefebd6829c79f4a385e32d05"
     },
     {
       "path": "CLAUDE.md",
@@ -350,8 +350,8 @@
     {
       "path": "docs/operations/deployment.md",
       "old_sha256": "97064848175f0dfd542c0f4ebf8fe1e799d26e70066c29b1f3fa27f87347b02a",
-      "reviewed_functions": "candidate release procedure",
-      "semantic_reach": "Documents isolated protected upload and preview qualification; no production data, runtime calculation or acceptance outcome changes. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Documents the separate approval, conditional pointer write, and existing verification and backup steps. The application does not read this runbook.",
+      "reviewed_functions": "candidate release procedure; protected preparation, verification and uncertain-outcome procedure",
+      "semantic_reach": "Documents isolated protected upload and preview qualification; no production data, runtime calculation or acceptance outcome changes. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Documents the separate approval, conditional pointer write, and existing verification and backup steps. The application does not read this runbook. The revised runbook is operational documentation. Original query answers do not consume it.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -376,7 +376,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "6b8f9a297620b36c623225e28a352f03150823e2c32029e378c6496dd2d1a67a"
+      "reviewed_sha256": "08a1cdebad163b8046d294454ff4545fe62486f1bfaa958c87616b99ee494341"
     },
     {
       "path": "docs/operations/observability.md",
@@ -1437,9 +1437,9 @@
     {
       "path": "tools/cloud_backup.py",
       "old_sha256": "6a07fc5ad9b35654fb630a640de702be837a38fb880402cc840a1a8fe562fc02",
-      "reviewed_sha256": "8423892db4c4a3fa005ece8fdec882b133ea69184e3d50d9641fe881489c9447",
-      "reviewed_functions": "qualified_activation_manifest, export_backup, restore_backup",
-      "semantic_reach": "The existing backup and offline restore tools use the independently qualified Cleveland manifest for exact byte verification. Both original historical generations retain their existing validation path. No original public query reads the backup tools.",
+      "reviewed_sha256": "c7e716306146ec593f0a33a68484894496867a6eb974073c1386a439ab7e71a7",
+      "reviewed_functions": "qualified_activation_manifest, export_backup, restore_backup; candidate ZIP size and shared verified object read",
+      "semantic_reach": "The existing backup and offline restore tools use the independently qualified Cleveland manifest for exact byte verification. Both original historical generations retain their existing validation path. No original public query reads the backup tools. Measures the exact candidate data under the existing backup bounds in disposable storage. The active backup/restore remain byte-exact. No historical answering route executes the backup tool.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1530,8 +1530,8 @@
     {
       "path": "tools/r2_publication.py",
       "old_sha256": "8cccffc3c91511cbfb6fd9d43c2bf0839bd749ac2de2fcdd84b76e584e082f0d",
-      "reviewed_functions": "manual candidate preparation/upload/verification and cold response gate",
-      "semantic_reach": "Pins the Git-retained accepted inputs, composes the complete base-preserving snapshot, checks storage/operation limits and verifies owner approval before candidate-prefix writes. The Cleveland package uses separate protected operations for upload and pointer activation. This manual release tool is not part of historical runtime calculations. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Adds the existing-workflow wrapper for the approved Cleveland pointer change. The publication tool does not run inside any original public query or change historical result construction.",
+      "reviewed_functions": "manual candidate preparation/upload/verification and cold response gate; candidate preflight digest, typed readiness and health",
+      "semantic_reach": "Pins the Git-retained accepted inputs, composes the complete base-preserving snapshot, checks storage/operation limits and verifies owner approval before candidate-prefix writes. The Cleveland package uses separate protected operations for upload and pointer activation. This manual release tool is not part of historical runtime calculations. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Adds the existing-workflow wrapper for the approved Cleveland pointer change. The publication tool does not run inside any original public query or change historical result construction. Adds stricter evidence to the protected activation tool, which is outside the public query runtime. No changes to original historical sample, calculation, capture or oracle.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1556,7 +1556,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "f091fb5d602fd66fa9b51da8f981638f9754814fa4985954883bd39813ca3747"
+      "reviewed_sha256": "2f2bec61efc49fb7c82dc3c72fc76ffea6439c4898e4ea66efeefe982f75ea59"
     },
     {
       "path": "tools/stage_participation_collection.py",

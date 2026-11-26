@@ -12,6 +12,7 @@ import json
 import os
 import shutil
 import stat
+import tempfile
 import zipfile
 from datetime import UTC, datetime
 from pathlib import Path
@@ -22,11 +23,20 @@ from nbatools.commands.pipeline.generation_publication import (
     _safe_relative_path,
     validate_staged_generation,
 )
-from tools.r2_publication import REGISTRY, verify_pointer_manifest
-
-MAX_FILES = 3000
-MAX_BYTES = 1_000_000_000
-MAX_ARCHIVE = 200_000_000
+from tools.r2_publication import (
+    BACKUP_MAX_ARCHIVE as MAX_ARCHIVE,
+)
+from tools.r2_publication import (
+    BACKUP_MAX_BYTES as MAX_BYTES,
+)
+from tools.r2_publication import (
+    BACKUP_MAX_FILES as MAX_FILES,
+)
+from tools.r2_publication import (
+    BACKUP_MAX_MANIFEST_BYTES,
+    REGISTRY,
+    verify_pointer_manifest,
+)
 
 
 def sha(path):
@@ -52,7 +62,11 @@ def inventory(manifest):
     total = 0
     for item in files:
         key = _safe_relative_path(item["path"]).as_posix()
-        if not key.startswith(("raw/", "processed/", "metadata/")) or key in result:
+        if (
+            not key.startswith(("raw/", "processed/", "metadata/"))
+            or key in result
+            or key == GENERATION_MANIFEST_PATH.as_posix()
+        ):
             raise ValueError("Unexpected or duplicate backup path")
         size = item["size_bytes"]
         if not isinstance(size, int) or size < 0 or size > MAX_BYTES:
@@ -62,6 +76,52 @@ def inventory(manifest):
     if total > MAX_BYTES:
         raise ValueError("Backup total exceeds bound")
     return result
+
+
+def _verified_object(client, bucket, key, *, size, digest):
+    body = client.get_object(Bucket=bucket, Key=key)["Body"]
+    try:
+        raw = body.read(size + 1)
+    finally:
+        body.close()
+    if len(raw) != size or hashlib.sha256(raw).hexdigest() != digest:
+        raise ValueError("Downloaded backup object differs from manifest")
+    return raw
+
+
+def candidate_backup_preflight(client, bucket, generation, manifest_sha256, manifest_raw):
+    """Measure ZIP size from the exact uploaded bytes, without exporting or repointing."""
+    if (
+        len(manifest_raw) > BACKUP_MAX_MANIFEST_BYTES
+        or hashlib.sha256(manifest_raw).hexdigest() != manifest_sha256
+    ):
+        raise ValueError("Candidate backup manifest differs from the approved checksum")
+    manifest = json.loads(manifest_raw)
+    if manifest.get("schema_version") != 1 or manifest.get("generation_id") != generation:
+        raise ValueError("Candidate backup manifest has the wrong schema or generation")
+    files = inventory(manifest)
+    prefix = f"generations/{generation}/"
+    with tempfile.TemporaryFile() as handle:
+        with zipfile.ZipFile(handle, "w", zipfile.ZIP_DEFLATED) as zipped:
+            zipped.writestr(GENERATION_MANIFEST_PATH.as_posix(), manifest_raw)
+            for key, item in sorted(files.items()):
+                raw = _verified_object(
+                    client, bucket, prefix + key, size=item["size_bytes"], digest=item["sha256"]
+                )
+                zipped.writestr(key, raw)
+                if handle.tell() > MAX_ARCHIVE:
+                    raise ValueError("Compressed candidate backup exceeds bound")
+        archive_bytes = handle.tell()
+    if archive_bytes > MAX_ARCHIVE:
+        raise ValueError("Compressed candidate backup exceeds bound")
+    return {
+        "generation_id": generation,
+        "manifest_sha256": manifest_sha256,
+        "files": len(files),
+        "data_bytes": sum(item["size_bytes"] for item in files.values()),
+        "archive_bytes": archive_bytes,
+        "r2_writes": 0,
+    }
 
 
 def export_backup(output, generation, *, client=None, bucket=None):
@@ -77,25 +137,26 @@ def export_backup(output, generation, *, client=None, bucket=None):
     stage.mkdir()
     prefix = f"generations/{generation}/"
     # Preserve original derived files and receipt bytes, including the manifest.
-    for key in [*files, GENERATION_MANIFEST_PATH.as_posix()]:
-        body = client.get_object(Bucket=bucket, Key=prefix + key)["Body"]
-        try:
-            limit = files[key]["size_bytes"] if key in files else 5_000_000
-            raw = body.read(limit + 1)
-        finally:
-            body.close()
-        if key in files:
-            expected = files[key]
-            if (
-                len(raw) != expected["size_bytes"]
-                or hashlib.sha256(raw).hexdigest() != expected["sha256"]
-            ):
-                raise ValueError("Downloaded backup object differs from manifest")
-        elif hashlib.sha256(raw).hexdigest() != manifest_sha:
-            raise ValueError("Downloaded manifest differs from active pointer")
+    for key, expected in files.items():
+        raw = _verified_object(
+            client, bucket, prefix + key, size=expected["size_bytes"], digest=expected["sha256"]
+        )
         path = stage / key
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(raw)
+    key = GENERATION_MANIFEST_PATH
+    body = client.get_object(Bucket=bucket, Key=prefix + key.as_posix())["Body"]
+    try:
+        raw_manifest = body.read(BACKUP_MAX_MANIFEST_BYTES + 1)
+    finally:
+        body.close()
+    if (
+        len(raw_manifest) > BACKUP_MAX_MANIFEST_BYTES
+        or hashlib.sha256(raw_manifest).hexdigest() != manifest_sha
+    ):
+        raise ValueError("Downloaded manifest differs from active pointer")
+    (stage / key).parent.mkdir(parents=True, exist_ok=True)
+    (stage / key).write_bytes(raw_manifest)
     # Every body and the complete inventory above are authenticated by the
     # exact independently qualified manifest. Other backups still replay.
     qualified = qualified_activation_manifest(generation, manifest_sha)
@@ -147,7 +208,7 @@ def restore_backup(archive, receipt, destination):
         names = [item.filename for item in entries]
         if len(names) != len(set(names)) or len(names) > MAX_FILES + 1:
             raise ValueError("Duplicate or excessive archive entries")
-        if sum(item.file_size for item in entries) > MAX_BYTES + 5_000_000:
+        if sum(item.file_size for item in entries) > MAX_BYTES + BACKUP_MAX_MANIFEST_BYTES:
             raise ValueError("Expanded backup exceeds bound")
         for item in entries:
             path = _safe_relative_path(item.filename)

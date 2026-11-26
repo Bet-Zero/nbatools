@@ -305,14 +305,31 @@ separate protected approvals.
 6. Register the passing hosted proof and the independent upload receipt in the
    reviewed package. Dispatch `activate_candidate` on main for that package.
    Read-only preparation authenticates the receipt, current base and uploaded
-   manifest, then shows the exact operation awaiting **separate** owner approval
-   in `r2-publication`. The protected writer verifies the uploaded bodies and
+   manifest. It verifies the candidate objects and measures their exact
+   compressed archive size under the backup limits without switching the
+   pointer. The size proof is bound to the candidate and included in the
+   exact operation awaiting **separate** owner approval in `r2-publication`.
+   The protected writer checks the downloaded approval tuple against the
+   read-only job's SHA-256 output before trusting it, verifies the uploaded bodies and
    changes only the active pointer with same-base CAS, with a budget of zero
    snapshot PUTs and one pointer PUT. Read-only verification checks both
-   manifests and all registered public answers before the existing backup and
+   manifests, health and all registered public answers before the existing backup and
    separate-runner restore. For the Cleveland package, the sole
    `new_season_not_loaded` blocker is recorded as failed operational readiness
    while the historical delivery is verified on the exact active generation.
+   That classification requires the complete native HTTP 503 readiness envelope
+   with its single typed blocker and a healthy service. Extra blockers, invalid
+   envelopes, unhealthy service and generation drift fail verification.
+
+If activation's result is uncertain, preserve the attempt receipt and use the
+authorized read-only context to inspect the actual pointer and its manifest.
+If the expected base is still active, reconcile the failure before any fresh
+dispatch. If the exact candidate is active, verify the approved previous
+manifest and complete the remaining read-only checks and backup/restore. If
+the pointer identifies a later or conflicting publication, preserve it and halt
+activation and recovery writes. Never retry the uncertain write or upload the
+candidate again. Any conditional recovery follows the exact tuple and authority
+in [the recovery runbook](recovery.md#immutable-data-rollback-and-restore).
 
 ### Agent-initiated targeted requests
 
