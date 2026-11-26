@@ -7,16 +7,64 @@ import json
 import tomllib
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler
+from io import BytesIO
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
 from nbatools import api_ui, vercel_functions
-from nbatools.admission_control import AdmissionController, AdmissionRejected
+from nbatools.admission_control import BODY_LIMITS, AdmissionController, AdmissionRejected
 from nbatools.vercel_http import JsonHandler
 
 pytestmark = pytest.mark.api
+
+
+def _body_reader(headers, stream):
+    handler = JsonHandler.__new__(JsonHandler)
+    handler.headers = headers
+    handler.rfile = stream
+    return handler
+
+
+@pytest.mark.parametrize("path", BODY_LIMITS)
+@pytest.mark.parametrize("very_large", [False, True])
+def test_vercel_rejects_excessive_declared_length_without_reading(path, very_large):
+    class UnreadableBody:
+        def read(self, length):
+            pytest.fail("body was read before its declared length was validated")
+
+    header = "9" * 5000 if very_large else str(BODY_LIMITS[path] + 1)
+    handler = _body_reader({"Content-Length": header}, UnreadableBody())
+    with pytest.raises(AdmissionRejected) as caught:
+        handler.read_json_body(path)
+    assert caught.value.status == HTTPStatus.REQUEST_ENTITY_TOO_LARGE
+    assert caught.value.error == "payload_too_large"
+
+
+@pytest.mark.parametrize("path", BODY_LIMITS)
+def test_vercel_reads_exactly_the_validated_inclusive_body_length(path):
+    limit = BODY_LIMITS[path]
+    stream = BytesIO(b"{}" + b" " * (limit - 2) + b"unread tail")
+    handler = _body_reader({"Content-Length": str(limit)}, stream)
+    assert handler.read_json_body(path) == {}
+    assert stream.tell() == limit
+    assert stream.read() == b"unread tail"
+
+
+@pytest.mark.parametrize("header", [None, "", "-1", "0", "3.5", "3, 4", "+2", "１２"])
+def test_vercel_invalid_length_is_rejected_before_any_read(header):
+    stream = BytesIO(b"{}")
+    headers = {} if header is None else {"Content-Length": header}
+    with pytest.raises(ValueError):
+        _body_reader(headers, stream).read_json_body("/query")
+    assert stream.tell() == 0
+
+
+def test_vercel_rejects_truncated_body_even_if_prefix_is_valid_json():
+    handler = _body_reader({"Content-Length": "4"}, BytesIO(b"{}"))
+    with pytest.raises(ValueError, match="does not match Content-Length"):
+        handler.read_json_body("/query")
 
 
 def test_vercel_entrypoints_export_handlers():

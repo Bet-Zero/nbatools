@@ -9,6 +9,7 @@ from fastapi.testclient import TestClient
 
 from nbatools import api as api_module
 from nbatools.admission_control import (
+    IDLE_CLIENT_SWEEP_LIMIT,
     NATURAL_QUERY_BODY_MAX_BYTES,
     AdmissionController,
     AdmissionRejected,
@@ -135,6 +136,47 @@ def test_shared_query_rate_limit_returns_retry_after() -> None:
     assert caught.value.headers() == {"Retry-After": "8"}
 
 
+def test_query_idle_sweep_is_bounded_and_preserves_an_active_window():
+    controller = AdmissionController(query_limit=1, query_window_seconds=10)
+    try:
+        count = 3 * IDLE_CLIENT_SWEEP_LIMIT
+        for idx in range(count):
+            controller.run_query(f"idle-{idx}", lambda: None, now=0)
+        controller.run_query("active", lambda: None, now=9)
+
+        with pytest.raises(AdmissionRejected) as rejected:
+            controller.run_query("active", lambda: None, now=10)
+        assert rejected.value.headers() == {"Retry-After": "9"}
+        assert len(controller._query_events) == count - IDLE_CLIENT_SWEEP_LIMIT + 1
+
+        controller.run_query("new", lambda: None, now=11)
+        controller.run_query("newer", lambda: None, now=12)
+        assert list(controller._query_events) == ["active", "new", "newer"]
+    finally:
+        controller._executor.shutdown(wait=True)
+
+
+def test_feedback_idle_sweep_keeps_active_reservations_and_rollback():
+    controller = AdmissionController(feedback_limit=2, feedback_window_seconds=100)
+    for idx in range(2 * IDLE_CLIENT_SWEEP_LIMIT):
+        reservation = controller.reserve_feedback(f"idle-{idx}", now=0)
+        reservation.commit()
+    first = controller.reserve_feedback("active", now=90)
+    first.commit()
+    second = controller.reserve_feedback("active", now=99)
+    assert len(controller._feedback_events) == 2 * IDLE_CLIENT_SWEEP_LIMIT + 1
+
+    with pytest.raises(AdmissionRejected) as rejected:
+        controller.reserve_feedback("active", now=100)
+    assert rejected.value.headers() == {"Retry-After": "90"}
+    assert len(controller._feedback_events) == IDLE_CLIENT_SWEEP_LIMIT + 1
+    second.rollback()
+    third = controller.reserve_feedback("active", now=101)
+    third.commit()
+    assert list(controller._feedback_events) == ["active"]
+    assert controller.feedback_count("active") == 2
+
+
 def test_natural_and_structured_share_concurrency_slots() -> None:
     controller = AdmissionController(
         max_concurrent_queries=1,
@@ -157,6 +199,7 @@ def test_natural_and_structured_share_concurrency_slots() -> None:
         controller.run_query("structured-client", lambda: "queued")
     assert caught.value.error == "concurrency_limited"
     assert caught.value.headers() == {"Retry-After": "1"}
+    assert "structured-client" not in controller._query_events
 
     release.set()
     thread.join(2)

@@ -8,7 +8,7 @@ from http.server import BaseHTTPRequestHandler
 from time import perf_counter
 from typing import Any
 
-from nbatools.admission_control import parse_and_validate_json_body
+from nbatools.admission_control import BODY_LIMITS, parse_and_validate_json_body, validate_body_size
 from nbatools.operational_observability import (
     extract_request_outcome,
     log_request_complete,
@@ -148,24 +148,28 @@ class JsonHandler(BaseHTTPRequestHandler):
             PUBLIC_INTERNAL_ERROR_DETAIL,
         )
 
-    def read_json_body(self, path: str | None = None) -> dict[str, Any]:
-        try:
-            length = int(self.headers.get("Content-Length", "0"))
-        except ValueError as exc:
-            raise ValueError("Invalid Content-Length header") from exc
-        if length <= 0:
+    def read_json_body(self, path: str) -> dict[str, Any]:
+        declared = self.headers.get("Content-Length", "").strip()
+        if not declared:
             raise ValueError("Request body must be a JSON object")
-
+        if not declared.isascii() or not declared.isdecimal():
+            raise ValueError("Invalid Content-Length header")
+        digits = declared.lstrip("0")
+        if not digits:
+            raise ValueError("Request body must be a JSON object")
+        limit = BODY_LIMITS.get(path)
+        if limit is None:
+            raise ValueError(f"No body budget is defined for {path}")
+        # Compare decimal width first so arbitrarily long digit strings never reach int().
+        if len(digits) > len(str(limit)):
+            validate_body_size(limit + 1, path)
+        length = int(digits)
+        validate_body_size(length, path)
         raw_body = self.rfile.read(length)
-        if path is not None:
-            return parse_and_validate_json_body(raw_body, path)
-        try:
-            body = json.loads(raw_body.decode("utf-8"))
-        except json.JSONDecodeError as exc:
-            raise ValueError("Request body must be valid JSON") from exc
-        if not isinstance(body, dict):
-            raise ValueError("Request body must be a JSON object")
-        return body
+        validate_body_size(len(raw_body), path)
+        if len(raw_body) != length:
+            raise ValueError("Request body length does not match Content-Length")
+        return parse_and_validate_json_body(raw_body, path)
 
     def client_identifier(self) -> str:
         from nbatools.admission_control import client_identifier
