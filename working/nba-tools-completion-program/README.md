@@ -17,8 +17,8 @@ evidence; don't extend it.
 guard in [PR #647](https://github.com/Bet-Zero/nbatools/pull/647). W2
 publication safeguards landed in [PR #648](https://github.com/Bet-Zero/nbatools/pull/648),
 and W1 landed in [PR #649](https://github.com/Bet-Zero/nbatools/pull/649).
-PR #644 was the accepted activation artifact. Production is on `c4d1be10`
-from [PR #650](https://github.com/Bet-Zero/nbatools/pull/650).
+PR #644 was the accepted activation artifact. Production is on `2615c940`
+from [PR #652](https://github.com/Bet-Zero/nbatools/pull/652).
 The only unrelated open PR is blocked
 [#462](https://github.com/Bet-Zero/nbatools/pull/462). No other writer or background
 worker is active. [Execution plan](execution-plan.md)
@@ -121,21 +121,38 @@ runtime and updates only those calendar assertions and the checkpoint. The
 independent checker approved final head `8d670d16`. All three blocking PR
 matrices passed. [PR #651](https://github.com/Bet-Zero/nbatools/pull/651) merged at
 `dce81e08`. [Main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45790182679)
-and [production build](https://vercel.com/zeros-projects-686e97fc/nbatools/CLQbm4a4WV7QXFCyqARMJ5W5MHcb)
-were started. The current health of those jobs and the deployed calendar smoke
-belong in the PR receipt and the next checkpoint.
+passed all three full jobs. The
+[deployed revision](https://vercel.com/zeros-projects-686e97fc/nbatools/CLQbm4a4WV7QXFCyqARMJ5W5MHcb)
+reported unavailable November 25 and 2026–27 coverage for the two literal
+queries. The explicit LeVert record kept its 31–13 result in 44 games. The PR
+records all three request IDs.
 
-**W5 candidate.** The locked Python 3.12 core installation resolved 27 packages
-with uv 0.13.5. Local selector, workflow and package tests passed 153 checks.
-All 22 historical payloads matched again under the locked dependencies. The
-first preview keeps building when there is no trusted previous built SHA.
-GitHub checks, pinned read-only R2, actual hosted lock consumption and final
-review remain open for `completion/w5-build-lock`.
+**W5.** The Python lock merged at `2615c940`. Preview and
+[production](https://vercel.com/zeros-projects-686e97fc/nbatools/GGy5uCzq2sBdeLLPW3CyM5bhwBPt)
+used the committed lock for the first Python 3.12 install with uv 0.13.5. The
+local Python builder produced a 223,239,050-byte query bundle from the chosen
+source and lock. That local artifact retains the configured 20-second value;
+the effective hosted cutoff and near-deadline response timing remain unproven.
+All 22 historical payloads matched under the locked dependencies, the exact
+PR gates passed, and [authenticated R2](https://github.com/Bet-Zero/nbatools/actions/runs/45790777737)
+passed 10 required source-row tests without skips. Production's natural and
+structured queries both returned 31–13 in 44 games without LeVert. The PR holds
+the request IDs and [main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45791747173)
+receipt. Settings remain under the owner's authority.
 
-**Next.** Verify W3B on the production alias, then complete W5's exact gates.
-W4B follows the calendar and error contract. For W3A, bind the actual host limit
-and measure startup, body parsing and full response completion before selecting
-an application deadline.
+**W4B candidate.** All 511 locked frontend tests, lint and build passed. Local
+built desktop/mobile browsers used the public API for the verified Cleveland
+example. The desktop check used the keyboard. On mobile a controlled 429
+displayed its retry delay and request ID, and manual retry rendered the correct
+sample with no automatic second request. The code in
+`completion/w4b-snapshot-discovery` still needs independent review, exact CI
+and deployed checks.
+
+**Next.** Finish W4B's integration gates, then prepare W6A's replacement
+historical acceptance path for the frozen stabilization release. For W3A,
+measure the hosted startup, body and response margin before choosing the
+application deadline. W3C needs the coherent frozen artifact and the existing
+resource and delivery checks.
 No new collection, historical backfill, spending, automatic refresh or Live work is authorized for this assignment.
 The checkout's existing `work` branch and the saved work below are preserved.
 
