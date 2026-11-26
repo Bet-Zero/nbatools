@@ -68,8 +68,10 @@ their existing scope and authority.
 reported snapshot passed and Live failed, with the representative scoring
 query returning HTTP 200 in 2.58 s. Strict alerts still fail on the Live gap.
 [Main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45777118682)
-passed all three Python full-suite jobs. Scheduled coverage and any reserved
-alert/recovery policy change remain open.
+passed all three Python full-suite jobs. [Scheduled run 45782818838](https://github.com/Bet-Zero/nbatools/actions/runs/45782818838)
+also attempted all three checks. Its representative query returned HTTP 200
+in 7.47 s and snapshot probes passed. Strict readiness still failed on the
+sole Live blocker. Any alert/recovery policy change remains reserved.
 
 **W2 recovery safeguards.** The exact guarded rollback path is merged.
 [Authenticated read-only preflight](https://github.com/Bet-Zero/nbatools/actions/runs/45777409867)
@@ -93,15 +95,15 @@ checks follow the merged runtime.
 
 **W3A.** The bounded request-reader and inactive-client cleanup unit passed
 focused tests and both real HTTP adapter paths on the exact offline Cleveland
-archive. The response deadline remains open. One earlier deployed query
-measured 2.576 s externally and 2.360 s in the application, which leaves just
-one measured operating point. Effective host cutoff and near-deadline
-response completion still need proof.
+archive. The response deadline remains open. The manual and scheduled
+representative queries measured 2.576 s and 7.474 s externally, with 2.360 s
+and 4.801 s in their respective application handlers. They used different
+builds and establish two observed points. Effective host cutoff and
+near-deadline response completion still need proof.
 
 **Next.** Bind the actual host limit and measure startup, body parsing and
-full response completion before setting the application deadline. Continue
-authorized calendar work while measurement is pending. Verify the first
-scheduled W4A run that includes the scoring query.
+full response completion before setting the application deadline. Calendar work
+can proceed independently while that proof is pending.
 No new collection, historical backfill, spending, automatic refresh or Live work is authorized for this assignment.
 The checkout's existing `work` branch and the saved work below are preserved.
 
