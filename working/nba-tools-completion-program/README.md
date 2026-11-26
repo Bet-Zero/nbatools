@@ -16,8 +16,9 @@ evidence; don't extend it.
 [PR #646](https://github.com/Bet-Zero/nbatools/pull/646), and the W2 recovery
 guard in [PR #647](https://github.com/Bet-Zero/nbatools/pull/647). W2
 publication safeguards landed in [PR #648](https://github.com/Bet-Zero/nbatools/pull/648),
-main `f407970e`, production `dpl_2kZXsG7uqDU1MgR5BCysuyaoNVWh` READY on the
-public alias before the W1 change. PR #644 was the accepted activation artifact.
+and W1 landed in [PR #649](https://github.com/Bet-Zero/nbatools/pull/649),
+main `295dfb18`. W1 production build `dpl_J9KedKBHdcUQKZRoFrgGmxH2ajpg`
+was started. PR #644 was the accepted activation artifact.
 The only unrelated open PR is blocked
 [#462](https://github.com/Bet-Zero/nbatools/pull/462). No other writer or background
 worker is active. [Execution plan](execution-plan.md)
@@ -82,16 +83,25 @@ activated the candidate, the existing normal verifier still needs a dedicated
 read-only handoff to consume that receipt and complete backup. Future writes
 require separate authority.
 
-**W1.** The identity candidate keeps immutable names, IDs, spelling and indexes
-for each request. Authenticated malformed and missing required inputs fail
-closed. The overlapping admitted-query controls and all 22 retained API-shaped
-comparisons on the exact restored data passed. The W1 PR records its review,
-authenticated real-data and exact CI/hosted evidence.
+**W1.** Request-pinned immutable identity and required-object validation
+are merged. Exact-head independent review, blocking CI and
+[authenticated R2](https://github.com/Bet-Zero/nbatools/actions/runs/45781851935)
+passed. All 12 identity checks ran with zero required skips, and all 22 retained
+API-shaped results were identical on the restored Cleveland data. Post-merge
+[CI](https://github.com/Bet-Zero/nbatools/actions/runs/45782678499) and deployment
+checks follow the merged runtime.
 
-**Next.** Once W1 has landed and its deployed check is complete, implement the
-W3A request reader and limiter-state bounds. Continue measuring the full
-response margin before choosing an internal deadline. Confirm scheduled W4A
-coverage on the live build while work continues.
+**W3A.** The bounded request-reader and inactive-client cleanup unit passed
+focused tests and both real HTTP adapter paths on the exact offline Cleveland
+archive. The response deadline remains open. One earlier deployed query
+measured 2.576 s externally and 2.360 s in the application, which leaves just
+one measured operating point. Effective host cutoff and near-deadline
+response completion still need proof.
+
+**Next.** Bind the actual host limit and measure startup, body parsing and
+full response completion before setting the application deadline. Continue
+authorized calendar work while measurement is pending. Verify the first
+scheduled W4A run that includes the scoring query.
 No new collection, historical backfill, spending, automatic refresh or Live work is authorized for this assignment.
 The checkout's existing `work` branch and the saved work below are preserved.
 
