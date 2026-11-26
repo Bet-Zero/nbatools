@@ -93,6 +93,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           PACKAGE: ${{ inputs.package }}
           WRITE_MODE: ${{ inputs.mode }}
+          ACTIVATION_PREPARED_SHA256: ${{ needs.prepare.outputs.prepared_sha256 }}
           R2_BUCKET_NAME: nbatools-data
           R2_ACCOUNT_ID: ${{ secrets.R2_PUBLICATION_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_PUBLICATION_ACCESS_KEY_ID }}

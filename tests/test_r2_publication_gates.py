@@ -168,6 +168,26 @@ def test_publication_cannot_reach_prepare_or_writer_without_approval(
         getattr(gate, operation)("package", tmp_path, tmp_path / "work", prepared)
 
 
+def test_activation_binds_the_exact_readonly_preflight_measurement(tmp_path, monkeypatch):
+    prepared = tmp_path / "approved.json"
+    raw = b'{"candidate_backup_preflight":{"archive_bytes":405}}\n'
+    prepared.write_bytes(raw.replace(b"405", b"1"))
+    monkeypatch.setenv("GITHUB_SHA", "code")
+    monkeypatch.setenv("GITHUB_RUN_ID", "run")
+    monkeypatch.setenv("ACTIVATION_PREPARED_SHA256", gate.digest(raw))
+    monkeypatch.setattr(gate, "check_main_revision", lambda *args: None)
+    monkeypatch.setattr(gate, "environment_audit", lambda: {})
+    monkeypatch.setattr(gate, "api", lambda path: [])
+    monkeypatch.setattr(gate, "check_approval", lambda *args: None)
+    monkeypatch.setattr(
+        gate,
+        "prepare_activation",
+        lambda *args, **kwargs: pytest.fail("preparation digest changed"),
+    )
+    with pytest.raises(ValueError, match="exact read-only job output"):
+        gate.activate_candidate("package", tmp_path, tmp_path / "work", prepared)
+
+
 def test_publisher_workflow_is_manual_and_credentials_are_job_and_step_scoped():
     workflow = yaml.safe_load((ROOT / ".github/workflows/r2-data-publication.yml").read_text())
     triggers = workflow.get("on", workflow.get(True))
@@ -194,6 +214,9 @@ def test_publisher_workflow_is_manual_and_credentials_are_job_and_step_scoped():
     assert len(secret_steps) == 1
     assert 'r2_publication.py "$WRITE_MODE"' in secret_steps[0]["run"]
     assert secret_steps[0]["env"]["WRITE_MODE"] == "${{ inputs.mode }}"
+    assert secret_steps[0]["env"]["ACTIVATION_PREPARED_SHA256"] == (
+        "${{ needs.prepare.outputs.prepared_sha256 }}"
+    )
     assert (
         "secrets.R2_PUBLICATION_SECRET_ACCESS_KEY" in secret_steps[0]["env"]["R2_SECRET_ACCESS_KEY"]
     )

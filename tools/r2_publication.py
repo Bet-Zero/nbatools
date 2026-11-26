@@ -627,11 +627,15 @@ def prepare_activation(name, publisher, work, *, expected=None):
 
 
 def activate_candidate(name, publisher, work, prepared_path):
-    expected = json.loads(prepared_path.read_text())
     check_main_revision(os.environ["GITHUB_SHA"])
     audit = environment_audit()
     approvals = api(f"/actions/runs/{os.environ['GITHUB_RUN_ID']}/approvals")
     check_approval(audit, approvals)
+    raw = prepared_path.read_bytes()
+    expected_hash = os.environ.get("ACTIVATION_PREPARED_SHA256", "")
+    if digest(raw) != expected_hash:
+        raise ValueError("Activation preparation differs from the exact read-only job output")
+    expected = json.loads(raw)
     receipt, publication = prepare_activation(name, publisher, work, expected=expected)
     receipt.update(
         publication_state="candidate_activation_started_outcome_unknown",

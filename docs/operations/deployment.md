@@ -309,7 +309,8 @@ separate protected approvals.
    compressed archive size under the backup limits without switching the
    pointer. The size proof is bound to the candidate and included in the
    exact operation awaiting **separate** owner approval in `r2-publication`.
-   The protected writer verifies the uploaded bodies and
+   The protected writer checks the downloaded approval tuple against the
+   read-only job's SHA-256 output before trusting it, verifies the uploaded bodies and
    changes only the active pointer with same-base CAS, with a budget of zero
    snapshot PUTs and one pointer PUT. Read-only verification checks both
    manifests, health and all registered public answers before the existing backup and

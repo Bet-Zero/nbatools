@@ -4,6 +4,10 @@ name: Read-only R2 Publication
 # backup jobs stay in r2-real-data-validation.yml, outside this read-only call graph.
 on:
   workflow_call:
+    outputs:
+      prepared_sha256:
+        description: SHA-256 of the exact prepared approval tuple
+        value: ${{ jobs.publication-readonly.outputs.prepared_sha256 }}
     inputs:
       publication_package:
         type: string
@@ -43,6 +47,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment: r2-validation
+    outputs:
+      prepared_sha256: ${{ steps.approval_tuple.outputs.prepared_sha256 }}
     permissions:
       contents: read
       actions: read
@@ -85,13 +91,18 @@ jobs:
             *) echo 'Unsupported read-only publication operation' >&2; exit 1 ;;
           esac
       - name: Show the immutable approval tuple
+        id: approval_tuple
         if: inputs.publication_mode == 'prepare' || inputs.publication_mode == 'prepare_activation'
         run: |
           python - <<'PY'
           import os
+          import hashlib
           from pathlib import Path
-          prepared = Path('work/prepared/prepared.json').read_text()
+          raw = Path('work/prepared/prepared.json').read_bytes()
+          prepared = raw.decode('utf-8')
           print(prepared)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('prepared_sha256=' + hashlib.sha256(raw).hexdigest() + '\n')
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
               output.write('### Prepared snapshot: no production writes\n\n```json\n')
               output.write(prepared)
