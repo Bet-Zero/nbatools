@@ -446,6 +446,7 @@ def read_refresh_log(data_root: Path = _DATA_ROOT) -> dict | None:
 # ---------------------------------------------------------------------------
 
 
+@data_generation_context()
 def build_freshness_info(
     seasons: list[str] | None = None,
     season_type: str = "Regular Season",
@@ -454,7 +455,8 @@ def build_freshness_info(
 ) -> FreshnessInfo:
     """Build a structured ``FreshnessInfo`` for the API/UI.
 
-    If *seasons* is None, defaults to the latest regular season.
+    If *seasons* is None, defaults to the latest regular season. The season
+    selection, slices and refresh log come from the same pinned generation.
     """
     from datetime import datetime
 

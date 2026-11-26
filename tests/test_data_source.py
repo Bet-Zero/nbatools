@@ -231,10 +231,7 @@ def test_hosted_cache_retires_a_generation_only_after_the_last_reader(tmp_path, 
     latest, _ = published_generation_objects("latest", {path: b"value\n2\n"})
     objects = old | {key: value for key, value in latest.items() if key != pointer_key}
     client = FakeR2Client(objects)
-    _configure_r2(monkeypatch, tmp_path, client)
-    monkeypatch.delenv(R2_CACHE_DIR_ENV)
-    monkeypatch.setenv("VERCEL", "1")
-    monkeypatch.setattr(data_source.tempfile, "gettempdir", lambda: str(tmp_path))
+    _configure_managed_cache(monkeypatch, tmp_path, client)
 
     old_pinned = Event()
     finish_old = Event()
@@ -271,6 +268,104 @@ def test_hosted_cache_retires_a_generation_only_after_the_last_reader(tmp_path, 
         assert data_path(path).read_bytes() == b"value\n1\n"
         assert not newest_path.exists()
     assert client.get_calls.count(f"generations/old/{path}") == 2
+
+
+def test_delayed_reader_keeps_the_newer_observed_cache(tmp_path, monkeypatch):
+    pointer_key = ACTIVE_GENERATION_PATH.as_posix()
+    path = "raw/sample.csv"
+    old, _ = published_generation_objects("old", {path: b"old"})
+    latest, _ = published_generation_objects("latest", {path: b"latest"})
+    objects = old | {key: value for key, value in latest.items() if key != pointer_key}
+    client = FakeR2Client(objects)
+    _configure_managed_cache(monkeypatch, tmp_path, client)
+
+    observed = Event()
+    resume = Event()
+    pin_cache = data_source._R2DataSource.pin_cache
+
+    def pause_before_pin(source, generation):
+        if generation.id == "old":
+            observed.set()
+            assert resume.wait(5)
+        return pin_cache(source, generation)
+
+    def read_old():
+        with data_generation_context() as generation:
+            assert generation == "old"
+            return data_path(path).read_bytes()
+
+    monkeypatch.setattr(data_source._R2DataSource, "pin_cache", pause_before_pin)
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        pending = pool.submit(read_old)
+        try:
+            assert observed.wait(5)
+            objects[pointer_key] = latest[pointer_key]
+            with data_generation_context():
+                newest_path = data_path(path)
+        finally:
+            resume.set()
+        assert pending.result(timeout=5) == b"old"
+
+    assert newest_path.read_bytes() == b"latest"
+    with data_generation_context():
+        assert data_path(path) == newest_path
+    assert client.get_calls.count(f"generations/latest/{path}") == 1
+
+
+@pytest.mark.served_seasons
+def test_freshness_keeps_one_cache_and_refresh_log_during_rollover(tmp_path, monkeypatch):
+    from nbatools.commands import _seasons
+    from nbatools.vercel_functions import freshness_response
+
+    pointer_key = ACTIVE_GENERATION_PATH.as_posix()
+    path = "raw/games/2023-24_regular_season.csv"
+    log = "metadata/last_refresh.json"
+    old, _ = published_generation_objects(
+        "fresh-old",
+        {
+            path: b"game_date,is_final\n2024-04-11,1\n",
+            log: b'{"success":true,"timestamp":"2024-04-11T13:00:00"}',
+        },
+    )
+    latest, _ = published_generation_objects(
+        "fresh-new",
+        {
+            path: b"game_date,is_final\n2024-04-12,1\n",
+            log: b'{"success":true,"timestamp":"2024-04-12T13:00:00"}',
+        },
+    )
+    objects = old | {key: value for key, value in latest.items() if key != pointer_key}
+    _configure_managed_cache(monkeypatch, tmp_path, FakeR2Client(objects))
+    monkeypatch.setattr(_seasons, "_LATEST_SERVED_CACHE", {})
+    with data_generation_context():
+        old_path = data_path(path)
+
+    started = Event()
+    resume = Event()
+    read_csv = data_source.pd.read_csv
+
+    def pause_before_open(path, *args, **kwargs):
+        if path == old_path and not started.is_set():
+            started.set()
+            assert resume.wait(5)
+        return read_csv(path, *args, **kwargs)
+
+    monkeypatch.setattr(data_source.pd, "read_csv", pause_before_open)
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        pending = pool.submit(freshness_response)
+        try:
+            assert started.wait(5)
+            objects[pointer_key] = latest[pointer_key]
+            with data_generation_context():
+                assert data_path(path).read_bytes() == latest[f"generations/fresh-new/{path}"]
+        finally:
+            resume.set()
+        status, result = pending.result(timeout=5)
+
+    assert status == 200
+    assert result["seasons"][0]["season"] == "2023-24"
+    assert result["last_refresh_at"] == "2024-04-11T13:00:00"
+    assert not old_path.exists()
 
 
 def test_explicit_r2_cache_remains_available_across_requests(tmp_path, monkeypatch):
@@ -592,3 +687,10 @@ def _configure_r2(
     monkeypatch.setenv("R2_BUCKET_NAME", "nbatools-data")
     monkeypatch.setattr(data_source, "create_r2_client", lambda config: client)
     reset_data_source_cache()
+
+
+def _configure_managed_cache(monkeypatch, tmp_path, client):
+    _configure_r2(monkeypatch, tmp_path, client)
+    monkeypatch.delenv(R2_CACHE_DIR_ENV)
+    monkeypatch.setenv("VERCEL_ENV", "production")
+    monkeypatch.setattr(data_source.tempfile, "gettempdir", lambda: str(tmp_path))

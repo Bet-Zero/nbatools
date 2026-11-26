@@ -353,11 +353,11 @@ class _R2DataSource:
     def pin_cache(self, generation: _Generation) -> Iterator[None]:
         """Keep in-flight paths readable while retiring the prior worker cache."""
         with self._cache_lock:
-            previous = self._latest_cache_generation
-            if previous is not None and previous != generation:
-                self._retired_cache_generations.add(previous)
-            self._latest_cache_generation = generation
-            self._retired_cache_generations.discard(generation)
+            if self._latest_cache_generation is None:
+                # An explicitly pinned preview has no active-pointer lookup.
+                self._latest_cache_generation = generation
+            if generation != self._latest_cache_generation:
+                self._retired_cache_generations.add(generation)
             self._cache_readers[generation] += 1
             self._retire_idle_caches()
         try:
@@ -613,7 +613,17 @@ class _R2DataSource:
             or not _SHA256_PATTERN.fullmatch(digest)
         ):
             raise DataSourceError("Invalid manifest checksum in active generation pointer")
-        return _Generation(generation, digest)
+        selection = _Generation(generation, digest)
+        if self.worker_cache is not None and digest is not None:
+            # Record the pointer observation before its request can wait to pin.
+            # A delayed reader may use older bytes, but cannot displace this copy.
+            with self._cache_lock:
+                previous = self._latest_cache_generation
+                if previous is not None and previous != selection:
+                    self._retired_cache_generations.add(previous)
+                self._latest_cache_generation = selection
+                self._retired_cache_generations.discard(selection)
+        return selection
 
     @staticmethod
     def _generation_prefix(generation: str) -> str:

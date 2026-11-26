@@ -218,8 +218,11 @@ candidate limits the default Vercel worker to the current verified disk cache
 and any still-pinned older cache. The managed local path retained 253,467,843
 bytes after the same rollover. The focused candidate preserves in-flight
 generation paths, evicts the idle worker copy and redownloads it on a later
-return to that generation. It still requires independent review and
-deployed proof. The temporary cache
+return to that generation. Independent probes exposed a freshness reader
+outside the pin and an older pointer observation displacing the new cache.
+The candidate pins the complete freshness report and marks the newest cache
+when the pointer is observed. Exact follow-up review and deployed proof are
+pending. The temporary cache
 footprint while two versions are pinned at once still needs qualification.
 
 **W3C browser preparation.** [PR #657](https://github.com/Bet-Zero/nbatools/pull/657)
