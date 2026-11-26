@@ -87,6 +87,25 @@ class _PointerState:
     etag: str | None = None
 
 
+@dataclass(frozen=True)
+class R2RollbackTarget:
+    """The exact candidate and last-good generation in a recovery decision."""
+
+    active_generation: str
+    previous_generation: str
+    previous_manifest_sha256: str
+
+    def __post_init__(self) -> None:
+        _validated_generation_id(self.active_generation)
+        _validated_generation_id(self.previous_generation)
+        if (
+            self.active_generation == self.previous_generation
+            or self.previous_generation == LEGACY_GENERATION
+            or not re.fullmatch(r"[0-9a-f]{64}", self.previous_manifest_sha256)
+        ):
+            raise GenerationPublicationError("Invalid exact R2 recovery target")
+
+
 def publish_local_generation(
     generation_id: str,
     *,
@@ -270,16 +289,54 @@ def rollback_r2_generation(
     bucket_name: str | None = None,
     env: Mapping[str, str] | None = None,
     env_file: Path | None = Path(".env"),
+    expected: R2RollbackTarget | None = None,
 ) -> GenerationPublicationResult:
     """Conditionally switch the R2 pointer to its retained previous generation."""
+    if client is None and expected is None:
+        raise GenerationPublicationError("R2 rollback requires an approved exact recovery target")
     s3_client, bucket = _resolve_r2_target(
         client=client,
         bucket_name=bucket_name,
         env=env,
         env_file=env_file,
+        disable_retries=expected is not None,
     )
     current = _read_r2_pointer(s3_client, bucket)
+    result = _inspect_r2_rollback(s3_client, bucket, current, expected)
+    payload = _pointer_payload(result.generation_id, current.generation_id, result.manifest_sha256)
+    _write_r2_pointer_atomic(s3_client, bucket, payload, expected_etag=current.etag)
+    return result
+
+
+def preflight_r2_rollback(
+    expected: R2RollbackTarget, *, client: Any, bucket_name: str
+) -> GenerationPublicationResult:
+    """Validate the pinned recovery tuple and inventory using a read-only client."""
+    current = _read_r2_pointer(client, bucket_name)
+    result = _inspect_r2_rollback(
+        client, bucket_name, current, expected, action="rollback_preflight"
+    )
+    if _read_r2_pointer(client, bucket_name) != current:
+        raise GenerationConflictError("R2 active pointer changed during recovery preflight")
+    return result
+
+
+def _inspect_r2_rollback(
+    client: Any,
+    bucket: str,
+    current: _PointerState,
+    expected: R2RollbackTarget | None,
+    *,
+    action: str = "rollback",
+) -> GenerationPublicationResult:
     target = current.previous_generation_id
+    if expected is not None and (
+        current.generation_id != expected.active_generation
+        or target != expected.previous_generation
+    ):
+        raise GenerationConflictError(
+            "R2 active or previous generation differs from recovery target"
+        )
     if target is None:
         raise GenerationPublicationError(
             "Active generation pointer has no retained previous generation"
@@ -287,14 +344,11 @@ def rollback_r2_generation(
     if target == current.generation_id:
         raise GenerationPublicationError("Active and previous generation identifiers are identical")
 
-    manifest, manifest_sha256 = _validate_r2_rollback_target(s3_client, bucket, target)
-    payload = _pointer_payload(target, current.generation_id, manifest_sha256)
-    _write_r2_pointer_atomic(
-        s3_client,
-        bucket,
-        payload,
-        expected_etag=current.etag,
-    )
+    if expected is None:
+        manifest, manifest_sha256 = _validate_r2_rollback_target(client, bucket, target)
+    else:
+        manifest_sha256 = expected.previous_manifest_sha256
+        manifest = verify_r2_candidate(client, bucket, target, manifest_sha256)
     return GenerationPublicationResult(
         target="r2",
         generation_id=target,
@@ -303,7 +357,7 @@ def rollback_r2_generation(
         total_bytes=sum(item["size_bytes"] for item in manifest["files"]) if manifest else 0,
         manifest_sha256=manifest_sha256,
         pointer=ACTIVE_GENERATION_PATH.as_posix(),
-        action="rollback",
+        action=action,
     )
 
 
