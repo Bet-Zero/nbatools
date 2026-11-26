@@ -53,8 +53,7 @@ their existing scope and authority.
 [Monitor run](https://github.com/Bet-Zero/nbatools/actions/runs/45768634065)
 · [Production build](https://vercel.com/zeros-projects-686e97fc/nbatools/E4SfKHXdhXx2dnKbL2qnGeSMaXN9)
 
-**Next.** Land W0 after independent navigation and safeguard review and light
-CI, then finish W4A run-all monitoring with the existing strict overall verdict.
+**Next.** Finish W4A run-all monitoring with the existing strict overall verdict.
 Keep monitor alert and recovery policy changes under their actual authority.
 The checkout's existing `work` branch and the saved work below are preserved.
 

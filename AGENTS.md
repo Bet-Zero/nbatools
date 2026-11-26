@@ -84,8 +84,9 @@ Standing limits until B changes them:
   existing protected approval. Fixed-plan limits and $0 metered overage stay.
 - Don't change Vercel settings, secrets, deployment protection, branch
   protection or R2 publication gates. Resource, duration, access and cost
-  settings remain reserved even when represented in a repository file. Public query-feedback persistence stays
-  disabled. No new paid service, model access or hosting migration.
+  settings remain reserved even when represented in a repository file.
+  Public query-feedback persistence stays disabled. No new paid service,
+  model access or hosting migration.
 - Launch and branding are B's decisions. No commercial data-provider
   investigation. The acquisition laptop is for acquisition and transfer only,
   never a development dependency.
@@ -103,8 +104,8 @@ Standing limits until B changes them:
 - One PR per logical unit. Reproduce the defect, fix it, run focused tests,
   get review where required, pass the gates, merge.
 - Before starting optional work, write one line in the PR saying which Core-1
-  requirement, confirmed defect or necessary dependency it serves. Other discoveries go in the
-  checkpoint's carry-forward list, not a new tracker or ticket.
+  requirement, confirmed defect or necessary dependency it serves. Record other
+  discoveries in the checkpoint's carry-forward list.
 - Never merge a known wrong answer, or failing runtime just to land a handoff.
 - Report executed, skipped and unavailable tests honestly. A red advisory job
   is reported as advisory, not hidden or treated as blocking.
@@ -131,21 +132,35 @@ Freeze the candidate before broad validation or final independent review. Use an
 isolated checkout if another writer could move it, and don't edit, rebase or
 merge it while checks run. If a fix changes reviewed meaning or risk, repeat the
 affected checks and a focused delta review, plus the exact-head gates.
+Freeze every input that can rebuild or change the served result, including
+frontend, operations and documentation when the actual selector builds them.
+Record the built deployment, interpreter and available dependency inputs,
+relevant nonsecret configuration, immutable data and qualification conditions.
 
 Before merging, recheck the current head and base. GitHub letting you merge is
 not permission: all blocking CI, required numerical results and required review
 must be in place. Missing pre-merge coverage can't be supplied by a later
 main or nightly run. Fast or data-free CI is not equivalent to preflight or
 authenticated numerical validation. After merge, check post-merge CI and the
-deployed behavior when it's affected.
+deployed behavior when it's affected. Track code completion, deployment,
+verified delivery and milestone acceptance as distinct outcomes. The applicable
+deployed proof is required before claiming verified delivery.
 
 **Independent review** means a separate agent session, not self-review. Record
-the reviewer, the reviewed revision and any open findings in the PR. Green CI
-alone is not review. A bot comment is not review.
+the reviewer/session, reviewed revision, relevant data and open findings in the
+PR. The checker chooses independent meaning, failure and numerical probes.
+Consequential changes to authority, safety or verification policy require focused
+independent review for conflicts, invalidation and coverage equivalence. Prefer
+a separate model when available within existing cost and access authority.
+Green CI and bot comments do not establish independent review.
 
 **Reuse passing evidence** when the code, data and conditions it covered are
-unchanged, the required checks really ran and passed, and no open finding
-contradicts it. Say which revision it came from. Never claim an old run happened
+unchanged or demonstrably unaffected, exact-head and frozen-release requirements
+still hold, the required checks really ran and passed, and no open finding
+contradicts it. Check applicability on selection and after relevant changes.
+Use trustworthy execution and skip counts, and inspect underlying evidence for
+failures, contradictions or concrete integration questions. Say which revision
+it came from. Never claim an old run happened
 on a new head, or that another PR's green run with the same workflow name
 applies. Don't rerun a passing check without a reason to expect a different result.
 
@@ -178,7 +193,8 @@ good sample. Most past verifier rework came from skipping this.
 - Keep raw, processed and derived layers and each dataset's grain. New data
   needs source, row meaning, keys, coverage rules and missing-data behavior in
   `docs/reference/data_contracts.md`. Before data work, follow
-  `docs/operations/data_availability.md` and reuse qualified retained data.
+  `docs/operations/data_availability.md` and
+  `docs/operations/product_data_workflow.md`. Reuse qualified retained data.
   Qualify new data with source URLs, original bodies, hashes, capture times,
   statistical scope and explicit unknowns. Never fabricate a passed manifest or
   substitute different data. Don't retry a diagnosed blocked source without new
@@ -186,11 +202,12 @@ good sample. Most past verifier rework came from skipping this.
   Check the active generated inventory, verify receipt, identity and schema
   before use, and preserve the existing source, clock, membership, readiness
   and 24-hour freshness gates. Capture time or an indexed file alone doesn't
-  establish coverage. Corrections create new immutable versions; never mutate data a test is using.
+  establish coverage. Corrections create new immutable versions. Never mutate
+  data a test is using.
   Fixtures are never published as real data. Never relabel old data as fresh.
 - Provisional development data must stay opt-in and isolated, carry a visible
-  provisional status through the API and exception exports, and never reach public or
-  production behavior. It is not a validator bypass.
+  provisional status through the API and exception exports, and stay out of
+  public and production behavior. It is not a validator bypass.
 - Useful commands: `make test-parser`, `test-query`, `test-engine`, `test-api`,
   `test-output` while editing; `make test-preflight` or `make test` for high
   fan-in changes; `make raw-query-answer-qa` is a failing gate.
@@ -200,8 +217,12 @@ good sample. Most past verifier rework came from skipping this.
 - The Resume checkpoint is the only active queue. **Replace** it with current
   state in plain English; keep it to about one screen. PR-specific detail stays
   in the PR. Update it before a merge that changes the next action, a block or a
-  session stop: branch and SHA, data version, what passed, open findings, the
-  one next action.
+  session stop. Record owner, branch and SHA, data version, completed evidence,
+  open findings, real blockers, actual active jobs and the one next action.
+  Preserve safe work on its branch where permitted and identify unpushed work.
+  Link a newer branch checkpoint from its PR if a merge is blocked. Carry the
+  checkpoint and receipts in the logical work PR. A separate record-only PR
+  needs a real stop without a work PR or a need to preserve a frozen candidate.
 - Durable docs go in `docs/reference/` (behavior), `docs/architecture/`,
   `docs/operations/` (runbooks), `docs/audits/` (history), per
   `docs/operations/working_and_archive_policy.md`. Task material goes in
