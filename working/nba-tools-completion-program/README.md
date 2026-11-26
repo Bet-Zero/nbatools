@@ -110,18 +110,22 @@ passed. The existing frontend development audit remained advisory and red.
 The response deadline remains open. These timing samples do not establish the
 effective host cutoff or near-deadline response completion.
 
-**W3B candidate.** The initial independent review found ordinary current-season
-wording, relative range endpoints and cutoff notes that could still misstate
-scope. The current `completion/w3b-request-calendar` candidate addresses those
-findings. It passed 290 focused checks with 49 expected local skips. The three
-selected R2 checks also passed against the exact restored Cleveland files with
-independent raw-row comparisons, and the 22 original historical API-shaped
-payloads were byte-identical. The current candidate still needs exact-head
-independent review, blocking CI, authenticated R2 and deployment verification.
+**W3B candidate.** The checker approved calendar runtime `9546cfa3` after 244
+focused passes and independent checks of date windows and current-season ranks.
+All 22 archived historical payloads matched byte for byte on the restored
+Cleveland snapshot. [Authenticated R2](https://github.com/Bet-Zero/nbatools/actions/runs/45788049013)
+passed all three selected raw-row checks with zero required skips. The exact
+PR matrix exposed four test assertions that still specified the prior
+cutoff flag or upper season boundary. The follow-up preserves the approved
+runtime and updates only those calendar assertions and this checkpoint.
+[PR #651](https://github.com/Bet-Zero/nbatools/pull/651)
 
-**Next.** Finish W3B's exact gates, then verify literal unavailable coverage and
-an unaffected snapshot answer on the deployed revision. Continue W5's build
-binding and W4B. For W3A, bind the actual host limit and measure startup, body
+**Next.** Finish W3B's exact PR checks, then verify literal unavailable coverage
+and an unaffected snapshot answer on its deployment. W5's independent build
+lane has a Python 3.12 locked installation and passing local selector and
+workflow tests in `completion/w5-build-lock`. It still needs an exact hosted
+build and independent integration gates. W4B follows the stable calendar and
+error contract. For W3A, bind the actual host limit and measure startup, body
 parsing and full response completion before selecting an application deadline.
 No new collection, historical backfill, spending, automatic refresh or Live work is authorized for this assignment.
 The checkout's existing `work` branch and the saved work below are preserved.

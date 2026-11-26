@@ -377,9 +377,17 @@ class TestRouteSelection:
         assert parsed["season"] == "2025-26"
         assert any("defaulted" in n for n in parsed.get("notes") or [])
 
-    def test_fuzzy_day_window_sets_flag(self):
+    def test_snapshot_window_flag_distinguishes_literal_days(self, monkeypatch):
+        monkeypatch.setattr(
+            "nbatools.commands.natural_query.compute_current_through",
+            lambda season, season_type: "2026-02-01",
+        )
         parsed = parse_query("bron points last night")
+        assert parsed["fuzzy_date_window"] is False
+        assert parsed["start_date"] == "2026-04-11" == parsed["end_date"]
+        parsed = parse_query("Jokic last 30 days")
         assert parsed["fuzzy_date_window"] is True
+        assert parsed["end_date"] == "2026-02-01"
         parsed = parse_query("Jokic recent form")
         assert parsed["fuzzy_date_window"] is False
 

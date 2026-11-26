@@ -8,9 +8,12 @@ games against Boston (the Lakers were dropped).
 
 from __future__ import annotations
 
+from datetime import date
+
 import pytest
 
 from nbatools.commands._parse_helpers import extract_bare_year_season, extract_since_season
+from nbatools.commands._seasons import request_calendar
 from nbatools.commands.natural_query import parse_query
 from nbatools.query_service import execute_natural_query
 
@@ -167,10 +170,13 @@ def test_an_on_filter_after_the_year_keeps_one_season(query):
 @pytest.mark.parametrize(
     "query", ["lebron ppg from 2019 to today", "lebron ppg from 2019 until today"]
 )
-def test_to_today_ends_a_season_span_without_a_one_day_filter(query):
-    kwargs = parse_query(query)["route_kwargs"]
+def test_to_today_keeps_the_season_start_and_literal_end(query):
+    with request_calendar(date(2026, 11, 26)):
+        kwargs = parse_query(query)["route_kwargs"]
     assert kwargs["start_season"] == "2019-20"
-    assert not kwargs.get("start_date") and not kwargs.get("end_date")
+    assert kwargs["end_season"] == "2026-27"
+    assert not kwargs.get("start_date")
+    assert kwargs["end_date"] == "2026-11-26"
 
 
 @pytest.mark.parametrize(
@@ -212,9 +218,13 @@ def test_at_least_and_in_season_after_on_are_not_open_ends(query, season):
     assert not kwargs.get("start_season")
 
 
-def test_in_a_year_to_tonight_has_no_one_day_filter():
-    kwargs = parse_query("LeBron stats in 2024 to tonight")["route_kwargs"]
-    assert not kwargs.get("start_date") and not kwargs.get("end_date")
+def test_in_a_year_to_tonight_keeps_the_season_start_and_literal_end():
+    with request_calendar(date(2026, 11, 26)):
+        kwargs = parse_query("LeBron stats in 2024 to tonight")["route_kwargs"]
+    assert kwargs["start_season"] == "2024-25"
+    assert kwargs["end_season"] == "2026-27"
+    assert not kwargs.get("start_date")
+    assert kwargs["end_date"] == "2026-11-26"
 
 
 @pytest.mark.parametrize(
