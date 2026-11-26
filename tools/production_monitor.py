@@ -16,6 +16,7 @@ from nbatools.production_monitoring import (
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run the nbatools production monitor.")
     parser.add_argument("--base-url", help="Public production base URL")
+    parser.add_argument("--expected-generation", help="Expected immutable production generation")
     parser.add_argument("--output", help="Optional JSON receipt path")
     parser.add_argument(
         "--synthetic-failure",
@@ -32,7 +33,9 @@ def main() -> int:
     else:
         if not args.base_url:
             build_parser().error("--base-url is required unless --synthetic-failure is used")
-        payload = run_production_monitor(args.base_url).to_dict()
+        payload = run_production_monitor(
+            args.base_url, expected_generation=args.expected_generation
+        ).to_dict()
 
     rendered = json.dumps(payload, indent=2)
     if args.output:

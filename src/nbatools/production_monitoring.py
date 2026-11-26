@@ -7,6 +7,7 @@ import re
 from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
+from http.client import HTTPException
 from time import perf_counter
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -51,6 +52,7 @@ class ProductionMonitorAttempt:
     summary: dict[str, Any]
     failure_kind: str | None = None
     error_code: str | None = None
+    known_live_gap: bool = False
 
 
 @dataclass(frozen=True)
@@ -73,6 +75,9 @@ class ProductionMonitorReport:
     failure_count: int
     failures: list[str]
     cases: list[ProductionMonitorCaseResult]
+    live_readiness: str
+    snapshot_status: str
+    expected_generation: str | None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -84,6 +89,9 @@ class ProductionMonitorReport:
             "notification_required": self.notification_required,
             "failure_count": self.failure_count,
             "failures": self.failures,
+            "live_readiness": self.live_readiness,
+            "snapshot_status": self.snapshot_status,
+            "expected_generation": self.expected_generation,
             "policy": {
                 "availability_objective_percent": AVAILABILITY_OBJECTIVE_PERCENT,
                 "objective_window_days": OBJECTIVE_WINDOW_DAYS,
@@ -144,19 +152,28 @@ def default_production_monitor_cases() -> list[ProductionMonitorCase]:
 def run_production_monitor(
     base_url: str,
     *,
+    expected_generation: str | None = None,
     cases: list[ProductionMonitorCase] | None = None,
     fetcher: Fetcher = fetch_http,
 ) -> ProductionMonitorReport:
-    """Run the approved monitor, retrying only transport and latency failures."""
+    """Run every probe while keeping the approved overall verdict strict."""
 
     normalized_base_url = _normalize_monitor_base_url(base_url)
-    case_results: list[ProductionMonitorCaseResult] = []
-    for case in cases or default_production_monitor_cases():
-        case_result = _run_monitor_case(normalized_base_url, case, fetcher)
-        case_results.append(case_result)
-        if not case_result.ok:
-            break
+    if expected_generation is not None and not _SAFE_TOKEN.fullmatch(expected_generation):
+        raise ValueError("expected_generation must be a safe immutable generation ID")
+    case_results = [
+        _run_monitor_case(normalized_base_url, case, fetcher, expected_generation)
+        for case in cases or default_production_monitor_cases()
+    ]
     failures = [case.slug for case in case_results if not case.ok]
+    readiness = next((case for case in case_results if case.slug == "readiness"), None)
+    if (
+        readiness is not None
+        and readiness.ok
+        and expected_generation is not None
+        and readiness.attempts[-1].summary.get("active_generation") != expected_generation
+    ):
+        failures.append("unexpected_active_generation")
     checked_at = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     return ProductionMonitorReport(
         base_url=normalized_base_url,
@@ -166,7 +183,31 @@ def run_production_monitor(
         failure_count=len(failures),
         failures=failures,
         cases=case_results,
+        live_readiness=(
+            "not_checked" if readiness is None else "passed" if readiness.ok else "failed"
+        ),
+        snapshot_status=_snapshot_status(case_results, expected_generation),
+        expected_generation=expected_generation,
     )
+
+
+def _snapshot_status(
+    cases: list[ProductionMonitorCaseResult], expected_generation: str | None
+) -> str:
+    probes = {case.slug: case for case in cases}
+    if not {"health", "readiness", "representative_query"} <= probes.keys():
+        return "not_checked"
+    if not probes["health"].ok or not probes["representative_query"].ok:
+        return "failed"
+    readiness = probes["readiness"]
+    attempt = readiness.attempts[-1]
+    if attempt.known_live_gap:
+        return "passed"
+    if not readiness.ok:
+        return "failed"
+    if expected_generation is None:
+        return "not_checked"
+    return "passed" if attempt.summary.get("active_generation") == expected_generation else "failed"
 
 
 def synthetic_notification_failure() -> dict[str, Any]:
@@ -187,11 +228,14 @@ def _run_monitor_case(
     base_url: str,
     monitor_case: ProductionMonitorCase,
     fetcher: Fetcher,
+    expected_generation: str | None,
 ) -> ProductionMonitorCaseResult:
     case = monitor_case.smoke_case
     attempts: list[ProductionMonitorAttempt] = []
     for attempt_number in range(1, MAX_ATTEMPTS + 1):
-        attempt = _run_monitor_attempt(base_url, monitor_case, attempt_number, fetcher)
+        attempt = _run_monitor_attempt(
+            base_url, monitor_case, attempt_number, fetcher, expected_generation
+        )
         attempts.append(attempt)
         if attempt.ok or attempt.failure_kind not in TRANSIENT_FAILURE_KINDS:
             break
@@ -212,6 +256,7 @@ def _run_monitor_attempt(
     monitor_case: ProductionMonitorCase,
     attempt_number: int,
     fetcher: Fetcher,
+    expected_generation: str | None,
 ) -> ProductionMonitorAttempt:
     case = monitor_case.smoke_case
     url = base_url + case.path
@@ -224,16 +269,17 @@ def _run_monitor_attempt(
             monitor_case.max_duration_ms / 1_000 + NETWORK_TIMEOUT_GRACE_SECONDS,
         )
     except HTTPError as exc:
-        duration_ms = round((perf_counter() - started) * 1_000, 3)
         status = int(exc.code)
         headers = dict(exc.headers.items()) if exc.headers is not None else {}
-        body = exc.read(MAX_SMOKE_RESPONSE_BYTES + 1)
-        if len(body) > MAX_SMOKE_RESPONSE_BYTES:
+        try:
+            with exc:
+                body = exc.read(MAX_SMOKE_RESPONSE_BYTES + 1)
+        except (HTTPException, OSError):
             return _failed_attempt(
                 attempt_number,
-                duration_ms,
-                "response",
-                "response_too_large",
+                round((perf_counter() - started) * 1_000, 3),
+                "transport",
+                "transport_error",
                 status_code=status,
             )
     except ResponseTooLargeError:
@@ -244,7 +290,7 @@ def _run_monitor_attempt(
             "response",
             "response_too_large",
         )
-    except (ConnectionError, TimeoutError, URLError, OSError):
+    except (HTTPException, URLError, OSError):
         duration_ms = round((perf_counter() - started) * 1_000, 3)
         return _failed_attempt(
             attempt_number,
@@ -262,9 +308,14 @@ def _run_monitor_attempt(
         )
 
     duration_ms = round((perf_counter() - started) * 1_000, 3)
+    if len(body) > MAX_SMOKE_RESPONSE_BYTES:
+        return _failed_attempt(
+            attempt_number, duration_ms, "response", "response_too_large", status_code=status
+        )
     try:
         result = evaluate_smoke_response(case, url, status, headers, body, duration_ms)
-        safe_summary = _safe_response_summary(case.slug, body)
+        payload = _decode_payload(body)
+        safe_summary = _safe_response_summary(case.slug, payload)
     except Exception:
         return _failed_attempt(
             attempt_number,
@@ -289,6 +340,12 @@ def _run_monitor_attempt(
             summary=safe_summary,
             failure_kind="response",
             error_code=error_code,
+            known_live_gap=(
+                case.slug == "readiness"
+                and status == 503
+                and duration_ms <= monitor_case.max_duration_ms
+                and _is_known_live_gap(payload, expected_generation)
+            ),
         )
     if duration_ms > monitor_case.max_duration_ms:
         return ProductionMonitorAttempt(
@@ -353,18 +410,100 @@ def _normalize_monitor_base_url(base_url: str) -> str:
     return normalized
 
 
-def _safe_response_summary(slug: str, body: bytes) -> dict[str, Any]:
+def _decode_payload(body: bytes) -> dict[str, Any]:
     try:
         payload = json.loads(body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError):
         return {}
-    if not isinstance(payload, dict):
-        return {}
+    return payload if isinstance(payload, dict) else {}
 
+
+def _is_known_live_gap(payload: dict[str, Any], expected_generation: str | None) -> bool:
+    """Match the native readiness response before reducing it for safe logging."""
+    if (
+        expected_generation is None
+        or payload.get("active_generation") != expected_generation
+        or payload.get("immutable_generation") is not True
+        or payload.get("ready") is not False
+        or payload.get("status") != "not_ready"
+        or not all(
+            isinstance(payload.get(key), str) and payload[key]
+            for key in (
+                "checked_at",
+                "season",
+                "season_state",
+                "release_exception_owner",
+            )
+        )
+        or type(payload.get("max_active_lag_hours")) is not int
+        or not isinstance(payload.get("slices"), list)
+        or not payload["slices"]
+        or not all(_has_slice_schema(row) for row in payload["slices"])
+    ):
+        return False
+
+    exception = payload.get("exception")
+    if (
+        not isinstance(exception, dict)
+        or exception.get("applied") is not False
+        or exception.keys() != {"applied", "owner", "reason", "created_at", "expires_at", "error"}
+        or not isinstance(exception["owner"], str)
+        or any(
+            exception[key] is not None for key in ("reason", "created_at", "expires_at", "error")
+        )
+    ):
+        return False
+
+    blockers = payload.get("blockers")
+    if not isinstance(blockers, list) or len(blockers) != 1:
+        return False
+    blocker = blockers[0]
+    return (
+        isinstance(blocker, dict)
+        and blocker.keys() == {"code", "detail"}
+        and blocker["code"] == "new_season_not_loaded"
+        and isinstance(blocker["detail"], str)
+        and bool(blocker["detail"].strip())
+    )
+
+
+def _has_slice_schema(row: Any) -> bool:
+    if not isinstance(row, dict):
+        return False
+    return (
+        all(isinstance(row.get(key), str) for key in ("season", "season_type", "validation_state"))
+        and all(
+            type(row.get(key)) is bool
+            for key in (
+                "trusted",
+                "schedule_complete",
+                "postseason_complete",
+            )
+        )
+        and all(
+            key in row and (row[key] is None or isinstance(row[key], str))
+            for key in ("generation_id", "current_through", "expected_current_through")
+        )
+        and isinstance(row.get("errors"), list)
+        and all(isinstance(error, str) for error in row["errors"])
+        and "missing_due_game_ids" in row
+        and (
+            row["missing_due_game_ids"] is None
+            or (
+                isinstance(row["missing_due_game_ids"], list)
+                and all(isinstance(game_id, str) for game_id in row["missing_due_game_ids"])
+            )
+        )
+    )
+
+
+def _safe_response_summary(slug: str, payload: dict[str, Any]) -> dict[str, Any]:
     if slug == "health":
         return _allowlisted_scalars(payload, ("status",))
     if slug == "readiness":
-        summary = _allowlisted_scalars(payload, ("ready", "status", "immutable_generation"))
+        summary = _allowlisted_scalars(
+            payload, ("ready", "status", "immutable_generation", "active_generation")
+        )
         blockers = payload.get("blockers")
         if isinstance(blockers, list):
             codes = []
