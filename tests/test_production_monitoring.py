@@ -415,14 +415,24 @@ def test_readiness_http_error_keeps_all_probes_and_strict_verdict(
         (503, {"slices": [{}]}),
         (503, {"blockers": ["new_season_not_loaded"]}),
         (503, {"blockers": [{"code": "new_season_not_loaded"}]}),
-        (503, {"blockers": [
-            {"code": "new_season_not_loaded", "detail": "one"},
-            {"code": "new_season_not_loaded", "detail": "duplicate"},
-        ]}),
-        (503, {"blockers": [
-            {"code": "new_season_not_loaded", "detail": "one"},
-            {"code": "last_refresh_failed", "detail": "another"},
-        ]}),
+        (
+            503,
+            {
+                "blockers": [
+                    {"code": "new_season_not_loaded", "detail": "one"},
+                    {"code": "new_season_not_loaded", "detail": "duplicate"},
+                ]
+            },
+        ),
+        (
+            503,
+            {
+                "blockers": [
+                    {"code": "new_season_not_loaded", "detail": "one"},
+                    {"code": "last_refresh_failed", "detail": "another"},
+                ]
+            },
+        ),
         (503, {"blockers": [{"code": "new_season_not_loaded", "detail": "one"}, {}]}),
     ],
 )
@@ -461,10 +471,35 @@ def test_http_error_body_transport_failure_retries_and_does_not_stop_query() -> 
 
     assert report.snapshot_status == "failed"
     assert [attempt.failure_kind for attempt in report.cases[1].attempts] == [
-        "transport", "transport"
+        "transport",
+        "transport",
     ]
     assert report.cases[-1].ok
     assert "private transport detail" not in json.dumps(report.to_dict())
+
+
+def test_strict_ready_on_wrong_generation_still_fails_monitor() -> None:
+    def fetcher(url, method, body, timeout):
+        slug = _slug_from_url(url)
+        if slug == "readiness":
+            ready = _known_live_gap_payload() | {
+                "ready": True,
+                "status": "ready",
+                "blockers": [],
+                "active_generation": "wrong",
+            }
+            return 200, {}, json.dumps(ready).encode()
+        return _response_for(slug)
+
+    report = run_production_monitor(
+        "https://deploy.example", expected_generation=EXPECTED_GENERATION, fetcher=fetcher
+    )
+
+    assert report.live_readiness == "passed"
+    assert report.snapshot_status == "failed"
+    assert report.ok is False
+    assert report.notification_required is True
+    assert report.failures == ["unexpected_active_generation"]
 
 
 def test_late_known_live_gap_does_not_pass_snapshot_probe(monkeypatch) -> None:

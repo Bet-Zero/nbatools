@@ -167,6 +167,13 @@ def run_production_monitor(
     ]
     failures = [case.slug for case in case_results if not case.ok]
     readiness = next((case for case in case_results if case.slug == "readiness"), None)
+    if (
+        readiness is not None
+        and readiness.ok
+        and expected_generation is not None
+        and readiness.attempts[-1].summary.get("active_generation") != expected_generation
+    ):
+        failures.append("unexpected_active_generation")
     checked_at = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     return ProductionMonitorReport(
         base_url=normalized_base_url,
@@ -269,8 +276,11 @@ def _run_monitor_attempt(
                 body = exc.read(MAX_SMOKE_RESPONSE_BYTES + 1)
         except (HTTPException, OSError):
             return _failed_attempt(
-                attempt_number, round((perf_counter() - started) * 1_000, 3),
-                "transport", "transport_error", status_code=status,
+                attempt_number,
+                round((perf_counter() - started) * 1_000, 3),
+                "transport",
+                "transport_error",
+                status_code=status,
             )
     except ResponseTooLargeError:
         duration_ms = round((perf_counter() - started) * 1_000, 3)
@@ -416,9 +426,15 @@ def _is_known_live_gap(payload: dict[str, Any], expected_generation: str | None)
         or payload.get("immutable_generation") is not True
         or payload.get("ready") is not False
         or payload.get("status") != "not_ready"
-        or not all(isinstance(payload.get(key), str) and payload[key] for key in (
-            "checked_at", "season", "season_state", "release_exception_owner",
-        ))
+        or not all(
+            isinstance(payload.get(key), str) and payload[key]
+            for key in (
+                "checked_at",
+                "season",
+                "season_state",
+                "release_exception_owner",
+            )
+        )
         or type(payload.get("max_active_lag_hours")) is not int
         or not isinstance(payload.get("slices"), list)
         or not payload["slices"]
@@ -456,9 +472,14 @@ def _has_slice_schema(row: Any) -> bool:
         return False
     return (
         all(isinstance(row.get(key), str) for key in ("season", "season_type", "validation_state"))
-        and all(type(row.get(key)) is bool for key in (
-            "trusted", "schedule_complete", "postseason_complete",
-        ))
+        and all(
+            type(row.get(key)) is bool
+            for key in (
+                "trusted",
+                "schedule_complete",
+                "postseason_complete",
+            )
+        )
         and all(
             key in row and (row[key] is None or isinstance(row[key], str))
             for key in ("generation_id", "current_through", "expected_current_through")

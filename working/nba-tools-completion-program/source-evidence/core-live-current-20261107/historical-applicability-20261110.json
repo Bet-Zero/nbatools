@@ -1313,7 +1313,7 @@
     {
       "path": "src/nbatools/production_monitoring.py",
       "old_sha256": "8bffd86698e24a0db8fb7abb4e4d57a75284aa24d6de701dd701ec55c1679c01",
-      "reviewed_sha256": "b2668f6666eea2ba6189249ff116d53fda1126709b408d1ace9ebbf74c66cb40",
+      "reviewed_sha256": "fa00ccd9aa179c193de85c2fa9128e9dca92c8a3cb2ffe3364ec01abc848179b",
       "reviewed_functions": "run_production_monitor and its response classification",
       "semantic_reach": "Only the monitor CLI invokes the probe runner. Public serving routes, interpretations, source data and original case results stay the same. The checker evaluates this exact delta without counting retained captures as new.",
       "eligible_existing_case_ids": [
