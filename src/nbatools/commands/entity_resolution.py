@@ -680,19 +680,19 @@ def _iter_identity_seasons(
             if verified:
                 raise
             continue
-        if verified and not _valid_identity_rows(frame):
+        if verified and not _valid_identity_rows(frame, verified=True):
             raise DataSourceError("Required published player season lacks complete identity rows")
         if "player_name" in frame.columns:
             yield frame
 
 
-def _valid_identity_rows(frame: pd.DataFrame) -> bool:
+def _valid_identity_rows(frame: pd.DataFrame, *, verified: bool) -> bool:
     if not {"player_id", "player_name"} <= set(frame.columns) or frame.empty:
         return False
     return all(
         frame[key].notna().all() and frame[key].str.strip().ne("").all()
         for key in ("player_id", "player_name")
-    )
+    ) and (not verified or frame["player_id"].str.fullmatch(r"[1-9][0-9]*", na=False).all())
 
 
 def _read_published_player_names(*, verified: bool) -> pd.DataFrame | None:
@@ -707,9 +707,18 @@ def _read_published_player_names(*, verified: bool) -> pd.DataFrame | None:
         if verified:
             raise
         return None
-    if _valid_identity_rows(frame) and "first_seen" in frame.columns:
+    if _valid_identity_rows(frame, verified=verified) and "first_seen" in frame.columns:
         order = pd.to_numeric(frame["first_seen"], errors="coerce")
-        if not order.isna().any():
+        if not order.isna().any() and (
+            not verified
+            or (
+                frame["first_seen"].str.fullmatch(r"0|[1-9][0-9]*", na=False).all()
+                and order.min() == 0
+                and order.max() == len(frame) - 1
+                and order.is_unique
+                and _ledger_season_inventory(frame)
+            )
+        ):
             return frame.iloc[order.argsort(kind="stable")]
     if verified:
         raise DataSourceError("Required published player name ledger is invalid")
@@ -757,18 +766,27 @@ def _build_identity_bundle() -> _PlayerIdentityBundle:
 def _player_ledger_seasons(
     ledger: pd.DataFrame | None,
 ) -> tuple[dict[str, frozenset[str]], frozenset[str]]:
-    if ledger is None or "season" not in ledger.columns:
+    if ledger is None:
         return {}, frozenset()
-    seasons = ledger["season"].astype(str)
-    if not seasons.str.fullmatch(r"\d{4}-\d{2}").all():
-        return {}, frozenset()
-    inventory = frozenset(seasons)
-    if any((int(value[:4]) + 1) % 100 != int(value[5:]) for value in inventory):
+    inventory = _ledger_season_inventory(ledger)
+    if not inventory:
         return {}, frozenset()
     return {
         player_id: frozenset(rows["season"].astype(str))
         for player_id, rows in ledger.groupby("player_id", sort=False)
     }, inventory
+
+
+def _ledger_season_inventory(ledger: pd.DataFrame) -> frozenset[str]:
+    if "season" not in ledger.columns:
+        return frozenset()
+    seasons = ledger["season"].astype(str)
+    if not seasons.str.fullmatch(r"\d{4}-\d{2}").all():
+        return frozenset()
+    inventory = frozenset(seasons)
+    if any((int(value[:4]) + 1) % 100 != int(value[5:]) for value in inventory):
+        return frozenset()
+    return inventory
 
 
 def _get_player_identity() -> _PlayerIdentityBundle:

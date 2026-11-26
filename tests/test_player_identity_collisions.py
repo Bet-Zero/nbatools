@@ -477,6 +477,45 @@ def test_required_identity_integrity_reaches_natural_and_structured_consumers(
         reset_data_source_cache()
 
 
+@pytest.mark.parametrize(
+    "invalid_row",
+    [
+        "not-a-player-id,Karl-Anthony Towns,2025-26,1",
+        "1626157,Karl Anthony Towns,2025-26,inf",
+        "1626157,Karl Anthony Towns,2025-26,0",
+        "1626157,Karl Anthony Towns,2025-26,1.5",
+        "1626157,Karl Anthony Towns,2025-27,1",
+        "1626157,Karl Anthony Towns,,1",
+    ],
+)
+def test_manifest_authenticated_but_invalid_ledger_fails_closed(
+    tmp_path, monkeypatch, identity_snapshot_files, invalid_row
+):
+    from nbatools.data_source import DataSourceError, reset_data_source_cache
+    from nbatools.query_service import execute_natural_query, execute_structured_query
+    from tests.test_data_source import FakeR2Client, _configure_r2, published_generation_objects
+
+    ledger = (
+        "player_id,player_name,season,first_seen\n"
+        f"1626157,Karl-Anthony Towns,2025-26,0\n{invalid_row}\n"
+    ).encode()
+    objects, _ = published_generation_objects(
+        "identity", identity_snapshot_files | {"metadata/player_names.csv": ledger}
+    )
+    _configure_r2(monkeypatch, tmp_path, FakeR2Client(objects))
+    entity_resolution.reset_player_index()
+    try:
+        with pytest.raises(DataSourceError, match="Required published player name ledger"):
+            execute_natural_query("Karl-Anthony Towns stats in 2025-26")
+        with pytest.raises(DataSourceError, match="Required published player name ledger"):
+            execute_structured_query(
+                "player_game_summary", player="Karl-Anthony Towns", season="2025-26"
+            )
+    finally:
+        entity_resolution.reset_player_index()
+        reset_data_source_cache()
+
+
 def test_failed_concurrent_identity_build_publishes_nothing_and_recovers(tmp_path, monkeypatch):
     from concurrent.futures import Future, ThreadPoolExecutor
     from threading import Event
