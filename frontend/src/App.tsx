@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { fetchHealth, postQuery, postStructuredQuery } from "./api/client";
+import { ApiRequestError } from "./api/requestError";
 import type { SavedQueryInput } from "./api/savedQueryTypes";
 import type { QueryResponse } from "./api/types";
 import AppShell from "./components/AppShell";
@@ -48,6 +49,16 @@ interface RunRequestOptions {
 }
 
 function safeErrorMessage(err: unknown): string {
+  if (err instanceof ApiRequestError) {
+    const detail = err.message.split(/\r?\n/)[0]?.trim().slice(0, 160) || "Request failed.";
+    const retry = err.retryAfterSeconds;
+    return [
+      err.status ? `HTTP ${err.status}.` : "",
+      err.status === 429 ? "The service is limiting requests." : detail,
+      retry && retry > 0 ? `Try again in ${retry} ${retry === 1 ? "second" : "seconds"}.` : "",
+      err.requestId ? `Request ID ${err.requestId}.` : "",
+    ].filter(Boolean).join(" ");
+  }
   const raw = err instanceof Error ? err.message : String(err ?? "");
   const firstLine = raw.split(/\r?\n/)[0]?.trim();
   if (!firstLine) return "Request failed.";

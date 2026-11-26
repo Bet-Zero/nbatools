@@ -39,7 +39,7 @@ describe("SampleQueries", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", {
-        name: "Run starter query: Lakers playoff history",
+        name: "Run starter query: Warriors playoff record in 2015-16",
       }),
     ).toBeInTheDocument();
     expect(screen.queryByText("entity_summary + game_log")).not.toBeInTheDocument();
@@ -50,7 +50,7 @@ describe("SampleQueries", () => {
 
     expect(screen.getByText("entity_summary + game_log")).toBeInTheDocument();
     expect(
-      screen.getByText("entity_summary (lineup_summary)"),
+      screen.getByText("leaderboard (season leaders)"),
     ).toBeInTheDocument();
     expect(
       screen.queryByText("fallback_table (lineup_summary)"),
@@ -69,9 +69,25 @@ describe("SampleQueries", () => {
 
     expect(onSelect).toHaveBeenCalledWith("Celtics record 2024-25");
   });
+
+  it("shows the snapshot and participation scope without offering a Live example", () => {
+    render(<SampleQueries onSelect={vi.fn()} />);
+    expect(screen.getByText(/Latest-game samples follow its data cutoff/)).toBeInTheDocument();
+    expect(screen.getByText(/appearances for the selected team/)).toBeInTheDocument();
+    expect(screen.getByRole("button", {
+      name: "Run starter query: Cavaliers record without Caris LeVert in 2024-25",
+    })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /this season|tonight|yesterday/ })).not.toBeInTheDocument();
+  });
 });
 
 describe("NoResultDisplay", () => {
+  it("names the literal day when its coverage is unavailable", () => {
+    render(<NoResultDisplay reason="no_data" status="no_result" metadata={{
+      team: "Cavaliers", season: "2026-27", start_date: "2026-11-25", end_date: "2026-11-25",
+    }} />);
+    expect(screen.getByText("Data is unavailable for Cavaliers on 2026-11-25.")).toBeInTheDocument();
+  });
   it.each([ ["game", "appearances anywhere in each game"], ["opponent", "appearances for the opposing team"] ])("labels an empty %s appearance sample", (scope, explanation) => {
     render(<NoResultDisplay reason="no_match" status="no_result" metadata={{without_player: "Stephen Curry", participation_scope: scope}} />);
     expect(screen.getByText(new RegExp(explanation))).toBeInTheDocument();

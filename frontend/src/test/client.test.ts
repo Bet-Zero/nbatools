@@ -90,6 +90,34 @@ describe("fetchRoutes", () => {
 });
 
 describe("postQuery", () => {
+  it("preserves the machine status, request ID and retry delay for rate limits", async () => {
+    mockFetch.mockResolvedValueOnce(new Response(
+      JSON.stringify({ error: "rate_limited", detail: "Query request limit exceeded." }),
+      { status: 429, headers: { "Retry-After": "17", "X-Request-ID": "req_example" } },
+    ));
+    await expect(postQuery("Cavaliers record")).rejects.toMatchObject({
+      status: 429, code: "rate_limited", requestId: "req_example", retryAfterSeconds: 17,
+    });
+  });
+
+  it("describes a non-JSON host deadline without showing infrastructure markup", async () => {
+    mockFetch.mockResolvedValueOnce(new Response("<html>host failure</html>", {
+      status: 504, headers: { "X-Vercel-Id": "host-request" },
+    }));
+    await expect(postQuery("Cavaliers record")).rejects.toMatchObject({
+      status: 504, code: "execution_timeout", requestId: "host-request",
+      message: "The server timed out before it returned an answer.",
+    });
+  });
+
+  it("keeps network errors and cancelled requests distinct", async () => {
+    const cancellation = new DOMException("Request cancelled", "AbortError");
+    mockFetch.mockRejectedValueOnce(new TypeError("Failed to fetch"));
+    mockFetch.mockRejectedValueOnce(cancellation);
+    await expect(postQuery("Cavaliers record")).rejects.toMatchObject({ code: "network_error" });
+    await expect(postQuery("Cavaliers record")).rejects.toBe(cancellation);
+  });
+
   it("sends POST with query body", async () => {
     const mockResponse = {
       ok: true,
