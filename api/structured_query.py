@@ -20,6 +20,8 @@ class handler(JsonHandler):
         try:
             with request_calendar():
                 body = self.read_json_body("/structured-query")
+                if self.preview_duration_probe("/structured-query", body):
+                    return
                 status, payload = structured_query_response(
                     body,
                     client_id=self.client_identifier(),

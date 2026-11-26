@@ -21,6 +21,8 @@ class handler(JsonHandler):
         try:
             with request_calendar():
                 body = self.read_json_body("/query")
+                if self.preview_duration_probe("/query", body):
+                    return
                 with ColdQualification() as qualification:
                     status, payload = query_response(
                         body,

@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import json
+import os
+import time
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler
+from threading import Lock
 from time import perf_counter
 from typing import Any
 
@@ -24,6 +27,9 @@ from nbatools.public_errors import (
     new_request_id,
 )
 
+_PREVIEW_PROBE_LOCK = Lock()
+_preview_holds_started: set[str] = set()
+
 
 class JsonHandler(BaseHTTPRequestHandler):
     """Base handler with JSON/text response helpers and CORS headers."""
@@ -42,6 +48,43 @@ class JsonHandler(BaseHTTPRequestHandler):
             value = new_request_id()
             self._nbatools_request_id = value
         return value
+
+    def preview_duration_probe(self, endpoint: str, body: dict[str, Any]) -> bool:
+        """Run one fixed timing witness on the isolated protected diagnostic branch."""
+        if (
+            os.environ.get("VERCEL_ENV") != "preview"
+            or os.environ.get("VERCEL_GIT_COMMIT_REF") != "diagnostic/w3a-host-cutoff"
+            or self.headers.get("X-NBATools-Deadline-Probe") != "provider-cutoff"
+            or body != {}
+        ):
+            return False
+        with _PREVIEW_PROBE_LOCK:
+            if endpoint in _preview_holds_started:
+                self.send_json({"probe": "already_started"}, status=HTTPStatus.CONFLICT)
+                return True
+            _preview_holds_started.add(endpoint)
+        started = time.perf_counter()
+        print(
+            json.dumps(
+                {
+                    "event": "w3a_host_cutoff_probe_started",
+                    "request_id": self.request_id,
+                    "endpoint": endpoint,
+                    "handler_age_ms": round(
+                        (started - self._nbatools_request_started_at) * 1000, 3
+                    ),
+                }
+            ),
+            flush=True,
+        )
+        time.sleep(24)
+        self.send_json(
+            {
+                "probe": "completed",
+                "elapsed_ms": round((time.perf_counter() - started) * 1000, 3),
+            }
+        )
+        return True
 
     def do_OPTIONS(self) -> None:
         self.send_response(HTTPStatus.NO_CONTENT)
