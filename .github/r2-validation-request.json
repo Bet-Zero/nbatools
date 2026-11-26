@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "9546cfa34023f84701c0b5b7b2f486633878ad4d",
+  "generation": "availability-cleveland-2024-v3-20261124",
+  "tests": [
+    "tests/test_natural_date_queries.py::test_literal_calendar_and_last_games_use_the_requested_raw_sample",
+    "tests/test_natural_date_queries.py::test_literal_range_preserves_both_ends_in_the_served_record"
+  ],
+  "raw_qa_cases": []
+}
