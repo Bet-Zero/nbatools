@@ -581,6 +581,19 @@ Record the `uv.lock` hash, Python and uv versions, the resolved runtime package
 inventory observed at build time, and the exact deployment. The lock does not
 reconstruct environments from deployments built before it was committed.
 
+Review advisory output when changing either lockfile. Preserve the blocking
+production frontend audit and report the development audit separately. Check
+whether any new finding affects a distributed runtime package or the build
+toolchain. Keep the advisory identifiers, applicable versions and decision in the
+change's PR so a later run can recheck the same scope.
+
+The proposed minimum required checks for `main` are `change-scope`, `lint`,
+`docs-governance`, `frontend-security`, `frontend-verify`, and `test-fast` on
+Python 3.11, 3.12 and 3.13. The existing scope job governs intentional skips.
+Run all three `test-full` jobs after application merges and on the scheduled
+backstop. Preserve each task's authenticated data, independent review and hosted
+evidence requirements. Applying repository settings remains an owner decision.
+
 `vercel.json` disables automatic Git deployments for `r2-validation/**` and
 `codex/*-production-gate`. These branches carry read-only validation requests or
 browser acceptance tests; ordinary CI and the existing validation workflow still
