@@ -8,13 +8,16 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import tempfile
+from collections import Counter
 from collections.abc import Iterable, Iterator, Mapping
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
 from pathlib import Path
+from threading import RLock
 from types import MappingProxyType
 from typing import Any
 
@@ -142,7 +145,16 @@ def data_generation_context() -> Iterator[str]:
     generation = _resolve_active_data_generation()
     token = _REQUEST_GENERATION.set(generation)
     try:
-        yield generation.id
+        source = _get_data_source()
+        if (
+            isinstance(source, _R2DataSource)
+            and source.worker_cache is not None
+            and generation.manifest_sha256 is not None
+        ):
+            with source.pin_cache(generation):
+                yield generation.id
+        else:
+            yield generation.id
     finally:
         _REQUEST_GENERATION.reset(token)
 
@@ -164,8 +176,9 @@ def _data_source_config_key() -> str:
 def reset_data_source_cache() -> None:
     """Clear the process-local data-source object cache."""
     global _DATA_SOURCE, _DATA_SOURCE_KEY
-    _DATA_SOURCE = None
-    _DATA_SOURCE_KEY = None
+    with _DATA_SOURCE_LOCK:
+        _DATA_SOURCE = None
+        _DATA_SOURCE_KEY = None
 
 
 def data_exists(path: str | Path) -> bool:
@@ -315,6 +328,19 @@ class _R2DataSource:
         self.config = config
         self.client = client or create_r2_client(config)
         self.cache_root = _r2_cache_root(config)
+        self.worker_cache = None
+        on_vercel = os.environ.get("VERCEL") == "1" or os.environ.get("VERCEL_ENV") in {
+            "preview",
+            "production",
+        }
+        if on_vercel and not os.environ.get(R2_CACHE_DIR_ENV):
+            self.cache_root.mkdir(parents=True, exist_ok=True)
+            self.worker_cache = tempfile.TemporaryDirectory(prefix="worker-", dir=self.cache_root)
+            self.cache_root = Path(self.worker_cache.name)
+        self._cache_lock = RLock()
+        self._cache_readers: Counter[_Generation] = Counter()
+        self._latest_cache_generation: _Generation | None = None
+        self._retired_cache_generations: set[_Generation] = set()
         self._downloaded_keys: set[str] = set()
         # Published generations are immutable, so what exists in one never
         # changes. Answer from its file manifest (one GET) and remember HEAD
@@ -322,6 +348,47 @@ class _R2DataSource:
         self._generation_files: dict[str, frozenset[str] | None] = {}
         self._verified_manifests: dict[_Generation, Mapping[str, GenerationFile]] = {}
         self._known_keys: dict[str, bool] = {}
+
+    @contextmanager
+    def pin_cache(self, generation: _Generation) -> Iterator[None]:
+        """Keep in-flight paths readable while retiring the prior worker cache."""
+        with self._cache_lock:
+            if self._latest_cache_generation is None:
+                # An explicitly pinned preview has no active-pointer lookup.
+                self._latest_cache_generation = generation
+            if generation != self._latest_cache_generation:
+                self._retired_cache_generations.add(generation)
+            self._cache_readers[generation] += 1
+            self._retire_idle_caches()
+        try:
+            yield
+        finally:
+            with self._cache_lock:
+                self._cache_readers[generation] -= 1
+                if not self._cache_readers[generation]:
+                    del self._cache_readers[generation]
+                self._retire_idle_caches()
+
+    def _retire_idle_caches(self) -> None:
+        for generation in self._retired_cache_generations - self._cache_readers.keys():
+            root = self._generation_cache_root(generation)
+            try:
+                shutil.rmtree(root)
+            except FileNotFoundError:
+                pass
+            except OSError:
+                # Leave it eligible for another cleanup when the cache is idle.
+                continue
+            try:
+                root.parent.rmdir()
+            except OSError:
+                pass
+            self._retired_cache_generations.remove(generation)
+            self._verified_manifests.pop(generation, None)
+            prefix = str(root) + os.sep
+            self._downloaded_keys.difference_update(
+                {path for path in self._downloaded_keys if path.startswith(prefix)}
+            )
 
     def exists(self, path: str | Path) -> bool:
         selection = _current_generation()
@@ -432,11 +499,14 @@ class _R2DataSource:
         with ThreadPoolExecutor(max_workers=min(_PREFETCH_WORKERS, len(pending))) as pool:
             list(pool.map(fetch, pending))
 
-    def _cache_path(self, path: Path, generation: _Generation) -> Path:
+    def _generation_cache_root(self, generation: _Generation) -> Path:
         root = self.cache_root / generation.id
         if generation.manifest_sha256 is not None:
             root = root / f".verified-{generation.manifest_sha256}"
-        return root / path
+        return root
+
+    def _cache_path(self, path: Path, generation: _Generation) -> Path:
+        return self._generation_cache_root(generation) / path
 
     def _fetch(self, rel_path: Path, generation: _Generation) -> Path:
         expected_hash = generation.manifest_sha256
@@ -478,7 +548,8 @@ class _R2DataSource:
         except BaseException:
             Path(temp_name).unlink(missing_ok=True)
             raise
-        self._downloaded_keys.add(str(cache_path))
+        with self._cache_lock:
+            self._downloaded_keys.add(str(cache_path))
         return cache_path
 
     def glob(self, pattern: str | Path) -> list[Path]:
@@ -542,7 +613,17 @@ class _R2DataSource:
             or not _SHA256_PATTERN.fullmatch(digest)
         ):
             raise DataSourceError("Invalid manifest checksum in active generation pointer")
-        return _Generation(generation, digest)
+        selection = _Generation(generation, digest)
+        if self.worker_cache is not None and digest is not None:
+            # Record the pointer observation before its request can wait to pin.
+            # A delayed reader may use older bytes, but cannot displace this copy.
+            with self._cache_lock:
+                previous = self._latest_cache_generation
+                if previous is not None and previous != selection:
+                    self._retired_cache_generations.add(previous)
+                self._latest_cache_generation = selection
+                self._retired_cache_generations.discard(selection)
+        return selection
 
     @staticmethod
     def _generation_prefix(generation: str) -> str:
@@ -558,6 +639,7 @@ class _R2DataSource:
 
 _DATA_SOURCE: _LocalDataSource | _R2DataSource | None = None
 _DATA_SOURCE_KEY: str | None = None
+_DATA_SOURCE_LOCK = RLock()
 
 
 def _get_data_source() -> _LocalDataSource | _R2DataSource:
@@ -570,15 +652,18 @@ def _get_data_source() -> _LocalDataSource | _R2DataSource:
     if _DATA_SOURCE is not None and _DATA_SOURCE_KEY == key:
         return _DATA_SOURCE
 
-    mode = data_source_mode()
-    if mode == "local":
-        source: _LocalDataSource | _R2DataSource = _LocalDataSource()
-    else:
-        source = _R2DataSource(load_r2_config())
+    with _DATA_SOURCE_LOCK:
+        if _DATA_SOURCE is not None and _DATA_SOURCE_KEY == key:
+            return _DATA_SOURCE
+        mode = data_source_mode()
+        if mode == "local":
+            source: _LocalDataSource | _R2DataSource = _LocalDataSource()
+        else:
+            source = _R2DataSource(load_r2_config())
 
-    _DATA_SOURCE = source
-    _DATA_SOURCE_KEY = key
-    return source
+        _DATA_SOURCE = source
+        _DATA_SOURCE_KEY = key
+        return source
 
 
 def _resolve_active_data_generation() -> _Generation:

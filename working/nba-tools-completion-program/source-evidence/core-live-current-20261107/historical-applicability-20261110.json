@@ -7,7 +7,7 @@
   "original_capture_sha256": "a5c718c7498f24d787866ff4e3d53220363e00588a045607e92f5947ac2074a5",
   "original_case_manifest_sha256": "096f093c24df872fca3107a1d4a23b19fc98e549b86aecfdc9df3b538ca1382a",
   "original_bound_file_count": 663,
-  "unchanged_bound_file_count": 598,
+  "unchanged_bound_file_count": 597,
   "cases": [
     {
       "id": "k12-s1",
@@ -1251,8 +1251,8 @@
     {
       "path": "src/nbatools/data_source.py",
       "old_sha256": "cebe4cbd4e6a1451b0c383072eaaf47ef9b53e7b5a3148f4b5b921f04c1b9474",
-      "reviewed_functions": "_resolve_active_data_generation; data_generation_context; data_source_cache_key; _R2DataSource manifest and object reads; R2 source cache identity",
-      "semantic_reach": "Only a present preview manifest environment pin triggers the additional preview-only manifest check; an absent pin resolves the same existing request/environment/active generation. No original22 production request carries this pin, and no HTTP input can select it. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. The R2 request now pins the active generation and its published manifest checksum together. Manifest-listed data is the same byte-exact input to the original queries, and absent optional data stays absent, including the 2026-27 case. This adds integrity checks and generation-scoped cache binding without changing historical query inputs, arithmetic or labels. Separates accounts even with the same bucket and cache path, retaining generation and manifest scope. The retained 22-question replay on the exact snapshot returned identical payloads.",
+      "reviewed_functions": "_resolve_active_data_generation; data_generation_context; data_source_cache_key; _R2DataSource manifest and object reads; R2 source cache identity; worker-local R2 cache lifetime in data_generation_context and _R2DataSource; active-generation observation and pinned worker cache retirement",
+      "semantic_reach": "Only a present preview manifest environment pin triggers the additional preview-only manifest check; an absent pin resolves the same existing request/environment/active generation. No original22 production request carries this pin, and no HTTP input can select it. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. The R2 request now pins the active generation and its published manifest checksum together. Manifest-listed data is the same byte-exact input to the original queries, and absent optional data stays absent, including the 2026-27 case. This adds integrity checks and generation-scoped cache binding without changing historical query inputs, arithmetic or labels. Separates accounts even with the same bucket and cache path, retaining generation and manifest scope. The retained 22-question replay on the exact snapshot returned identical payloads. Retires default Vercel disk paths for idle verified snapshots, while pinned readers and fresh downloads retain full existing generation, size and digest controls. Saved original answers retain their source semantics and verified data. Records the selected generation at pointer observation so an older delayed reader can safely read its own data without evicting the latest observed disk cache. Retains immutable manifest and file integrity validation.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1277,7 +1277,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "b350d42007975511f92a1b12960d5f4243af2c8c34d77a0ceecd54344fb4244b"
+      "reviewed_sha256": "bbb46c632ffcc6b466203927cab4694090d4a780e6a92e02e6e2023feb1d95f3"
     },
     {
       "path": "src/nbatools/development_data.py",
@@ -2093,6 +2093,37 @@
       "reviewed_sha256": "0bd705c281d8aea18f478c593fd1b2e0ca18b2bf451f484fdecde86753ae6bb8",
       "reviewed_functions": "build_result and _build_from_game_logs",
       "semantic_reach": "Releases the source frames after concatenation, skips the no-op playoff-series copy for unfiltered leaderboards, and carries only the aggregate inputs through name canonicalization. K12-B1 retains the same ratio of totals, qualifier, game counts and ranking. All other original query identities retain their existing routes and results.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ]
+    },
+    {
+      "path": "src/nbatools/commands/freshness.py",
+      "old_sha256": "d443a17b91c1e587148298a278e6d1b74c06a659ffa212f3d16481786701dc76",
+      "reviewed_sha256": "57fb4bbe21643235d22d6dcd53a4581a48ab723157f6efa0954f44a83f810670",
+      "reviewed_functions": "build_freshness_info generation pin",
+      "semantic_reach": "Keeps the default served season, slice validation and refresh log on the same immutable generation while disk versions retire. Original freshness labels and historical query samples remain applicable.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
