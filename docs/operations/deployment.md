@@ -572,6 +572,28 @@ after an explicitly approved publication.
 
 ## Vercel Frontend Build
 
+Python dependencies come from the committed `uv.lock`. Vercel chooses Python
+3.12 for production. CI exercises 3.11, 3.12 and 3.13 against the same published
+dependency graph, and authenticated read-only validation uses 3.12 for locked
+candidates. A manually selected historical revision predating the lock retains
+its 3.11 compatibility path. That path does not establish current build parity.
+Record the `uv.lock` hash, Python and uv versions, the resolved runtime package
+inventory observed at build time, and the exact deployment. The lock does not
+reconstruct environments from deployments built before it was committed.
+
+Review advisory output when changing either lockfile. Preserve the blocking
+production frontend audit and report the development audit separately. Check
+whether any new finding affects a distributed runtime package or the build
+toolchain. Keep the advisory identifiers, applicable versions and decision in the
+change's PR so a later run can recheck the same scope.
+
+The proposed minimum required checks for `main` are `change-scope`, `lint`,
+`docs-governance`, `frontend-security`, `frontend-verify`, and `test-fast` on
+Python 3.11, 3.12 and 3.13. The existing scope job governs intentional skips.
+Run all three `test-full` jobs after application merges and on the scheduled
+backstop. Preserve each task's authenticated data, independent review and hosted
+evidence requirements. Applying repository settings remains an owner decision.
+
 `vercel.json` disables automatic Git deployments for `r2-validation/**` and
 `codex/*-production-gate`. These branches carry read-only validation requests or
 browser acceptance tests; ordinary CI and the existing validation workflow still
@@ -599,6 +621,9 @@ in the same reviewed change; a previously valid input boundary is not permanent.
 Missing/invalid/shallow/non-ancestor comparison history, an initial deployment,
 and a same-revision redeploy all continue the build. The documented Vercel exit
 protocol is 0 = ignore, 1 = build; no deployment failure is converted to success.
+For a first preview, use only the deployment baseline Vercel actually supplies.
+The PR merge base can be newer than the last successful build and does not
+establish deploy equivalence on its own.
 Existing branch suppression, production artifacts, rollback and separate data
 publication controls are unchanged. An ignored build is not deployed acceptance,
 does not close the first-request HTTP504, and may still create a Vercel canceled
@@ -636,8 +661,9 @@ bundles; only the generated `ui/dist` output is needed at runtime. If the
 bundle is unavailable locally, the root route intentionally falls back to the
 API-only "UI bundle not built" shell.
 
-Vercel installs the core dependency list from `pyproject.toml`; it does not
-select the repository's optional `api` extra. Any distribution imported by a
+Vercel installs the core dependencies declared by `pyproject.toml` and uses
+their exact versions in `uv.lock`. The optional `api` extra is for FastAPI
+development and CI. Any distribution imported by a
 Vercel entrypoint or its shared handler path must therefore be declared as a
 direct core dependency. In particular, `pydantic>=2.0` is direct because the
 request contracts use Pydantic v2 APIs before any handler can run. The Vercel

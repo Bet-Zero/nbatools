@@ -110,23 +110,32 @@ passed. The existing frontend development audit remained advisory and red.
 The response deadline remains open. These timing samples do not establish the
 effective host cutoff or near-deadline response completion.
 
-**W3B candidate.** The checker approved calendar runtime `9546cfa3` after 244
+**W3B.** The checker approved calendar runtime `9546cfa3` after 244
 focused passes and independent checks of date windows and current-season ranks.
 All 22 archived historical payloads matched byte for byte on the restored
 Cleveland snapshot. [Authenticated R2](https://github.com/Bet-Zero/nbatools/actions/runs/45788049013)
 passed all three selected raw-row checks with zero required skips. The exact
 PR matrix exposed four test assertions that still specified the prior
 cutoff flag or upper season boundary. The follow-up preserves the approved
-runtime and updates only those calendar assertions and this checkpoint.
-[PR #651](https://github.com/Bet-Zero/nbatools/pull/651)
+runtime and updates only those calendar assertions and the checkpoint. The
+independent checker approved final head `8d670d16`. All three blocking PR
+matrices passed. [PR #651](https://github.com/Bet-Zero/nbatools/pull/651) merged at
+`dce81e08`. [Main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45790182679)
+and [production build](https://vercel.com/zeros-projects-686e97fc/nbatools/CLQbm4a4WV7QXFCyqARMJ5W5MHcb)
+were started. The current health of those jobs and the deployed calendar smoke
+belong in the PR receipt and the next checkpoint.
 
-**Next.** Finish W3B's exact PR checks, then verify literal unavailable coverage
-and an unaffected snapshot answer on its deployment. W5's independent build
-lane has a Python 3.12 locked installation and passing local selector and
-workflow tests in `completion/w5-build-lock`. It still needs an exact hosted
-build and independent integration gates. W4B follows the stable calendar and
-error contract. For W3A, bind the actual host limit and measure startup, body
-parsing and full response completion before selecting an application deadline.
+**W5 candidate.** The locked Python 3.12 core installation resolved 27 packages
+with uv 0.13.5. Local selector, workflow and package tests passed 153 checks.
+All 22 historical payloads matched again under the locked dependencies. The
+first preview keeps building when there is no trusted previous built SHA.
+GitHub checks, pinned read-only R2, actual hosted lock consumption and final
+review remain open for `completion/w5-build-lock`.
+
+**Next.** Verify W3B on the production alias, then complete W5's exact gates.
+W4B follows the calendar and error contract. For W3A, bind the actual host limit
+and measure startup, body parsing and full response completion before selecting
+an application deadline.
 No new collection, historical backfill, spending, automatic refresh or Live work is authorized for this assignment.
 The checkout's existing `work` branch and the saved work below are preserved.
 
