@@ -23,7 +23,9 @@ const delivery = deliveryNoData || (cases.length === deliveryIds.length && deliv
 // Separately reviewed historical integration; readiness remains an independent,
 // recorded obligation. Existing complete strict P3 bundles are unchanged.
 const historicalIntegrationIds = ["k12-s1", "k12-r1", "k12-b1", "k12-c1", "k12-l1", "k12-x1", "k12-m1", "k12-z1", "k12-e1", "k12-n1", "k12-h1", "k12-r1-win-loss", "live-k05", "live-k09", "live-k10", "live-k08", "live-s4-team-with", "live-s4-team-without", "live-s4-player-with", "live-s4-player-without", "live-owned-team", "live-owned-opponent"];
-const historicalIntegration = cases.length === historicalIntegrationIds.length && historicalIntegrationIds.every(id => cases.some(item => item.id === id));
+const stabilizationIds = [...deliveryIds, ...historicalIntegrationIds.slice(deliveryBaseIds.length)];
+const stabilization = cases.length === stabilizationIds.length && stabilizationIds.every((id, index) => cases[index].id === id);
+const historicalIntegration = stabilization || (cases.length === historicalIntegrationIds.length && historicalIntegrationIds.every(id => cases.some(item => item.id === id)));
 // Nine exact original K08 obligations, qualified on the published served-default
 // slice. No literal-current substitution and no full Core-1/readiness claim.
 const originalK08Ids = [7, 8, 23, 24, 25, 30, 31, 32, 41].map(id => `original-k08-${String(id).padStart(2, "0")}`);
@@ -197,7 +199,9 @@ try {
   }
 } finally {
   await writeFile(`${output}/browser-receipt.json`, JSON.stringify({ base, browser: browser.version(), receipts, failures,
-    latencyScope: "Observed browser requests; not a declared cold/warm performance acceptance sample" }, null, 2));
+    latencyScope: stabilization
+      ? "Observed browser requests including the declared K12 primed repetitions; cold start and process reuse are unproven"
+      : "Observed browser requests; not a declared cold/warm performance acceptance sample" }, null, 2));
   await browser.close();
 }
 if (failures.length) throw new Error(`Required browser checks failed: ${failures.join(", ")}`);

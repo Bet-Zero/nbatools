@@ -21,7 +21,7 @@ import requests
 from nbatools.data_source import data_generation_context, data_path
 from nbatools.development_data import selected_snapshot
 from tests.cloud_reported_rest_deployed_real_data import _assert_count
-from tests.test_deployed_k12_delivery_browser import _assert_rendered
+from tests.test_deployed_k12_delivery_browser import COMMON, _assert_rendered, _repeat_measurements
 from tests.test_k05_subject_ownership_real_data import CASES as K05
 from tests.test_k05_subject_ownership_real_data import _qualified_sample as _ownership_sample
 from tests.test_k09_sequences_real_data import _assert_case as _assert_sequence
@@ -78,21 +78,32 @@ def _original_case_identity(cases, *, evidence=EVIDENCE):
     }
 
 
-def _fresh_capture_set(rows, cases, *, started, finished):
+def _fresh_capture_set(rows, cases, *, started, finished, expected_count=44):
     expected = {
         (viewport, case["id"], case["query"])
         for viewport in ("desktop", "mobile")
         for case in cases
     }
     actual = {(item["viewport"], item["id"], item["query"]) for item in rows}
-    assert len(rows) == len(actual) == len(expected) == 44
+    assert len(rows) == len(actual) == len(expected) == expected_count
     assert actual == expected, "Fresh capture changed question identity or viewport coverage"
     request_ids = [item.get("requestId") for item in rows]
     assert all(
         isinstance(rid, str) and re.fullmatch(r"req_[0-9a-f]{32}", rid) for rid in request_ids
     )
-    assert len(set(request_ids)) == 44, "Every capture must have its own live request"
+    assert len(set(request_ids)) == expected_count, "Every capture must have its own live request"
     assert all(started <= datetime.fromisoformat(item["capturedAt"]) <= finished for item in rows)
+
+
+def _stabilization_capture_cases(original, delivery):
+    named = {case["id"]: case for case in original}
+    repeat_base = {
+        f"{key}-repeat-{repetition}": key for repetition in range(1, 6) for key in COMMON
+    }
+    repeats = [dict(named[base], id=repeat_id) for repeat_id, base in repeat_base.items()]
+    assert len(delivery) == 12
+    assert [case["id"] for case in original[:12]] == list(delivery)
+    return [*original[:12], *repeats, *original[12:]], repeat_base
 
 
 def _stabilization_active_pointer():
@@ -563,7 +574,10 @@ def _run(
     output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / folder
     output.mkdir(parents=True, exist_ok=False)
     inputs = output / "cases.json"
-    inputs.write_text(json.dumps(cases) + "\n")
+    capture_cases, repeat_base = (
+        _stabilization_capture_cases(cases, delivery) if stabilization else (cases, {})
+    )
+    inputs.write_text(json.dumps(capture_cases) + "\n")
     allowed = {
         "PATH",
         "HOME",
@@ -668,11 +682,13 @@ def _run(
         if stabilization:
             _fresh_capture_set(
                 actual["receipts"],
-                cases,
+                capture_cases,
                 started=datetime.fromisoformat(receipt["capture_started_at"]),
                 finished=datetime.now(UTC),
+                expected_count=84,
             )
-        assert len(actual["receipts"]) == 44
+        else:
+            assert len(actual["receipts"]) == 44
         if retained:
             # Preserve the original red run. The driver falsely required the word
             # Lakers where the existing interface correctly shows canonical LAL.
@@ -690,7 +706,7 @@ def _run(
             assert not actual["failures"]
         reviewed_cases = {c["id"]: c for c in cases}
         seen = set()
-        assets = None
+        assets, repeats = None, {}
         for item in actual["receipts"]:
             if retained:
                 assert (
@@ -735,11 +751,16 @@ def _run(
             if current_runtime:
                 assert "provisional" not in item["text"].lower()
                 assert not item["payload"]["result"]["metadata"].get("data_quality")
+            if base_id := repeat_base.get(item["id"]):
+                repeats.setdefault(base_id, []).append(item["responseElapsedMs"])
+                item = dict(item, id=base_id)
             _verify(item, delivery, sources, frozen, seq_sources, history_sources, lebron)
         asset_hashes = [item["servedAssetSha256"] for item in actual["receipts"]]
         assert len(set(asset_hashes)) == 1
         assert _sha((output / "served-application.js").read_bytes()) == asset_hashes[0]
-        assert seen == {(viewport, c["id"]) for viewport in ("desktop", "mobile") for c in cases}
+        assert seen == {
+            (viewport, c["id"]) for viewport in ("desktop", "mobile") for c in capture_cases
+        }
         receipt.update(
             consumer_acceptance="passed", actual_captures=44, actual_cases=22, served_assets=assets
         )
@@ -781,9 +802,11 @@ def _run(
                 fresh_deployment_accepted=True,
                 current_season_accepted=False,
                 operational_readiness_accepted=False,
-                public_UI_queries=44,
+                public_UI_queries=len(actual["receipts"]),
                 separate_unaccepted_source_diagnostics=2,
             )
+            if stabilization:
+                receipt["k12_deployed_repeat_measurements"] = _repeat_measurements(repeats)
     except Exception as exc:
         receipt.update(
             consumer_acceptance="failed", failure=dict(type=type(exc).__name__, message=str(exc))

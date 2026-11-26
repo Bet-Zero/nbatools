@@ -100,6 +100,39 @@ def test_replacement_requires_every_fresh_case_and_viewport(original_cases, defe
         gate._fresh_capture_set(receipts, original_cases, started=started, finished=finished)
 
 
+def test_stabilization_keeps_original_cases_and_declared_repeat_order(original_cases):
+    named_delivery = {case["id"]: case for case in original_cases[:12]}
+    combined, repeat_base = gate._stabilization_capture_cases(original_cases, named_delivery)
+
+    assert [case for case in combined if case["id"] not in repeat_base] == original_cases
+    assert len(combined) == 42 and len(repeat_base) == 20
+    assert [case["id"] for case in combined[12:16]] == [
+        "k12-s1-repeat-1",
+        "k12-r1-repeat-1",
+        "k12-b1-repeat-1",
+        "k12-m1-repeat-1",
+    ]
+    for case in combined[12:32]:
+        assert case["query"] == named_delivery[repeat_base[case["id"]]]["query"]
+
+
+@pytest.mark.parametrize("changed", [None, "missing", "nonfinite", "slow"])
+def test_stabilization_requires_all_forty_latencies_and_the_existing_p95(changed):
+    values = {key: [500] * 10 for key in gate.COMMON}
+    if changed == "missing":
+        values["k12-s1"].pop()
+    elif changed == "nonfinite":
+        values["k12-s1"][0] = float("nan")
+    elif changed == "slow":
+        values["k12-s1"][-3:] = [3001, 3002, 3003]
+    if changed:
+        with pytest.raises(AssertionError):
+            gate._repeat_measurements(values)
+    else:
+        result = gate._repeat_measurements(values)
+        assert result["observations"] == 40 and result["p95_ms"] == 500
+
+
 @pytest.mark.parametrize("generation_drift", [False, True])
 def test_replacement_requires_the_approved_active_manifest(monkeypatch, generation_drift):
     from nbatools.commands.pipeline import generation_publication
