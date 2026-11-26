@@ -17,8 +17,8 @@ evidence; don't extend it.
 guard in [PR #647](https://github.com/Bet-Zero/nbatools/pull/647). W2
 publication safeguards landed in [PR #648](https://github.com/Bet-Zero/nbatools/pull/648),
 and W1 landed in [PR #649](https://github.com/Bet-Zero/nbatools/pull/649).
-PR #644 was the accepted activation artifact. Production is on `1fb49033`
-from [PR #656](https://github.com/Bet-Zero/nbatools/pull/656).
+PR #644 was the accepted activation artifact. Production is on `b55cc244`
+from [PR #658](https://github.com/Bet-Zero/nbatools/pull/658).
 The only unrelated open PR is blocked
 [#462](https://github.com/Bet-Zero/nbatools/pull/462). No other writer or background
 worker is active. [Execution plan](execution-plan.md)
@@ -211,37 +211,50 @@ returned typed 413 on both native endpoints, then the correct LeVert result
 with HTTP 200. The PR records all three request IDs. Hosted cutoff and final
 capacity remain open.
 
-**W3C version rollover.** Two authentic backup manifests and their objects
-reproduced 506,874,532 cached bytes after one sequential ranking per data
-version in one local worker. Both answers matched raw expectations. A local
-candidate limits the default Vercel worker to the current verified disk cache
-and any still-pinned older cache. The managed local path retained 253,467,843
-bytes after the same rollover. The focused candidate preserves in-flight
-generation paths, evicts the idle worker copy and redownloads it on a later
-return to that generation. Independent probes exposed a freshness reader
-outside the pin and an older pointer observation displacing the new cache.
-The candidate pins the complete freshness report and marks the newest cache
-when the pointer is observed. Exact follow-up review and deployed proof are
-pending. The temporary cache
-footprint while two versions are pinned at once still needs qualification.
+**W3C version rollover.** Two authentic backup archives reproduced
+506,874,532 retained logical bytes after one sequential ranking per version
+in an actual controlled worker. The managed path retained 253,467,843 bytes
+with identical correct answers. [PR #658](https://github.com/Bet-Zero/nbatools/pull/658)
+merged as `b55cc244`. The checker verified old/new pinned reads, safe retirement,
+redownload, failed closed reads for absent/corrupt rollback inputs, and
+native freshness through a pointer change. A delayed old reader leaves the
+newer cache in place. All 232 focused lead tests, the 66 exact checker tests,
+[PR CI](https://github.com/Bet-Zero/nbatools/actions/runs/45804036199)
+and the [one authenticated raw-row test](https://github.com/Bet-Zero/nbatools/actions/runs/45804242041)
+passed. The [production build](https://vercel.com/zeros-projects-686e97fc/nbatools/9J2PKZ7bxgs8uqSEx2NtpY1b3bCN)
+returned the June 13, 2026 cutoff, Cleveland's known strict Live readiness
+gap, and 44–11 in 55 games without Hunter. The actual project configuration
+has no explicit production cache-directory or generation override. The PR
+records request IDs and [main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45805158080).
+Hosted disk pressure with two simultaneously pinned versions and final
+resource qualification remain open.
 
-**W3C browser preparation.** [PR #657](https://github.com/Bet-Zero/nbatools/pull/657)
-merged at `e6d8c93a` after [exact gates](https://github.com/Bet-Zero/nbatools/actions/runs/45801872154)
-and independent review. One frozen run will retain 44 original captures and
-collect the 40 declared K12 timing repeats in the existing sequence. The
-checker tested wrong order, timing, request identity, asset bytes and sample
-size. There has been no frozen-release browser capture or broad replay.
+**W3C/W6A browser preparation.** [PR #657](https://github.com/Bet-Zero/nbatools/pull/657)
+merged at `e6d8c93a` and passed [main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45802916602).
+Vercel suppressed its new build against the actual previous artifact. One
+frozen run retains 44 original captures and collects the 40 declared K12
+timing repeats in their existing sequence. The checker exercised altered
+order, timing, request identity, asset bytes and sample size. The runner
+reuses the [Cleveland activation receipt](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-45763092143)
+for the two legacy diagnostic topics outside the original 22 cases. The
+2025–26 Boston result and canonical Seattle wording have actual activation
+receipts. The Thunder alias was also checked on the exact restored data.
+The current frozen browser run and broad replay have not started.
 
-**W3A host measurement.** Local diagnostic `f9aaf7a1` was independently checked
-on both native routes. Actual preview deployment and a temporary share link
-await owner authority. The proposed four POSTs include two ordinary verified
-controls and two fixed native cutoff probes, using one protected preview.
+**W3A host measurement.** The [reviewed diagnostic](https://github.com/Bet-Zero/nbatools/tree/codex/w3a-cutoff-review-production-gate)
+is `f9aaf7a1`, staged on a branch with Vercel deployment disabled. Both
+native routes passed independent local checks. The owner decision is pending
+for one SSO-protected diagnostic preview and a temporary link, for two
+ordinary positive controls and two fixed native cutoff probes. The preview
+has not been deployed. The tool supports a ten-minute link.
 
-**Next.** Integrate the focused disk-cache repair after exact gates, then
-qualify eviction, redownload and overlap on the frozen artifact. Measure
-the effective host cutoff and verify useful near-deadline response completion
-before setting the application deadline. Final W3C, the fresh browser capture
-and required broad checks remain pending.
+**Next.** On approval, deploy the exact guarded diagnostic ref as a protected
+preview. Correlate the elapsed requests with the provider cutoff for both
+endpoints. Use that evidence to set the deadline and verify a useful
+near-deadline response. Freeze the app, build, configuration and Cleveland
+manifest, then complete W3C and the release checks once. Prepared selections
+cover 621 Raw QA cases, 521 filter comparisons, and the 44 original browser
+observations plus 40 timing repeats. Stabilization and Live remain open.
 No new collection, historical backfill, spending, automatic refresh or Live work is authorized for this assignment.
 The checkout's existing `work` branch and the saved work below are preserved.
 
