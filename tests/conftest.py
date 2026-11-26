@@ -1,6 +1,7 @@
 """Shared fixtures and markers for the nbatools test suite."""
 
 import os
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -87,19 +88,17 @@ def _skip_needs_data(request: pytest.FixtureRequest) -> None:
 
 @pytest.fixture(autouse=True)
 def _pin_latest_season_for_data_free_tests(request: pytest.FixtureRequest, monkeypatch) -> None:
-    """Keep data-free tests on the fallback latest season.
+    """Keep source-free tests on the fallback data and fixture-era clock."""
+    from nbatools.commands import _seasons
 
-    The latest season follows whatever games the data root serves, so a local
-    ``data/`` holding a newer season would otherwise move "this season" under
-    tests that assert the fallback constants.
-    """
+    if not any(request.node.get_closest_marker(name) for name in ("needs_data", "served_seasons")):
+        monkeypatch.setattr(_seasons, "_detroit_today", lambda: date(2026, 4, 12))
+
     if any(
         request.node.get_closest_marker(name)
         for name in ("needs_data", "fixture_data", "served_seasons")
     ):
         return
-    from nbatools.commands import _seasons
-
     monkeypatch.setattr(_seasons, "latest_served_season", lambda season_type: None)
 
 

@@ -7,7 +7,7 @@
   "original_capture_sha256": "a5c718c7498f24d787866ff4e3d53220363e00588a045607e92f5947ac2074a5",
   "original_case_manifest_sha256": "096f093c24df872fca3107a1d4a23b19fc98e549b86aecfdc9df3b538ca1382a",
   "original_bound_file_count": 663,
-  "unchanged_bound_file_count": 609,
+  "unchanged_bound_file_count": 606,
   "cases": [
     {
       "id": "k12-s1",
@@ -319,8 +319,8 @@
     {
       "path": "api/query.py",
       "old_sha256": "8a8d3610a1987623d0f114e2c53599664cdfa560b9bc4fd3f78febc8946b509f",
-      "reviewed_functions": "handler.do_POST preview qualification context",
-      "semantic_reach": "Wraps the same admitted query call in preview-only telemetry and passes its optional response header. With no candidate manifest environment pin, the wrapper has no source requests, state changes or added headers; production queries and all original22 requests retain their existing engine. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed.",
+      "reviewed_functions": "handler.do_POST preview qualification context; request calendar binding before body parsing",
+      "semantic_reach": "Wraps the same admitted query call in preview-only telemetry and passes its optional response header. With no candidate manifest environment pin, the wrapper has no source requests, state changes or added headers; production queries and all original22 requests retain their existing engine. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. The same natural HTTP and cold qualification paths run inside one request day. Historical controls on the restored verified snapshot keep their exact payloads.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -345,7 +345,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "1394c08040f1af81b776c17dcd49ad82ba3abb0f5efd64eff7fffdacee849154"
+      "reviewed_sha256": "47312f988be4c89676a859590ac68c7e0fdd5a8a3c8fb78c6b233470d0412c19"
     },
     {
       "path": "docs/operations/deployment.md",
@@ -469,9 +469,9 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_functions": "Team-record participation contract",
-      "semantic_reach": "Reference prose only; no runtime reads. Original questions and historical sources remain exact.",
-      "reviewed_sha256": "43ed0124845afbfed5fa2ac366f3f8c6ce9131791ece01ef7c2d99e8f577596c"
+      "reviewed_functions": "Team-record participation contract; literal request date and snapshot cutoff descriptions",
+      "semantic_reach": "Reference prose only; no runtime reads. Original questions and historical sources remain exact. This records the verified calendar meanings without changing application behavior or the original historical identities.",
+      "reviewed_sha256": "6a485844c0ccbce787a5ea4ca68bd8b2da2ec7712bdf8255063b9d002fc74b31"
     },
     {
       "path": "frontend/src/components/NoResultDisplay.tsx",
@@ -724,9 +724,9 @@
     {
       "path": "src/nbatools/commands/_parse_helpers.py",
       "old_sha256": "f6bf722bb2223a8ff09e68bced4799dd030043a637f6831ba5570ef4347e0171",
-      "reviewed_sha256": "8ddd400b20d535f184dc9ba1ee7ffe2d6fffb7b50338fc2256fa57b345a02f95",
-      "reviewed_functions": "opponent-list/period detection; wants_summary total; extract_min_value season guard; canonicalize_stat_ranges, _reads_as_season, canonicalize_total_counts",
-      "semantic_reach": "All original 22 inputs have identical old/current regex matches; all quarter/half predicates are None, no vs/against either phrase. PR607's requested-total summary needs the word total, absent from all 22, and its season-token floor guard leaves every original 22 route and route_kwargs byte-identical to main 8a390f70 (checked by parse_query on both trees). PR618: stat ranges ('25-30 points') and 'N total <stat>' / 'a total of N' rewrites need a number range or the word total beside a stat; none of the original 22 has either, and their route, route_kwargs and notes are byte-identical to main 07b865e (parse_query on both trees).",
+      "reviewed_sha256": "3a868142dc29d83be5d43857ef1674ae44ea79f2b98f567f19dcfeb0deb31b22",
+      "reviewed_functions": "opponent-list/period detection; wants_summary total; extract_min_value season guard; canonicalize_stat_ranges, _reads_as_season, canonicalize_total_counts; current-season calendar and explicit season-list recognition",
+      "semantic_reach": "All original 22 inputs have identical old/current regex matches; all quarter/half predicates are None, no vs/against either phrase. PR607's requested-total summary needs the word total, absent from all 22, and its season-token floor guard leaves every original 22 route and route_kwargs byte-identical to main 8a390f70 (checked by parse_query on both trees). PR618: stat ranges ('25-30 points') and 'N total <stat>' / 'a total of N' rewrites need a number range or the word total beside a stat; none of the original 22 has either, and their route, route_kwargs and notes are byte-identical to main 07b865e (parse_query on both trees). Explicit historical season and fixed absolute date inputs keep their meaning. Current calendar aliases no longer use the latest served season.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -972,9 +972,9 @@
     {
       "path": "src/nbatools/commands/natural_query.py",
       "old_sha256": "8f98d100b63240b8e97419bf3fd198d3e3279812d4e286ce057535351377c275",
-      "reviewed_sha256": "9e61ff934727010347da15e166cbe4afc468353746fc6511cdfd31b90a73ba62",
-      "reviewed_functions": "parse_query; explicit matchup participant scope",
-      "semantic_reach": "New scope translation applies only to team_record participation conditions. Original team_record cases have no with/without predicate; original S4 participant records use team_split_summary or player_split_summary, not this new consumer. No source/time/season mutation.",
+      "reviewed_sha256": "9387c51ad1407daf2a82b05415ffc86d75883085be39d705bbb0ab32747079e0",
+      "reviewed_functions": "parse_query; explicit matchup participant scope; literal date and current-season propagation into natural routes",
+      "semantic_reach": "New scope translation applies only to team_record participation conditions. Original team_record cases have no with/without predicate; original S4 participant records use team_split_summary or player_split_summary, not this new consumer. No source/time/season mutation. Keeps exact historical routes, scopes and all 22 prior results on restored Cleveland. Covered literal spans keep both resolved endpoints.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1375,9 +1375,9 @@
     {
       "path": "src/nbatools/query_service.py",
       "old_sha256": "8a9c15d23ebc0a0f7a7660789e5532f94d81956204e5eb236278fd0dc5dd3fcf",
-      "reviewed_sha256": "b716bdeaaaf704fc5a8eeb78ffbfb659c80338cfcb16b8106eb028f87d000467",
-      "reviewed_functions": "Participation scope metadata; structured team_record scope; natural and structured pinned identity lifetime",
-      "semantic_reach": "New scope labels/calculation dispatch attach only to team_record with/without. Original22 have no such route/predicate combination; S4 uses split routes. New optional metadata on plain team records is not an asserted numerical or rendered field. Existing ownership and original44 captures untouched. Keeps the first identity reference in each current request's generation through execution. The retained 22-question replay on the exact snapshot returned identical payloads, including filters and sections.",
+      "reviewed_sha256": "667bec5a350da0484fc938e2686acd71c1a01a44d210429a4b12bb50536f62c1",
+      "reviewed_functions": "Participation scope metadata; structured team_record scope; natural and structured pinned identity lifetime; uncovered calendar response and truthful rolling cutoff note",
+      "semantic_reach": "New scope labels/calculation dispatch attach only to team_record with/without. Original22 have no such route/predicate combination; S4 uses split routes. New optional metadata on plain team records is not an asserted numerical or rendered field. Existing ownership and original44 captures untouched. Keeps the first identity reference in each current request's generation through execution. The retained 22-question replay on the exact snapshot returned identical payloads, including filters and sections. Historical archive payloads are identical. A literal date outside the qualified scope yields unavailable coverage with the actual requested date.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1718,9 +1718,9 @@
     {
       "path": "src/nbatools/admission_control.py",
       "old_sha256": "e939ff8936bac643dcc56783b0c6273057ea8f964d922df58f96a712a27e6b03",
-      "reviewed_sha256": "46b895e979b8a126d0c5e45ccaacb28a91714efa3366006febb8c189b5ab4e24",
-      "reviewed_functions": "endpoint byte budget and bounded idle query/feedback clients",
-      "semantic_reach": "Preserves the existing admitted-query samples, public errors, and active rate windows. It rejects no normal original case with an in-budget body, and adds no calculation or selection change. Both real adapters returned the independently established Cleveland total from the exact restored data.",
+      "reviewed_sha256": "63822ce633f3e681a67d6f78ce3d144e22681c6cbf0f8514a38c52e7c2cd2a70",
+      "reviewed_functions": "endpoint byte budget and bounded idle query/feedback clients; request clock through ASGI validation and the admitted executor",
+      "semantic_reach": "Preserves the existing admitted-query samples, public errors, and active rate windows. It rejects no normal original case with an in-budget body, and adds no calculation or selection change. Both real adapters returned the independently established Cleveland total from the exact restored data. Window clocks, request budgets, quota handling and generation ownership continue through the existing worker. Explicit archived samples do not move.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1752,6 +1752,99 @@
       "reviewed_sha256": "2a23c9b919bc7ab3b0c413391b06e705ead2ece77c6aa0efcca09170853226d4",
       "reviewed_functions": "JsonHandler.read_json_body",
       "semantic_reach": "Validates request framing and the fixed endpoint budget before reading input. Accepted normal bodies still enter the same parser and answer engine. This changes no question identity, sample, or rendering in the retained historical cohort.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ]
+    },
+    {
+      "path": "api/structured_query.py",
+      "old_sha256": "b943363992d8f6e3f75f98a90ace8c893d22e78cc712f06a9ab861e94ea8e3dc",
+      "reviewed_sha256": "fcd9ba0f2d4fa66f79fe076b9101818b5d519964bf12033cf96af19cae1581f9",
+      "reviewed_functions": "request calendar binding before body parsing",
+      "semantic_reach": "The same structured handler receives the original route and immutable data. Calendar context keeps validation and worker on one day.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ]
+    },
+    {
+      "path": "src/nbatools/commands/_date_utils.py",
+      "old_sha256": "1253924ca84be334d751876342c6d872a37e96fddfe0710d4ec0dbca858579ca",
+      "reviewed_sha256": "466abdcf7f6f2ac8de0532be8258e22f59efbaa306e7c2da7a8a848a53c3ea87",
+      "reviewed_functions": "literal date and relative range endpoint resolution",
+      "semantic_reach": "Literal days use Detroit calendar scope. The full historical API-shaped cohort was compared byte for byte using the restored Cleveland generation.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ]
+    },
+    {
+      "path": "src/nbatools/commands/_seasons.py",
+      "old_sha256": "d378614ebb24c629ae3a953264106247e43f995f8c05c27039c20fc4ec7de13e",
+      "reviewed_sha256": "ea7602fd3a4dc00625163e74e3534549e69fedab1074b22131e6470395b27615",
+      "reviewed_functions": "immutable Detroit calendar within each request",
+      "semantic_reach": "Changes calendar context lifetime, preserving source-driven default seasons and explicit historical season selection.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",

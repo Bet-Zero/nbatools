@@ -603,10 +603,10 @@ def _trailing_year_owned_elsewhere(text: str, match: re.Match) -> bool:
     if {int(y) for y in re.findall(rf"(?<!\d)({_YEAR})(?!\d)", text)} - {year}:
         # "Lakers record 2010 2016", "Warriors 2017 vs Cavs 2016".
         return True
-    from datetime import date
+    from nbatools.commands._seasons import today
 
     # "Lakers record 2099": no NBA season ended then.
-    return not 1947 <= year <= date.today().year + 1
+    return not 1947 <= year <= today().year + 1
 
 
 # A year closing the question, as read by ``extract_bare_year_season``.
@@ -683,12 +683,17 @@ def extract_bare_year_pair(text: str) -> tuple[str, str] | None:
     return int_to_season(first - 1), int_to_season(last - 1)
 
 
+_CURRENT_SEASON_PHRASE = (
+    r"\b(?:this|current)\s+(?:nba\s+)?(?:regular[\s-]+season|season|year|postseason|playoffs)\b"
+)
+_CURRENT_SEASON_WORDS = re.compile(_CURRENT_SEASON_PHRASE)
+
 # One season named in a list of seasons: "2023-24", "the 2016 season",
 # "this season", "last year". A bare year names the season that ended in it.
 _PAIR_SEASON_TOKEN = re.compile(
     r"(?P<explicit>(?<![\d-])(?:19|20)\d{2}-\d{2}(?![-\d]))(?:\s+(?:nba\s+)?season)?"
     r"|(?P<bare>(?<![\d/.-])(?:19|20)\d{2}(?![-/\d]))(?:\s+(?:nba\s+)?season)?"
-    r"|(?P<this>\b(?:this|current)\s+(?:season|year)\b)"
+    rf"|(?P<this>{_CURRENT_SEASON_PHRASE})"
     r"|(?P<last>\b(?:last|previous)\s+(?:season|year)\b)"
     r"|(?P<lone_last>(?<=\s)last"
     r"(?=\s*[?.!]?\s*$|\s+(?:and|or|,)\b))"
@@ -720,10 +725,11 @@ def extract_season_list(text: str, season_type: str) -> list[str] | None:
     as ("in 2024 and 2025"). Spans ("from 2016 to 2020") are read earlier.
     """
     from nbatools.commands._seasons import (
-        default_end_season,
         int_to_season,
         previous_season,
+        season_for_date,
         season_to_int,
+        today,
     )
 
     if _BARE_YEAR_NOT_A_SEASON.search(text):
@@ -748,6 +754,7 @@ def extract_season_list(text: str, season_type: str) -> list[str] | None:
             return None
         if _BARE_YEAR_RANGE_WORD.search(text[: group[0].start()]):
             continue
+        current = season_for_date(today()) if any(t.group("this") for t in group) else None
         seasons: list[str] = []
         for token in group:
             if token.group("explicit"):
@@ -755,7 +762,9 @@ def extract_season_list(text: str, season_type: str) -> list[str] | None:
             elif token.group("bare"):
                 seasons.append(int_to_season(int(token.group("bare")) - 1))
             elif token.group("this"):
-                seasons.append(default_end_season("Regular Season"))
+                seasons.append(current)
+            elif current is not None:
+                seasons.append(int_to_season(season_to_int(current) - 1))
             else:
                 seasons.append(previous_season(season_type))
         if all(t.group("bare") for t in group) and extract_bare_year_pair(text) is not None:
@@ -767,7 +776,11 @@ def extract_season_list(text: str, season_type: str) -> list[str] | None:
 
 
 def extract_relative_season(text: str, season_type: str) -> str | None:
-    """Extract singular relative season phrases such as ``last season``."""
+    """Resolve singular season words within their calendar or snapshot scope."""
+    if names_current_season(text):
+        from nbatools.commands._seasons import season_for_date, today
+
+        return season_for_date(today())
     if re.search(r"\b(?:last|previous)\s+season\b", text):
         from nbatools.commands._seasons import previous_season
 
@@ -2222,12 +2235,18 @@ def last_n_reach_back_seasons(season: str, *, seasons_back: int = 1) -> dict:
     }
 
 
-_CURRENT_SEASON_WORDS = re.compile(r"\b(?:this|current)\s+(?:season|year)\b")
+_CURRENT_SEASON_RANGE_END = re.compile(
+    r"\b(?:to|through|thru|until|till)\s+(?:the\s+)?" + _CURRENT_SEASON_PHRASE
+)
 
 
 def names_current_season(text: str) -> bool:
     """True when the query pins the sample to the current season in words."""
     return bool(_CURRENT_SEASON_WORDS.search(text))
+
+
+def season_span_ends_in_current_season(text: str) -> bool:
+    return bool(_CURRENT_SEASON_RANGE_END.search(text))
 
 
 def extract_last_n(text: str) -> int | None:

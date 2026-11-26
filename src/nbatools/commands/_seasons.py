@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import re
-from datetime import date
+from collections.abc import Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -20,6 +24,8 @@ LATEST_PLAYOFF_SEASON = "2025-26"
 # is draft and free agency for the season just finished, so a date belongs to
 # the next season's label from August onward.
 _SEASON_LABEL_ROLLOVER_MONTH = 8
+_DETROIT = ZoneInfo("America/Detroit")
+_REQUEST_DAY: ContextVar[date | None] = ContextVar("nba_request_day", default=None)
 
 
 # ---------------------------------------------------------------------------
@@ -35,9 +41,26 @@ def int_to_season(year: int) -> str:
     return f"{year}-{str(year + 1)[-2:]}"
 
 
+def _detroit_today() -> date:
+    return datetime.now(_DETROIT).date()
+
+
 def today() -> date:
-    """Return today's date. Tests replace this to control the calendar."""
-    return date.today()
+    """Return the pinned query day or Detroit's current calendar date."""
+    return _REQUEST_DAY.get() or _detroit_today()
+
+
+@contextmanager
+def request_calendar(day: date | None = None) -> Iterator[None]:
+    """Bind one Detroit calendar day across all parsing within this request."""
+    if _REQUEST_DAY.get() is not None:
+        yield
+        return
+    token = _REQUEST_DAY.set(day if day is not None else today())
+    try:
+        yield
+    finally:
+        _REQUEST_DAY.reset(token)
 
 
 def season_for_date(day: date) -> str:

@@ -129,7 +129,11 @@ required real-data and deployed acceptance remain pending.
 - month / date windows: `in March`, `since January`, `since January 1`, `since All-Star break`, `last 30 days`
 - explicit calendar dates: `January 1 2026`, `Jan. 1, 2026`
 - fuzzy time words: `lately`, `recently` (→ last 10 games), `past month`, `last month` (→ rolling 30 days), `last couple weeks`, `past 2 weeks` (→ rolling 14 days)
-- single-day: `last night`, `yesterday`, `today`, `tonight`
+- calendar scope: `yesterday`, `today`, `tonight` and `this season` use the
+  Detroit date captured for the request. A date or season outside the served
+  coverage returns an unavailable result naming the requested scope. Existing
+  latest-game questions and omitted-season defaults use the served snapshot.
+  Snapshot-relative rolling windows identify the data cutoff they use.
 - season type: `playoffs`, `postseason`
 
 ### 2.3 Sample filters

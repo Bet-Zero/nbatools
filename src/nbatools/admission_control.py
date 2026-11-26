@@ -242,6 +242,7 @@ class AdmissionController:
         now: float | None = None,
     ) -> T:
         """Admit and execute one natural/structured query under shared budgets."""
+        request_day = _seasons.today()
         with self._lock:
             admitted_at = time.monotonic() if now is None else now
             cutoff = admitted_at - self.query_window_seconds
@@ -269,8 +270,12 @@ class AdmissionController:
             self._query_events.move_to_end(client_id)
             self._active_queries += 1
 
+        def run_with_calendar() -> T:
+            with _seasons.request_calendar(request_day):
+                return callback()
+
         try:
-            future = self._executor.submit(callback)
+            future = self._executor.submit(run_with_calendar)
         except Exception:
             self._release_query()
             raise
@@ -371,6 +376,10 @@ class RequestBodyBudgetMiddleware:
             await self.app(scope, receive, send)
             return
 
+        with _seasons.request_calendar():
+            await self._handle_post(scope, receive, send, path)
+
+    async def _handle_post(self, scope: dict[str, Any], receive: Any, send: Any, path: str) -> None:
         limit = BODY_LIMITS[path]
         request_id = _scope_request_id(scope)
         content_length = _content_length(scope)

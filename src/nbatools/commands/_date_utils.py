@@ -5,10 +5,10 @@ from __future__ import annotations
 import re
 from calendar import monthcalendar, monthrange
 from datetime import date, timedelta
-from zoneinfo import ZoneInfo
 
 import pandas as pd
 
+from nbatools.commands import _seasons
 from nbatools.commands._glossary import FUZZY_DATE_TERMS
 
 MONTH_NAME_TO_NUM = {
@@ -38,7 +38,10 @@ MONTH_NAME_TO_NUM = {
     "dec": 12,
 }
 
-CURRENT_QUERY_DATE = pd.Timestamp.now(tz=ZoneInfo("America/Detroit")).floor("D").tz_localize(None)
+
+def current_query_date() -> pd.Timestamp:
+    return pd.Timestamp(_seasons.today())
+
 
 ALL_STAR_BREAK_START_OVERRIDES = {
     "2022-23": "2023-02-20",
@@ -55,9 +58,8 @@ def _infer_all_star_break_start(season: str | None) -> str | None:
     if season and re.match(r"^(?:19|20)\d{2}-\d{2}$", season):
         end_year = int(season.split("-")[0]) + 1
     else:
-        end_year = (
-            CURRENT_QUERY_DATE.year if CURRENT_QUERY_DATE.month < 7 else CURRENT_QUERY_DATE.year + 1
-        )
+        now = current_query_date()
+        end_year = now.year if now.month < 7 else now.year + 1
 
     cal = monthcalendar(end_year, 2)
     sundays = [week[6] for week in cal if week[6] != 0]
@@ -74,8 +76,9 @@ def _resolve_year_for_month_in_season(season: str | None, month_num: int) -> int
         start_year = int(season.split("-")[0])
         return start_year if month_num >= 10 else start_year + 1
 
-    current_year = int(CURRENT_QUERY_DATE.year)
-    current_month = int(CURRENT_QUERY_DATE.month)
+    now = current_query_date()
+    current_year = int(now.year)
+    current_month = int(now.month)
     return current_year if month_num <= current_month else current_year - 1
 
 
@@ -276,6 +279,18 @@ _SEASON_SPAN_TO_TODAY = re.compile(
     r"\b(?:from|since|starting|in|for|during)\s+(?:the\s+)?(?:19|20)\d{2}(?:-\d{2})?(?:\s+(?:nba\s+)?season)?"
     r"\s+(?:up\s+to|to|through|thru|until|till|til)\s+(?:today|tonight)\b"
 )
+_LITERAL_DAY_TOKEN = "|".join(
+    f"(?:{term.regex})" for term in FUZZY_DATE_TERMS if term.same_day or term.yesterday
+)
+_LITERAL_DAY_MATCH = re.compile(_LITERAL_DAY_TOKEN)
+_LITERAL_RANGE_END = re.compile(
+    r"\b(?:up\s+to|prior\s+to|before|to|through|thru|until|till|til)\s+"
+    rf"(?P<day>{_LITERAL_DAY_TOKEN})"
+)
+
+
+def season_span_ends_on_literal_day(text: str) -> bool:
+    return bool(_SEASON_SPAN_TO_TODAY.search(text))
 
 
 def explicit_date_is_open_ended(text: str) -> bool:
@@ -578,6 +593,21 @@ def unread_month_pair(text: str, season: str | None = None) -> str | None:
     return None
 
 
+def _resolve_literal_day(text: str, day: pd.Timestamp) -> str:
+    for term in FUZZY_DATE_TERMS:
+        if term.yesterday and re.fullmatch(term.regex, text):
+            return (day - pd.Timedelta(days=1)).date().isoformat()
+    return day.date().isoformat()
+
+
+def literal_query_day(text: str) -> str | None:
+    """Resolve an explicit day or the final literal endpoint of a range."""
+    match = _LITERAL_RANGE_END.search(text) or _LITERAL_DAY_MATCH.search(text)
+    if match is None:
+        return None
+    return _resolve_literal_day(match.groupdict().get("day", match.group()), current_query_date())
+
+
 def extract_date_range(
     text: str,
     season: str | None,
@@ -587,24 +617,40 @@ def extract_date_range(
     month_range = _month_year_range(text)
     if month_range is not None:
         return month_range
+    literal = literal_query_day(text)
     if re.search(r"\b(?:since|after|post)\s+(?:the\s+)?all[- ]star\s+break\b", text):
-        return _infer_all_star_break_start(season), None
+        return _infer_all_star_break_start(season), literal
 
-    anchor = anchor_date if anchor_date is not None else CURRENT_QUERY_DATE
+    anchor = anchor_date if anchor_date is not None else current_query_date()
+    if literal is not None:
+        if season_span_ends_on_literal_day(text):
+            return None, literal
+        literal_anchor = pd.Timestamp(literal)
+        if endpoint := _LITERAL_RANGE_END.search(text):
+            request_day = current_query_date()
+            before = _LITERAL_DAY_MATCH.sub(
+                lambda match: _resolve_literal_day(match.group(), request_day),
+                text[: endpoint.start()],
+            )
+            after = (
+                text[endpoint.start() : endpoint.start("day")]
+                + literal
+                + text[endpoint.end("day") :]
+            )
+            if re.search(r"\b(?:since|after|post)\b", before):
+                start, _ = extract_date_range(before, season, anchor_date=literal_anchor)
+                if start is not None:
+                    _, end = _extract_explicit_date_range(after, season, literal_anchor)
+                    return start, end or literal
+            literal_range = _extract_explicit_date_range(before + after, season, literal_anchor)
+            if literal_range != (None, None):
+                return literal_range
+        return literal, literal
 
     # --- Fuzzy time words (glossary / spec §18.1) ---
     for term in FUZZY_DATE_TERMS:
         if not re.search(term.regex, text):
             continue
-        if term.yesterday:
-            d = (anchor - pd.Timedelta(days=1)).date().isoformat()
-            return d, d
-        if term.same_day:
-            if _SEASON_SPAN_TO_TODAY.search(text):
-                # "from 2019 to today": the season span runs to the latest season.
-                continue
-            d = anchor.date().isoformat()
-            return d, d
         if term.days_back is not None:
             start = (anchor - pd.Timedelta(days=term.days_back - 1)).date().isoformat()
             end = anchor.date().isoformat()
