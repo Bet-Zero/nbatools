@@ -6,6 +6,7 @@ import importlib
 import json
 import tomllib
 from http import HTTPStatus
+from http.client import HTTPMessage
 from http.server import BaseHTTPRequestHandler
 from io import BytesIO
 from pathlib import Path
@@ -22,7 +23,10 @@ pytestmark = pytest.mark.api
 
 def _body_reader(headers, stream):
     handler = JsonHandler.__new__(JsonHandler)
-    handler.headers = headers
+    message = HTTPMessage()
+    for name, value in headers:
+        message[name] = value
+    handler.headers = message
     handler.rfile = stream
     return handler
 
@@ -35,7 +39,7 @@ def test_vercel_rejects_excessive_declared_length_without_reading(path, very_lar
             pytest.fail("body was read before its declared length was validated")
 
     header = "9" * 5000 if very_large else str(BODY_LIMITS[path] + 1)
-    handler = _body_reader({"Content-Length": header}, UnreadableBody())
+    handler = _body_reader([("Content-Length", header)], UnreadableBody())
     with pytest.raises(AdmissionRejected) as caught:
         handler.read_json_body(path)
     assert caught.value.status == HTTPStatus.REQUEST_ENTITY_TOO_LARGE
@@ -46,7 +50,7 @@ def test_vercel_rejects_excessive_declared_length_without_reading(path, very_lar
 def test_vercel_reads_exactly_the_validated_inclusive_body_length(path):
     limit = BODY_LIMITS[path]
     stream = BytesIO(b"{}" + b" " * (limit - 2) + b"unread tail")
-    handler = _body_reader({"Content-Length": str(limit)}, stream)
+    handler = _body_reader([("Content-Length", str(limit))], stream)
     assert handler.read_json_body(path) == {}
     assert stream.tell() == limit
     assert stream.read() == b"unread tail"
@@ -55,14 +59,23 @@ def test_vercel_reads_exactly_the_validated_inclusive_body_length(path):
 @pytest.mark.parametrize("header", [None, "", "-1", "0", "3.5", "3, 4", "+2", "１２"])
 def test_vercel_invalid_length_is_rejected_before_any_read(header):
     stream = BytesIO(b"{}")
-    headers = {} if header is None else {"Content-Length": header}
+    headers = [] if header is None else [("Content-Length", header)]
     with pytest.raises(ValueError):
         _body_reader(headers, stream).read_json_body("/query")
     assert stream.tell() == 0
 
 
+@pytest.mark.parametrize("second_length", ["2", "8"])
+def test_vercel_rejects_multiple_content_lengths_before_any_read(second_length):
+    stream = BytesIO(b"{}")
+    headers = [("Content-Length", "2"), ("Content-Length", second_length)]
+    with pytest.raises(ValueError, match="single Content-Length"):
+        _body_reader(headers, stream).read_json_body("/query")
+    assert stream.tell() == 0
+
+
 def test_vercel_rejects_truncated_body_even_if_prefix_is_valid_json():
-    handler = _body_reader({"Content-Length": "4"}, BytesIO(b"{}"))
+    handler = _body_reader([("Content-Length", "4")], BytesIO(b"{}"))
     with pytest.raises(ValueError, match="does not match Content-Length"):
         handler.read_json_body("/query")
 

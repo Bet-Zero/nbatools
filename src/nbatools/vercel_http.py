@@ -149,7 +149,10 @@ class JsonHandler(BaseHTTPRequestHandler):
         )
 
     def read_json_body(self, path: str) -> dict[str, Any]:
-        declared = self.headers.get("Content-Length", "").strip()
+        lengths = self.headers.get_all("Content-Length", [])
+        if len(lengths) > 1:
+            raise ValueError("Expected a single Content-Length header")
+        declared = lengths[0].strip() if lengths else ""
         if not declared:
             raise ValueError("Request body must be a JSON object")
         if not declared.isascii() or not declared.isdecimal():
