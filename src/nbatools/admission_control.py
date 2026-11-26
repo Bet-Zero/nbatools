@@ -9,7 +9,7 @@ import re
 import threading
 import time
 import uuid
-from collections import defaultdict, deque
+from collections import OrderedDict, deque
 from collections.abc import Callable, Mapping
 from concurrent.futures import (
     Future,
@@ -20,7 +20,7 @@ from concurrent.futures import (
 )
 from dataclasses import dataclass
 from http import HTTPStatus
-from typing import Any, TypeVar
+from typing import Any, Generic, TypeVar
 
 from nbatools.commands import _seasons
 from nbatools.commands._seasons import season_to_int
@@ -41,6 +41,7 @@ QUERY_RATE_WINDOW_SECONDS = 60
 QUERY_EXECUTION_TIMEOUT_SECONDS = 20
 FEEDBACK_SUBMISSIONS_PER_DAY = 20
 FEEDBACK_RATE_WINDOW_SECONDS = 24 * 60 * 60
+IDLE_CLIENT_SWEEP_LIMIT = 16
 
 BODY_LIMITS = {
     "/query": NATURAL_QUERY_BODY_MAX_BYTES,
@@ -67,17 +68,22 @@ class AdmissionRejected(Exception):
         return {"Retry-After": str(self.retry_after)} if self.retry_after is not None else {}
 
 
-def parse_and_validate_json_body(raw: bytes, path: str) -> dict[str, Any]:
-    """Parse one endpoint body after enforcing its exact byte and JSON budgets."""
+def validate_body_size(length: int, path: str) -> None:
+    """Enforce the same byte budget before reading or decoding an endpoint body."""
     limit = BODY_LIMITS.get(path)
     if limit is None:
         raise ValueError(f"No body budget is defined for {path}")
-    if len(raw) > limit:
+    if length > limit:
         raise AdmissionRejected(
             HTTPStatus.REQUEST_ENTITY_TOO_LARGE,
             "payload_too_large",
             f"Request body exceeds the {limit}-byte limit for {path}.",
         )
+
+
+def parse_and_validate_json_body(raw: bytes, path: str) -> dict[str, Any]:
+    """Parse one endpoint body after enforcing its exact byte and JSON budgets."""
+    validate_body_size(len(raw), path)
     if not raw:
         raise ValueError("Request body must be a JSON object")
     try:
@@ -186,6 +192,20 @@ def client_identifier(
     return (fallback or "unknown-client")[:128]
 
 
+@dataclass
+class _ClientEvents(Generic[T]):
+    entries: deque[T]
+    last_activity: float
+
+
+def _expire_idle_clients(clients: OrderedDict[str, _ClientEvents[T]], cutoff: float) -> None:
+    """Prune a bounded prefix in last-admission order while holding the controller lock."""
+    for _ in range(IDLE_CLIENT_SWEEP_LIMIT):
+        if not clients or next(iter(clients.values())).last_activity > cutoff:
+            return
+        clients.popitem(last=False)
+
+
 class AdmissionController:
     """Thread-safe process-local rate, concurrency, timeout, and feedback quotas."""
 
@@ -207,8 +227,8 @@ class AdmissionController:
         self.feedback_window_seconds = feedback_window_seconds
         self._lock = threading.Lock()
         self._active_queries = 0
-        self._query_events: dict[str, deque[float]] = defaultdict(deque)
-        self._feedback_events: dict[str, deque[tuple[float, str]]] = defaultdict(deque)
+        self._query_events: OrderedDict[str, _ClientEvents[float]] = OrderedDict()
+        self._feedback_events: OrderedDict[str, _ClientEvents[tuple[float, str]]] = OrderedDict()
         self._executor = ThreadPoolExecutor(
             max_workers=max_concurrent_queries,
             thread_name_prefix="nbatools-query",
@@ -222,10 +242,13 @@ class AdmissionController:
         now: float | None = None,
     ) -> T:
         """Admit and execute one natural/structured query under shared budgets."""
-        admitted_at = time.monotonic() if now is None else now
         with self._lock:
-            events = self._query_events[client_id]
-            _prune_timestamps(events, admitted_at - self.query_window_seconds)
+            admitted_at = time.monotonic() if now is None else now
+            cutoff = admitted_at - self.query_window_seconds
+            _expire_idle_clients(self._query_events, cutoff)
+            window = self._query_events.get(client_id)
+            events = window.entries if window is not None else deque()
+            _prune_timestamps(events, cutoff)
             if len(events) >= self.query_limit:
                 retry = max(1, math.ceil(events[0] + self.query_window_seconds - admitted_at))
                 raise AdmissionRejected(
@@ -242,6 +265,8 @@ class AdmissionController:
                     1,
                 )
             events.append(admitted_at)
+            self._query_events[client_id] = _ClientEvents(events, admitted_at)
+            self._query_events.move_to_end(client_id)
             self._active_queries += 1
 
         try:
@@ -267,11 +292,13 @@ class AdmissionController:
         now: float | None = None,
     ) -> FeedbackReservation:
         """Reserve one rolling-24-hour accepted-feedback slot."""
-        admitted_at = time.time() if now is None else now
         token = uuid.uuid4().hex
         with self._lock:
-            events = self._feedback_events[client_id]
+            admitted_at = time.monotonic() if now is None else now
             cutoff = admitted_at - self.feedback_window_seconds
+            _expire_idle_clients(self._feedback_events, cutoff)
+            window = self._feedback_events.get(client_id)
+            events = window.entries if window is not None else deque()
             while events and events[0][0] <= cutoff:
                 events.popleft()
             if len(events) >= self.feedback_limit:
@@ -283,11 +310,14 @@ class AdmissionController:
                     retry,
                 )
             events.append((admitted_at, token))
+            self._feedback_events[client_id] = _ClientEvents(events, admitted_at)
+            self._feedback_events.move_to_end(client_id)
         return FeedbackReservation(self, client_id, token)
 
     def feedback_count(self, client_id: str) -> int:
         with self._lock:
-            return len(self._feedback_events.get(client_id, ()))
+            window = self._feedback_events.get(client_id)
+            return len(window.entries) if window is not None else 0
 
     def _query_finished(self, _future: Future[Any]) -> None:
         self._release_query()
@@ -298,12 +328,12 @@ class AdmissionController:
 
     def _rollback_feedback(self, client_id: str, token: str) -> None:
         with self._lock:
-            events = self._feedback_events.get(client_id)
-            if not events:
+            window = self._feedback_events.get(client_id)
+            if window is None:
                 return
-            retained = deque(item for item in events if item[1] != token)
+            retained = deque(item for item in window.entries if item[1] != token)
             if retained:
-                self._feedback_events[client_id] = retained
+                window.entries = retained
             else:
                 self._feedback_events.pop(client_id, None)
 
