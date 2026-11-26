@@ -263,21 +263,37 @@ exist.
 
 ## Immutable data rollback and restore
 
-Normal data rollback uses the retained `previous_generation_id`:
+Local data rollback uses the retained `previous_generation_id`.
 
 ```bash
-# Temporary/local operation
 nbatools-cli pipeline rollback-generation --target local
-
-# Production R2 mutation: explicit authorization required for this exact run
-nbatools-cli pipeline rollback-generation --target r2
 ```
 
-Before moving a pointer, the implementation validates the target generation's
-manifest, inventory, sizes, and SHA-256 metadata. Local pointer replacement is
-atomic; R2 pointer replacement is conditional on the previously read ETag.
-Missing, corrupt, legacy-unmanifested, or concurrently changed targets fail
-closed and leave the active pointer unchanged.
+For R2 recovery, record the exact failed app/data pair, the intended last-good
+app deployment and the last-good backup and independent restore receipts.
+Take the failed generation, previous generation and previous manifest hash
+from that reviewed evidence. Use the authorized read-only environment for
+preflight, with those values supplied as shell variables:
+
+```bash
+nbatools-cli pipeline rollback-generation --target r2 --dry-run \
+  --expected-active "$FAILED_GENERATION" --expected-previous "$LAST_GOOD_GENERATION" \
+  --expected-manifest "$LAST_GOOD_MANIFEST_SHA256"
+```
+
+The preflight validates the pointer tuple before and after reading the target,
+matches the approved manifest hash and verifies every required object body.
+It performs zero writes. A production change requires separate authorization
+for that exact tuple and condition. With that authority, use the same command
+and tuple without `--dry-run` in the approved write context. The writer checks
+the tuple and bodies again and attempts a single conditional pointer write
+using the observed ETag. A newer publication, mismatch, corrupt data or race
+leaves the active pointer unchanged.
+
+If the write result is uncertain, re-read the pointer and manifest before
+deciding any further action. After a successful recovery, check the restored
+app/data pair, approved required answers and readiness or snapshot status.
+Retain the failed candidate and the recovery evidence.
 
 If a retained generation is incomplete, restore its exact immutable bytes and
 checksum metadata from an independently retained backup or provider recovery

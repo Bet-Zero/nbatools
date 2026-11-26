@@ -13,6 +13,8 @@ import typer
 from nbatools.commands.pipeline.generation_publication import (
     GenerationPublicationError,
     GenerationPublicationResult,
+    R2RollbackTarget,
+    preflight_r2_rollback,
     publish_local_generation,
     publish_r2_generation,
     rollback_local_generation,
@@ -36,7 +38,13 @@ from nbatools.commands.pipeline.orchestrator import (
 from nbatools.commands.pipeline.orchestrator import (
     rebuild_season as rebuild_season_fn,
 )
-from nbatools.commands.pipeline.sync_r2 import R2SyncError, SyncProgress, run_sync_r2
+from nbatools.commands.pipeline.sync_r2 import (
+    R2SyncError,
+    SyncProgress,
+    create_r2_client,
+    load_r2_config,
+    run_sync_r2,
+)
 from nbatools.recovery_drill import RecoveryDrillError, run_safe_recovery_drill
 
 app = typer.Typer()
@@ -418,14 +426,40 @@ def rollback_generation(
         "--target",
         help="Rollback target: local or r2.",
     ),
+    expected_active: str | None = typer.Option(
+        None, "--expected-active", help="Exact failed generation for an R2 recovery."
+    ),
+    expected_previous: str | None = typer.Option(
+        None, "--expected-previous", help="Exact last-good generation for an R2 recovery."
+    ),
+    expected_manifest: str | None = typer.Option(
+        None, "--expected-manifest", help="SHA-256 of the exact last-good R2 manifest."
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="Validate an exact R2 recovery using read-only credentials."
+    ),
 ):
     """Atomically reactivate the retained previous generation."""
     try:
         if target is PublicationTarget.LOCAL:
+            if dry_run or any((expected_active, expected_previous, expected_manifest)):
+                raise GenerationPublicationError("Exact recovery options require --target r2")
             result = rollback_local_generation(data_root=data_dir)
         else:
-            result = rollback_r2_generation()
-    except GenerationPublicationError as exc:
+            if not expected_active or not expected_previous or not expected_manifest:
+                raise GenerationPublicationError(
+                    "R2 rollback requires --expected-active, --expected-previous and "
+                    "--expected-manifest"
+                )
+            expected = R2RollbackTarget(expected_active, expected_previous, expected_manifest)
+            if dry_run:
+                config = load_r2_config(env_file=None)
+                result = preflight_r2_rollback(
+                    expected, client=create_r2_client(config), bucket_name=config.bucket_name
+                )
+            else:
+                result = rollback_r2_generation(expected=expected)
+    except (GenerationPublicationError, R2SyncError) as exc:
         print(f"Generation rollback failed: {exc}")
         raise typer.Exit(code=1)
     _print_publication_result(result)

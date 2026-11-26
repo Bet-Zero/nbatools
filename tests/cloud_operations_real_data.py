@@ -15,6 +15,11 @@ from pathlib import Path
 
 import pytest
 
+from nbatools.commands.pipeline.generation_publication import (
+    R2RollbackTarget,
+    preflight_r2_rollback,
+)
+from nbatools.commands.pipeline.sync_r2 import create_r2_client, load_r2_config
 from tools.cloud_backup import export_backup
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.engine]
@@ -27,6 +32,30 @@ def test_full_generation_backup(capfd):
     assert receipt["r2_writes"] == 0 and receipt["production_pointer_unchanged"] is True
     with capfd.disabled():
         print("CLOUD_BACKUP_JSON " + json.dumps(receipt, sort_keys=True), flush=True)
+
+
+def test_cleveland_rollback_preflight_readonly(capfd):
+    """Check the exact retained last-good tuple without exercising a writer."""
+    expected = R2RollbackTarget(
+        "availability-cleveland-2024-v3-20261124",
+        "availability-season-inactive-2024-v1-20261116",
+        "0abce6f8261957df6cffc19ce24a4ed408a548e1292a33456ce55c0481903ecc",
+    )
+    assert os.environ["NBATOOLS_DATA_GENERATION"] == expected.active_generation
+    config = load_r2_config(env_file=None)
+    client = create_r2_client(config)
+    try:
+        result = preflight_r2_rollback(expected, client=client, bucket_name=config.bucket_name)
+    finally:
+        client.close()
+    assert result.action == "rollback_preflight"
+    assert result.generation_id == expected.previous_generation
+    assert result.previous_generation_id == expected.active_generation
+    assert result.manifest_sha256 == expected.previous_manifest_sha256
+    assert result.file_count == 1216
+    assert result.total_bytes == 419_488_508
+    with capfd.disabled():
+        print("CLEVELAND_ROLLBACK_PREFLIGHT " + json.dumps(result.__dict__, sort_keys=True))
 
 
 def test_core_cloud_routes(tmp_path, capfd):

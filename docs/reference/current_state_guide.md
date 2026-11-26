@@ -569,8 +569,10 @@ nbatools-cli pipeline rollback-generation --target local
 
 # R2 publication and rollback (remote mutation; requires explicit operational approval)
 nbatools-cli pipeline publish-generation --generation-id <unique-id> --target r2
-nbatools-cli pipeline rollback-generation --target r2
 ```
+
+For an R2 rollback, use the pinned recovery tuple and preflight in
+[Immutable data rollback and restore](../operations/recovery.md#immutable-data-rollback-and-restore).
 
 `pipeline sync-r2 --dry-run` is retained only as a read-only comparison with
 legacy canonical keys. Non-dry direct sync is disabled because sequential

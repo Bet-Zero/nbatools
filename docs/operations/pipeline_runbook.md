@@ -144,8 +144,10 @@ nbatools-cli pipeline rollback-generation --target local
 
 # R2 mutation: run only with explicit publication approval
 nbatools-cli pipeline publish-generation --generation-id <unique-id> --target r2
-nbatools-cli pipeline rollback-generation --target r2
 ```
+
+For an R2 rollback, use the pinned recovery tuple and preflight in
+[Immutable data rollback and restore](recovery.md#immutable-data-rollback-and-restore).
 
 Never reuse a generation ID for changed content. Publication validates all
 staged dataset receipts and file checksums, writes immutable generation paths,

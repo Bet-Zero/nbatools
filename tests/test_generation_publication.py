@@ -16,6 +16,8 @@ from nbatools.commands.pipeline.generation_publication import (
     GenerationConflictError,
     GenerationPublicationError,
     GenerationValidationError,
+    R2RollbackTarget,
+    preflight_r2_rollback,
     publish_local_generation,
     publish_r2_generation,
     rollback_local_generation,
@@ -654,6 +656,120 @@ def test_r2_rollback_refuses_unmanifested_legacy_target(tmp_path: Path) -> None:
     assert json.loads(client.objects[ACTIVE_GENERATION_PATH.as_posix()])["generation_id"] == (
         "remote-one"
     )
+
+
+@pytest.fixture
+def exact_recovery(tmp_path: Path) -> tuple[FakeR2Client, R2RollbackTarget]:
+    client = FakeR2Client()
+    for generation in ("last-good", "failed-candidate"):
+        _write_valid_source(tmp_path, generation)
+        publish_r2_generation(
+            generation, source_dir=tmp_path, client=client, bucket_name="test-bucket"
+        )
+    target_sha = hashlib.sha256(
+        client.objects[f"generations/last-good/{GENERATION_MANIFEST_PATH.as_posix()}"]
+    ).hexdigest()
+    client.put_order.clear()
+    return client, R2RollbackTarget("failed-candidate", "last-good", target_sha)
+
+
+def test_exact_r2_recovery_preflight_uses_no_writer_then_cas_writes_only_pointer(
+    exact_recovery,
+) -> None:
+    client, target = exact_recovery
+
+    class ReadOnly:
+        get_object = client.get_object
+        head_object = client.head_object
+
+    result = preflight_r2_rollback(target, client=ReadOnly(), bucket_name="test-bucket")
+    assert result.action == "rollback_preflight"
+    assert result.generation_id == target.previous_generation
+    assert result.manifest_sha256 == target.previous_manifest_sha256
+    assert client.put_order == []
+
+    rolled_back = rollback_r2_generation(client=client, bucket_name="test-bucket", expected=target)
+    assert rolled_back.action == "rollback"
+    assert client.put_order == [ACTIVE_GENERATION_PATH.as_posix()]
+    pointer = json.loads(client.objects[ACTIVE_GENERATION_PATH.as_posix()])
+    assert pointer["generation_id"] == target.previous_generation
+    assert pointer["previous_generation_id"] == target.active_generation
+
+
+@pytest.mark.parametrize("timing", ["before_start", "during_write"])
+def test_exact_r2_recovery_cannot_rollback_later_publication(exact_recovery, timing) -> None:
+    client, target = exact_recovery
+    key = ACTIVE_GENERATION_PATH.as_posix()
+    later = json.dumps(
+        {"generation_id": "later", "previous_generation_id": target.active_generation}
+    ).encode()
+    if timing == "before_start":
+        client.objects[key] = later
+    else:
+        client.pointer_conflict_payload = later
+
+    with pytest.raises(GenerationConflictError):
+        rollback_r2_generation(client=client, bucket_name="test-bucket", expected=target)
+    assert client.objects[key] == later
+    assert client.put_order == []
+
+
+def test_exact_r2_recovery_preflight_rejects_corruption_with_matching_metadata(
+    exact_recovery,
+) -> None:
+    client, target = exact_recovery
+    key = "generations/last-good/raw/sample.csv"
+    original = client.objects[key]
+    client.objects[key] = original[:-1] + b"x"
+    with pytest.raises(GenerationValidationError, match="object checksum"):
+        preflight_r2_rollback(target, client=client, bucket_name="test-bucket")
+    assert client.put_order == []
+
+
+def test_r2_cli_refuses_an_unpinned_recovery() -> None:
+    from nbatools.cli_apps.pipeline import app
+
+    result = CliRunner().invoke(app, ["rollback-generation", "--target", "r2"])
+    assert result.exit_code == 1
+    assert "R2 rollback requires --expected-active" in result.output
+
+
+def test_r2_cli_preflight_uses_environment_only_and_never_writes(
+    exact_recovery, monkeypatch
+) -> None:
+    from nbatools.cli_apps import pipeline
+
+    client, target = exact_recovery
+
+    class ReadOnly:
+        get_object = client.get_object
+        head_object = client.head_object
+
+    def readonly_config(*, env_file):
+        assert env_file is None
+        return data_source.R2Config("offline", "offline", "offline", "test-bucket")
+
+    monkeypatch.setattr(pipeline, "load_r2_config", readonly_config)
+    monkeypatch.setattr(pipeline, "create_r2_client", lambda config: ReadOnly())
+    result = CliRunner().invoke(
+        pipeline.app,
+        [
+            "rollback-generation",
+            "--target",
+            "r2",
+            "--dry-run",
+            "--expected-active",
+            target.active_generation,
+            "--expected-previous",
+            target.previous_generation,
+            "--expected-manifest",
+            target.previous_manifest_sha256,
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert "Generation rollback_preflight: last-good" in result.output
+    assert client.put_order == []
 
 
 def test_r2_rollback_refuses_incomplete_retained_generation(tmp_path: Path) -> None:
