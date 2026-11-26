@@ -1718,9 +1718,9 @@
     {
       "path": "src/nbatools/admission_control.py",
       "old_sha256": "e939ff8936bac643dcc56783b0c6273057ea8f964d922df58f96a712a27e6b03",
-      "reviewed_sha256": "63822ce633f3e681a67d6f78ce3d144e22681c6cbf0f8514a38c52e7c2cd2a70",
-      "reviewed_functions": "endpoint byte budget and bounded idle query/feedback clients; request clock through ASGI validation and the admitted executor",
-      "semantic_reach": "Preserves the existing admitted-query samples, public errors, and active rate windows. It rejects no normal original case with an in-budget body, and adds no calculation or selection change. Both real adapters returned the independently established Cleveland total from the exact restored data. Window clocks, request budgets, quota handling and generation ownership continue through the existing worker. Explicit archived samples do not move.",
+      "reviewed_sha256": "5d7ffd9e96095825105f14504d0ca29d2d6d06d5dc2b0cdd39fccc8e5d306ae0",
+      "reviewed_functions": "endpoint byte budget and bounded idle query/feedback clients; request clock through ASGI validation and the admitted executor; AdmissionRejected traceback handling",
+      "semantic_reach": "Preserves the existing admitted-query samples, public errors, and active rate windows. It rejects no normal original case with an in-budget body, and adds no calculation or selection change. Both real adapters returned the independently established Cleveland total from the exact restored data. Window clocks, request budgets, quota handling and generation ownership continue through the existing worker. Explicit archived samples do not move. Preserves the existing typed rejection when Python attaches its traceback through the request-calendar scope. Admitted queries, successful historical results, calendar scope and quota thresholds remain the same.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",

@@ -6,11 +6,11 @@ import importlib
 import json
 import tomllib
 from http import HTTPStatus
-from http.client import HTTPMessage
+from http.client import HTTPMessage, HTTPResponse
 from http.server import BaseHTTPRequestHandler
 from io import BytesIO
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -78,6 +78,52 @@ def test_vercel_rejects_truncated_body_even_if_prefix_is_valid_json():
     handler = _body_reader([("Content-Length", "4")], BytesIO(b"{}"))
     with pytest.raises(ValueError, match="does not match Content-Length"):
         handler.read_json_body("/query")
+
+
+@pytest.mark.parametrize(
+    ("module", "path", "function"),
+    [
+        ("api.query", "/query", "query_response"),
+        ("api.structured_query", "/structured-query", "structured_query_response"),
+    ],
+)
+@pytest.mark.parametrize(
+    ("status", "code", "retry_after"),
+    [
+        (413, "payload_too_large", None),
+        (429, "concurrency_limited", 1),
+        (504, "execution_timeout", None),
+    ],
+)
+def test_vercel_query_handler_preserves_typed_rejections(
+    monkeypatch, module, path, function, status, code, retry_after
+):
+    endpoint = importlib.import_module(module)
+    body = b" " * (BODY_LIMITS[path] + 1) if status == 413 else b"{}"
+    service = Mock(side_effect=AdmissionRejected(status, code, "Request rejected.", retry_after))
+    monkeypatch.setattr(endpoint, function, service)
+
+    incoming = Mock()
+    incoming.makefile.return_value = BytesIO(
+        f"POST {path} HTTP/1.1\r\nHost: localhost\r\nContent-Length: {len(body)}\r\n\r\n".encode()
+        + body
+    )
+    endpoint.handler(incoming, ("127.0.0.1", 9876), None)
+
+    outgoing = Mock()
+    outgoing.makefile.return_value = BytesIO(
+        b"".join(call.args[0] for call in incoming.sendall.call_args_list)
+    )
+    response = HTTPResponse(outgoing)
+    response.begin()
+    payload = json.loads(response.read())
+    assert response.status == status
+    assert payload["error"] == code
+    assert payload["request_id"] == response.headers["X-Request-ID"]
+    assert response.headers.get("Retry-After") == (
+        str(retry_after) if retry_after is not None else None
+    )
+    assert service.call_count == (0 if status == 413 else 1)
 
 
 def test_vercel_entrypoints_export_handlers():

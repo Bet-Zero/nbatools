@@ -52,9 +52,12 @@ BODY_LIMITS = {
 T = TypeVar("T")
 
 
-@dataclass(frozen=True)
+@dataclass
 class AdmissionRejected(Exception):
-    """Structured public rejection with an optional retry delay."""
+    """Structured public rejection with an optional retry delay.
+
+    Context managers must be able to attach the exception's traceback.
+    """
 
     status: int
     error: str

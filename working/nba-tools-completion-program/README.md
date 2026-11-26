@@ -17,8 +17,8 @@ evidence; don't extend it.
 guard in [PR #647](https://github.com/Bet-Zero/nbatools/pull/647). W2
 publication safeguards landed in [PR #648](https://github.com/Bet-Zero/nbatools/pull/648),
 and W1 landed in [PR #649](https://github.com/Bet-Zero/nbatools/pull/649).
-PR #644 was the accepted activation artifact. Production is on `da104fbf`
-from [PR #653](https://github.com/Bet-Zero/nbatools/pull/653).
+PR #644 was the accepted activation artifact. The latest verified production
+ranking revision is `cd39bc37` from [PR #655](https://github.com/Bet-Zero/nbatools/pull/655).
 The only unrelated open PR is blocked
 [#462](https://github.com/Bet-Zero/nbatools/pull/462). No other writer or background
 worker is active. [Execution plan](execution-plan.md)
@@ -167,7 +167,9 @@ prefixes. The independent checker approved `ceef7e4d` after 37 checks, including
 mutated readiness and sample data and rejection of old browser rows as fresh.
 [PR #654](https://github.com/Bet-Zero/nbatools/pull/654) merged at `1f8fad88` after
 [blocking CI](https://github.com/Bet-Zero/nbatools/actions/runs/45796678276).
-The original and legacy gates remain. No first-release broad capture has run.
+[Main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45797731404) passed.
+Vercel compared against the actual W4B deployment and suppressed the gate-only
+build. The original and legacy gates remain. No first-release broad capture has run.
 
 **W3A timing.** On the locked build, Patrick Ewing's historical summary matched
 all 348 games and 5,027 points. Request `req_9bda12cb015d4fbb98954b85bdff1d14`
@@ -182,12 +184,34 @@ using the actual HTTP handler and restored Cleveland objects, the focused
 repair reduced peak RSS from 899.664 to 590.145 MiB. The identical 3,729-byte
 answers came from 736,417 player-game rows. The reader fetched the same 94
 objects and 253,468,131 bytes in each run. These are controlled resource
-measurements; the hosted peak is a process measurement, and host limits and
-three simultaneous admissions still need evidence.
+measurements. The [merged repair](https://github.com/Bet-Zero/nbatools/pull/655)
+passed exact-head independent review and [three authenticated raw-row tests](https://github.com/Bet-Zero/nbatools/actions/runs/45798294354)
+with zero skips. The [hosted repair](https://vercel.com/zeros-projects-686e97fc/nbatools/64jSJzEC9VcH8BZoM9DmJx9PqTW3)
+returned the exact same five rows in 15.152 s. Request
+`req_db8bf3485e074cbf9675339e9369974e` logged 14.836 s in the handler and
+637.211 MiB peak process RSS. This is one sample per build.
 
-**Next.** Verify the broad-ranking repair through exact-head checks,
-authenticated raw rows and hosted production. Determine the effective host
-cutoff and verify useful near-deadline response completion before setting the
+**W3A public error regression.** After the calendar change, the request
+scope failed to propagate the frozen admission exception. A real oversized
+request returned internal 500 on the ranking build
+(`req_a1d928dac11d43948e7a4d50f5bbffc5`). Vercel logged
+`FrozenInstanceError`. Both native adapters now preserve 413, 429 with
+`Retry-After`, and 504 under their request-calendar scope in local tests.
+Actual local HTTP with three occupied slots rejected one excess request with
+429, then correctly delivered the three retained summary, team-record and
+ranking responses. This is controlled same-process proof against restored
+Cleveland data. Hosted cutoff and final capacity remain open.
+
+**W3C version rollover.** Two authentic backup manifests and their objects
+reproduced 506,874,532 cached bytes after one sequential ranking per data
+version in one local worker. Both answers matched raw expectations. A local
+candidate limits the default Vercel worker to the current verified disk cache
+and any still-pinned older cache. The managed local path retained 253,467,843
+bytes after the same rollover. The cache candidate is parked until the public
+error repair lands; it still requires independent review and deployed proof.
+
+**Next.** Land and verify the public error repair, then validate the
+disk-cache rollover repair. Determine the effective host cutoff and verify useful near-deadline response completion before setting the
 application deadline. Measure cache eviction, redownload and version rollover.
 Complete W3C and the fresh 44 captures with the coherent frozen stabilization
 artifact and required broad checks.
