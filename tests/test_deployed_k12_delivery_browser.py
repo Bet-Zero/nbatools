@@ -207,14 +207,19 @@ def _validate(receipt, bindings, sources, output):
         )
         _assert_case(result, case, sources)
         _assert_rendered(item, case)
-        elapsed = item["responseElapsedMs"]
-        assert math.isfinite(elapsed) and elapsed >= 0
-        if case["id"] == "K12-H1":
-            assert elapsed <= 20_000
+        elapsed = _response_elapsed_ms(item, case)
         if re.search(r"-repeat-[1-5]$", item["id"]):
             per_case.setdefault(item["id"].split("-repeat-")[0], []).append(elapsed)
     assert seen == {(viewport, ident) for viewport in ("desktop", "mobile") for ident in bindings}
     return _repeat_measurements(per_case)
+
+
+def _response_elapsed_ms(item, case):
+    elapsed = item["responseElapsedMs"]
+    assert math.isfinite(elapsed) and elapsed >= 0
+    if case["id"] == "K12-H1":
+        assert elapsed <= 20_000, f"K12-H1 browser response took {elapsed} ms"
+    return elapsed
 
 
 def _repeat_measurements(per_case):

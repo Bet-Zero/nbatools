@@ -21,7 +21,12 @@ import requests
 from nbatools.data_source import data_generation_context, data_path
 from nbatools.development_data import selected_snapshot
 from tests.cloud_reported_rest_deployed_real_data import _assert_count
-from tests.test_deployed_k12_delivery_browser import COMMON, _assert_rendered, _repeat_measurements
+from tests.test_deployed_k12_delivery_browser import (
+    COMMON,
+    _assert_rendered,
+    _repeat_measurements,
+    _response_elapsed_ms,
+)
 from tests.test_k05_subject_ownership_real_data import CASES as K05
 from tests.test_k05_subject_ownership_real_data import _qualified_sample as _ownership_sample
 from tests.test_k09_sequences_real_data import _assert_case as _assert_sequence
@@ -79,20 +84,22 @@ def _original_case_identity(cases, *, evidence=EVIDENCE):
 
 
 def _fresh_capture_set(rows, cases, *, started, finished, expected_count=44):
-    expected = {
+    expected = [
         (viewport, case["id"], case["query"])
         for viewport in ("desktop", "mobile")
         for case in cases
-    }
-    actual = {(item["viewport"], item["id"], item["query"]) for item in rows}
-    assert len(rows) == len(actual) == len(expected) == expected_count
-    assert actual == expected, "Fresh capture changed question identity or viewport coverage"
+    ]
+    actual = [(item["viewport"], item["id"], item["query"]) for item in rows]
+    assert len(actual) == len(set(actual)) == len(expected) == expected_count
+    assert actual == expected, "Fresh capture changed question identity, order or viewport coverage"
     request_ids = [item.get("requestId") for item in rows]
     assert all(
         isinstance(rid, str) and re.fullmatch(r"req_[0-9a-f]{32}", rid) for rid in request_ids
     )
     assert len(set(request_ids)) == expected_count, "Every capture must have its own live request"
-    assert all(started <= datetime.fromisoformat(item["capturedAt"]) <= finished for item in rows)
+    captured_at = [datetime.fromisoformat(item["capturedAt"]) for item in rows]
+    assert captured_at == sorted(captured_at), "Fresh capture timestamps must follow request order"
+    assert all(started <= timestamp <= finished for timestamp in captured_at)
 
 
 def _stabilization_capture_cases(original, delivery):
@@ -751,9 +758,12 @@ def _run(
             if current_runtime:
                 assert "provisional" not in item["text"].lower()
                 assert not item["payload"]["result"]["metadata"].get("data_quality")
-            if base_id := repeat_base.get(item["id"]):
-                repeats.setdefault(base_id, []).append(item["responseElapsedMs"])
-                item = dict(item, id=base_id)
+            base_id = repeat_base.get(item["id"])
+            if stabilization and (case := delivery.get(base_id or item["id"])):
+                elapsed = _response_elapsed_ms(item, case)
+                if base_id:
+                    repeats.setdefault(base_id, []).append(elapsed)
+                    item = dict(item, id=base_id)
             _verify(item, delivery, sources, frozen, seq_sources, history_sources, lebron)
         asset_hashes = [item["servedAssetSha256"] for item in actual["receipts"]]
         assert len(set(asset_hashes)) == 1

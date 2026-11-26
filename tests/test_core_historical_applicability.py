@@ -65,7 +65,17 @@ def test_replacement_refuses_modified_original_evidence(original_cases, monkeypa
 
 @pytest.mark.parametrize(
     "defect",
-    [None, "missing", "duplicate", "changed_text", "wrong_viewport", "old_time", "reused_request"],
+    [
+        None,
+        "missing",
+        "duplicate",
+        "changed_text",
+        "wrong_viewport",
+        "old_time",
+        "reused_request",
+        "swapped_order",
+        "unordered_time",
+    ],
 )
 def test_replacement_requires_every_fresh_case_and_viewport(original_cases, defect):
     started = datetime(2026, 11, 26, 9, 0, tzinfo=UTC)
@@ -94,6 +104,10 @@ def test_replacement_requires_every_fresh_case_and_viewport(original_cases, defe
         receipts[0]["viewport"] = "tablet"
     elif defect == "old_time":
         receipts[0]["capturedAt"] = "2026-11-07T04:00:00+00:00"
+    elif defect == "swapped_order":
+        receipts[0], receipts[1] = receipts[1], receipts[0]
+    elif defect == "unordered_time":
+        receipts[0]["capturedAt"] = "2026-11-26T09:06:00+00:00"
     else:
         receipts[0]["requestId"] = receipts[1]["requestId"]
     with pytest.raises(AssertionError):
@@ -131,6 +145,13 @@ def test_stabilization_requires_all_forty_latencies_and_the_existing_p95(changed
     else:
         result = gate._repeat_measurements(values)
         assert result["observations"] == 40 and result["p95_ms"] == 500
+
+
+@pytest.mark.parametrize("elapsed", [20_001, float("inf"), -1])
+def test_stabilization_retains_k12_historical_response_time(elapsed):
+    with pytest.raises(AssertionError):
+        gate._response_elapsed_ms({"responseElapsedMs": elapsed}, {"id": "K12-H1"})
+    assert gate._response_elapsed_ms({"responseElapsedMs": 20_000}, {"id": "K12-H1"}) == 20_000
 
 
 @pytest.mark.parametrize("generation_drift", [False, True])
