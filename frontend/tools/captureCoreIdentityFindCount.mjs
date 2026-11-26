@@ -39,7 +39,7 @@ const ownershipIds = ["ownership-washington-h1", "ownership-washington-q2", "own
 const localOwnership = cases.length === ownershipIds.length && ownershipIds.every(id => cases.some(item => item.id === id));
 if (localOwnership && base !== "http://127.0.0.1:8765") throw new Error("Provisional ownership bundle is loopback-only");
 
-const exactExistingProjectHost = /^https:\/\/nbatools-[a-z0-9]+-brents-projects-686e97fc\.vercel\.app$/.test(base);
+const exactExistingProjectHost = /^https:\/\/nbatools-[a-z0-9]+-(?:brents|zeros)-projects-686e97fc\.vercel\.app$/.test(base);
 if (!["https://nbatools.vercel.app", "http://127.0.0.1:8765"].includes(base) && !((originalK08Defaults || originalK08Scope || historicalIntegration || core1K08) && exactExistingProjectHost)) {
   throw new Error("Only production alias, local verification, or the exact reviewed historical/K08 immutable project host allowed");
 }
@@ -187,7 +187,7 @@ try {
         readinessAcceptance: "Not applied: explicitly provisional loopback demonstration; observations retained",
       } : {};
       if (localOwnership && (developmentEvidence.dataQuality?.state !== "provisional" || !/^[a-f0-9]{64}$/.test(developmentEvidence.dataQuality?.manifest_sha256 ?? "") || !/provisional/i.test(text))) failures.push(`${viewport}/${item.id}/missing-provisional-identity`);
-      const receipt = { ...deliveryEvidence, ...developmentEvidence, id: item.id, viewport, query: item.query, http: response.status(), elapsedMs: Date.now() - start, responseElapsedMs,
+      const receipt = { ...deliveryEvidence, ...developmentEvidence, id: item.id, viewport, query: item.query, http: response.status(), requestId: response.headers()["x-request-id"] ?? null, elapsedMs: Date.now() - start, responseElapsedMs,
         payload, text, servedAssetSha256, readinessBefore, readinessAfter, readinessHttpBefore: before.status(), readinessHttpAfter: after.status(), overflow, errors: [...errors], missing,
         headers, grainErrors, tables, forbidden, assets, detailsMetadataText, screenshot, screenshotSha256: createHash("sha256").update(image).digest("hex") };
       receipts.push(receipt);

@@ -42,6 +42,11 @@ MANIFEST = "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3"
 LIVE = "availability-participation-2025-durant-v1-20261114"
 LIVE_MANIFEST = "cde98408f3390e6191da564197fb77ffbc598a3059963cfc21d9f2d7e1a6b366"
 GENERATIONS = {BASE: MANIFEST, LIVE: LIVE_MANIFEST}
+CLEVELAND = "availability-cleveland-2024-v3-20261124"
+CLEVELAND_MANIFEST = "d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034"
+ORIGINAL_BINDING_SHA256 = "b2c2e145acec65db5e7707cb69ae4d1a194c19b97f5a2a52e3dbe632e326638f"
+ORIGINAL_CAPTURE_SHA256 = "a5c718c7498f24d787866ff4e3d53220363e00588a045607e92f5947ac2074a5"
+ORIGINAL_CASES_SHA256 = "096f093c24df872fca3107a1d4a23b19fc98e549b86aecfdc9df3b538ca1382a"
 URL = "https://nbatools.vercel.app"
 S4 = PROGRAM / "source-evidence/paired-missing-20261107/r2-final/composed-acceptance.json"
 OWNED = PROGRAM / "source-evidence/distinct-player-or-20261106/independent/oracle.json"
@@ -52,6 +57,60 @@ APPLICABILITY_SHA256 = "931a82ac65a914f94f643c6c6bb967dc1a5b777205017d096044e81f
 
 def _sha(raw):
     return hashlib.sha256(raw).hexdigest()
+
+
+def _original_case_identity(cases, *, evidence=EVIDENCE):
+    """Verify the original archive without inspecting current source hashes."""
+    binding = evidence / "live-code-binding.json"
+    archive = evidence / "historical-live-original.zip"
+    assert _sha(binding.read_bytes()) == ORIGINAL_BINDING_SHA256
+    assert _sha(archive.read_bytes()) == ORIGINAL_CAPTURE_SHA256
+    with ZipFile(archive) as original:
+        captured_cases = original.read("acquired_data/core-historical-live/cases.json")
+    assert _sha(captured_cases) == ORIGINAL_CASES_SHA256
+    identity = [(case["id"], case["query"]) for case in cases]
+    assert identity == [(case["id"], case["query"]) for case in json.loads(captured_cases)]
+    assert len(identity) == len({case_id for case_id, _ in identity}) == 22
+    return {
+        "binding_sha256": ORIGINAL_BINDING_SHA256,
+        "archive_sha256": ORIGINAL_CAPTURE_SHA256,
+        "case_manifest_sha256": ORIGINAL_CASES_SHA256,
+    }
+
+
+def _fresh_capture_set(rows, cases, *, started, finished):
+    expected = {
+        (viewport, case["id"], case["query"])
+        for viewport in ("desktop", "mobile")
+        for case in cases
+    }
+    actual = {(item["viewport"], item["id"], item["query"]) for item in rows}
+    assert len(rows) == len(actual) == len(expected) == 44
+    assert actual == expected, "Fresh capture changed question identity or viewport coverage"
+    request_ids = [item.get("requestId") for item in rows]
+    assert all(
+        isinstance(rid, str) and re.fullmatch(r"req_[0-9a-f]{32}", rid) for rid in request_ids
+    )
+    assert len(set(request_ids)) == 44, "Every capture must have its own live request"
+    assert all(started <= datetime.fromisoformat(item["capturedAt"]) <= finished for item in rows)
+
+
+def _stabilization_active_pointer():
+    from nbatools.commands.pipeline.generation_publication import _resolve_r2_target
+    from tools.r2_publication import verify_pointer_manifest
+
+    client, bucket = _resolve_r2_target(client=None, bucket_name=None, env=None, env_file=None)
+    pointer, _, digest = verify_pointer_manifest(client, bucket, CLEVELAND)
+    assert digest == CLEVELAND_MANIFEST, "Active R2 manifest differs from the frozen release"
+    return pointer
+
+
+def _stabilization_readiness(http, body):
+    from tools.r2_publication import readiness_for_generation
+
+    assert http == 503
+    response = SimpleNamespace(status_code=http, json=lambda: body)
+    assert readiness_for_generation(response, CLEVELAND, activation=True) is not None
 
 
 def _parser_predicates(source):
@@ -432,10 +491,13 @@ def _assert_fixed_runtime(before, after):
     assert before["build_input_tree_sha256"] == after["build_input_tree_sha256"]
 
 
-def _run(tmp_path, *, retained=False, current_runtime=False, generation_name=BASE):
+def _run(
+    tmp_path, *, retained=False, current_runtime=False, generation_name=BASE, stabilization=False
+):
     assert not (retained and current_runtime), "Retained captures cannot be fresh runtime evidence"
     assert generation_name == BASE or current_runtime, "Only a fresh capture may use LIVE"
-    manifest = GENERATIONS[generation_name]
+    assert not stabilization or (current_runtime and generation_name == CLEVELAND)
+    manifest = CLEVELAND_MANIFEST if stabilization else GENERATIONS[generation_name]
     binding = json.loads((EVIDENCE / "live-code-binding.json").read_bytes())
     applicability = None
     capture_url = URL
@@ -460,7 +522,10 @@ def _run(tmp_path, *, retained=False, current_runtime=False, generation_name=BAS
         assert datetime.fromisoformat(post["checked_at"]) > datetime.fromisoformat(
             "2026-11-07T04:21:56.249817+00:00"
         )
-    if retained or current_runtime:
+    if stabilization:
+        # The replacement runs alongside the existing gates until acceptance.
+        assert _sha((EVIDENCE / "live-code-binding.json").read_bytes()) == ORIGINAL_BINDING_SHA256
+    elif retained or current_runtime:
         applicability = _retained_applicability(binding)
     else:
         # Fresh public captures retain the original strict deployed-code binding.
@@ -474,6 +539,7 @@ def _run(tmp_path, *, retained=False, current_runtime=False, generation_name=BAS
             and _sha(data_path("metadata/generation_manifest.json").read_bytes()) == manifest
         )
         cases, delivery, sources, frozen, seq_sources, history_sources, lebron, s4 = _cases()
+        original_identity = _original_case_identity(cases) if stabilization else None
         if applicability:
             assert [{"id": c["id"], "query": c["query"]} for c in cases] == applicability["cases"]
         entries = json.loads(data_path("metadata/generation_manifest.json").read_bytes())["files"]
@@ -541,6 +607,23 @@ def _run(tmp_path, *, retained=False, current_runtime=False, generation_name=BAS
                 historical_original_binding_preserved=True,
                 fresh_deployment_accepted=False,
             )
+        if stabilization:
+            receipt["original_case_identity"] = original_identity
+            receipt["active_pointer_before"] = _stabilization_active_pointer()
+            receipt["provider_build_evidence"] = {
+                "reference": runtime_before["base_url"],
+                "deployed_sha": runtime_before["deployed_sha"],
+                "required_review": "Bind actual provider build logs for the interpreter, toolchain, lock consumption and nonsecret runtime configuration to this immutable deployment before stabilization acceptance.",
+            }
+            receipt["locked_build_input_sha256"] = {
+                relative: _sha((ROOT / relative).read_bytes())
+                for relative in (
+                    "pyproject.toml",
+                    "uv.lock",
+                    "vercel.json",
+                    "frontend/package-lock.json",
+                )
+            }
         if retained:
             archive = EVIDENCE / "historical-live-original.zip"
             assert (
@@ -582,6 +665,13 @@ def _run(tmp_path, *, retained=False, current_runtime=False, generation_name=BAS
         actual = json.loads((output / "browser-receipt.json").read_bytes())
         if current_runtime:
             assert actual["base"] == capture_url
+        if stabilization:
+            _fresh_capture_set(
+                actual["receipts"],
+                cases,
+                started=datetime.fromisoformat(receipt["capture_started_at"]),
+                finished=datetime.now(UTC),
+            )
         assert len(actual["receipts"]) == 44
         if retained:
             # Preserve the original red run. The driver falsely required the word
@@ -625,6 +715,10 @@ def _run(tmp_path, *, retained=False, current_runtime=False, generation_name=BAS
                 )
             assert not any(item[name] for name in ("errors", "missing", "forbidden", "grainErrors"))
             assert item["overflow"]["document"] <= item["overflow"]["viewport"]
+            if stabilization:
+                assert item["screenshot"] == f"{pair[0]}-{pair[1]}.png"
+                _stabilization_readiness(item["readinessHttpBefore"], item["readinessBefore"])
+                _stabilization_readiness(item["readinessHttpAfter"], item["readinessAfter"])
             assert _sha((output / item["screenshot"]).read_bytes()) == item["screenshotSha256"]
             assets = item["assets"] if assets is None else assets
             assert (
@@ -677,6 +771,10 @@ def _run(tmp_path, *, retained=False, current_runtime=False, generation_name=BAS
         if current_runtime:
             runtime_after = deployed_runtime_binding()
             _assert_fixed_runtime(runtime_before, runtime_after)
+            if stabilization:
+                pointer_after = _stabilization_active_pointer()
+                assert receipt["active_pointer_before"] == pointer_after
+                receipt["active_pointer_after"] = pointer_after
             receipt.update(
                 runtime_after=runtime_after,
                 deployment_post_binding="passed provider GitHub Production deployment/commit/immutable host/build-tree comparison",
@@ -714,3 +812,8 @@ def test_actual_new_runtime_historical_api_and_ui(tmp_path):
 def test_actual_new_runtime_historical_api_and_ui_on_live_generation(tmp_path):
     """The same fresh original22/44 delivery on the generation served after 2026-11-14."""
     _run(tmp_path, current_runtime=True, generation_name=LIVE)
+
+
+def test_stabilization_original_historical_api_and_ui(tmp_path):
+    """Fresh acceptance on the frozen Cleveland runtime, alongside the old gate."""
+    _run(tmp_path, current_runtime=True, generation_name=CLEVELAND, stabilization=True)

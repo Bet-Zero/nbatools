@@ -17,8 +17,8 @@ evidence; don't extend it.
 guard in [PR #647](https://github.com/Bet-Zero/nbatools/pull/647). W2
 publication safeguards landed in [PR #648](https://github.com/Bet-Zero/nbatools/pull/648),
 and W1 landed in [PR #649](https://github.com/Bet-Zero/nbatools/pull/649).
-PR #644 was the accepted activation artifact. Production is on `2615c940`
-from [PR #652](https://github.com/Bet-Zero/nbatools/pull/652).
+PR #644 was the accepted activation artifact. Production is on `da104fbf`
+from [PR #653](https://github.com/Bet-Zero/nbatools/pull/653).
 The only unrelated open PR is blocked
 [#462](https://github.com/Bet-Zero/nbatools/pull/462). No other writer or background
 worker is active. [Execution plan](execution-plan.md)
@@ -53,7 +53,7 @@ was found in the activation evidence. Reuse the accepted PR #643 cold proof
 **Live and stabilization remain open.** Public readiness reports 503 with sole
 `new_season_not_loaded`, on the intended Cleveland generation. Scheduled
 monitor run 45768634065 failed before its representative query. W5A logs for
-the current deployment show Python 3.12 and uv 0.13.5, initial install from
+the earlier unlocked deployment show Python 3.12 and uv 0.13.5, initial install from
 `pyproject.toml` and subsequent build-step installs from an untracked build
 `uv.lock`. The logs omit a complete installed inventory and say that Active CPU
 billing ignores the configured memory value. Original K08 remains 16 PASS /
@@ -140,20 +140,40 @@ structured queries both returned 31–13 in 44 games without LeVert. The PR hold
 the request IDs and [main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45791747173)
 receipt. Settings remain under the owner's authority.
 
-**W4B candidate.** All 514 locked frontend tests, lint and build passed. Local
+**W4B.** All 514 locked frontend tests, lint and build passed. Local
 built desktop/mobile browsers used the public API for the verified Cleveland
 example. The desktop check used the keyboard. On mobile a controlled 429
 displayed its retry delay and request ID, and manual retry rendered the correct
 sample with no automatic second request. The independent review identified misleading
-copy for date ranges. The updated range message preserves its requested bounds. The code in
-`completion/w4b-snapshot-discovery` still needs independent review, exact CI
-and deployed checks.
+copy for date ranges. The updated range message preserves its requested bounds.
+The checker approved exact head `b0898973`. All blocking PR jobs passed.
+[PR #653](https://github.com/Bet-Zero/nbatools/pull/653) merged at `da104fbf`.
+[Main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45795324415) passed
+all blocking checks, including three full Python suites. The exact preview
+built and requires SSO. The public
+[production build](https://vercel.com/zeros-projects-686e97fc/nbatools/BZ9H2smKA5oU6fGX93SL5dNv1hmi)
+passed fresh desktop keyboard and mobile discovery. Both rendered 31–13 in
+44 games without horizontal overflow. Mobile displayed a controlled 429 and
+recovered after one manual retry. The PR records both real production request IDs.
 
-**Next.** Finish W4B's integration gates, then prepare W6A's replacement
-historical acceptance path for the frozen stabilization release. For W3A,
-measure the hosted startup, body and response margin before choosing the
-application deadline. W3C needs the coherent frozen artifact and the existing
-resource and delivery checks.
+**W6A preparation.** The fresh Cleveland selector preserves the original
+22 question identities and every numerical and rendered check. It binds the
+immutable hosted deployment, locked build inputs and active pointer on both
+sides of capture, and requires 44 fresh IDs and screenshots. The legacy gate
+continues. The read-only provider lookup matched the last locked production
+build's full source tree (674 files) and exact immutable URL. The restored
+Cleveland preflight verified all original cases and four retained source-file
+prefixes. No first-release broad capture has run.
+
+**W3A timing.** On the locked build, Patrick Ewing's historical summary matched
+all 348 games and 5,027 points. Request `req_9bda12cb015d4fbb98954b85bdff1d14`
+took 13.940 s externally and 11.293 s in the handler. The metric is one successful
+sample. Effective host cutoff and near-deadline completion remain open.
+
+**Next.** Finish exact-head review and blocking CI for W6A preparation.
+Bind the hosted budget and verify a useful near-deadline response before setting
+the application deadline. W3C and the fresh 44 captures follow the coherent
+frozen stabilization artifact and required broad checks.
 No new collection, historical backfill, spending, automatic refresh or Live work is authorized for this assignment.
 The checkout's existing `work` branch and the saved work below are preserved.
 
