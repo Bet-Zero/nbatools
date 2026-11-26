@@ -55,6 +55,7 @@ their existing scope and authority.
 
 **Next.** Finish W4A run-all monitoring with the existing strict overall verdict.
 Keep monitor alert and recovery policy changes under their actual authority.
+No new collection, historical backfill, spending, automatic refresh or Live work is authorized for this assignment.
 The checkout's existing `work` branch and the saved work below are preserved.
 
 ## Preserved scope

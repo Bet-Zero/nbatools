@@ -1,6 +1,14 @@
 NBA TOOLS
 
-Final execution plan Deliver Cleveland. Stabilize the accepted product. Qualify growth. 25 November 2026 | Final reviewed version 2 | America/Detroit
+# Final execution plan
+
+Deliver Cleveland. Stabilize the accepted product. Qualify growth.
+
+25 November 2026 | Final reviewed version 2 | America/Detroit
+
+The [Resume checkpoint](README.md) owns live status, receipt applicability and
+the next action. The reviewed baseline and sequence below preserve the November
+25 contract. Reconcile them with current evidence before acting.
 
 The execution direction is settled. Restore useful snapshot monitoring, finish the qualified Cleveland release through the protected route, then close the shared correctness, resource, repeatability and maintenance defects. Expand through a measured, reusable pipeline.
 
