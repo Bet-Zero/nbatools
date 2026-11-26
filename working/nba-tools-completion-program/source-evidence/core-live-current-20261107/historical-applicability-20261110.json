@@ -104,7 +104,7 @@
       "old_sha256": "cc2042c866c201a9d764865ab3961f38ef878ea217f35b439d06cff605670c55",
       "reviewed_sha256": "e63e86f8f673fa4456894b6b9be7d197d25a239bca75edc17a939e31fe1b39e1",
       "reviewed_functions": "protected publication registry",
-      "semantic_reach": "Adds separately pinned protected-workflow publication packages through the exact 2024 season inactive overlay. Every prior package/check and all storage/approval limits remain unchanged. Registry is read by manual protected publication, not historical query execution; no original22 query, data, parser or arithmetic semantics change. All22 existing cases remain eligible; no new capture or broader acceptance is claimed. The Cleveland addition pins one upload-only candidate, preserves all prior45 registered expectations and adds42 independently source-derived nonempty checks. It cannot trigger activation or affect the original22 computations. Registers evidence for one new manual pointer-only Cleveland operation. No original historical capture runs this workflow or uses the Cleveland generation.",
+      "semantic_reach": "Adds separately pinned protected-workflow publication packages through the exact 2024 season inactive overlay. Every prior package/check and all storage/approval limits remain unchanged. Registry is read by manual protected publication, not historical query execution; no original22 query, data, parser or arithmetic semantics change. All22 existing cases remain eligible; no new capture or broader acceptance is claimed. The Cleveland addition pins one candidate, preserves all prior45 registered expectations and adds42 independently source-derived nonempty checks. The registry binds upload and separate manual pointer-only activation evidence without changing the original computations. No original historical capture runs this workflow or uses the Cleveland generation.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -345,7 +345,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "defb1fc25356205af27fb98c117991307fca8c021fc385c79da6f9cd8bea0d89"
+      "reviewed_sha256": "6b8f9a297620b36c623225e28a352f03150823e2c32029e378c6496dd2d1a67a"
     },
     {
       "path": "docs/reference/data_contracts.md",
@@ -1376,7 +1376,7 @@
       "path": "tools/r2_publication.py",
       "old_sha256": "8cccffc3c91511cbfb6fd9d43c2bf0839bd749ac2de2fcdd84b76e584e082f0d",
       "reviewed_functions": "manual candidate preparation/upload/verification and cold response gate",
-      "semantic_reach": "Pins the Git-retained accepted inputs, composes the complete base-preserving snapshot, checks storage/operation limits and verifies owner approval before candidate-prefix writes. The registered Cleveland package forbids combined publish and has no activation workflow operation. This manual release tool is not part of historical runtime calculations. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Adds the existing-workflow wrapper for the approved Cleveland pointer change. The publication tool does not run inside any original public query or change historical result construction.",
+      "semantic_reach": "Pins the Git-retained accepted inputs, composes the complete base-preserving snapshot, checks storage/operation limits and verifies owner approval before candidate-prefix writes. The Cleveland package uses separate protected operations for upload and pointer activation. This manual release tool is not part of historical runtime calculations. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Adds the existing-workflow wrapper for the approved Cleveland pointer change. The publication tool does not run inside any original public query or change historical result construction.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",

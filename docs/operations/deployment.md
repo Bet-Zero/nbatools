@@ -253,8 +253,9 @@ is evidence for that change, not a full validation.
 
 The owner authorized this split process on 2026-11-24. It supplements, rather
 than bypasses, the protected publication process below. Existing packages keep
-their reviewed `publish` behavior. The Cleveland candidate permits only
-`validate` and `upload_candidate`; combined publication is rejected.
+their reviewed `publish` behavior. The Cleveland package uses `validate`,
+`upload_candidate`, and `activate_candidate`. Upload and activation require
+separate protected approvals.
 
 1. Run the existing **Protected R2 Data Publication** workflow on merged main
    with mode `validate`. This reads the authenticated active base, composes the
