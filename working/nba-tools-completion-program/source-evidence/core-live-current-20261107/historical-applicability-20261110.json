@@ -507,9 +507,9 @@
     {
       "path": "frontend/src/components/noResultDisplayUtils.ts",
       "old_sha256": "b3f5623ea70f0c054b6ffcb4f479fc0c73f890929e8e3e31ed1b28bab09ce992",
-      "reviewed_sha256": "0abb5a4cc20002d0aa0726f3e69c058267ff84b0f4c7b79c91d7527f5eb73049",
-      "reviewed_functions": "readableNoResultMessage; hasUnverifiedParticipation; single literal date unavailable messaging",
-      "semantic_reach": "New TEAM empty-sample and incomplete-appearance wording only. None of original22 is an empty TEAM appearance sample or new complete-list refusal; original fallback and historical captures preserved. Uses the exact requested day if already present in the response. The original unavailable future-season case has no single-day window.",
+      "reviewed_sha256": "7613ad75db95fd01821f9b4896a62c69cedb9df677a4163e9f4694fb141039f4",
+      "reviewed_functions": "literal date and date-range unavailable messaging",
+      "semantic_reach": "Names the requested date window if present. The original unavailable future-season case has no date window.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -538,7 +538,7 @@
     {
       "path": "frontend/src/test/UIComponents.test.tsx",
       "old_sha256": "928e50583895c307bb3990a4aef6c7593d106c6c70521f968710a87fc7501543",
-      "reviewed_sha256": "622e786883fca81d460ebac8655eb51f225aa6885a18e0c34a900d7ebe712c03",
+      "reviewed_sha256": "172e183b2f9e2bb23d6beb09d04b4d4044ff2dafa252648355f1a445df65cd47",
       "reviewed_functions": "New TEAM empty-sample and incomplete-proof controls; starter scope and unavailable-day presentation regressions",
       "semantic_reach": "Test-only assertions, not bundled runtime; old22 expected text and original capture bodies unchanged. Exercises the changed discovery and date copy without replacing any original archive, response or rendering requirement.",
       "eligible_existing_case_ids": [

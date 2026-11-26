@@ -140,11 +140,12 @@ structured queries both returned 31–13 in 44 games without LeVert. The PR hold
 the request IDs and [main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45791747173)
 receipt. Settings remain under the owner's authority.
 
-**W4B candidate.** All 511 locked frontend tests, lint and build passed. Local
+**W4B candidate.** All 514 locked frontend tests, lint and build passed. Local
 built desktop/mobile browsers used the public API for the verified Cleveland
 example. The desktop check used the keyboard. On mobile a controlled 429
 displayed its retry delay and request ID, and manual retry rendered the correct
-sample with no automatic second request. The code in
+sample with no automatic second request. The independent review identified misleading
+copy for date ranges. The updated range message preserves its requested bounds. The code in
 `completion/w4b-snapshot-discovery` still needs independent review, exact CI
 and deployed checks.
 

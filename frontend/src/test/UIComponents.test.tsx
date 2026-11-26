@@ -82,11 +82,17 @@ describe("SampleQueries", () => {
 });
 
 describe("NoResultDisplay", () => {
-  it("names the literal day when its coverage is unavailable", () => {
+  it.each([
+    ["2026-11-25", "2026-11-25", "on 2026-11-25"],
+    ["2026-03-01", "2026-07-27", "from 2026-03-01 through 2026-07-27"],
+    [null, "2026-07-27", "through 2026-07-27"],
+    ["2026-03-01", null, "from 2026-03-01 onward"],
+  ])("keeps requested date coverage visible for %s to %s", (start, end, window) => {
     render(<NoResultDisplay reason="no_data" status="no_result" metadata={{
-      team: "Cavaliers", season: "2026-27", start_date: "2026-11-25", end_date: "2026-11-25",
+      team: "Cavaliers", season: "2025-26", start_date: start, end_date: end,
     }} />);
-    expect(screen.getByText("Data is unavailable for Cavaliers on 2026-11-25.")).toBeInTheDocument();
+    expect(screen.getByText(`Data is unavailable for Cavaliers ${window}.`)).toBeInTheDocument();
+    expect(screen.queryByText("Data is not available for Cavaliers in 2025-26.")).not.toBeInTheDocument();
   });
   it.each([ ["game", "appearances anywhere in each game"], ["opponent", "appearances for the opposing team"] ])("labels an empty %s appearance sample", (scope, explanation) => {
     render(<NoResultDisplay reason="no_match" status="no_result" metadata={{without_player: "Stephen Curry", participation_scope: scope}} />);
