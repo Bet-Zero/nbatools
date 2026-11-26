@@ -636,6 +636,18 @@ def _run(
                 "deployed_sha": runtime_before["deployed_sha"],
                 "required_review": "Bind actual provider build logs for the interpreter, toolchain, lock consumption and nonsecret runtime configuration to this immutable deployment before stabilization acceptance.",
             }
+            receipt["retained_publication_observations"] = {
+                "run_id": 45763092143,
+                "receipt_url": "https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-45763092143",
+                "receipt_sha256": "f20c829ba165a2d0b6715e683a76c5cb463ce6803708606a10dd942fda6b35c1",
+                "generation": CLEVELAND,
+                "manifest_sha256": CLEVELAND_MANIFEST,
+                "registered_questions": [
+                    "Seattle SuperSonics record without Kevin Durant in 2007-08",
+                    "Celtics record with Tatum and Brown missing in 2025-26",
+                ],
+                "scope": "Verified on the activation artifact; outside the original 22 capture identities.",
+            }
             receipt["locked_build_input_sha256"] = {
                 relative: _sha((ROOT / relative).read_bytes())
                 for relative in (
@@ -779,7 +791,7 @@ def _run(
         diagnostics = []
         for question in (
             []
-            if retained
+            if retained or stabilization
             else [
                 "Thunder record without Kevin Durant in 2007-08",
                 "Celtics record with Tatum and Brown missing in 2025-26",
@@ -813,7 +825,7 @@ def _run(
                 current_season_accepted=False,
                 operational_readiness_accepted=False,
                 public_UI_queries=len(actual["receipts"]),
-                separate_unaccepted_source_diagnostics=2,
+                separate_unaccepted_source_diagnostics=len(diagnostics),
             )
             if stabilization:
                 receipt["k12_deployed_repeat_measurements"] = _repeat_measurements(repeats)
