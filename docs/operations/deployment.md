@@ -321,6 +321,16 @@ separate protected approvals.
    with its single typed blocker and a healthy service. Extra blockers, invalid
    envelopes, unhealthy service and generation drift fail verification.
 
+If activation's result is uncertain, preserve the attempt receipt and use the
+authorized read-only context to inspect the actual pointer and its manifest.
+If the expected base is still active, reconcile the failure before any fresh
+dispatch. If the exact candidate is active, verify the approved previous
+manifest and complete the remaining read-only checks and backup/restore. If
+the pointer identifies a later or conflicting publication, preserve it and halt
+activation and recovery writes. Never retry the uncertain write or upload the
+candidate again. Any conditional recovery follows the exact tuple and authority
+in [the recovery runbook](recovery.md#immutable-data-rollback-and-restore).
+
 ### Agent-initiated targeted requests
 
 The owner authorized automatic targeted validation on 2026-10-15. An agent with
