@@ -1744,7 +1744,7 @@ def _specific_date_top_scorer_intent(q: str, start_date: str | None, end_date: s
     """Detect explicit-date top-scorer phrasing that needs game-level rows."""
     if not start_date or not end_date or start_date != end_date:
         return False
-    if not has_explicit_calendar_date(q):
+    if not (has_explicit_calendar_date(q) or literal_query_day(q)):
         return False
     return bool(
         re.search(
@@ -3782,12 +3782,21 @@ def _build_parse_state(query: str) -> dict:
                 anchor_date = ct_ts
 
     start_date, end_date = extract_date_range(q, season, anchor_date=anchor_date)
+    if calendar_day is not None and start_date and end_date and start_date < end_date and season:
+        from datetime import date
+
+        first_season = _seasons.season_for_date(date.fromisoformat(start_date))
+        last_season = _seasons.season_for_date(date.fromisoformat(end_date))
+        if first_season != last_season and not explicit_relative_season and not extract_season(q):
+            season, start_season, end_season = None, first_season, last_season
     if comparison_scope and not comparison_scope["unsupported"]:
         sample_start, sample_end = extract_date_range(
             comparison_scope["sample_text"], season, anchor_date=anchor_date
         )
         comparison_scope["sample"].update(start_date=sample_start, end_date=sample_end)
-    fuzzy_date_window = bool((start_date or end_date) and uses_fuzzy_date_term(q))
+    fuzzy_date_window = bool(
+        anchor_date is not None and (start_date or end_date) and uses_fuzzy_date_term(q)
+    )
     stretch_display_mode = _stretch_display_mode(q, player)
 
     explicit_single_season = extract_season(q)
@@ -3800,7 +3809,7 @@ def _build_parse_state(query: str) -> dict:
         (streak_request or team_streak_request)
         # "this season" / "last season" name a season too.
         and not explicit_relative_season
-        and not re.search(r"\b(?:this|current)\s+(?:season|year)\b", q)
+        and not names_current_season(q)
         and not career_intent
         # "Lakers win streak in 2024" names its season.
         and bare_year_season is None
@@ -8317,11 +8326,9 @@ def _league_team_seasons(parsed: dict, out: dict) -> dict | None:
     notes = [n for n in out.get("notes") or [] if not n.startswith("unsupported_boundary")]
     if start:
         season = None
-    elif season is None and re.search(r"\b(?:this|current)\s+(?:season|year)\b", q):
+    elif season is None and names_current_season(q):
         # "teams with 40 wins this season".
-        from nbatools.commands._seasons import default_end_season
-
-        season = default_end_season(season_type)
+        season = _seasons.season_for_date(_seasons.today())
     elif not _NAMED_SEASON_WORDS.search(q):
         from nbatools.commands._seasons import EARLIEST_SEASON, resolve_career
 

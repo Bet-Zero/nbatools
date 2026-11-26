@@ -263,6 +263,9 @@ def test_one_admitted_worker_reads_the_new_day_on_its_next_request(monkeypatch):
         ("Cavaliers record tonight", "2026-11-26", "2026-11-26"),
         ("Cavaliers record yesterday", "2026-11-25", "2026-11-25"),
         ("Cavaliers record this season", "2026-27", None),
+        ("Cavaliers record for this regular season", "2026-27", None),
+        ("Cavaliers record for the current NBA season", "2026-27", None),
+        ("Cavaliers record in this postseason", "2026-27", None),
     ],
 )
 def test_stale_snapshot_cannot_replace_requested_calendar_scope(data_root, question, target, day):

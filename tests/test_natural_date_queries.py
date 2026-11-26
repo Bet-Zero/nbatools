@@ -134,14 +134,43 @@ def test_literal_calendar_and_last_games_use_the_requested_raw_sample():
     assert [int(game["game_id"]) for game in games] == yesterday["game_id"].astype(int).tolist()
     assert sum(game["pts"] for game in games) == pytest.approx(yesterday["pts"].sum())
 
-    with request_calendar(date(2026, 11, 26)):
+    with request_calendar(date(2026, 7, 28)):
         stale = execute_natural_query("Nikola Jokic stats yesterday")
-        retained = execute_natural_query("Nikola Jokic stats last 5 games")
+        retained = execute_natural_query("Nikola Jokic summary last 5 games in 2025-26")
     assert stale.result_reason == "no_data"
-    assert stale.metadata["start_date"] == "2026-11-25" == stale.metadata["end_date"]
-    assert "2026-11-25" in " ".join(stale.result.notes)
+    assert stale.metadata["start_date"] == "2026-07-27" == stale.metadata["end_date"]
+    assert "2026-07-27" in " ".join(stale.result.notes)
     assert retained.result_status == "ok", (retained.result_reason, retained.metadata)
     assert retained.metadata["last_n"] == 5
     summary = retained.result.to_dict()["sections"]["summary"][0]
     assert summary["games"] == 5
     assert summary["pts_sum"] == pytest.approx(rows.tail(5)["pts"].sum())
+
+
+@pytest.mark.needs_data
+@pytest.mark.parametrize(
+    ("question", "start", "seasons"),
+    [
+        ("Cavaliers record since January 2026 through yesterday", "2026-01-01", ["2025-26"]),
+        ("Cavaliers record from March 1, 2025 to yesterday", "2025-03-01", ["2024-25", "2025-26"]),
+    ],
+)
+def test_literal_range_preserves_both_ends_in_the_served_record(question, start, seasons):
+    from nbatools.data_source import data_read_csv
+    from nbatools.query_service import execute_natural_query
+
+    end = "2026-04-09"
+    raw = pd.concat([data_read_csv(f"raw/team_game_stats/{s}_regular_season.csv") for s in seasons])
+    dates = raw["game_date"]
+    selected = raw.loc[(raw["team_id"] == 1610612739) & dates.between(start, end)]
+    assert len(selected) > 1
+    with request_calendar(date(2026, 4, 10)):
+        result = execute_natural_query(question)
+    assert result.result_status == "ok", (result.result_reason, result.metadata)
+    assert result.metadata["start_date"] == start
+    assert result.metadata["end_date"] == end
+    summary = result.result.to_dict()["sections"]["summary"][0]
+    assert summary["games"] == len(selected)
+    assert summary["wins"] == (selected["wl"] == "W").sum()
+    assert summary["losses"] == (selected["wl"] == "L").sum()
+    assert not any("snapshot cutoff" in note for note in result.metadata.get("notes", []))

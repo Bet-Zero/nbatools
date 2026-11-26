@@ -7,6 +7,7 @@ from http import HTTPStatus
 import pytest
 from fastapi.testclient import TestClient
 
+from nbatools import admission_control
 from nbatools import api as api_module
 from nbatools.admission_control import (
     IDLE_CLIENT_SWEEP_LIMIT,
@@ -254,6 +255,37 @@ def test_fastapi_rejects_body_before_json_parsing() -> None:
 
     assert response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE
     assert response.json()["error"] == "payload_too_large"
+
+
+def test_fastapi_keeps_request_day_from_body_validation_to_worker(monkeypatch):
+    day = date(2026, 7, 31)
+    observed = []
+    controller = AdmissionController()
+
+    def validate(raw, path):
+        nonlocal day
+        observed.append(_seasons.today())
+        day = date(2026, 8, 1)
+        return parse_and_validate_json_body(raw, path)
+
+    def execute(query):
+        observed.append(_seasons.today())
+        return QueryResult(
+            result=NoResult(query_class="unknown", reason="no_match"),
+            query=query,
+        )
+
+    monkeypatch.setattr(_seasons, "_detroit_today", lambda: day)
+    monkeypatch.setattr(admission_control, "parse_and_validate_json_body", validate)
+    monkeypatch.setattr(api_module, "execute_natural_query", execute)
+    monkeypatch.setattr(api_module, "ADMISSION_CONTROLLER", controller)
+    monkeypatch.setenv("NBATOOLS_ADMISSION_CONTROLS", "true")
+    try:
+        response = TestClient(app).post("/query", json={"query": "Cavaliers record today"})
+    finally:
+        controller._executor.shutdown(wait=True)
+    assert response.status_code == HTTPStatus.OK
+    assert observed == [date(2026, 7, 31), date(2026, 7, 31)]
 
 
 def test_fastapi_returns_429_and_retry_after_without_executing(monkeypatch) -> None:

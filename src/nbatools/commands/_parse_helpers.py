@@ -683,12 +683,17 @@ def extract_bare_year_pair(text: str) -> tuple[str, str] | None:
     return int_to_season(first - 1), int_to_season(last - 1)
 
 
+_CURRENT_SEASON_PHRASE = (
+    r"\b(?:this|current)\s+(?:nba\s+)?(?:regular[\s-]+season|season|year|postseason|playoffs)\b"
+)
+_CURRENT_SEASON_WORDS = re.compile(_CURRENT_SEASON_PHRASE)
+
 # One season named in a list of seasons: "2023-24", "the 2016 season",
 # "this season", "last year". A bare year names the season that ended in it.
 _PAIR_SEASON_TOKEN = re.compile(
     r"(?P<explicit>(?<![\d-])(?:19|20)\d{2}-\d{2}(?![-\d]))(?:\s+(?:nba\s+)?season)?"
     r"|(?P<bare>(?<![\d/.-])(?:19|20)\d{2}(?![-/\d]))(?:\s+(?:nba\s+)?season)?"
-    r"|(?P<this>\b(?:this|current)\s+(?:season|year)\b)"
+    rf"|(?P<this>{_CURRENT_SEASON_PHRASE})"
     r"|(?P<last>\b(?:last|previous)\s+(?:season|year)\b)"
     r"|(?P<lone_last>(?<=\s)last"
     r"(?=\s*[?.!]?\s*$|\s+(?:and|or|,)\b))"
@@ -2230,9 +2235,8 @@ def last_n_reach_back_seasons(season: str, *, seasons_back: int = 1) -> dict:
     }
 
 
-_CURRENT_SEASON_WORDS = re.compile(r"\b(?:this|current)\s+(?:season|year)\b")
 _CURRENT_SEASON_RANGE_END = re.compile(
-    r"\b(?:to|through|thru|until|till)\s+(?:the\s+)?" + _CURRENT_SEASON_WORDS.pattern
+    r"\b(?:to|through|thru|until|till)\s+(?:the\s+)?" + _CURRENT_SEASON_PHRASE
 )
 
 

@@ -78,6 +78,19 @@ class TestExtractDateRangeWeeks:
             )
         assert actual == (f"2026-11-{day}", f"2026-11-{day}")
 
+    @pytest.mark.parametrize(
+        ("phrase", "expected"),
+        [
+            ("before today", (None, "2026-04-09")),
+            ("through yesterday", (None, "2026-04-09")),
+            ("since january 2026 through yesterday", ("2026-01-01", "2026-04-09")),
+            ("from march 1, 2025 to yesterday", ("2025-03-01", "2026-04-09")),
+        ],
+    )
+    def test_literal_range_ends_keep_the_other_boundary(self, phrase, expected):
+        with request_calendar(date(2026, 4, 10)):
+            assert extract_date_range(f"cavaliers record {phrase}", "2025-26") == expected
+
 
 class TestParseQueryWeeksPhrases:
     """parse_query should wire week phrases through to start_date/end_date."""

@@ -279,6 +279,10 @@ _SEASON_SPAN_TO_TODAY = re.compile(
     r"\b(?:from|since|starting|in|for|during)\s+(?:the\s+)?(?:19|20)\d{2}(?:-\d{2})?(?:\s+(?:nba\s+)?season)?"
     r"\s+(?:up\s+to|to|through|thru|until|till|til)\s+(?:today|tonight)\b"
 )
+_LITERAL_RANGE_END = re.compile(
+    r"\b(?:up\s+to|prior\s+to|before|to|through|thru|until|till|til)\s+"
+    r"(?P<day>today|tonight|yesterday|last\s+night)\b"
+)
 
 
 def season_span_ends_on_literal_day(text: str) -> bool:
@@ -606,17 +610,25 @@ def extract_date_range(
     month_range = _month_year_range(text)
     if month_range is not None:
         return month_range
+    literal = literal_query_day(text)
     if re.search(r"\b(?:since|after|post)\s+(?:the\s+)?all[- ]star\s+break\b", text):
-        return _infer_all_star_break_start(season), None
+        return _infer_all_star_break_start(season), literal
 
     anchor = anchor_date if anchor_date is not None else current_query_date()
-    literal = literal_query_day(text)
     if literal is not None:
         if season_span_ends_on_literal_day(text):
             return None, literal
-        literal_range = _extract_explicit_date_range(text, season, pd.Timestamp(literal))
-        if literal_range != (None, None):
-            return literal_range
+        literal_anchor = pd.Timestamp(literal)
+        if endpoint := _LITERAL_RANGE_END.search(text):
+            before = text[: endpoint.start()]
+            if re.search(r"\b(?:since|after|post)\b", before) and not literal_query_day(before):
+                start, _ = extract_date_range(before, season, anchor_date=literal_anchor)
+                if start is not None:
+                    return start, literal
+            resolved = text[: endpoint.start("day")] + literal + text[endpoint.end("day") :]
+            literal_range = _extract_explicit_date_range(resolved, season, literal_anchor)
+            if literal_range != (None, None):
+                return literal_range
         return literal, literal
 
     # --- Fuzzy time words (glossary / spec §18.1) ---

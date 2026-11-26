@@ -16,9 +16,9 @@ evidence; don't extend it.
 [PR #646](https://github.com/Bet-Zero/nbatools/pull/646), and the W2 recovery
 guard in [PR #647](https://github.com/Bet-Zero/nbatools/pull/647). W2
 publication safeguards landed in [PR #648](https://github.com/Bet-Zero/nbatools/pull/648),
-and W1 landed in [PR #649](https://github.com/Bet-Zero/nbatools/pull/649),
-main `295dfb18`. W1 production build `dpl_J9KedKBHdcUQKZRoFrgGmxH2ajpg`
-was started. PR #644 was the accepted activation artifact.
+and W1 landed in [PR #649](https://github.com/Bet-Zero/nbatools/pull/649).
+PR #644 was the accepted activation artifact. Production is on `c4d1be10`
+from [PR #650](https://github.com/Bet-Zero/nbatools/pull/650).
 The only unrelated open PR is blocked
 [#462](https://github.com/Bet-Zero/nbatools/pull/462). No other writer or background
 worker is active. [Execution plan](execution-plan.md)
@@ -89,21 +89,40 @@ require separate authority.
 are merged. Exact-head independent review, blocking CI and
 [authenticated R2](https://github.com/Bet-Zero/nbatools/actions/runs/45781851935)
 passed. All 12 identity checks ran with zero required skips, and all 22 retained
-API-shaped results were identical on the restored Cleveland data. Post-merge
-[CI](https://github.com/Bet-Zero/nbatools/actions/runs/45782678499) and deployment
-checks follow the merged runtime.
+API-shaped results were identical on the restored Cleveland data.
+[Main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45782678499) passed all
+three full-suite jobs. Production `dpl_J9KedKBHdcUQKZRoFrgGmxH2ajpg` returned
+31–13 in 44 Cleveland games through the natural endpoint
+(`req_79f810c65bcc4d4bbdb25adb1b9723e8`) and 49 games, 680 points and 411 rebounds
+for Bobby Portis Jr. through the structured endpoint
+(`req_d377df6f6926481fa4836a0ae16538a7`).
 
-**W3A.** The bounded request-reader and inactive-client cleanup unit passed
-focused tests and both real HTTP adapter paths on the exact offline Cleveland
-archive. The response deadline remains open. The manual and scheduled
-representative queries measured 2.576 s and 7.474 s externally, with 2.360 s
-and 4.801 s in their respective application handlers. They used different
-builds and establish two observed points. Effective host cutoff and
-near-deadline response completion still need proof.
+**W3A.** Bounded request reads and inactive-client cleanup merged at `c4d1be10`
+and deployed on `dpl_FjNusyfWTmWqGrKCVPgL3qkEH4L6`. The independent checker
+passed 110 focused tests at the exact PR revision. Both offline HTTP adapters
+returned the known Cleveland result from the restored archive. Production
+returned typed 413 for an over-budget body (`req_3caf4ff6ea8647d3b71b60d375f13467`)
+and 31–13 in 44 games for a normal question (`req_194f3cd4c2a840db90b665dd68ef7db7`,
+5.330 s externally, 5.042 s in the handler). The
+[blocking PR gates](https://github.com/Bet-Zero/nbatools/actions/runs/45784086988)
+and [all three full main suites](https://github.com/Bet-Zero/nbatools/actions/runs/45785294622)
+passed. The existing frontend development audit remained advisory and red.
+The response deadline remains open. These timing samples do not establish the
+effective host cutoff or near-deadline response completion.
 
-**Next.** Bind the actual host limit and measure startup, body parsing and
-full response completion before setting the application deadline. Calendar work
-can proceed independently while that proof is pending.
+**W3B candidate.** The initial independent review found ordinary current-season
+wording, relative range endpoints and cutoff notes that could still misstate
+scope. The current `completion/w3b-request-calendar` candidate addresses those
+findings. It passed 290 focused checks with 49 expected local skips. The three
+selected R2 checks also passed against the exact restored Cleveland files with
+independent raw-row comparisons, and the 22 original historical API-shaped
+payloads were byte-identical. The current candidate still needs exact-head
+independent review, blocking CI, authenticated R2 and deployment verification.
+
+**Next.** Finish W3B's exact gates, then verify literal unavailable coverage and
+an unaffected snapshot answer on the deployed revision. Continue W5's build
+binding and W4B. For W3A, bind the actual host limit and measure startup, body
+parsing and full response completion before selecting an application deadline.
 No new collection, historical backfill, spending, automatic refresh or Live work is authorized for this assignment.
 The checkout's existing `work` branch and the saved work below are preserved.
 

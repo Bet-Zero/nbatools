@@ -958,14 +958,11 @@ def _build_query_metadata(
     if alternates:
         meta["alternates"] = alternates
 
-    # Day-window queries ("yesterday", "this week") are anchored to the
-    # data's latest day; say so whether the window matched games or not.
+    # Some rolling windows explicitly use the snapshot's latest available day.
     if parsed.get("fuzzy_date_window") and meta.get("current_through"):
         existing = meta.get("notes") or []
         meta["notes"] = list(existing) + [
-            f"data is current through {meta['current_through']}; day-based "
-            f"windows like 'yesterday' or 'this week' are anchored to that "
-            f"date, not today"
+            f"This rolling window ends at the snapshot cutoff, {meta['current_through']}."
         ]
 
     return meta
@@ -3600,30 +3597,32 @@ def execute_natural_query(query: str) -> QueryResult:
 
 
 def _uncovered_calendar_request(
-    query: str, normalized: str, *, grouped_boolean_used: bool
+    query: str, normalized: str, *, grouped_boolean_used: bool, parsed: dict | None = None
 ) -> QueryResult | None:
     literal_day = literal_query_day(_yes_no_last_words(normalized))
     if literal_day is None and not names_current_season(normalized):
         return None
-    day = date.fromisoformat(literal_day) if literal_day is not None else _seasons.today()
+    if parsed is None:
+        try:
+            parsed = parse_query(query)
+        except ValueError:
+            return None
+    route = parsed.get("route")
+    if route is None or parsed.get("route_kwargs", {}).get("unsupported_filters"):
+        return None
+    end_day = (parsed.get("end_date") or literal_day) if literal_day is not None else None
+    day = date.fromisoformat(end_day) if end_day is not None else _seasons.today()
     season = _seasons.season_for_date(day)
-    season_type = detect_season_type(normalized)
+    season_type = parsed.get("season_type") or detect_season_type(normalized)
     if literal_day is None:
         if season <= _seasons.default_end_season(season_type):
             return None
         through = None
     else:
         through = compute_current_through(season, season_type)
-        if through is not None and literal_day <= through:
+        if through is not None and end_day <= through:
             return None
-    try:
-        parsed = parse_query(query)
-    except ValueError:
-        return None
-    route = parsed.get("route")
-    if route is None or parsed.get("route_kwargs", {}).get("unsupported_filters"):
-        return None
-    target = literal_day or season
+    target = end_day if literal_day is not None else season
     result = NoResult(
         query_class=route_to_query_class(route),
         reason="no_data",
@@ -3659,11 +3658,6 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
     grouped_boolean_used = expression_contains_boolean_ops(normalized) and (
         "(" in normalized or ")" in normalized
     )
-    uncovered = _uncovered_calendar_request(
-        query, normalized, grouped_boolean_used=grouped_boolean_used
-    )
-    if uncovered is not None:
-        return uncovered
 
     def _build_special_path_error_result(
         exc: FileNotFoundError | KeyError | TypeError | ValueError,
@@ -3702,6 +3696,10 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
             parsed = parse_query(query)
         except ValueError:
             pass  # keep _build_parse_state result
+        if unavailable := _uncovered_calendar_request(
+            query, normalized, grouped_boolean_used=True, parsed=parsed
+        ):
+            return unavailable
         try:
             condition_text = _extract_grouped_condition_text(
                 query, player=parsed.get("player"), team=parsed.get("team"), parsed=parsed
@@ -3723,6 +3721,10 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
 
     # -- OR query path --
     if contains_boolean_or(normalized):
+        if unavailable := _uncovered_calendar_request(
+            query, normalized, grouped_boolean_used=False
+        ):
+            return unavailable
         try:
             result, parsed = _execute_or_query_build_result(query)
             parsed["boolean_filter_mode"] = (
@@ -3772,6 +3774,10 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
             route=None,
         )
 
+    if unavailable := _uncovered_calendar_request(
+        query, normalized, grouped_boolean_used=False, parsed=parsed
+    ):
+        return unavailable
     route = parsed["route"]
     kwargs = parsed["route_kwargs"]
     extra_conditions = parsed.get("extra_conditions", [])

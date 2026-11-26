@@ -376,6 +376,10 @@ class RequestBodyBudgetMiddleware:
             await self.app(scope, receive, send)
             return
 
+        with _seasons.request_calendar():
+            await self._handle_post(scope, receive, send, path)
+
+    async def _handle_post(self, scope: dict[str, Any], receive: Any, send: Any, path: str) -> None:
         limit = BODY_LIMITS[path]
         request_id = _scope_request_id(scope)
         content_length = _content_length(scope)
