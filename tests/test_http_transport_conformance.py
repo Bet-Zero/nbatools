@@ -7,6 +7,7 @@ import json
 import logging
 import time
 from http import HTTPStatus
+from http.client import HTTPMessage
 from io import BytesIO
 from pathlib import Path
 from unittest.mock import Mock, patch
@@ -34,6 +35,7 @@ def _new_vercel_handler(path: str, *, method: str):
     handler = object.__new__(handler_type)
     handler.path = path
     handler.command = method
+    handler.headers = HTTPMessage()
     handler._nbatools_request_id = "req_contract"
     handler._nbatools_request_started_at = time.perf_counter()
     handler.send_response = Mock()
@@ -186,7 +188,7 @@ def test_malformed_bodies_share_json_validation_errors(
     assert response.headers[REQUEST_ID_HEADER] == response.json()["request_id"]
 
     handler = _new_vercel_handler(path, method="POST")
-    handler.headers = {"Content-Length": str(len(raw_body))}
+    handler.headers["Content-Length"] = str(len(raw_body))
     handler.rfile = BytesIO(raw_body)
     getattr(handler, "do_POST")()
     payload = json.loads(handler.wfile.getvalue())
@@ -209,7 +211,7 @@ def test_endpoint_validation_errors_are_correlated_across_transports() -> None:
     assert response.headers[REQUEST_ID_HEADER] == response.json()["request_id"]
 
     handler = _new_vercel_handler("/query-feedback", method="POST")
-    handler.headers = {"Content-Length": str(len(raw_body))}
+    handler.headers["Content-Length"] = str(len(raw_body))
     handler.rfile = BytesIO(raw_body)
     handler.client_address = ("127.0.0.1", 1234)
     handler.do_POST()
