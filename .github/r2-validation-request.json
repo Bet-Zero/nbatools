@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "0e76b2791a24502f8e2f6626cd3b2d9062a432ee",
+  "generation": "availability-cleveland-2024-v3-20261124",
+  "tests": [
+    "tests/test_k12_delivery_real_data.py::test_k12_answer_delivery[K12-R1]"
+  ],
+  "raw_qa_cases": []
+}
