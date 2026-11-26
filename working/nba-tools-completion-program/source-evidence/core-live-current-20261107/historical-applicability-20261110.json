@@ -879,7 +879,7 @@
     {
       "path": "src/nbatools/commands/entity_resolution.py",
       "old_sha256": "bd8f035fc6bc9cf7a62c46ed343a7f91b2eb62d10bb0dfdd6bb7b0e5f992f414",
-      "reviewed_sha256": "0c281f22c9b844a96f407a58f4ec73aa57ef4947dfa8ab9967d2616f84605772",
+      "reviewed_sha256": "092962e205642d1918122e3649a5d6f947130c736524154e72eae199fbaafcf8",
       "reviewed_functions": "resolve_player_in_query; mask_player_owned_team_words; resolve_team_in_query; immutable player identity ledger, indexes, construction and fallback",
       "semantic_reach": "All original 22 person names lack internal team-alias words and initial periods. Their complete-name-before-alias precedence and identities remain unchanged. The new substring precheck is equivalent to the following bounded regex; broader full-name lookup adds no different matching person to these exact names. Team masking does not erase any independent team mention. Pins names, IDs, spelling, and matching indexes to the selected manifest and fails closed on required corrupt data. With the exact restored Cleveland snapshot, the complete API-shaped results for the original 22 historical questions were unchanged from the previous reviewed runtime. This is a semantic delta check and does not create new hosted captures.",
       "eligible_existing_case_ids": [

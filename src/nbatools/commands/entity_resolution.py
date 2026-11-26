@@ -695,8 +695,10 @@ def _valid_identity_rows(frame: pd.DataFrame, *, verified: bool) -> bool:
     ) and (not verified or frame["player_id"].str.fullmatch(r"[1-9][0-9]*", na=False).all())
 
 
-def _read_published_player_names(*, verified: bool) -> pd.DataFrame | None:
+def _read_published_player_names(*, verified: bool | None = None) -> pd.DataFrame | None:
     """Read canonical identity and spelling order from the snapshot ledger."""
+    if verified is None:
+        verified = verified_generation_files() is not None
     try:
         if not data_exists(PLAYER_NAMES_PATH):
             # Older manifests may omit this derived ledger. The fallback uses
