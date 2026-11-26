@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from threading import Event
 
 import pytest
 
@@ -220,6 +222,75 @@ def test_published_reads_use_pointer_digest_and_only_manifested_bytes(tmp_path, 
         assert data_path("raw/sample.csv").read_bytes() == b"valid"
     assert not client.head_calls
     assert client.get_calls.count(prefix + "metadata/generation_manifest.json") == 1
+
+
+def test_hosted_cache_retires_a_generation_only_after_the_last_reader(tmp_path, monkeypatch):
+    pointer_key = ACTIVE_GENERATION_PATH.as_posix()
+    path = "raw/sample.csv"
+    old, _ = published_generation_objects("old", {path: b"value\n1\n"})
+    latest, _ = published_generation_objects("latest", {path: b"value\n2\n"})
+    objects = old | {key: value for key, value in latest.items() if key != pointer_key}
+    client = FakeR2Client(objects)
+    _configure_r2(monkeypatch, tmp_path, client)
+    monkeypatch.delenv(R2_CACHE_DIR_ENV)
+    monkeypatch.setenv("VERCEL", "1")
+    monkeypatch.setattr(data_source.tempfile, "gettempdir", lambda: str(tmp_path))
+
+    old_pinned = Event()
+    finish_old = Event()
+
+    def read_old():
+        with data_generation_context() as generation:
+            assert generation == "old"
+            cached = data_path(path)
+            old_pinned.set()
+            assert finish_old.wait(5)
+            assert cached.read_bytes() == b"value\n1\n"
+            assert data_path(path) == cached
+            return cached
+
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        pending = pool.submit(read_old)
+        try:
+            assert old_pinned.wait(5)
+            objects[pointer_key] = latest[pointer_key]
+            with data_generation_context() as generation:
+                assert generation == "latest"
+                newest_path = data_path(path)
+                assert newest_path.read_bytes() == b"value\n2\n"
+                finish_old.set()
+                retired_path = pending.result(timeout=5)
+                assert not retired_path.exists()
+                assert newest_path.exists()
+        finally:
+            finish_old.set()
+
+    objects[pointer_key] = old[pointer_key]
+    with data_generation_context() as generation:
+        assert generation == "old"
+        assert data_path(path).read_bytes() == b"value\n1\n"
+        assert not newest_path.exists()
+    assert client.get_calls.count(f"generations/old/{path}") == 2
+
+
+def test_explicit_r2_cache_remains_available_across_requests(tmp_path, monkeypatch):
+    pointer_key = ACTIVE_GENERATION_PATH.as_posix()
+    path = "raw/sample.csv"
+    old, _ = published_generation_objects("old", {path: b"same"})
+    latest, _ = published_generation_objects("latest", {path: b"same"})
+    objects = old | {key: value for key, value in latest.items() if key != pointer_key}
+    client = FakeR2Client(objects)
+    _configure_r2(monkeypatch, tmp_path, client)
+    monkeypatch.setenv("VERCEL", "1")
+
+    with data_generation_context():
+        original_path = data_path(path)
+
+    objects[pointer_key] = latest[pointer_key]
+    with data_generation_context(), pytest.raises(DataSourceError, match="Missing published"):
+        del objects[f"generations/latest/{path}"]
+        data_path(path)
+    assert original_path.read_bytes() == b"same"
 
 
 def test_published_reads_fail_closed_on_wrong_manifest(tmp_path, monkeypatch):
