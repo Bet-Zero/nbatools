@@ -131,6 +131,16 @@ def test_replacement_requires_the_approved_active_manifest(monkeypatch, generati
         assert gate._stabilization_active_pointer() == pointer
 
 
+def test_replacement_validates_native_readiness_status_as_well_as_shape():
+    from tests.test_r2_publication_gates import _native_activation_readiness
+
+    body = _native_activation_readiness(gate.CLEVELAND)
+    gate._stabilization_readiness(503, body)
+    body["status"] = "ready"
+    with pytest.raises(AssertionError):
+        gate._stabilization_readiness(503, body)
+
+
 def test_companion_tamper_rejected(binding, tmp_path):
     path, _ = _reseal(tmp_path, lambda proof: proof.update(full_core1_accepted=True))
     with pytest.raises(AssertionError, match="Unreviewed historical applicability"):

@@ -105,6 +105,14 @@ def _stabilization_active_pointer():
     return pointer
 
 
+def _stabilization_readiness(http, body):
+    from tools.r2_publication import readiness_for_generation
+
+    assert http == 503
+    response = SimpleNamespace(status_code=http, json=lambda: body)
+    assert readiness_for_generation(response, CLEVELAND, activation=True) is not None
+
+
 def _parser_predicates(source):
     """Evaluate only the three reviewed historical-query detection predicates."""
     tree = ast.parse(source)
@@ -602,6 +610,11 @@ def _run(
         if stabilization:
             receipt["original_case_identity"] = original_identity
             receipt["active_pointer_before"] = _stabilization_active_pointer()
+            receipt["provider_build_evidence"] = {
+                "reference": runtime_before["base_url"],
+                "deployed_sha": runtime_before["deployed_sha"],
+                "required_review": "Bind actual provider build logs for the interpreter, toolchain, lock consumption and nonsecret runtime configuration to this immutable deployment before stabilization acceptance.",
+            }
             receipt["locked_build_input_sha256"] = {
                 relative: _sha((ROOT / relative).read_bytes())
                 for relative in (
@@ -703,11 +716,9 @@ def _run(
             assert not any(item[name] for name in ("errors", "missing", "forbidden", "grainErrors"))
             assert item["overflow"]["document"] <= item["overflow"]["viewport"]
             if stabilization:
-                from tools.r2_publication import _activation_readiness_shape
-
                 assert item["screenshot"] == f"{pair[0]}-{pair[1]}.png"
-                for key in ("readinessBefore", "readinessAfter"):
-                    assert isinstance(item[key], dict) and _activation_readiness_shape(item[key])
+                _stabilization_readiness(item["readinessHttpBefore"], item["readinessBefore"])
+                _stabilization_readiness(item["readinessHttpAfter"], item["readinessAfter"])
             assert _sha((output / item["screenshot"]).read_bytes()) == item["screenshotSha256"]
             assets = item["assets"] if assets is None else assets
             assert (
