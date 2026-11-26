@@ -279,9 +279,13 @@ _SEASON_SPAN_TO_TODAY = re.compile(
     r"\b(?:from|since|starting|in|for|during)\s+(?:the\s+)?(?:19|20)\d{2}(?:-\d{2})?(?:\s+(?:nba\s+)?season)?"
     r"\s+(?:up\s+to|to|through|thru|until|till|til)\s+(?:today|tonight)\b"
 )
+_LITERAL_DAY_TOKEN = "|".join(
+    f"(?:{term.regex})" for term in FUZZY_DATE_TERMS if term.same_day or term.yesterday
+)
+_LITERAL_DAY_MATCH = re.compile(_LITERAL_DAY_TOKEN)
 _LITERAL_RANGE_END = re.compile(
     r"\b(?:up\s+to|prior\s+to|before|to|through|thru|until|till|til)\s+"
-    r"(?P<day>today|tonight|yesterday|last\s+night)\b"
+    rf"(?P<day>{_LITERAL_DAY_TOKEN})"
 )
 
 
@@ -589,16 +593,19 @@ def unread_month_pair(text: str, season: str | None = None) -> str | None:
     return None
 
 
-def literal_query_day(text: str) -> str | None:
-    """Resolve an explicit day using the request clock, without snapshot anchoring."""
+def _resolve_literal_day(text: str, day: pd.Timestamp) -> str:
     for term in FUZZY_DATE_TERMS:
-        if not (term.same_day or term.yesterday) or not re.search(term.regex, text):
-            continue
-        day = current_query_date()
-        if term.yesterday:
-            day -= pd.Timedelta(days=1)
-        return day.date().isoformat()
-    return None
+        if term.yesterday and re.fullmatch(term.regex, text):
+            return (day - pd.Timedelta(days=1)).date().isoformat()
+    return day.date().isoformat()
+
+
+def literal_query_day(text: str) -> str | None:
+    """Resolve an explicit day or the final literal endpoint of a range."""
+    match = _LITERAL_RANGE_END.search(text) or _LITERAL_DAY_MATCH.search(text)
+    if match is None:
+        return None
+    return _resolve_literal_day(match.groupdict().get("day", match.group()), current_query_date())
 
 
 def extract_date_range(
@@ -620,13 +627,22 @@ def extract_date_range(
             return None, literal
         literal_anchor = pd.Timestamp(literal)
         if endpoint := _LITERAL_RANGE_END.search(text):
-            before = text[: endpoint.start()]
-            if re.search(r"\b(?:since|after|post)\b", before) and not literal_query_day(before):
+            request_day = current_query_date()
+            before = _LITERAL_DAY_MATCH.sub(
+                lambda match: _resolve_literal_day(match.group(), request_day),
+                text[: endpoint.start()],
+            )
+            after = (
+                text[endpoint.start() : endpoint.start("day")]
+                + literal
+                + text[endpoint.end("day") :]
+            )
+            if re.search(r"\b(?:since|after|post)\b", before):
                 start, _ = extract_date_range(before, season, anchor_date=literal_anchor)
                 if start is not None:
-                    return start, literal
-            resolved = text[: endpoint.start("day")] + literal + text[endpoint.end("day") :]
-            literal_range = _extract_explicit_date_range(resolved, season, literal_anchor)
+                    _, end = _extract_explicit_date_range(after, season, literal_anchor)
+                    return start, end or literal
+            literal_range = _extract_explicit_date_range(before + after, season, literal_anchor)
             if literal_range != (None, None):
                 return literal_range
         return literal, literal

@@ -972,7 +972,7 @@
     {
       "path": "src/nbatools/commands/natural_query.py",
       "old_sha256": "8f98d100b63240b8e97419bf3fd198d3e3279812d4e286ce057535351377c275",
-      "reviewed_sha256": "454fb0a839090c4a4bd2bd741de86ce8e4c2da21c582bbfe7d1326d226601ca4",
+      "reviewed_sha256": "9387c51ad1407daf2a82b05415ffc86d75883085be39d705bbb0ab32747079e0",
       "reviewed_functions": "parse_query; explicit matchup participant scope; literal date and current-season propagation into natural routes",
       "semantic_reach": "New scope translation applies only to team_record participation conditions. Original team_record cases have no with/without predicate; original S4 participant records use team_split_summary or player_split_summary, not this new consumer. No source/time/season mutation. Keeps exact historical routes, scopes and all 22 prior results on restored Cleveland. Covered literal spans keep both resolved endpoints.",
       "eligible_existing_case_ids": [
@@ -1811,7 +1811,7 @@
     {
       "path": "src/nbatools/commands/_date_utils.py",
       "old_sha256": "1253924ca84be334d751876342c6d872a37e96fddfe0710d4ec0dbca858579ca",
-      "reviewed_sha256": "cb1b3b255932b30450712f0b340361a6142558baa962bedf46abf0dc6babbe46",
+      "reviewed_sha256": "466abdcf7f6f2ac8de0532be8258e22f59efbaa306e7c2da7a8a848a53c3ea87",
       "reviewed_functions": "literal date and relative range endpoint resolution",
       "semantic_reach": "Literal days use Detroit calendar scope. The full historical API-shaped cohort was compared byte for byte using the restored Cleveland generation.",
       "eligible_existing_case_ids": [

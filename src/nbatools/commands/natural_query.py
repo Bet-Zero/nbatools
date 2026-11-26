@@ -8326,9 +8326,9 @@ def _league_team_seasons(parsed: dict, out: dict) -> dict | None:
     notes = [n for n in out.get("notes") or [] if not n.startswith("unsupported_boundary")]
     if start:
         season = None
-    elif season is None and names_current_season(q):
+    elif names_current_season(q):
         # "teams with 40 wins this season".
-        season = _seasons.season_for_date(_seasons.today())
+        season = season or _seasons.season_for_date(_seasons.today())
     elif not _NAMED_SEASON_WORDS.search(q):
         from nbatools.commands._seasons import EARLIEST_SEASON, resolve_career
 

@@ -85,6 +85,9 @@ class TestExtractDateRangeWeeks:
             ("through yesterday", (None, "2026-04-09")),
             ("since january 2026 through yesterday", ("2026-01-01", "2026-04-09")),
             ("from march 1, 2025 to yesterday", ("2025-03-01", "2026-04-09")),
+            ("from yesterday to today", ("2026-04-09", "2026-04-10")),
+            ("from yesterday through today", ("2026-04-09", "2026-04-10")),
+            ("since january 2026 before today", ("2026-01-01", "2026-04-09")),
         ],
     )
     def test_literal_range_ends_keep_the_other_boundary(self, phrase, expected):

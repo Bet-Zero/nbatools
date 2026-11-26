@@ -60,6 +60,16 @@ def test_parse_explicit_date_top_scorer_uses_game_level_route():
     assert parsed["route_kwargs"]["end_date"] == "2026-01-01"
 
 
+@pytest.mark.parametrize("qualifier", ["this regular season", "in the current NBA season"])
+def test_qualified_current_season_win_board_keeps_one_calendar_season(qualifier):
+    with request_calendar(date(2026, 4, 10)):
+        parsed = parse_query(f"Teams with 40 wins {qualifier}")
+    assert parsed["route"] == "team_record_leaderboard"
+    assert parsed["route_kwargs"]["season"] == "2025-26"
+    assert parsed["route_kwargs"]["start_season"] is None
+    assert parsed["route_kwargs"]["end_season"] is None
+
+
 def test_parse_matchup_last_30_days():
     parsed = parse_query("Jokic vs Lakers last 30 days")
     # Anchor to data end date when data is stale, otherwise the request day
