@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "b897ec63ed07af9ce801ca126b252cb1b70aa87d",
+  "generation": "availability-cleveland-2024-v3-20261124",
+  "tests": [
+    "tests/test_natural_date_queries.py::test_literal_calendar_and_last_games_use_the_requested_raw_sample",
+    "tests/test_natural_date_queries.py::test_literal_range_preserves_both_ends_in_the_served_record",
+    "tests/test_player_identity_real_data.py::test_named_season_summary_matches_raw_rows"
+  ],
+  "raw_qa_cases": []
+}
