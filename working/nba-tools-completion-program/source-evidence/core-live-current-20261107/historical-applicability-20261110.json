@@ -1251,8 +1251,8 @@
     {
       "path": "src/nbatools/data_source.py",
       "old_sha256": "cebe4cbd4e6a1451b0c383072eaaf47ef9b53e7b5a3148f4b5b921f04c1b9474",
-      "reviewed_functions": "_resolve_active_data_generation; data_generation_context; data_source_cache_key; _R2DataSource manifest and object reads; R2 source cache identity",
-      "semantic_reach": "Only a present preview manifest environment pin triggers the additional preview-only manifest check; an absent pin resolves the same existing request/environment/active generation. No original22 production request carries this pin, and no HTTP input can select it. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. The R2 request now pins the active generation and its published manifest checksum together. Manifest-listed data is the same byte-exact input to the original queries, and absent optional data stays absent, including the 2026-27 case. This adds integrity checks and generation-scoped cache binding without changing historical query inputs, arithmetic or labels. Separates accounts even with the same bucket and cache path, retaining generation and manifest scope. The retained 22-question replay on the exact snapshot returned identical payloads.",
+      "reviewed_functions": "_resolve_active_data_generation; data_generation_context; data_source_cache_key; _R2DataSource manifest and object reads; R2 source cache identity; worker-local R2 cache lifetime in data_generation_context and _R2DataSource",
+      "semantic_reach": "Only a present preview manifest environment pin triggers the additional preview-only manifest check; an absent pin resolves the same existing request/environment/active generation. No original22 production request carries this pin, and no HTTP input can select it. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. The R2 request now pins the active generation and its published manifest checksum together. Manifest-listed data is the same byte-exact input to the original queries, and absent optional data stays absent, including the 2026-27 case. This adds integrity checks and generation-scoped cache binding without changing historical query inputs, arithmetic or labels. Separates accounts even with the same bucket and cache path, retaining generation and manifest scope. The retained 22-question replay on the exact snapshot returned identical payloads. Retires default Vercel disk paths for idle verified snapshots, while pinned readers and fresh downloads retain full existing generation, size and digest controls. Saved original answers retain their source semantics and verified data.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1277,7 +1277,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "b350d42007975511f92a1b12960d5f4243af2c8c34d77a0ceecd54344fb4244b"
+      "reviewed_sha256": "452c3c4a7c3be5002decd462f5049a6128a0efb57b7aa9e395220017982f28dd"
     },
     {
       "path": "src/nbatools/development_data.py",

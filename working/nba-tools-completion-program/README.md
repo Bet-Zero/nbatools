@@ -17,8 +17,8 @@ evidence; don't extend it.
 guard in [PR #647](https://github.com/Bet-Zero/nbatools/pull/647). W2
 publication safeguards landed in [PR #648](https://github.com/Bet-Zero/nbatools/pull/648),
 and W1 landed in [PR #649](https://github.com/Bet-Zero/nbatools/pull/649).
-PR #644 was the accepted activation artifact. The latest verified production
-ranking revision is `cd39bc37` from [PR #655](https://github.com/Bet-Zero/nbatools/pull/655).
+PR #644 was the accepted activation artifact. Production is on `1fb49033`
+from [PR #656](https://github.com/Bet-Zero/nbatools/pull/656).
 The only unrelated open PR is blocked
 [#462](https://github.com/Bet-Zero/nbatools/pull/462). No other writer or background
 worker is active. [Execution plan](execution-plan.md)
@@ -71,7 +71,10 @@ query returning HTTP 200 in 2.58 s. Strict alerts still fail on the Live gap.
 passed all three Python full-suite jobs. [Scheduled run 45782818838](https://github.com/Bet-Zero/nbatools/actions/runs/45782818838)
 also attempted all three checks. Its representative query returned HTTP 200
 in 7.47 s and snapshot probes passed. Strict readiness still failed on the
-sole Live blocker. Any alert/recovery policy change remains reserved.
+sole Live blocker. [Scheduled run 45800466145](https://github.com/Bet-Zero/nbatools/actions/runs/45800466145)
+again passed snapshot probes and the representative scoring query (HTTP 200
+in 0.523 s, `req_01a19bea06f24678bc71e380ae673c30`). Strict Live stayed red.
+Any alert/recovery policy change remains reserved.
 
 **W2 recovery safeguards.** The exact guarded rollback path is merged.
 [Authenticated read-only preflight](https://github.com/Bet-Zero/nbatools/actions/runs/45777409867)
@@ -200,21 +203,31 @@ request returned internal 500 on the ranking build
 Actual local HTTP with three occupied slots rejected one excess request with
 429, then correctly delivered the three retained summary, team-record and
 ranking responses. This is controlled same-process proof against restored
-Cleveland data. Hosted cutoff and final capacity remain open.
+Cleveland data. The separate checker approved exact `1933a332` and independently
+proved a controlled 504, occupied-slot 429 and a correct Boston 64–18 result
+after worker release. The [merged main suite](https://github.com/Bet-Zero/nbatools/actions/runs/45801545598)
+passed. The [production repair](https://vercel.com/zeros-projects-686e97fc/nbatools/2mqvQpLGjh8ss7bLXkGyw6FAeTdL)
+returned typed 413 on both native endpoints, then the correct LeVert result
+with HTTP 200. The PR records all three request IDs. Hosted cutoff and final
+capacity remain open.
 
 **W3C version rollover.** Two authentic backup manifests and their objects
 reproduced 506,874,532 cached bytes after one sequential ranking per data
 version in one local worker. Both answers matched raw expectations. A local
 candidate limits the default Vercel worker to the current verified disk cache
 and any still-pinned older cache. The managed local path retained 253,467,843
-bytes after the same rollover. The cache candidate is parked until the public
-error repair lands; it still requires independent review and deployed proof.
+bytes after the same rollover. The focused candidate now preserves in-flight generation paths, evicts the
+idle worker copy and redownloads it on a later return to that generation. It
+still requires independent review and deployed proof. The temporary cache
+footprint while two versions are pinned at once still needs qualification.
 
-**Next.** Land and verify the public error repair, then validate the
-disk-cache rollover repair. Determine the effective host cutoff and verify useful near-deadline response completion before setting the
+**Next.** Land the reviewed combined capture preparation and the focused
+disk-cache rollover repair after exact gates. Determine the effective host cutoff and verify useful near-deadline response completion before setting the
 application deadline. Measure cache eviction, redownload and version rollover.
 Complete W3C and the fresh 44 captures with the coherent frozen stabilization
-artifact and required broad checks.
+artifact and required broad checks. [PR #657](https://github.com/Bet-Zero/nbatools/pull/657)
+prepares 44 original captures and the 40 declared K12 timing repeats in one
+sequence. There has been no frozen-release browser capture or broad replay.
 No new collection, historical backfill, spending, automatic refresh or Live work is authorized for this assignment.
 The checkout's existing `work` branch and the saved work below are preserved.
 
