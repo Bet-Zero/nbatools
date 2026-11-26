@@ -17,7 +17,9 @@ import requests
 from tests.core1_k08_served_default_cases import ROOT
 
 API = "https://api.github.com/repos/Bet-Zero/nbatools/"
-IMMUTABLE_HOST = re.compile(r"https://nbatools-[a-z0-9]+-brents-projects-686e97fc\.vercel\.app")
+IMMUTABLE_HOST = re.compile(
+    r"https://nbatools-[a-z0-9]+-(?:brents|zeros)-projects-686e97fc\.vercel\.app"
+)
 
 
 def non_build(path):

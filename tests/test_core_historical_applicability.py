@@ -4,8 +4,11 @@ No source data, public queries, production requests or new captures are required
 """
 
 import copy
+import io
 import json
+from datetime import UTC, datetime
 from pathlib import Path
+from zipfile import ZipFile
 
 import pytest
 
@@ -30,6 +33,102 @@ def test_reviewed_original22_applicability(binding):
     assert result["changed_files"] == 64
     assert len(result["cases"]) == 22
     assert result["companion_sha256"] == gate.APPLICABILITY_SHA256
+
+
+@pytest.fixture
+def original_cases():
+    with ZipFile(gate.EVIDENCE / "historical-live-original.zip") as archive:
+        return json.loads(archive.read("acquired_data/core-historical-live/cases.json"))
+
+
+def test_replacement_binds_the_fixed_original_case_identities(original_cases):
+    assert gate._original_case_identity(original_cases)["case_manifest_sha256"] == (
+        gate.ORIGINAL_CASES_SHA256
+    )
+    original_cases[0]["query"] = "Stephen Curry first quarter averages"
+    with pytest.raises(AssertionError):
+        gate._original_case_identity(original_cases)
+
+
+@pytest.mark.parametrize("name", ["live-code-binding.json", "historical-live-original.zip"])
+def test_replacement_refuses_modified_original_evidence(original_cases, monkeypatch, name):
+    original = Path.read_bytes
+
+    def read(path):
+        raw = original(path)
+        return raw + b"changed" if path == gate.EVIDENCE / name else raw
+
+    monkeypatch.setattr(Path, "read_bytes", read)
+    with pytest.raises(AssertionError):
+        gate._original_case_identity(original_cases)
+
+
+@pytest.mark.parametrize(
+    "defect",
+    [None, "missing", "duplicate", "changed_text", "wrong_viewport", "old_time", "reused_request"],
+)
+def test_replacement_requires_every_fresh_case_and_viewport(original_cases, defect):
+    started = datetime(2026, 11, 26, 9, 0, tzinfo=UTC)
+    finished = datetime(2026, 11, 26, 9, 10, tzinfo=UTC)
+    receipts = [
+        {
+            **case,
+            "viewport": viewport,
+            "requestId": f"req_{index:032x}",
+            "capturedAt": "2026-11-26T09:05:00+00:00",
+        }
+        for index, (viewport, case) in enumerate(
+            (view, case) for view in ("desktop", "mobile") for case in original_cases
+        )
+    ]
+    if defect is None:
+        gate._fresh_capture_set(receipts, original_cases, started=started, finished=finished)
+        return
+    if defect == "missing":
+        receipts.pop()
+    elif defect == "duplicate":
+        receipts[0] = receipts[1]
+    elif defect == "changed_text":
+        receipts[0]["query"] = "Different question"
+    elif defect == "wrong_viewport":
+        receipts[0]["viewport"] = "tablet"
+    elif defect == "old_time":
+        receipts[0]["capturedAt"] = "2026-11-07T04:00:00+00:00"
+    else:
+        receipts[0]["requestId"] = receipts[1]["requestId"]
+    with pytest.raises(AssertionError):
+        gate._fresh_capture_set(receipts, original_cases, started=started, finished=finished)
+
+
+@pytest.mark.parametrize("generation_drift", [False, True])
+def test_replacement_requires_the_approved_active_manifest(monkeypatch, generation_drift):
+    from nbatools.commands.pipeline import generation_publication
+
+    raw = json.dumps(
+        {"generation_id": gate.CLEVELAND, "files": [{"path": "confirmed.csv"}]}
+    ).encode()
+    expected_digest = gate._sha(raw)
+    pointer = {"generation_id": gate.CLEVELAND, "manifest_sha256": expected_digest}
+
+    class Reader:
+        def get_object(self, *, Bucket, Key):
+            assert Bucket == "data"
+            if Key == "metadata/active_generation.json":
+                return {"Body": io.BytesIO(json.dumps(pointer).encode())}
+            assert Key == f"generations/{gate.CLEVELAND}/metadata/generation_manifest.json"
+            return {"Body": io.BytesIO(raw)}
+
+    monkeypatch.setattr(
+        generation_publication, "_resolve_r2_target", lambda **kwargs: (Reader(), "data")
+    )
+    monkeypatch.setattr(
+        gate, "CLEVELAND_MANIFEST", "0" * 64 if generation_drift else expected_digest
+    )
+    if generation_drift:
+        with pytest.raises(AssertionError, match="differs from the frozen release"):
+            gate._stabilization_active_pointer()
+    else:
+        assert gate._stabilization_active_pointer() == pointer
 
 
 def test_companion_tamper_rejected(binding, tmp_path):
