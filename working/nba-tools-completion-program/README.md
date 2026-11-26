@@ -14,9 +14,10 @@ evidence; don't extend it.
 **November 26, 2026. Lead and operations writer: Codex.** W0 landed in
 [PR #645](https://github.com/Bet-Zero/nbatools/pull/645), W4A in
 [PR #646](https://github.com/Bet-Zero/nbatools/pull/646), and the W2 recovery
-guard in [PR #647](https://github.com/Bet-Zero/nbatools/pull/647), main
-`7526a254`. W4A production deployment `dpl_2bY3RnKmD8nwW4VZDJL5UhC1t37H`
-was READY on the public alias. PR #644 was the accepted activation artifact.
+guard in [PR #647](https://github.com/Bet-Zero/nbatools/pull/647). W2
+publication safeguards landed in [PR #648](https://github.com/Bet-Zero/nbatools/pull/648),
+main `f407970e`, production `dpl_2kZXsG7uqDU1MgR5BCysuyaoNVWh` READY on the
+public alias before the W1 change. PR #644 was the accepted activation artifact.
 The only unrelated open PR is blocked
 [#462](https://github.com/Bet-Zero/nbatools/pull/462). No other writer or background
 worker is active. [Execution plan](execution-plan.md)
@@ -76,12 +77,21 @@ manifest and all 1,216 retained files without a write. The publication verifier
 requires native typed readiness, health and exact pre-activation backup sizing.
 On the restored Cleveland bytes it measured the same 66,763,469-byte ZIP as the
 durable release. This is current proof. The previous activation's prospective
-preflight timing remains unproven. Future writes require separate authority.
+preflight timing remains unproven. If an uncertain future write actually
+activated the candidate, the existing normal verifier still needs a dedicated
+read-only handoff to consume that receipt and complete backup. Future writes
+require separate authority.
 
-**Next.** Complete W1's version-safe player identity and fail-closed
-required-object checks in `completion/w1-player-identity`. The lead is the
-only shared-runtime writer. Confirm the next scheduled production monitor
-receipt while work continues.
+**W1.** The identity candidate keeps immutable names, IDs, spelling and indexes
+for each request. Authenticated malformed and missing required inputs fail
+closed. The overlapping admitted-query controls and all 22 retained API-shaped
+comparisons on the exact restored data passed. The W1 PR records its review,
+authenticated real-data and exact CI/hosted evidence.
+
+**Next.** Once W1 has landed and its deployed check is complete, implement the
+W3A request reader and limiter-state bounds. Continue measuring the full
+response margin before choosing an internal deadline. Confirm scheduled W4A
+coverage on the live build while work continues.
 No new collection, historical backfill, spending, automatic refresh or Live work is authorized for this assignment.
 The checkout's existing `work` branch and the saved work below are preserved.
 
