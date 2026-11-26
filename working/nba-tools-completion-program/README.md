@@ -163,17 +163,34 @@ sides of capture, and requires 44 fresh IDs and screenshots. The legacy gate
 continues. The read-only provider lookup matched the last locked production
 build's full source tree (674 files) and exact immutable URL. The restored
 Cleveland preflight verified all original cases and four retained source-file
-prefixes. No first-release broad capture has run.
+prefixes. The independent checker approved `ceef7e4d` after 37 checks, including
+mutated readiness and sample data and rejection of old browser rows as fresh.
+[PR #654](https://github.com/Bet-Zero/nbatools/pull/654) merged at `1f8fad88` after
+[blocking CI](https://github.com/Bet-Zero/nbatools/actions/runs/45796678276).
+The original and legacy gates remain. No first-release broad capture has run.
 
 **W3A timing.** On the locked build, Patrick Ewing's historical summary matched
 all 348 games and 5,027 points. Request `req_9bda12cb015d4fbb98954b85bdff1d14`
 took 13.940 s externally and 11.293 s in the handler. The metric is one successful
 sample. Effective host cutoff and near-deadline completion remain open.
 
-**Next.** Finish exact-head review and blocking CI for W6A preparation.
-Bind the hosted budget and verify a useful near-deadline response before setting
-the application deadline. W3C and the fresh 44 captures follow the coherent
-frozen stabilization artifact and required broad checks.
+**W3C broad ranking.** The locked W4B build returned the five independently
+verified leaders for a 30-season attempt-qualified ranking in 13.977 s.
+Request `req_4cdd9bac9bd34ca289335a55045f48df` logged 13.694 s in the handler
+and 1,011.609 MiB peak process RSS. In two fresh local Python 3.12 processes
+using the actual HTTP handler and restored Cleveland objects, the focused
+repair reduced peak RSS from 899.664 to 590.145 MiB. The identical 3,729-byte
+answers came from 736,417 player-game rows. The reader fetched the same 94
+objects and 253,468,131 bytes in each run. These are controlled resource
+measurements; the hosted peak is a process measurement, and host limits and
+three simultaneous admissions still need evidence.
+
+**Next.** Verify the broad-ranking repair through exact-head checks,
+authenticated raw rows and hosted production. Determine the effective host
+cutoff and verify useful near-deadline response completion before setting the
+application deadline. Measure cache eviction, redownload and version rollover.
+Complete W3C and the fresh 44 captures with the coherent frozen stabilization
+artifact and required broad checks.
 No new collection, historical backfill, spending, automatic refresh or Live work is authorized for this assignment.
 The checkout's existing `work` branch and the saved work below are preserved.
 
