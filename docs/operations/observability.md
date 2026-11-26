@@ -74,6 +74,16 @@ allows a slow serverless response to finish so the monitor can classify it as
 latency, apply the single approved retry, and retain a measured duration. A
 socket failure beyond that grace remains a transport failure.
 
+Each run attempts all three checks and records every failure. The
+`live_readiness` and `snapshot_status` fields report separate observations.
+Snapshot probes can pass with strict Live readiness still failing only when
+health and the representative query pass, and timely HTTP 503 readiness
+reports the expected immutable generation and exactly one well-formed
+`new_season_not_loaded` blocker. Any unexpected snapshot failure remains
+visible. The overall exit, alert policy and recovery targets still follow
+the strict verdict. Keep the workflow's tracked expected generation in sync
+with the exact generation selected by future protected releases or recovery.
+
 The workflow fixes its target to the accepted production endpoint in tracked
 configuration. It has no dispatch URL input, secret, or mutable repository
 variable that can silently redirect scheduled requests. A production target

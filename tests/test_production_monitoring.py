@@ -5,6 +5,8 @@ from collections.abc import Mapping
 from io import BytesIO
 from urllib.error import HTTPError
 
+import pytest
+
 from nbatools.production_monitoring import (
     AVAILABILITY_OBJECTIVE_PERCENT,
     MINIMUM_SUCCESSES_AT_FULL_WINDOW,
@@ -307,7 +309,54 @@ def test_readiness_contract_failure_alerts_without_retry() -> None:
     assert attempt.request_id == "req-blocked"
 
 
-def test_readiness_http_error_is_semantic_and_skips_query() -> None:
+EXPECTED_GENERATION = "availability-test-snapshot"
+
+
+def _known_live_gap_payload() -> dict:
+    return {
+        "ready": False,
+        "status": "not_ready",
+        "checked_at": "2026-11-26T07:20:46Z",
+        "season": "2025-26",
+        "season_state": "offseason",
+        "max_active_lag_hours": 24,
+        "active_generation": EXPECTED_GENERATION,
+        "immutable_generation": True,
+        "release_exception_owner": "project owner",
+        "slices": [
+            {
+                "season": "2025-26",
+                "season_type": "Regular Season",
+                "trusted": True,
+                "validation_state": "passed",
+                "generation_id": "retained-season",
+                "current_through": "2026-04-12",
+                "expected_current_through": "2026-04-12",
+                "schedule_complete": True,
+                "postseason_complete": False,
+                "errors": [],
+                "missing_due_game_ids": [],
+            }
+        ],
+        "blockers": [{"code": "new_season_not_loaded", "detail": "private gap detail"}],
+        "exception": {
+            "applied": False,
+            "owner": "project owner",
+            "reason": None,
+            "created_at": None,
+            "expires_at": None,
+            "error": None,
+        },
+    }
+
+
+@pytest.mark.parametrize(
+    ("probe_failures", "snapshot_status"),
+    [(set(), "passed"), ({"representative_query"}, "failed"), ({"health"}, "failed")],
+)
+def test_readiness_http_error_keeps_all_probes_and_strict_verdict(
+    probe_failures: set[str], snapshot_status: str
+) -> None:
     calls: list[str] = []
 
     def fetcher(
@@ -318,30 +367,123 @@ def test_readiness_http_error_is_semantic_and_skips_query() -> None:
     ) -> tuple[int, Mapping[str, str], bytes]:
         del method, body, timeout
         calls.append(url)
-        if url.endswith("/health"):
-            return _response_for("health")
+        slug = _slug_from_url(url)
+        if slug in probe_failures:
+            return 500, {}, b'{"status":"error"}'
+        if slug != "readiness":
+            return _response_for(slug)
         raise HTTPError(
             url,
             503,
             "Service Unavailable",
             {"x-request-id": "req-http-error"},
-            BytesIO(
-                b'{"ready":false,"status":"not_ready","blockers":[{"code":"last_refresh_failed"}]}'
-            ),
+            BytesIO(json.dumps(_known_live_gap_payload()).encode()),
         )
 
-    report = run_production_monitor("https://deploy.example", fetcher=fetcher)
+    report = run_production_monitor(
+        "https://deploy.example", expected_generation=EXPECTED_GENERATION, fetcher=fetcher
+    )
 
     assert report.ok is False
+    assert report.notification_required is True
+    assert report.live_readiness == "failed"
+    assert report.snapshot_status == snapshot_status
+    assert set(report.failures) == {"readiness", *probe_failures}
+    assert report.failure_count == len(report.failures)
     assert calls == [
         "https://deploy.example/health",
         "https://deploy.example/readiness",
+        "https://deploy.example/query",
     ]
     readiness = report.cases[1].attempts[0]
     assert readiness.failure_kind == "response"
     assert readiness.status_code == 503
     assert readiness.request_id == "req-http-error"
     assert len(report.cases[1].attempts) == 1
+    assert readiness.known_live_gap is True
+    assert readiness.summary["blocker_codes"] == ["new_season_not_loaded"]
+    assert "private gap detail" not in json.dumps(report.to_dict())
+
+
+@pytest.mark.parametrize(
+    ("status", "overrides"),
+    [
+        (200, {}),
+        (503, {"active_generation": "different-generation"}),
+        (503, {"immutable_generation": "true"}),
+        (503, {"status": "ready"}),
+        (503, {"slices": [{}]}),
+        (503, {"blockers": ["new_season_not_loaded"]}),
+        (503, {"blockers": [{"code": "new_season_not_loaded"}]}),
+        (503, {"blockers": [
+            {"code": "new_season_not_loaded", "detail": "one"},
+            {"code": "new_season_not_loaded", "detail": "duplicate"},
+        ]}),
+        (503, {"blockers": [
+            {"code": "new_season_not_loaded", "detail": "one"},
+            {"code": "last_refresh_failed", "detail": "another"},
+        ]}),
+        (503, {"blockers": [{"code": "new_season_not_loaded", "detail": "one"}, {}]}),
+    ],
+)
+def test_unexpected_readiness_remains_a_snapshot_failure(status: int, overrides: dict) -> None:
+    def fetcher(url, method, body, timeout):
+        slug = _slug_from_url(url)
+        if slug == "readiness":
+            return status, {}, json.dumps(_known_live_gap_payload() | overrides).encode()
+        return _response_for(slug)
+
+    report = run_production_monitor(
+        "https://deploy.example", expected_generation=EXPECTED_GENERATION, fetcher=fetcher
+    )
+
+    assert report.snapshot_status == "failed"
+    assert report.live_readiness == "failed"
+    assert report.failures == ["readiness"]
+    assert len(report.cases[1].attempts) == 1
+    assert report.cases[-1].ok
+
+
+def test_http_error_body_transport_failure_retries_and_does_not_stop_query() -> None:
+    class InterruptedBody(BytesIO):
+        def read(self, size: int = -1) -> bytes:
+            raise TimeoutError("private transport detail")
+
+    def fetcher(url, method, body, timeout):
+        slug = _slug_from_url(url)
+        if slug == "readiness":
+            raise HTTPError(url, 503, "interrupted", {}, InterruptedBody())
+        return _response_for(slug)
+
+    report = run_production_monitor(
+        "https://deploy.example", expected_generation=EXPECTED_GENERATION, fetcher=fetcher
+    )
+
+    assert report.snapshot_status == "failed"
+    assert [attempt.failure_kind for attempt in report.cases[1].attempts] == [
+        "transport", "transport"
+    ]
+    assert report.cases[-1].ok
+    assert "private transport detail" not in json.dumps(report.to_dict())
+
+
+def test_late_known_live_gap_does_not_pass_snapshot_probe(monkeypatch) -> None:
+    ticks = iter([0.0, 0.1, 1.0, 11.1, 12.0, 12.1])
+    monkeypatch.setattr("nbatools.production_monitoring.perf_counter", lambda: next(ticks))
+
+    def fetcher(url, method, body, timeout):
+        slug = _slug_from_url(url)
+        if slug == "readiness":
+            return 503, {}, json.dumps(_known_live_gap_payload()).encode()
+        return _response_for(slug)
+
+    report = run_production_monitor(
+        "https://deploy.example", expected_generation=EXPECTED_GENERATION, fetcher=fetcher
+    )
+
+    assert report.snapshot_status == "failed"
+    assert report.live_readiness == "failed"
+    assert report.cases[-1].ok
 
 
 def test_synthetic_failure_is_network_free_and_safe() -> None:

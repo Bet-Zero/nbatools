@@ -11,9 +11,10 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**November 26, 2026. Lead and operations writer: Codex.** Main
-`3dd58a0cf72daf934719523e3fdf42f57ca82846` (PR #644), production deployment
-`dpl_E4SfKHXdhXx2dnKbL2qnGeSMaXN9` READY. The only other open PR is blocked
+**November 26, 2026. Lead and operations writer: Codex.** W0 landed in
+[PR #645](https://github.com/Bet-Zero/nbatools/pull/645), main `bbacf58c`.
+PR #644's accepted production deployment is `dpl_E4SfKHXdhXx2dnKbL2qnGeSMaXN9`.
+The only unrelated open PR is blocked
 [#462](https://github.com/Bet-Zero/nbatools/pull/462). No other writer or background
 worker is active. [Execution plan](execution-plan.md)
 
@@ -29,8 +30,10 @@ rostered missed-game coverage remains 14/21. [Activation receipt](https://github
 
 **Recovery and proof.** The separate credential-free runner restored the 1,461
 files byte-exact from the 66,763,469-byte candidate archive. The qualified restore
-path checked every hash and reused source qualification. A fresh real-loader
-probe of that restored copy is still due under W2. The previous generation
+path checked every hash and reused source qualification. A credential-free
+follow-up using the actual verified R2 reader over the restored filesystem
+returned 31–13 in 44 games without LeVert. This exercised the loader with an
+offline object transport, using the retained verified pointer and archive. The previous generation
 `availability-season-inactive-2024-v1-20261116` retains its exact backup and
 restore. No prospective candidate ZIP preflight or production rollback rehearsal
 was found in the activation evidence. Reuse the accepted PR #643 cold proof
@@ -53,8 +56,13 @@ their existing scope and authority.
 [Monitor run](https://github.com/Bet-Zero/nbatools/actions/runs/45768634065)
 · [Production build](https://vercel.com/zeros-projects-686e97fc/nbatools/E4SfKHXdhXx2dnKbL2qnGeSMaXN9)
 
-**Next.** Finish W4A run-all monitoring with the existing strict overall verdict.
-Keep monitor alert and recovery policy changes under their actual authority.
+**W4A.** The run-all implementation preserves the strict overall verdict and
+reports snapshot status separately. The monitoring and retained historical
+applicability checks passed locally. The next action after landing is to run
+the existing production probe and confirm a scheduled run attempts all three
+checks. W4A's changed alert and recovery policy remains reserved. Follow up on
+W2's reusable readiness validation and guarded recovery using read-only proof.
+Existing Cleveland activation and export do not need repeating.
 No new collection, historical backfill, spending, automatic refresh or Live work is authorized for this assignment.
 The checkout's existing `work` branch and the saved work below are preserved.
 
