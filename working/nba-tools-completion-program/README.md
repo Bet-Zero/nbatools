@@ -216,8 +216,9 @@ reproduced 506,874,532 cached bytes after one sequential ranking per data
 version in one local worker. Both answers matched raw expectations. A local
 candidate limits the default Vercel worker to the current verified disk cache
 and any still-pinned older cache. The managed local path retained 253,467,843
-bytes after the same rollover. The focused candidate now preserves in-flight generation paths, evicts the
-idle worker copy and redownloads it on a later return to that generation. It
+bytes after the same rollover. The focused candidate preserves in-flight
+generation paths, evicts the idle worker copy and redownloads it on a later
+return to that generation. It
 still requires independent review and deployed proof. The temporary cache
 footprint while two versions are pinned at once still needs qualification.
 
