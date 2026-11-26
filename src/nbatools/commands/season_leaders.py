@@ -353,8 +353,10 @@ def _build_from_game_logs(basic: pd.DataFrame) -> pd.DataFrame:
         agg_spec["wins"] = ("wl", lambda s: int(s.eq("W").sum()))
         agg_spec["losses"] = ("wl", lambda s: int(s.eq("L").sum()))
 
-    basic = canonicalize_player_names(basic)
-    grouped = basic.groupby(["player_id", "player_name"], as_index=False).agg(**agg_spec)
+    group_keys = ["player_id", "player_name"]
+    aggregate_columns = dict.fromkeys(column for column, _ in agg_spec.values())
+    work = canonicalize_player_names(basic[[*group_keys, *aggregate_columns]])
+    grouped = work.groupby(group_keys, as_index=False).agg(**agg_spec)
 
     grouped["pts_per_game"] = grouped["pts_total"] / grouped["games_played"]
     grouped["reb_per_game"] = grouped["reb_total"] / grouped["games_played"]
@@ -1018,6 +1020,7 @@ def build_result(
         return NoResult(query_class="leaderboard", reason="no_data")
 
     basic = pd.concat(frames, ignore_index=True)
+    del frames
 
     # Player game logs lack a 'wl' column — derive it from team game stats
     # so that wins_only / losses_only filters can be applied.
@@ -1052,7 +1055,8 @@ def build_result(
             )
 
     # "most points in game 7s": the player's games in that series situation.
-    basic = apply_series_situation_filter(basic, seasons, series_situation)
+    if series_situation:
+        basic = apply_series_situation_filter(basic, seasons, series_situation)
 
     if home_only and "is_home" in basic.columns:
         basic = basic[basic["is_home"] == 1].copy()
