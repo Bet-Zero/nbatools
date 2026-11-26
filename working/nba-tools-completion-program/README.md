@@ -218,17 +218,27 @@ candidate limits the default Vercel worker to the current verified disk cache
 and any still-pinned older cache. The managed local path retained 253,467,843
 bytes after the same rollover. The focused candidate preserves in-flight
 generation paths, evicts the idle worker copy and redownloads it on a later
-return to that generation. It
-still requires independent review and deployed proof. The temporary cache
+return to that generation. It still requires independent review and
+deployed proof. The temporary cache
 footprint while two versions are pinned at once still needs qualification.
 
-**Next.** Land the reviewed combined capture preparation and the focused
-disk-cache rollover repair after exact gates. Determine the effective host cutoff and verify useful near-deadline response completion before setting the
-application deadline. Measure cache eviction, redownload and version rollover.
-Complete W3C and the fresh 44 captures with the coherent frozen stabilization
-artifact and required broad checks. [PR #657](https://github.com/Bet-Zero/nbatools/pull/657)
-prepares 44 original captures and the 40 declared K12 timing repeats in one
-sequence. There has been no frozen-release browser capture or broad replay.
+**W3C browser preparation.** [PR #657](https://github.com/Bet-Zero/nbatools/pull/657)
+merged at `e6d8c93a` after [exact gates](https://github.com/Bet-Zero/nbatools/actions/runs/45801872154)
+and independent review. One frozen run will retain 44 original captures and
+collect the 40 declared K12 timing repeats in the existing sequence. The
+checker tested wrong order, timing, request identity, asset bytes and sample
+size. There has been no frozen-release browser capture or broad replay.
+
+**W3A host measurement.** Local diagnostic `f9aaf7a1` was independently checked
+on both native routes. Actual preview deployment and a temporary share link
+await owner authority. The proposed four POSTs include two ordinary verified
+controls and two fixed native cutoff probes, using one protected preview.
+
+**Next.** Integrate the focused disk-cache repair after exact gates, then
+qualify eviction, redownload and overlap on the frozen artifact. Measure
+the effective host cutoff and verify useful near-deadline response completion
+before setting the application deadline. Final W3C, the fresh browser capture
+and required broad checks remain pending.
 No new collection, historical backfill, spending, automatic refresh or Live work is authorized for this assignment.
 The checkout's existing `work` branch and the saved work below are preserved.
 
