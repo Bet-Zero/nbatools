@@ -12,10 +12,11 @@ evidence; don't extend it.
 ## Resume checkpoint
 
 **November 26, 2026. Lead and operations writer: Codex.** W0 landed in
-[PR #645](https://github.com/Bet-Zero/nbatools/pull/645) and W4A code landed in
-[PR #646](https://github.com/Bet-Zero/nbatools/pull/646), main `d266b17e`.
-PR #644's accepted production deployment is `dpl_E4SfKHXdhXx2dnKbL2qnGeSMaXN9`;
-the W4A production build is `dpl_2bY3RnKmD8nwW4VZDJL5UhC1t37H`.
+[PR #645](https://github.com/Bet-Zero/nbatools/pull/645), W4A in
+[PR #646](https://github.com/Bet-Zero/nbatools/pull/646), and the W2 recovery
+guard in [PR #647](https://github.com/Bet-Zero/nbatools/pull/647), main
+`7526a254`. W4A production deployment `dpl_2bY3RnKmD8nwW4VZDJL5UhC1t37H`
+was READY on the public alias. PR #644 was the accepted activation artifact.
 The only unrelated open PR is blocked
 [#462](https://github.com/Bet-Zero/nbatools/pull/462). No other writer or background
 worker is active. [Execution plan](execution-plan.md)
@@ -60,20 +61,27 @@ their existing scope and authority.
 [Monitor run](https://github.com/Bet-Zero/nbatools/actions/runs/45768634065)
 · [Production build](https://vercel.com/zeros-projects-686e97fc/nbatools/E4SfKHXdhXx2dnKbL2qnGeSMaXN9)
 
-**W4A.** Run-all monitoring with separate snapshot status and strict Live
-readiness is merged. Independent review and exact-head blocking CI passed.
-The existing strict alert verdict stays in force. The post-merge
-[manual probe](https://github.com/Bet-Zero/nbatools/actions/runs/45777149868)
-and [main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45777118682)
-were started. Scheduled proof and any reserved alert/recovery policy change
-remain open.
+**W4A.** Run-all monitoring is merged and its production build is live.
+[Manual run](https://github.com/Bet-Zero/nbatools/actions/runs/45777149868)
+reported snapshot passed and Live failed, with the representative scoring
+query returning HTTP 200 in 2.58 s. Strict alerts still fail on the Live gap.
+[Main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45777118682)
+passed all three Python full-suite jobs. Scheduled coverage and any reserved
+alert/recovery policy change remain open.
 
-**Next.** Verify the exact read-only recovery preflight on the current
-Cleveland pointer before integrating the guarded rollback path. Continue
-W2 publication-verifier hardening while keeping the accepted Cleveland
-activation and backup receipts in their verified scope. Production rollback
-would require separate exact authority. No pre-activation rehearsal can be
-supplied retroactively.
+**W2 recovery safeguards.** The exact guarded rollback path is merged.
+[Authenticated read-only preflight](https://github.com/Bet-Zero/nbatools/actions/runs/45777409867)
+passed 1/1 required tests with no skips. It checked the live pointer, previous
+manifest and all 1,216 retained files without a write. The publication verifier
+requires native typed readiness, health and exact pre-activation backup sizing.
+On the restored Cleveland bytes it measured the same 66,763,469-byte ZIP as the
+durable release. This is current proof. The previous activation's prospective
+preflight timing remains unproven. Future writes require separate authority.
+
+**Next.** Complete W1's version-safe player identity and fail-closed
+required-object checks in `completion/w1-player-identity`. The lead is the
+only shared-runtime writer. Confirm the next scheduled production monitor
+receipt while work continues.
 No new collection, historical backfill, spending, automatic refresh or Live work is authorized for this assignment.
 The checkout's existing `work` branch and the saved work below are preserved.
 
