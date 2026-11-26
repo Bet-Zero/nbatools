@@ -53,24 +53,12 @@ ROSTER = [
 
 @pytest.fixture
 def roster_index(monkeypatch, request):
-    """Install the data-backed identity caches for ``ROSTER``."""
+    """Install the data-backed identity rows for ``ROSTER``."""
     entity_resolution.reset_player_index()
     request.addfinalizer(entity_resolution.reset_player_index)
     monkeypatch.setattr(entity_resolution, "data_source_cache_key", lambda: "roster-test")
-    ids_by_name: dict[str, set[str]] = {}
-    name_by_id: dict[str, str] = {}
-    for player_id, name in ROSTER:
-        key = entity_resolution._normalize_for_matching(name)
-        ids_by_name.setdefault(key, set()).add(player_id)
-        name_by_id[player_id] = entity_resolution._preferred_spelling(
-            name_by_id.get(player_id), name
-        )
-    entity_resolution._player_index_generation_key = "roster-test"
-    entity_resolution._player_names_cache = {name for _, name in ROSTER}
-    entity_resolution._player_ids_by_name_cache = {
-        key: frozenset(ids) for key, ids in ids_by_name.items()
-    }
-    entity_resolution._player_name_by_id_cache = name_by_id
+    roster = pd.DataFrame(ROSTER, columns=["player_id", "player_name"])
+    monkeypatch.setattr(entity_resolution, "_read_identity_rows", lambda: ([roster], None))
 
 
 def _rows(player_id: int, name: str, team: str, seasons_games: dict[str, int]) -> list[dict]:
@@ -416,18 +404,17 @@ def test_name_list_without_game_order_falls_back_to_the_full_scan(monkeypatch, r
 
 
 def test_omitted_suffix_is_bound_only_to_a_unique_data_identity(roster_index, monkeypatch):
-    normalize = entity_resolution._normalize_for_matching
-    monkeypatch.setattr(
-        entity_resolution,
-        "_player_ids_by_name_cache",
-        {
-            normalize("Controlled Player III"): frozenset({"1001"}),
-            normalize("Another Player Jr."): frozenset({"1002"}),
-            normalize("Another Player Sr."): frozenset({"1003"}),
-            normalize("Exact Player"): frozenset({"1004"}),
-            normalize("Exact Player II"): frozenset({"1005"}),
-        },
+    rows = pd.DataFrame(
+        [
+            ("1001", "Controlled Player III"),
+            ("1002", "Another Player Jr."),
+            ("1003", "Another Player Sr."),
+            ("1004", "Exact Player"),
+            ("1005", "Exact Player II"),
+        ],
+        columns=["player_id", "player_name"],
     )
+    monkeypatch.setattr(entity_resolution, "_read_identity_rows", lambda: ([rows], None))
     assert entity_resolution.player_ids_for_name("Controlled Player") == {"1001"}
     assert entity_resolution.player_ids_for_name("Another Player") == {"1002", "1003"}
     assert entity_resolution.player_ids_for_name("Exact Player") == {"1004"}
@@ -449,16 +436,8 @@ def test_fullphrase_lookup_and_exact_operand_share_unique_id_suffix_binding(
         "1004": "Controlled Gamma",
         "1005": "Controlled Gamma II",
     }
-    monkeypatch.setattr(entity_resolution, "_player_names_cache", set(names.values()))
-    monkeypatch.setattr(entity_resolution, "_player_name_by_id_cache", names)
-    monkeypatch.setattr(
-        entity_resolution,
-        "_player_ids_by_name_cache",
-        {
-            entity_resolution._normalize_for_matching(name): frozenset({pid})
-            for pid, name in names.items()
-        },
-    )
+    rows = pd.DataFrame(names.items(), columns=["player_id", "player_name"])
+    monkeypatch.setattr(entity_resolution, "_read_identity_rows", lambda: ([rows], None))
     for phrase, expected, pid in [
         ("Controlled Alpha", "Controlled Alpha Jr.", "1001"),
         ("Controlled Gamma", "Controlled Gamma", "1004"),

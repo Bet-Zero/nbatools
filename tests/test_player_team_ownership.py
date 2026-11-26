@@ -3,6 +3,7 @@
 import asyncio
 
 import httpx
+import pandas as pd
 import pytest
 
 from nbatools.api_handlers import natural_query_payload
@@ -37,7 +38,9 @@ def known_names(monkeypatch, request):
     er.reset_player_index()
     request.addfinalizer(er.reset_player_index)
     monkeypatch.setattr(er, "data_source_cache_key", lambda: "controlled-team-owned-names")
-    monkeypatch.setattr(er, "_read_player_names", lambda data_dir=None: names)
+    monkeypatch.setattr(
+        er, "_read_identity_rows", lambda: ([pd.DataFrame({"player_name": sorted(names)})], None)
+    )
 
 
 @pytest.mark.parametrize(

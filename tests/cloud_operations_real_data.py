@@ -58,6 +58,33 @@ def test_cleveland_rollback_preflight_readonly(capfd):
         print("CLEVELAND_ROLLBACK_PREFLIGHT " + json.dumps(result.__dict__, sort_keys=True))
 
 
+def test_live_player_identity_uses_authenticated_pointer(monkeypatch):
+    from nbatools import data_source
+    from nbatools.query_service import execute_natural_query, execute_structured_query
+
+    assert data_source.data_source_mode() == "r2"
+    requested_generation = os.environ[data_source.DATA_GENERATION_ENV]
+    monkeypatch.delenv(data_source.DATA_GENERATION_ENV)
+    with data_source.data_generation_context() as active:
+        assert active == requested_generation
+        manifest = data_source.verified_generation_files()
+        assert manifest and data_source.PLAYER_NAMES_PATH.as_posix() in manifest
+        source = data_source.data_read_csv("raw/player_game_stats/2024-25_regular_season.csv")
+        rows = source[source["player_id"] == 1626171]
+        assert not rows.empty and rows["player_name"].unique().tolist() == ["Bobby Portis Jr."]
+        expected = (len(rows), rows["pts"].sum(), rows["reb"].sum())
+
+        natural = execute_natural_query("Bobby Portis stats in 2024-25")
+        structured = execute_structured_query(
+            "player_game_summary", player="Bobby Portis", season="2024-25"
+        )
+        for answer in (natural, structured):
+            assert answer.result_status == "ok"
+            (result,) = answer.result.to_dict()["sections"]["summary"]
+            assert result["player_name"] == "Bobby Portis Jr."
+            assert (result["games"], result["pts_sum"], result["reb_sum"]) == expected
+
+
 def test_core_cloud_routes(tmp_path, capfd):
     from nba_api.live.nba.endpoints import boxscore
 

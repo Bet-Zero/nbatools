@@ -21,6 +21,7 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from nbatools.commands import entity_resolution
@@ -70,7 +71,9 @@ def covered_index(monkeypatch, request):
     request.addfinalizer(entity_resolution.reset_player_index)
     monkeypatch.setattr(entity_resolution, "data_source_cache_key", lambda: "identity-test")
     monkeypatch.setattr(
-        entity_resolution, "_read_player_names", lambda data_dir=None: set(COVERED_NAMES)
+        entity_resolution,
+        "_read_identity_rows",
+        lambda: ([pd.DataFrame({"player_name": sorted(COVERED_NAMES)})], None),
     )
 
 
@@ -79,7 +82,7 @@ def empty_index(monkeypatch, request):
     entity_resolution.reset_player_index()
     request.addfinalizer(entity_resolution.reset_player_index)
     monkeypatch.setattr(entity_resolution, "data_source_cache_key", lambda: "identity-empty")
-    monkeypatch.setattr(entity_resolution, "_read_player_names", lambda data_dir=None: set())
+    monkeypatch.setattr(entity_resolution, "_read_identity_rows", lambda: ([], None))
 
 
 @pytest.mark.parser
@@ -330,3 +333,243 @@ def test_http_answer_names_and_counts_the_requested_player():
         "Karl-Anthony Towns",
         _expected_summary(_player_games(TOWNS_ID, "2025-26")[-10:]),
     )
+
+
+@pytest.fixture
+def identity_snapshot_files():
+    root = FIXTURE_STATS.parents[1]
+    return {
+        path.relative_to(root).as_posix(): path.read_bytes()
+        for path in root.rglob("*")
+        if path.is_file()
+    }
+
+
+def test_admitted_queries_keep_own_identity_and_sample_on_generation_rollover(
+    tmp_path, monkeypatch, identity_snapshot_files
+):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Event
+
+    from nbatools import query_service
+    from nbatools.admission_control import AdmissionController
+    from nbatools.data_source import ACTIVE_GENERATION_PATH, reset_data_source_cache
+    from tests.test_data_source import FakeR2Client, _configure_r2, published_generation_objects
+
+    old_ledger = b"player_id,player_name,season,first_seen\n1626157,Karl-Anthony Towns,2025-26,0\n"
+    new_ledger = (
+        b"player_id,player_name,season,first_seen\n"
+        b"1626157,Karl Anthony Towns,2025-26,0\n"
+        b"99999,Karl Anthony Towns,2025-26,1\n"
+    )
+    ledger = "metadata/player_names.csv"
+    stats = "raw/player_game_stats/2025-26_regular_season.csv"
+    original = pd.read_csv(FIXTURE_STATS / "2025-26_regular_season.csv", dtype={"game_id": str})
+    changed = original.copy()
+    primary = changed["player_id"] == int(TOWNS_ID)
+    changed.loc[primary, "player_name"] = "Karl Anthony Towns"
+    addition = changed.loc[primary].head(1).assign(player_id=99999, pts=200)
+    new_stats = pd.concat([changed, addition], ignore_index=True).to_csv(index=False).encode()
+    old, _ = published_generation_objects("old", identity_snapshot_files | {ledger: old_ledger})
+    new, _ = published_generation_objects(
+        "new", identity_snapshot_files | {ledger: new_ledger, stats: new_stats}
+    )
+    pointer = ACTIVE_GENERATION_PATH.as_posix()
+    client = FakeR2Client(new | old)
+    _configure_r2(monkeypatch, tmp_path, client)
+    monkeypatch.setattr(entity_resolution, "_MAX_CACHED_PLAYER_IDENTITIES", 1)
+    entity_resolution.reset_player_index()
+    old_pinned = Event()
+    new_finished = Event()
+    observed = {}
+    original_natural = query_service._execute_natural_query_in_generation
+    original_structured = query_service._execute_structured_query_in_generation
+
+    def read_identity():
+        return (
+            entity_resolution.player_ids_for_name("Karl-Anthony Towns"),
+            entity_resolution.canonical_player_names_by_id()[TOWNS_ID],
+        )
+
+    def pause_old(query):
+        bundle = entity_resolution._get_player_identity()
+        observed["old_before"] = read_identity()
+        old_pinned.set()
+        assert new_finished.wait(8)
+        answer = original_natural(query)
+        assert entity_resolution._get_player_identity() is bundle
+        observed["old_after"] = read_identity()
+        return answer
+
+    def inspect_new(route, **kwargs):
+        observed["new"] = read_identity()
+        return original_structured(route, **kwargs)
+
+    monkeypatch.setattr(query_service, "_execute_natural_query_in_generation", pause_old)
+    monkeypatch.setattr(query_service, "_execute_structured_query_in_generation", inspect_new)
+    controller = AdmissionController(max_concurrent_queries=2)
+    query = "Karl-Anthony Towns stats in 2025-26"
+    try:
+        with ThreadPoolExecutor(max_workers=1) as callers:
+            old_answer = callers.submit(
+                controller.run_query,
+                "old-client",
+                lambda: query_service.execute_natural_query(query),
+            )
+            try:
+                assert old_pinned.wait(8)
+                client.objects[pointer] = new[pointer]
+                new_answer = controller.run_query(
+                    "new-client",
+                    lambda: query_service.execute_structured_query(
+                        "player_game_summary", player="Karl-Anthony Towns", season="2025-26"
+                    ),
+                )
+            finally:
+                new_finished.set()
+            old_result = old_answer.result(timeout=8)
+        expected = _expected_summary(_player_games(TOWNS_ID, "2025-26"))
+        _assert_summary_matches(_summary_rows(old_result)[0], "Karl-Anthony Towns", expected)
+        _assert_summary_matches(_summary_rows(new_answer)[0], "Karl Anthony Towns", expected)
+        assert observed == {
+            "old_before": (frozenset({TOWNS_ID}), "Karl-Anthony Towns"),
+            "new": (frozenset({TOWNS_ID, "99999"}), "Karl Anthony Towns"),
+            "old_after": (frozenset({TOWNS_ID}), "Karl-Anthony Towns"),
+        }
+        assert any("More than one player" in note for note in new_answer.result.notes)
+        assert not any("More than one player" in note for note in old_result.result.notes)
+    finally:
+        controller._executor.shutdown(wait=True)
+        entity_resolution.reset_player_index()
+        reset_data_source_cache()
+
+
+@pytest.mark.parametrize("declared_ledger", [True, False])
+def test_required_identity_integrity_reaches_natural_and_structured_consumers(
+    tmp_path, monkeypatch, identity_snapshot_files, declared_ledger
+):
+    from nbatools.data_source import DataSourceError, reset_data_source_cache
+    from nbatools.query_service import execute_natural_query, execute_structured_query
+    from tests.test_data_source import FakeR2Client, _configure_r2, published_generation_objects
+
+    season = "raw/player_game_stats/2025-26_regular_season.csv"
+    sources = dict(identity_snapshot_files)
+    if declared_ledger:
+        sources["metadata/player_names.csv"] = (
+            b"player_id,player_name,season,first_seen\n1626157,Karl-Anthony Towns,2025-26,0\n"
+        )
+    objects, _ = published_generation_objects("identity", sources)
+    objects[f"generations/identity/{season}"] = b"corrupt season object"
+    if declared_ledger:
+        objects.pop("generations/identity/metadata/player_names.csv")
+    _configure_r2(monkeypatch, tmp_path, FakeR2Client(objects))
+    entity_resolution.reset_player_index()
+
+    try:
+        with pytest.raises(DataSourceError):
+            execute_natural_query("Karl-Anthony Towns stats in 2025-26")
+        with pytest.raises(DataSourceError):
+            execute_structured_query(
+                "player_game_summary", player="Karl-Anthony Towns", season="2025-26"
+            )
+    finally:
+        entity_resolution.reset_player_index()
+        reset_data_source_cache()
+
+
+@pytest.mark.parametrize(
+    "invalid_row",
+    [
+        "not-a-player-id,Karl-Anthony Towns,2025-26,1",
+        "1626157,Karl Anthony Towns,2025-26,inf",
+        "1626157,Karl Anthony Towns,2025-26,0",
+        "1626157,Karl Anthony Towns,2025-26,1.5",
+        "1626157,Karl Anthony Towns,2025-27,1",
+        "1626157,Karl Anthony Towns,,1",
+    ],
+)
+def test_manifest_authenticated_but_invalid_ledger_fails_closed(
+    tmp_path, monkeypatch, identity_snapshot_files, invalid_row
+):
+    from nbatools.data_source import DataSourceError, reset_data_source_cache
+    from nbatools.query_service import execute_natural_query, execute_structured_query
+    from tests.test_data_source import FakeR2Client, _configure_r2, published_generation_objects
+
+    ledger = (
+        "player_id,player_name,season,first_seen\n"
+        f"1626157,Karl-Anthony Towns,2025-26,0\n{invalid_row}\n"
+    ).encode()
+    objects, _ = published_generation_objects(
+        "identity", identity_snapshot_files | {"metadata/player_names.csv": ledger}
+    )
+    _configure_r2(monkeypatch, tmp_path, FakeR2Client(objects))
+    entity_resolution.reset_player_index()
+    try:
+        with pytest.raises(DataSourceError, match="Required published player name ledger"):
+            execute_natural_query("Karl-Anthony Towns stats in 2025-26")
+        with pytest.raises(DataSourceError, match="Required published player name ledger"):
+            execute_structured_query(
+                "player_game_summary", player="Karl-Anthony Towns", season="2025-26"
+            )
+    finally:
+        entity_resolution.reset_player_index()
+        reset_data_source_cache()
+
+
+def test_failed_concurrent_identity_build_publishes_nothing_and_recovers(tmp_path, monkeypatch):
+    from concurrent.futures import Future, ThreadPoolExecutor
+    from threading import Event
+
+    from nbatools.data_source import DataSourceError, reset_data_source_cache
+    from tests.test_data_source import (
+        FakeBody,
+        FakeR2Client,
+        _configure_r2,
+        published_generation_objects,
+    )
+
+    builder_entered = Event()
+    waiter_entered = Event()
+    data = b"player_id,player_name,season,first_seen\n2229,Mike James,2025-26,0\n"
+    ledger = "metadata/player_names.csv"
+    key = f"generations/identity/{ledger}"
+
+    class ObservedFuture(Future):
+        def result(self, timeout=None):
+            waiter_entered.set()
+            return super().result(timeout)
+
+    class OneCorruptReadClient(FakeR2Client):
+        attempts = 0
+
+        def get_object(self, *, Bucket, Key):
+            if Key == key:
+                self.attempts += 1
+                if self.attempts == 1:
+                    builder_entered.set()
+                    assert waiter_entered.wait(8)
+                    # Preserve length so the authenticated digest is the check
+                    # that prevents a plausible but incorrect identity.
+                    return {"Body": FakeBody(data.replace(b"2229", b"2228"))}
+            return super().get_object(Bucket=Bucket, Key=Key)
+
+    objects, _ = published_generation_objects("identity", {ledger: data})
+    client = OneCorruptReadClient(objects)
+    _configure_r2(monkeypatch, tmp_path, client)
+    monkeypatch.setattr(entity_resolution, "Future", ObservedFuture)
+    entity_resolution.reset_player_index()
+    try:
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            first = pool.submit(entity_resolution.player_ids_for_name, "Mike James")
+            assert builder_entered.wait(8)
+            second = pool.submit(entity_resolution.player_ids_for_name, "Mike James")
+            for pending in (first, second):
+                with pytest.raises(DataSourceError, match="published digest"):
+                    pending.result(timeout=8)
+        assert client.attempts == 1
+        assert entity_resolution.player_ids_for_name("Mike James") == {"2229"}
+        assert entity_resolution.canonical_player_names_by_id()["2229"] == "Mike James"
+        assert client.attempts == 2
+    finally:
+        entity_resolution.reset_player_index()
+        reset_data_source_cache()

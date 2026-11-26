@@ -62,7 +62,7 @@ class TestResolvePlayer:
         from nbatools.commands.entity_resolution import _get_player_first_name_index
 
         idx = _get_player_first_name_index()
-        assert idx.get("shai") == ["Shai Gilgeous-Alexander"]
+        assert idx.get("shai") == ("Shai Gilgeous-Alexander",)
 
     def test_shared_first_name_stays_ambiguous(self):
         # Shared first names ("jalen") must never auto-resolve.
@@ -253,7 +253,7 @@ class TestResolvePlayerInQuery:
             raise AssertionError("player index should not be built")
 
         monkeypatch.setattr(entity_resolution, "_build_player_full_name_index", fail_build)
-        monkeypatch.setattr(entity_resolution, "_build_player_index", fail_build)
+        monkeypatch.setattr(entity_resolution, "_build_identity_bundle", fail_build)
 
         parsed = parse_query("Who leads the NBA in points per game this season?")
 

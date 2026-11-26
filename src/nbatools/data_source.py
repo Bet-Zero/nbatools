@@ -158,7 +158,7 @@ def _data_source_config_key() -> str:
         return f"local:{Path(root).resolve()}"
     config = load_r2_config()
     cache_dir = _r2_cache_root(config)
-    return f"r2:{config.bucket_name}:{cache_dir}"
+    return f"r2:{config.account_id}:{config.bucket_name}:{cache_dir}"
 
 
 def reset_data_source_cache() -> None:

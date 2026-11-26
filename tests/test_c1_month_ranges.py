@@ -234,8 +234,15 @@ def landmark_named_players(monkeypatch, request):
     monkeypatch.setattr(entity_resolution, "data_source_cache_key", lambda: "landmark-names")
     monkeypatch.setattr(
         entity_resolution,
-        "_read_player_names",
-        lambda data_dir=None: {"Rakeem Christmas", "Tim Thanksgiving", "LeBron James"},
+        "_read_identity_rows",
+        lambda: (
+            [
+                pd.DataFrame(
+                    {"player_name": ["Rakeem Christmas", "Tim Thanksgiving", "LeBron James"]}
+                )
+            ],
+            None,
+        ),
     )
 
 

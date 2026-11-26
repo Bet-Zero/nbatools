@@ -879,9 +879,9 @@
     {
       "path": "src/nbatools/commands/entity_resolution.py",
       "old_sha256": "bd8f035fc6bc9cf7a62c46ed343a7f91b2eb62d10bb0dfdd6bb7b0e5f992f414",
-      "reviewed_sha256": "3f65cf6ae98297e251931f01b34f8e374cdd10a2c1f4ff8a904a0a8613d41215",
-      "reviewed_functions": "resolve_player_in_query; mask_player_owned_team_words; resolve_team_in_query",
-      "semantic_reach": "All original 22 person names lack internal team-alias words and initial periods. Their complete-name-before-alias precedence and identities remain unchanged. The new substring precheck is equivalent to the following bounded regex; broader full-name lookup adds no different matching person to these exact names. Team masking does not erase any independent team mention.",
+      "reviewed_sha256": "092962e205642d1918122e3649a5d6f947130c736524154e72eae199fbaafcf8",
+      "reviewed_functions": "resolve_player_in_query; mask_player_owned_team_words; resolve_team_in_query; immutable player identity ledger, indexes, construction and fallback",
+      "semantic_reach": "All original 22 person names lack internal team-alias words and initial periods. Their complete-name-before-alias precedence and identities remain unchanged. The new substring precheck is equivalent to the following bounded regex; broader full-name lookup adds no different matching person to these exact names. Team masking does not erase any independent team mention. Pins names, IDs, spelling, and matching indexes to the selected manifest and fails closed on required corrupt data. With the exact restored Cleveland snapshot, the complete API-shaped results for the original 22 historical questions were unchanged from the previous reviewed runtime. This is a semantic delta check and does not create new hosted captures.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1251,8 +1251,8 @@
     {
       "path": "src/nbatools/data_source.py",
       "old_sha256": "cebe4cbd4e6a1451b0c383072eaaf47ef9b53e7b5a3148f4b5b921f04c1b9474",
-      "reviewed_functions": "_resolve_active_data_generation; data_generation_context; data_source_cache_key; _R2DataSource manifest and object reads",
-      "semantic_reach": "Only a present preview manifest environment pin triggers the additional preview-only manifest check; an absent pin resolves the same existing request/environment/active generation. No original22 production request carries this pin, and no HTTP input can select it. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. The R2 request now pins the active generation and its published manifest checksum together. Manifest-listed data is the same byte-exact input to the original queries, and absent optional data stays absent, including the 2026-27 case. This adds integrity checks and generation-scoped cache binding without changing historical query inputs, arithmetic or labels.",
+      "reviewed_functions": "_resolve_active_data_generation; data_generation_context; data_source_cache_key; _R2DataSource manifest and object reads; R2 source cache identity",
+      "semantic_reach": "Only a present preview manifest environment pin triggers the additional preview-only manifest check; an absent pin resolves the same existing request/environment/active generation. No original22 production request carries this pin, and no HTTP input can select it. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. The R2 request now pins the active generation and its published manifest checksum together. Manifest-listed data is the same byte-exact input to the original queries, and absent optional data stays absent, including the 2026-27 case. This adds integrity checks and generation-scoped cache binding without changing historical query inputs, arithmetic or labels. Separates accounts even with the same bucket and cache path, retaining generation and manifest scope. The retained 22-question replay on the exact snapshot returned identical payloads.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1277,7 +1277,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "0b65a2ae0d349e126fbb6d0ad056e9946e4609aaf9e5b98591e6449e252d9ea5"
+      "reviewed_sha256": "b350d42007975511f92a1b12960d5f4243af2c8c34d77a0ceecd54344fb4244b"
     },
     {
       "path": "src/nbatools/development_data.py",
@@ -1375,9 +1375,9 @@
     {
       "path": "src/nbatools/query_service.py",
       "old_sha256": "8a9c15d23ebc0a0f7a7660789e5532f94d81956204e5eb236278fd0dc5dd3fcf",
-      "reviewed_sha256": "038f2f1ff6c183278793a6fb6bcb84bb74bab993797bb28f774d47de6d79e9d4",
-      "reviewed_functions": "Participation scope metadata; structured team_record scope",
-      "semantic_reach": "New scope labels/calculation dispatch attach only to team_record with/without. Original22 have no such route/predicate combination; S4 uses split routes. New optional metadata on plain team records is not an asserted numerical or rendered field. Existing ownership and original44 captures untouched.",
+      "reviewed_sha256": "b716bdeaaaf704fc5a8eeb78ffbfb659c80338cfcb16b8106eb028f87d000467",
+      "reviewed_functions": "Participation scope metadata; structured team_record scope; natural and structured pinned identity lifetime",
+      "semantic_reach": "New scope labels/calculation dispatch attach only to team_record with/without. Original22 have no such route/predicate combination; S4 uses split routes. New optional metadata on plain team records is not an asserted numerical or rendered field. Existing ownership and original44 captures untouched. Keeps the first identity reference in each current request's generation through execution. The retained 22-question replay on the exact snapshot returned identical payloads, including filters and sections.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
