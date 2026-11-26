@@ -108,19 +108,19 @@ jobs:
       automatic: ${{ steps.resolve.outputs.automatic }}
     steps:
       - name: Check out the resolver from this workflow revision
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ github.workflow_sha }}
           path: workflow
           persist-credentials: false
       - name: Check out the exact push or requested manual revision
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ inputs.backup_generation != '' && github.sha || github.event_name == 'push' && github.sha || inputs.target_ref }}
           fetch-depth: 2
           path: candidate
           persist-credentials: false
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
           python-version: "3.11"
       - name: Validate request before installation or credential access
@@ -160,17 +160,27 @@ jobs:
       NBATOOLS_DATA_GENERATION: ${{ needs.request.outputs.generation }}
     steps:
       - name: Check out the resolved candidate
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ needs.request.outputs.candidate_sha }}
           persist-credentials: false
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
-          python-version: "3.11"
+          python-version: ${{ github.event_name == 'workflow_dispatch' && hashFiles('uv.lock') == '' && '3.11' || '3.12' }}
           cache: pip
-      - name: Install project
-        run: pip install -e ".[dev,api]"
+      - name: Install exact Python dependencies
+        env:
+          REQUEST_EVENT: ${{ github.event_name }}
+        run: |
+          if [[ "$REQUEST_EVENT" == workflow_dispatch && ! -f uv.lock ]]; then
+            echo "Historical manual target without uv.lock; compatibility check only."
+            python -m pip install -e ".[dev,api]"
+          else
+            python -m pip install 'uv==0.13.5'
+            uv sync --locked --python "$(command -v python)" --extra dev --extra api
+            printf '%s\n' "$PWD/.venv/bin" >> "$GITHUB_PATH"
+          fi
 
       - name: Verify read-only data access and pin one immutable generation
         id: pin
@@ -241,15 +251,26 @@ jobs:
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
       NBATOOLS_DATA_GENERATION: ${{ needs.preflight.outputs.generation }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ needs.preflight.outputs.candidate_sha }}
           persist-credentials: false
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
-          python-version: "3.11"
+          python-version: ${{ github.event_name == 'workflow_dispatch' && hashFiles('uv.lock') == '' && '3.11' || '3.12' }}
           cache: pip
-      - run: pip install -e ".[dev,api]"
+      - name: Install exact Python dependencies
+        env:
+          REQUEST_EVENT: ${{ github.event_name }}
+        run: |
+          if [[ "$REQUEST_EVENT" == workflow_dispatch && ! -f uv.lock ]]; then
+            echo "Historical manual target without uv.lock; compatibility check only."
+            python -m pip install -e ".[dev,api]"
+          else
+            python -m pip install 'uv==0.13.5'
+            uv sync --locked --python "$(command -v python)" --extra dev --extra api
+            printf '%s\n' "$PWD/.venv/bin" >> "$GITHUB_PATH"
+          fi
 
       - name: Run Raw QA (full corpus, or the named cases when targeted)
         env:
@@ -279,7 +300,7 @@ jobs:
 
       - name: Upload Raw QA evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: raw-qa-${{ github.run_id }}
           path: outputs/raw_query_answer_qa/r2_validation/
@@ -305,15 +326,26 @@ jobs:
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
       NBATOOLS_DATA_GENERATION: ${{ needs.preflight.outputs.generation }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ needs.preflight.outputs.candidate_sha }}
           persist-credentials: false
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
-          python-version: "3.11"
+          python-version: ${{ github.event_name == 'workflow_dispatch' && hashFiles('uv.lock') == '' && '3.11' || '3.12' }}
           cache: pip
-      - run: pip install -e ".[dev,api]"
+      - name: Install exact Python dependencies
+        env:
+          REQUEST_EVENT: ${{ github.event_name }}
+        run: |
+          if [[ "$REQUEST_EVENT" == workflow_dispatch && ! -f uv.lock ]]; then
+            echo "Historical manual target without uv.lock; compatibility check only."
+            python -m pip install -e ".[dev,api]"
+          else
+            python -m pip install 'uv==0.13.5'
+            uv sync --locked --python "$(command -v python)" --extra dev --extra api
+            printf '%s\n' "$PWD/.venv/bin" >> "$GITHUB_PATH"
+          fi
 
       - name: Run real-data filter execution sweep
         run: |
@@ -323,7 +355,7 @@ jobs:
 
       - name: Upload sweep evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: filter-sweep-${{ github.run_id }}
           path: outputs/filter_execution_sweep/r2_validation.json
@@ -351,15 +383,26 @@ jobs:
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
       NBATOOLS_DATA_GENERATION: ${{ needs.preflight.outputs.generation }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ needs.preflight.outputs.candidate_sha }}
           persist-credentials: false
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
-          python-version: "3.11"
+          python-version: ${{ github.event_name == 'workflow_dispatch' && hashFiles('uv.lock') == '' && '3.11' || '3.12' }}
           cache: pip
-      - run: pip install -e ".[dev,api]"
+      - name: Install exact Python dependencies
+        env:
+          REQUEST_EVENT: ${{ github.event_name }}
+        run: |
+          if [[ "$REQUEST_EVENT" == workflow_dispatch && ! -f uv.lock ]]; then
+            echo "Historical manual target without uv.lock; compatibility check only."
+            python -m pip install -e ".[dev,api]"
+          else
+            python -m pip install 'uv==0.13.5'
+            uv sync --locked --python "$(command -v python)" --extra dev --extra api
+            printf '%s\n' "$PWD/.venv/bin" >> "$GITHUB_PATH"
+          fi
 
       - name: Required needs_data tests against the pinned candidate and generation
         env:
@@ -373,7 +416,7 @@ jobs:
 
       - name: Upload required numerical evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: required-numerical-${{ github.run_id }}
           path: outputs/required_data_validation/

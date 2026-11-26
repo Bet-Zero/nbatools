@@ -82,6 +82,7 @@ def run_scope(repo, base, head, *, mode="ci", event="pull_request"):
         (["docs/executable-example.md"], True, True),
         (["frontend/package-lock.json"], True, True),
         (["pyproject.toml"], True, True),
+        (["uv.lock"], True, True),
         (["contracts/query_transport.json"], True, True),
         (["AGENTS.md", "unclassified-input.json"], True, True),
         (["AGENTS.md", "src/nbatools/query_service.py"], True, True),
@@ -118,6 +119,27 @@ def test_runtime_then_receipt_cannot_hide_unbuilt_or_unchecked_runtime(history):
     assert run_scope(repo, intermediate, head)[1]["application"] is False
     assert run_scope(repo, base, head)[1]["application"] is True
     assert run_scope(repo, base, head, mode="vercel")[0] == 1
+
+
+def test_first_preview_checkpoint_can_reuse_the_platforms_built_base(history):
+    repo, built = history
+    git(repo, "checkout", "-qb", "first-preview")
+    (repo / "AGENTS.md").write_text("planning update\n")
+    head = commit(repo)
+    assert run_scope(repo, built, head, mode="vercel")[0] == 0
+    assert run_scope(repo, "", head, mode="vercel")[0] == 1
+
+
+def test_first_preview_does_not_use_an_unbuilt_main_as_its_base(history):
+    repo, built = history
+    (repo / "pyproject.toml").write_text("unbuilt dependency input\n")
+    unbuilt_main = commit(repo)
+    git(repo, "checkout", "-qb", "first-preview", unbuilt_main)
+    (repo / "AGENTS.md").write_text("planning update\n")
+    head = commit(repo)
+    assert run_scope(repo, unbuilt_main, head)[1]["application"] is False
+    assert run_scope(repo, built, head, mode="vercel")[0] == 1
+    assert run_scope(repo, "", head, mode="vercel")[0] == 1
 
 
 @pytest.mark.parametrize("base", ["", "0" * 40, "not-a-sha", "--help", "$(touch unsafe)"])
@@ -277,7 +299,10 @@ def test_full_backstop_replaces_duplicate_fast_execution_without_narrowing_suite
         job = jobs[name]
         assert job["strategy"]["matrix"]["python-version"] == ["3.11", "3.12", "3.13"]
         assert {"run": command} in job["steps"]
-        assert {"run": 'pip install -e ".[dev,api]"'} in job["steps"]
+        install = next(step["run"] for step in job["steps"] if "uv sync" in step.get("run", ""))
+        assert "python -m pip install 'uv==0.13.5'" in install
+        assert 'uv sync --locked --python "$(command -v python)" --extra dev --extra api' in install
+        assert '"$PWD/.venv/bin" >> "$GITHUB_PATH"' in install
     makefile = (ROOT / "Makefile").read_text()
     assert 'test-unit:\n\t$(PYTEST) -m "not needs_data and not slow"' in makefile
     assert "test:\n\t$(PYTEST)" in makefile
