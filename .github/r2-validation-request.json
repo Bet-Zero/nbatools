@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "eefef4d7cce25df7183d5d01eb0b9a6ee9f5b2c4",
+  "generation": "availability-cleveland-2024-v3-20261124",
+  "tests": ["tests/cloud_operations_real_data.py::test_cleveland_rollback_preflight_readonly"],
+  "raw_qa_cases": []
+}
