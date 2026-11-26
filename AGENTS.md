@@ -1,9 +1,9 @@
 # AGENTS.md
 
 Rules for coding agents in `Bet-Zero/nbatools` (NBA Tools, not ScoutZero).
-This file holds only current rules. Older dated layers were removed on 2026-11-12;
-their full text is in Git history (`git show 95cb705:AGENTS.md`). Shorter wording
-is not permission: where this file is silent, the older safeguard still applies.
+This file holds the standing execution rules. The Resume checkpoint records
+current work and links the active execution plan. Current explicit owner
+decisions control. Historical revisions are evidence of past decisions.
 
 ## Start of a session
 
@@ -12,7 +12,8 @@ is not permission: where this file is silent, the older safeguard still applies.
    choosing between milestones.
 2. Check live `main`, open PRs and any branch you are resuming. Preserve newer
    work; never reset or force-push another session's branch.
-3. Do the checkpoint's next action. Read only the code, docs and PRs it needs.
+3. Take the checkpoint's next action. Read the complete work package and its
+   relevant dependencies, contracts, code, PRs and runbooks.
    Do not restart a whole-project audit or ask the owner for test questions.
 
 ## The product
@@ -48,11 +49,19 @@ Data scope is the 1996-97 season onward.
   season, conditions and grain before checking values. Expected NBA values come
   from qualified source rows or controlled fixtures, never from the app's own
   calculation. Two engine paths agreeing is not an independent check.
+- Preserve explicit subjects, condition ownership, sample order, metric basis,
+  grouping, ranking and result grain. Ordinary shorthand and grammar variation
+  remain valid; do not silently omit clauses, invent metrics or force a phrase.
 - **Fix shared logic, not phrases.** Repair the shared interpretation or
   calculation; don't add per-question special cases. A third patch for the
   same root cause means the shared representation needs fixing.
 - **No rewrite.** Keep the engine, calculations, result contracts, React app,
-  immutable data generations and useful tests. Splitting files is not progress.
+  immutable data generations and useful tests. Use existing fields and helpers
+  first. Introduce a small typed representation only for a demonstrated problem.
+  Read [routing guardrails](docs/operations/parser_routing_growth_guardrails.md)
+  and [promotion rules](docs/operations/feature_promotion_rules.md) for relevant
+  changes. A language approach must be evaluated on verified engine capability.
+  It cannot invent NBA values or execute unrestricted generated code or SQL.
 
 ## Who decides what
 
@@ -68,11 +77,14 @@ recommendation and the smallest exact action. Never fake an approval.
 Standing limits until B changes them:
 
 - Routine, bounded collection of public NBA data through the existing approved
-  routes is allowed (owner, 2026-11-01). Automatic or unattended refresh is not.
+  routes, tools, credentials and cost limits is allowed for authorized work
+  (owner, 2026-11-01). This includes development staging. Automatic or unattended
+  refresh and publication require explicit authority.
 - Runtime and validation credentials stay read-only. Publication stays behind the
   existing protected approval. Fixed-plan limits and $0 metered overage stay.
 - Don't change Vercel settings, secrets, deployment protection, branch
-  protection or R2 publication gates. Public query-feedback persistence stays
+  protection or R2 publication gates. Resource, duration, access and cost
+  settings remain reserved even when represented in a repository file. Public query-feedback persistence stays
   disabled. No new paid service, model access or hosting migration.
 - Launch and branding are B's decisions. No commercial data-provider
   investigation. The acquisition laptop is for acquisition and transfer only,
@@ -84,12 +96,14 @@ Standing limits until B changes them:
 
 - **One lead** owns integration and the checkpoint. **One writer** owns the
   shared parser/request/service code at a time. At most one other truly
-  independent lane, plus a separate checker. Don't invent parallel capacity, and
+  independent lane, plus a separate checker. Set file and contract ownership
+  first. Isolate concurrent worktrees, pin tested data and leave other writers'
+  active files alone. Don't invent parallel capacity, and
   never claim background work that isn't actually running.
 - One PR per logical unit. Reproduce the defect, fix it, run focused tests,
   get review where required, pass the gates, merge.
 - Before starting optional work, write one line in the PR saying which Core-1
-  requirement or confirmed defect it serves. Other discoveries go in the
+  requirement, confirmed defect or necessary dependency it serves. Other discoveries go in the
   checkpoint's carry-forward list, not a new tracker or ticket.
 - Never merge a known wrong answer, or failing runtime just to land a handoff.
 - Report executed, skipped and unavailable tests honestly. A red advisory job
@@ -169,10 +183,13 @@ good sample. Most past verifier rework came from skipping this.
   statistical scope and explicit unknowns. Never fabricate a passed manifest or
   substitute different data. Don't retry a diagnosed blocked source without new
   evidence.
-  Corrections create new immutable versions; never mutate data a test is using.
+  Check the active generated inventory, verify receipt, identity and schema
+  before use, and preserve the existing source, clock, membership, readiness
+  and 24-hour freshness gates. Capture time or an indexed file alone doesn't
+  establish coverage. Corrections create new immutable versions; never mutate data a test is using.
   Fixtures are never published as real data. Never relabel old data as fresh.
 - Provisional development data must stay opt-in and isolated, carry a visible
-  provisional status through the API and exports, and never reach public or
+  provisional status through the API and exception exports, and never reach public or
   production behavior. It is not a validator bypass.
 - Useful commands: `make test-parser`, `test-query`, `test-engine`, `test-api`,
   `test-output` while editing; `make test-preflight` or `make test` for high
@@ -188,7 +205,12 @@ good sample. Most past verifier rework came from skipping this.
 - Durable docs go in `docs/reference/` (behavior), `docs/architecture/`,
   `docs/operations/` (runbooks), `docs/audits/` (history), per
   `docs/operations/working_and_archive_policy.md`. Task material goes in
-  `working/`. Don't create another status system.
+  `working/`. Don't create another status system. Keep
+  `working/nba-tools-completion-program/` tracked, including after plan closure
+  while any operational or evidence consumer depends on it. Before moving or
+  archiving it, migrate every affected consumer, retain required evidence and
+  prove clean checkout and independent restore. Any reserved archive or
+  destructive action still needs its actual authority.
 - Raw QA human-review fields keep their literal meaning. Never invent
   `human_review_complete` or a named human reviewer.
 - Owner updates lead with **Now answers; Still unfinished; Verification; Next;

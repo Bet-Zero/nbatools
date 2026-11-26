@@ -11,84 +11,59 @@ evidence; don't extend it.
 
 ## Resume checkpoint
 
-**Lead: Codex, November 25.** [PR #640](https://github.com/Bet-Zero/nbatools/pull/640) is merged. Workflow main is
-`11ab5aad1db7897fec0b871e6d9dba77dd6929e3`; production runtime `997efe5d` is READY.
-The limited Core-1 snapshot remains closed; full original acceptance and
-league-wide participation remain unfinished.
+**November 26, 2026. Lead and operations writer: Codex.** Main
+`3dd58a0cf72daf934719523e3fdf42f57ca82846` (PR #644), production deployment
+`dpl_E4SfKHXdhXx2dnKbL2qnGeSMaXN9` READY. The only other open PR is blocked
+[#462](https://github.com/Bet-Zero/nbatools/pull/462). No other writer or background
+worker is active. [Execution plan](execution-plan.md)
 
-**Candidate uploaded and independently verified, NOT ACTIVATED:** owner-approved
-[run45391469130](https://github.com/Bet-Zero/nbatools/actions/runs/45391469130)
-completed preparation, protected upload, separate read-only verification and
-[durable receipt](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-45391469130).
-The actual receipt is `candidate_independently_verified_not_activated`, SHA256
-`b49eed924b26a6c2d5ad0cd0d8c654e37a811a657b8a889548f615c38ebfbd70`.
-- Package `cleveland-team-appearances-2024-v1`; publisher `564f2e05`.
-- Generation `availability-cleveland-2024-v3-20261124`; manifest
-  `d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034`.
-- 1,461 manifest-listed files/423,517,896 bytes; upload ceiling 1,462 candidate
-  PUTs and **zero pointer PUTs**. Approved conservative storage projection
-  4,048,614,400 bytes is below the unchanged 10 GB limit.
-- The production pointer stayed on `availability-season-inactive-2024-v1-20261116`,
-  manifest `0abce6f8261957df6cffc19ce24a4ed408a548e1292a33456ce55c0481903ecc`.
-  Every uploaded body passed independent readback. Existing data and backups
-  remain intact; candidate upload intentionally skipped production backup.
-- The owner approved the existing environment gate as `Bet-Zero`; no bypass,
-  broader credential or repeat upload occurred. The pending-run main freeze has
-  ended. The exact packet and source lineage remain in PR637–639 and the receipt.
+**Cleveland is active and its historical answers and backup are verified.**
+The owner approved [run 45763092143](https://github.com/Bet-Zero/nbatools/actions/runs/45763092143).
+One conditional pointer write and zero snapshot uploads selected
+`availability-cleveland-2024-v3-20261124`, manifest
+`d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034`.
+The independent receipt records 1,461 verified objects, all 87 registered public
+answers and the retained previous manifest. Cleveland's 2024-25 record without
+Caris LeVert is 31–13 in 44 games. TEAM appearances cover all 21 pilot players;
+rostered missed-game coverage remains 14/21. [Activation receipt](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-45763092143)
 
-**Functional improvement still unavailable on the public website:** all 82
-Cleveland 2024-25 side lists support TEAM WITH/WITHOUT for all 21 original pilot
-candidates. Without LeVert 31–13, Hunter 44–11, Curry 64–18; WITH Curry is
-known-empty, not 0–0. Rostered missed games remain 14/21 complete, seven cases /
-318 cells unknown. Compatible v2 sources are included; quarantines, original
-source authority and unknowns are preserved. Production has not selected this
-candidate.
+**Recovery and proof.** The separate credential-free runner restored the 1,461
+files byte-exact from the 66,763,469-byte candidate archive. The qualified restore
+path checked every hash and reused source qualification. A fresh real-loader
+probe of that restored copy is still due under W2. The previous generation
+`availability-season-inactive-2024-v1-20261116` retains its exact backup and
+restore. No prospective candidate ZIP preflight or production rollback rehearsal
+was found in the activation evidence. Reuse the accepted PR #643 cold proof
+(5.8248 s and six follow-ups) and #644 independent review and post-merge CI.
+[Candidate backup](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-45763092143)
+· [Previous backup](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-44062070685)
+· [PR #643](https://github.com/Bet-Zero/nbatools/pull/643)
+· [PR #644](https://github.com/Bet-Zero/nbatools/pull/644)
 
-**Verification reused:** numerical run45375696531 actually executed/passed its
-one required test with zero required skips: source preservation, 45 prior checks,
-44 TEAM controls and seven rostered unknown controls. Blocking pre/post CI for
-PR637/638 passed; PR639 took its passing light path. Source/deployed evidence
-from PR633–635 retains its original scope. Historical failed receipts and the
-informational development-security failure are preserved. No full-suite rerun
-or new NBA acquisition was needed for upload verification.
+**Live and stabilization remain open.** Public readiness reports 503 with sole
+`new_season_not_loaded`, on the intended Cleveland generation. Scheduled
+monitor run 45768634065 failed before its representative query. W5A logs for
+the current deployment show Python 3.12 and uv 0.13.5, initial install from
+`pyproject.toml` and subsequent build-step installs from an untracked build
+`uv.lock`. The logs omit a complete installed inventory and say that Active CPU
+billing ignores the configured memory value. Original K08 remains 16 PASS /
+26 MISSING DATA / 4 LIVE. Full original acceptance, Live freshness, league-wide
+participation, K12 timing, DQ-005 and the 484 labeled unavailable rates retain
+their existing scope and authority.
+[Monitor run](https://github.com/Bet-Zero/nbatools/actions/runs/45768634065)
+· [Production build](https://vercel.com/zeros-projects-686e97fc/nbatools/E4SfKHXdhXx2dnKbL2qnGeSMaXN9)
 
-**Hosted cold-load qualification passed.** [PR #643](https://github.com/Bet-Zero/nbatools/pull/643)
-fixes the serial original-source downloads and source replay in the query path.
-The published reader checks the pinned manifest and the bytes it consumes. The
-prior 22.85-second timeout remains recorded in [PR #642](https://github.com/Bet-Zero/nbatools/pull/642).
-
-The first POST on the [protected preview](https://vercel.com/zeros-projects-686e97fc/nbatools/2eQNvuDvCrnqUNebDxHWG9e6REYT)
-returned the Cavaliers' 2024-25 record without Caris LeVert, **31–13 in 44 games**,
-in **5.825 seconds** (20-second gate). Preview `5986dde5` adds only the existing
-candidate pins to independently reviewed runtime `ff0cb12b`. Evidence showed
-empty disk and frame caches, invocation one and one completed appearance load.
-Request `sfo1::iad1::kbzhj-1795601143376-324c21674a03`, response SHA256
-`ed8fbeb85f79354446dacb7bdad3a48ec9bcf585f7b8ddd86e8079646d09a956`.
-All six follow-up controls passed. The five-minute link was revoked. The
-[targeted R2 run](https://github.com/Bet-Zero/nbatools/actions/runs/45589761409)
-confirmed the exact game IDs and fetched no original source files.
-
-**Public activation remains pending.** Reuse this exact upload and hosted proof
-for the separate protected activation gate. The current production pointer is
-still on the earlier generation. Production reports `new_season_not_loaded`
-for 2026-27, so strict publication verification cannot pass on the current
-inputs. No pointer write or additional data acquisition was authorized.
-
-**Separate unfinished requirements:** original K08 remains 16 PASS / 26 MISSING
-DATA / 4 LIVE; original questions, controlled positives and acceptance baseline
-are unchanged. The new semantics do not upgrade the 26 cases. Current-season
-readiness remains 503/new_season_not_loaded; Live collection/publication,
-24-hour freshness, literal-current cases and K12 timing are separate. DQ-005,
-484 unavailable rates and original failure receipts remain preserved. No new
-collection, historical backfill, spending, automatic refresh or Live work is
-authorized.
+**Next.** Land W0 after independent navigation and safeguard review and light
+CI, then finish W4A run-all monitoring with the existing strict overall verdict.
+Keep monitor alert and recovery policy changes under their actual authority.
+The checkout's existing `work` branch and the saved work below are preserved.
 
 ## Preserved scope
 
 - **Acceptance contract:** [acceptance-baseline-pr582.md](acceptance-baseline-pr582.md),
   byte-exact, SHA256 `433f49eb4467401184f15231e0d80520a9d8bef44eb81c5bb4b3988f9f916bfd`.
   Its status cells are historical; its requirements still apply, as revised only by
-  B's scope decisions recorded above.
+  the owner's recorded scope decisions, including [the November 14 decisions](https://github.com/Bet-Zero/nbatools/pull/611).
 - **Bindings per group:** [K01](k01-binding.md), [K02](k02-binding.md),
   [K03](k03-binding.md), [K04](k04-binding.md), [K05](k05-binding.md),
   [K06](k06-binding.md), [K07](k07-binding.md), [K09](k09-binding.md),
@@ -96,7 +71,7 @@ authorized.
   [46 original PR462 positives](https://github.com/Bet-Zero/nbatools/pull/462#issuecomment-6440042622).
 - **Carry-forward scope:** section 8 of the baseline lists the work Core-1 does
   not complete (wider combinations, roles/context data, play-by-play/lineups,
-  unattended freshness, guided tools). Pick the next task from it after Core-1.
+  unattended freshness, guided tools). Use the execution plan for the current sequence.
 - **Saved unreviewed work:** Tatum branch at
   `b835874e7c31dc29c38d62fcda263af404c881fe`. Don't treat it as accepted or
   overwrite it.
