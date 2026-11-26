@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "df803872c2d87840272968b1d12a38adcbf57058",
+  "generation": "availability-cleveland-2024-v3-20261124",
+  "tests": [
+    "tests/test_b1_rankings_and_counts_real_data.py::test_broad_three_point_ranking_matches_all_raw_seasons",
+    "tests/test_b1_rankings_and_counts_real_data.py::test_qualified_rate_leaders_match_raw_totals"
+  ],
+  "raw_qa_cases": []
+}
