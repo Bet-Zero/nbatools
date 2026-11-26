@@ -27,6 +27,10 @@ REPOSITORY = "Bet-Zero/nbatools"
 ENVIRONMENT = "r2-publication"
 OWNER_ID = 205859440
 MAX_ARCHIVE = 32 * 1024 * 1024
+BACKUP_MAX_FILES = 3000
+BACKUP_MAX_BYTES = 1_000_000_000
+BACKUP_MAX_ARCHIVE = 200_000_000
+BACKUP_MAX_MANIFEST_BYTES = 5_000_000
 
 
 def digest(data):
@@ -553,11 +557,15 @@ def prepare_activation(name, publisher, work, *, expected=None):
     base_pointer, _, base_hash = verify_pointer_manifest(client, bucket, base)
     if base_pointer != upload["base_pointer"] or base_hash != upload["base_manifest_sha256"]:
         raise ValueError("The approved base pointer or manifest changed since the upload")
-    raw = client.get_object(
+    candidate_body = client.get_object(
         Bucket=bucket, Key=f"generations/{generation}/metadata/generation_manifest.json"
-    )["Body"].read()
+    )["Body"]
+    try:
+        raw = candidate_body.read(BACKUP_MAX_MANIFEST_BYTES + 1)
+    finally:
+        candidate_body.close()
     manifest_hash = upload["prepared_manifest_sha256"]
-    if digest(raw) != manifest_hash:
+    if len(raw) > BACKUP_MAX_MANIFEST_BYTES or digest(raw) != manifest_hash:
         raise ValueError("Uploaded candidate manifest differs from independent verification")
     manifest = json.loads(raw)
     count, size = len(manifest["files"]), sum(row["size_bytes"] for row in manifest["files"])
@@ -569,6 +577,29 @@ def prepare_activation(name, publisher, work, *, expected=None):
         or not 0 < size <= policy["max_snapshot_bytes"]
     ):
         raise ValueError("Uploaded candidate inventory differs from the approved bounds")
+    if expected is None:
+        from tools.cloud_backup import candidate_backup_preflight
+
+        backup = candidate_backup_preflight(client, bucket, generation, manifest_hash, raw)
+        after, _, after_hash = verify_pointer_manifest(client, bucket, base)
+        if after != base_pointer or after_hash != base_hash:
+            raise ValueError("Production base changed during candidate backup preflight")
+    else:
+        backup = expected.get("candidate_backup_preflight")
+    if (
+        not isinstance(backup, dict)
+        or backup.get("generation_id") != generation
+        or backup.get("manifest_sha256") != manifest_hash
+        or backup.get("files") != count
+        or backup.get("data_bytes") != size
+        or not 0 < count <= BACKUP_MAX_FILES
+        or not 0 < size <= BACKUP_MAX_BYTES
+        or type(backup.get("archive_bytes")) is not int
+        or not 0 < backup["archive_bytes"] <= BACKUP_MAX_ARCHIVE
+        or type(backup.get("r2_writes")) is not int
+        or backup["r2_writes"] != 0
+    ):
+        raise ValueError("Exact candidate backup preflight does not bind the reviewed inventory")
     receipt = dict(
         schema_version=1,
         publication_state="activation_prepared_no_writes",
@@ -585,6 +616,7 @@ def prepare_activation(name, publisher, work, *, expected=None):
         file_count=count,
         total_bytes=size,
         activation_evidence=package["activation"],
+        candidate_backup_preflight=backup,
         operation_budget={"active_pointer_puts": 1, "snapshot_object_puts": 0, "sdk_attempts": 1},
     )
     if expected is not None and receipt != expected:
@@ -771,27 +803,104 @@ def check_live_answers(package, receipt):
     return answers
 
 
+def _activation_readiness_shape(body):
+    """Validate the native readiness envelope without importing the pinned publisher."""
+    fields = {
+        "ready": bool,
+        "status": str,
+        "checked_at": str,
+        "season": str,
+        "season_state": str,
+        "max_active_lag_hours": int,
+        "active_generation": str,
+        "immutable_generation": bool,
+        "release_exception_owner": str,
+        "slices": list,
+        "blockers": list,
+        "exception": dict,
+    }
+    if not all(type(body.get(key)) is kind for key, kind in fields.items()):
+        return False
+    if not body["slices"] or not all(_readiness_slice_shape(row) for row in body["slices"]):
+        return False
+    exception = body["exception"]
+    if (
+        exception.keys() != {"applied", "owner", "reason", "created_at", "expires_at", "error"}
+        or exception["applied"] is not False
+        or not isinstance(exception["owner"], str)
+        or any(
+            exception[key] is not None for key in ("reason", "created_at", "expires_at", "error")
+        )
+    ):
+        return False
+    return all(
+        isinstance(row, dict)
+        and row.keys() == {"code", "detail"}
+        and isinstance(row["code"], str)
+        and isinstance(row["detail"], str)
+        and bool(row["detail"].strip())
+        for row in body["blockers"]
+    )
+
+
+def _readiness_slice_shape(row):
+    if not isinstance(row, dict):
+        return False
+    required = {
+        "season": str,
+        "season_type": str,
+        "trusted": bool,
+        "validation_state": str,
+        "generation_id": (str, type(None)),
+        "current_through": (str, type(None)),
+        "expected_current_through": (str, type(None)),
+        "schedule_complete": bool,
+        "postseason_complete": bool,
+        "errors": list,
+        "missing_due_game_ids": (list, type(None)),
+    }
+    if not all(key in row and isinstance(row[key], kind) for key, kind in required.items()):
+        return False
+    return all(
+        isinstance(value, str) for value in row["errors"] + (row["missing_due_game_ids"] or [])
+    )
+
+
 def readiness_for_generation(response, generation, *, activation=False):
     """Recognize the existing historical limitation without claiming readiness."""
     if response.status_code != 200 and not (activation and response.status_code == 503):
         return None
-    body = response.json()
-    if body.get("active_generation") != generation:
+    try:
+        body = response.json()
+    except ValueError:
         return None
-    if activation and (
-        body.get("immutable_generation") is not True
-        or body.get("exception", {}).get("applied") is not False
-    ):
+    if not isinstance(body, dict) or body.get("active_generation") != generation:
         return None
-    if response.status_code == 200 and body.get("ready") is True:
-        return body
+    if not activation:
+        return body if body.get("ready") is True else None
+    if not _activation_readiness_shape(body) or body["immutable_generation"] is not True:
+        return None
+    if response.status_code == 200:
+        return (
+            body if body["ready"] and body["status"] == "ready" and not body["blockers"] else None
+        )
     if (
-        response.status_code == 503
-        and body.get("ready") is False
-        and [row.get("code") for row in body.get("blockers", [])] == ["new_season_not_loaded"]
+        not body["ready"]
+        and body["status"] == "not_ready"
+        and [row["code"] for row in body["blockers"]] == ["new_season_not_loaded"]
     ):
         return body
     return None
+
+
+def check_activation_health(base_url):
+    response = requests.get(base_url + "/health", timeout=20)
+    if response.status_code != 200:
+        raise ValueError("Deployed health probe did not return HTTP 200")
+    body = response.json()
+    if not isinstance(body, dict) or body.get("status") != "ok":
+        raise ValueError("Deployed health response does not match its contract")
+    return {"http_status": response.status_code, "status": "ok"}
 
 
 def verify_published_snapshot(package, inventory, publication, work, receipt, *, activation=False):
@@ -848,6 +957,7 @@ def verify_published_snapshot(package, inventory, publication, work, receipt, *,
         receipt["deployed_readiness"] = readiness
         if activation:
             receipt["deployed_readiness_http_status"] = response.status_code
+            receipt["deployed_health"] = check_activation_health(base_url)
         answers = check_live_answers(package, receipt)
         final_pointer, _, final_hash = verify_pointer_manifest(
             client, bucket, package["generation_id"]

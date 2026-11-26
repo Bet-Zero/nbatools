@@ -78,7 +78,7 @@ jobs:
         run: |
           case "$MODE" in
             prepare) python tools/r2_publication.py prepare --package "$PACKAGE" --publisher publisher --work work/prepared ;;
-            prepare_activation) python tools/r2_publication.py prepare_activation --package "$PACKAGE" --publisher publisher --work work/prepared ;;
+            prepare_activation) python -m tools.r2_publication prepare_activation --package "$PACKAGE" --publisher publisher --work work/prepared ;;
             verify_activation) python tools/r2_publication.py verify_activation --package "$PACKAGE" --publisher publisher --prepared published/publication.json --work work/verified ;;
             verify) python tools/r2_publication.py verify --package "$PACKAGE" --publisher publisher --prepared published/publication.json --work work/verified ;;
             verify_candidate) python tools/r2_publication.py verify_candidate --package "$PACKAGE" --publisher publisher --prepared published/publication.json --work work/verified ;;

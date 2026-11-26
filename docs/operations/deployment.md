@@ -305,14 +305,20 @@ separate protected approvals.
 6. Register the passing hosted proof and the independent upload receipt in the
    reviewed package. Dispatch `activate_candidate` on main for that package.
    Read-only preparation authenticates the receipt, current base and uploaded
-   manifest, then shows the exact operation awaiting **separate** owner approval
-   in `r2-publication`. The protected writer verifies the uploaded bodies and
+   manifest. It verifies the candidate objects and measures their exact
+   compressed archive size under the backup limits without switching the
+   pointer. The size proof is bound to the candidate and included in the
+   exact operation awaiting **separate** owner approval in `r2-publication`.
+   The protected writer verifies the uploaded bodies and
    changes only the active pointer with same-base CAS, with a budget of zero
    snapshot PUTs and one pointer PUT. Read-only verification checks both
-   manifests and all registered public answers before the existing backup and
+   manifests, health and all registered public answers before the existing backup and
    separate-runner restore. For the Cleveland package, the sole
    `new_season_not_loaded` blocker is recorded as failed operational readiness
    while the historical delivery is verified on the exact active generation.
+   That classification requires the complete native HTTP 503 readiness envelope
+   with its single typed blocker and a healthy service. Extra blockers, invalid
+   envelopes, unhealthy service and generation drift fail verification.
 
 ### Agent-initiated targeted requests
 

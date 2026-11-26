@@ -210,14 +210,46 @@ def test_publisher_workflow_is_manual_and_credentials_are_job_and_step_scoped():
     )
 
 
-def test_only_guarded_activation_records_the_known_readiness_failure():
-    body = dict(
-        active_generation="cleveland",
+def _native_activation_readiness(generation="cleveland"):
+    return dict(
+        active_generation=generation,
         ready=False,
+        status="not_ready",
+        checked_at="2026-11-26T07:20:46Z",
+        season="2025-26",
+        season_state="offseason",
+        max_active_lag_hours=24,
         immutable_generation=True,
-        exception={"applied": False},
-        blockers=[{"code": "new_season_not_loaded"}],
+        release_exception_owner="owner",
+        slices=[
+            {
+                "season": "2025-26",
+                "season_type": "Regular Season",
+                "trusted": True,
+                "validation_state": "passed",
+                "generation_id": "season",
+                "current_through": "2026-04-12",
+                "expected_current_through": "2026-04-12",
+                "schedule_complete": True,
+                "postseason_complete": False,
+                "errors": [],
+                "missing_due_game_ids": [],
+            }
+        ],
+        exception={
+            "applied": False,
+            "owner": "owner",
+            "reason": None,
+            "created_at": None,
+            "expires_at": None,
+            "error": None,
+        },
+        blockers=[{"code": "new_season_not_loaded", "detail": "2026-27 inputs are absent"}],
     )
+
+
+def test_only_guarded_activation_records_the_known_readiness_failure():
+    body = _native_activation_readiness()
     response = SimpleNamespace(status_code=503, json=lambda: body)
     assert gate.readiness_for_generation(response, "cleveland") is None
     assert gate.readiness_for_generation(response, "cleveland", activation=True) == body
@@ -227,6 +259,103 @@ def test_only_guarded_activation_records_the_known_readiness_failure():
     body["blockers"].pop()
     body["exception"]["applied"] = True
     assert gate.readiness_for_generation(response, "cleveland", activation=True) is None
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"ready": 0},
+        {"status": "ready"},
+        {"slices": [{}]},
+        {"blockers": [None]},
+        {"blockers": [{"code": "new_season_not_loaded"}]},
+        {"blockers": [{"code": "new_season_not_loaded", "detail": " "}]},
+        {"exception": {"applied": False}},
+    ],
+)
+def test_activation_rejects_malformed_readiness(overrides):
+    body = _native_activation_readiness() | overrides
+    response = SimpleNamespace(status_code=503, json=lambda: body)
+    assert gate.readiness_for_generation(response, "cleveland", activation=True) is None
+
+
+def test_activation_readiness_requires_one_exact_blocker():
+    body = _native_activation_readiness()
+    body["blockers"] *= 2
+    response = SimpleNamespace(status_code=503, json=lambda: body)
+    assert gate.readiness_for_generation(response, "cleveland", activation=True) is None
+    body.update(ready=True, status="ready", blockers=[])
+    response.status_code = 200
+    assert gate.readiness_for_generation(response, "cleveland", activation=True) == body
+
+
+@pytest.mark.parametrize(
+    "status,body,healthy",
+    [
+        (503, {"status": "ok"}, False),
+        (200, {"status": "down"}, False),
+        (200, {"status": "ok"}, True),
+    ],
+)
+def test_activation_requires_health_before_deployed_answers(
+    tmp_path, monkeypatch, status, body, healthy
+):
+    item = dict(path="raw/data.csv", size_bytes=3, sha256=gate.digest(b"abc"))
+    pointer = dict(generation_id="target", previous_generation_id="base")
+    monkeypatch.setattr(
+        gate, "verify_pointer_manifest", lambda *args: (pointer, {"files": [item]}, "hash")
+    )
+
+    class Client:
+        def get_object(self, *, Bucket, Key):
+            return {
+                "Body": io.BytesIO(b"previous" if Key.startswith("generations/base/") else b"abc")
+            }
+
+    publication = SimpleNamespace(
+        _resolve_r2_target=lambda **options: (Client(), "bucket"),
+        _validate_r2_manifest_inventory=lambda *args: None,
+    )
+    probes = []
+
+    def get(url, *, timeout):
+        if url.endswith("/readiness"):
+            return SimpleNamespace(
+                status_code=503, json=lambda: _native_activation_readiness("target")
+            )
+        assert url == "https://nbatools.vercel.app/health"
+        probes.append("health")
+        return SimpleNamespace(status_code=status, json=lambda: body)
+
+    def answers(*args):
+        assert probes == ["health"]
+        probes.append("answers")
+        return ["registered answer"]
+
+    monkeypatch.setattr(gate.requests, "get", get)
+    monkeypatch.setattr(gate, "check_live_answers", answers)
+    args = (
+        {"generation_id": "target"},
+        {"base_generation": "base", "base_manifest_sha256": gate.digest(b"previous")},
+        publication,
+        tmp_path,
+        {"file_count": 1, "prepared_manifest_sha256": "hash"},
+    )
+    if healthy:
+        gate.verify_published_snapshot(*args, activation=True)
+    else:
+        with pytest.raises(ValueError, match="health"):
+            gate.verify_published_snapshot(*args, activation=True)
+    receipt = json.loads((tmp_path / "receipt.json").read_text())
+    if healthy:
+        assert probes == ["health", "answers"]
+        assert receipt["publication_state"] == "candidate_activated_historical_verified"
+        assert receipt["deployed_health"] == {"http_status": 200, "status": "ok"}
+        assert receipt["deployed_answers"] == ["registered answer"]
+    else:
+        assert probes == ["health"]
+        assert receipt["publication_state"] == "candidate_activation_verification_failed"
+    assert receipt["operational_acceptance_complete"] is False
 
 
 def test_activation_binds_independent_receipt_and_hosted_candidate(monkeypatch):
