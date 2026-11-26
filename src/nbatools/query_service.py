@@ -50,7 +50,11 @@ from nbatools.commands._natural_query_execution import (
     _unsupported_filter_note,
 )
 from nbatools.commands._player_identity import select_player_rows
-from nbatools.commands.entity_resolution import ALL_TEAM_ABBRS, resolve_team
+from nbatools.commands.entity_resolution import (
+    ALL_TEAM_ABBRS,
+    player_identity_context,
+    resolve_team,
+)
 from nbatools.commands.format_output import route_to_query_class
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.natural_query import (
@@ -3581,7 +3585,7 @@ def _development_unavailable(query: str, reason: str) -> QueryResult:
 
 def execute_natural_query(query: str) -> QueryResult:
     """Execute a natural query against one request-pinned data generation."""
-    with data_generation_context():
+    with data_generation_context(), player_identity_context():
         clear_query_issues()
         try:
             return label_result(_execute_natural_query_in_generation(query))
@@ -3888,7 +3892,7 @@ VALID_ROUTES = frozenset(
 
 def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
     """Execute a structured query against one request-pinned data generation."""
-    with data_generation_context():
+    with data_generation_context(), player_identity_context():
         clear_query_issues()
         try:
             return label_result(_execute_structured_query_in_generation(route, **kwargs))

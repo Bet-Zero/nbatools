@@ -113,6 +113,23 @@ def test_r2_data_source_downloads_and_caches_files(tmp_path: Path, monkeypatch: 
     assert data_glob("raw/*.csv") == [Path("data/raw/sample.csv")]
 
 
+def test_r2_cache_identity_keeps_accounts_separate(tmp_path, monkeypatch):
+    first = FakeR2Client({"raw/sample.csv": b"name,value\nOne,1\n"})
+    second = FakeR2Client({"raw/sample.csv": b"name,value\nTwo,2\n"})
+    _configure_r2(monkeypatch, tmp_path, first)
+    monkeypatch.setattr(
+        data_source,
+        "create_r2_client",
+        lambda config: first if config.account_id == "account-id" else second,
+    )
+    first_key = data_source_cache_key()
+    assert data_read_csv("raw/sample.csv")["value"].tolist() == [1]
+
+    monkeypatch.setenv("R2_ACCOUNT_ID", "different-account")
+    assert first_key != data_source_cache_key()
+    assert data_read_csv("raw/sample.csv")["value"].tolist() == [2]
+
+
 def test_r2_generation_switch_reloads_same_logical_key(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):

@@ -2,6 +2,7 @@
 
 import copy
 
+import pandas as pd
 import pytest
 
 from nbatools.commands import _seasons
@@ -176,7 +177,11 @@ def test_supplemental_dated_question_actually_compiles_to_player_finder(monkeypa
     er.reset_player_index()
     request.addfinalizer(er.reset_player_index)
     monkeypatch.setattr(er, "data_source_cache_key", lambda: "supplement-dated-person")
-    monkeypatch.setattr(er, "_read_player_names", lambda data_dir=None: {"P.J. Washington"})
+    monkeypatch.setattr(
+        er,
+        "_read_identity_rows",
+        lambda: ([pd.DataFrame({"player_name": ["P.J. Washington"]})], None),
+    )
     parsed = parse_query("P.J. Washington stats on 2026-01-01 in 2025-26")
     assert parsed["route"] == "player_game_finder"
     kwargs = parsed["route_kwargs"]

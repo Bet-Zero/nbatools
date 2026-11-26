@@ -16,21 +16,30 @@ from __future__ import annotations
 
 import re
 import unicodedata
-from collections.abc import Iterable
+from collections import OrderedDict
+from collections.abc import Iterable, Iterator, Mapping
+from concurrent.futures import Future
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
+from threading import Lock
+from types import MappingProxyType
 
 import pandas as pd
 
 from nbatools.data_source import (
     PLAYER_NAMES_PATH,
+    DataSourceError,
     data_exists,
+    data_generation_context,
     data_glob,
     data_prefetch,
     data_read_csv,
     data_source_cache_key,
     season_file_order,
+    verified_generation_files,
 )
 
 # ---------------------------------------------------------------------------
@@ -597,8 +606,6 @@ def _normalize_for_matching(text: str) -> str:
 # Data-driven player index (built from CSV data)
 # ---------------------------------------------------------------------------
 
-_DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data"
-
 _FALLBACK_PLAYER_NAMES: set[str] = {
     # Keep data-free CI/unit runs aligned with parser expectations. The
     # data-backed index still extends this set whenever game logs are present.
@@ -608,82 +615,105 @@ _FALLBACK_PLAYER_NAMES: set[str] = {
 }
 
 
-def _read_player_names(data_dir: Path | None = None) -> set[str]:
-    """Read canonical player names (and their ids) from player game stats CSVs."""
-    global _player_names_cache, _player_ids_by_name_cache, _player_name_by_id_cache
-    if data_dir is None:
-        _ensure_player_index_generation()
-    if data_dir is None and _player_names_cache is not None:
-        return set(_player_names_cache)
+@dataclass(frozen=True)
+class _PlayerIdentityBundle:
+    ids_by_name: Mapping[str, frozenset[str]]
+    name_by_id: Mapping[str, str]
+    last_names: Mapping[str, tuple[str, ...]]
+    first_names: Mapping[str, tuple[str, ...]]
+    full_names: Mapping[str, str]
+    full_name_keys: tuple[str, ...]
+    seasons_by_id: Mapping[str, frozenset[str]]
+    ledger_seasons: frozenset[str]
 
-    names: set[str] = set(_FALLBACK_PLAYER_NAMES)
-    ids_by_name: dict[str, set[str]] = {}
-    # Rows arrive in game order, so the last spelling seen is the most recent.
-    name_by_id: dict[str, str] = {}
 
-    def add_rows(df: pd.DataFrame) -> None:
-        names.update(df["player_name"].dropna().unique())
-        if "player_id" not in df.columns:
-            return
-        pairs = df[["player_name", "player_id"]].dropna().drop_duplicates()
-        for name, player_id in pairs.itertuples(index=False):
-            ids_by_name.setdefault(_normalize_for_matching(name), set()).add(player_id)
-            name_by_id[player_id] = _preferred_spelling(name_by_id.get(player_id), name)
+@dataclass
+class _RequestPlayerIdentity:
+    bundle: _PlayerIdentityBundle | None = None
 
-    published = _read_published_player_names() if data_dir is None else None
+
+_REQUEST_PLAYER_IDENTITY: ContextVar[_RequestPlayerIdentity | None] = ContextVar(
+    "request_player_identity", default=None
+)
+_MAX_CACHED_PLAYER_IDENTITIES = 4
+_player_identities: OrderedDict[str, _PlayerIdentityBundle] = OrderedDict()
+_player_identities_pending: dict[str, Future[_PlayerIdentityBundle]] = {}
+_player_identity_lock = Lock()
+
+
+@contextmanager
+def player_identity_context() -> Iterator[None]:
+    """Keep the first identity bundle used by this query until the query exits."""
+    if _REQUEST_PLAYER_IDENTITY.get() is not None:
+        yield
+        return
+    token = _REQUEST_PLAYER_IDENTITY.set(_RequestPlayerIdentity())
+    try:
+        yield
+    finally:
+        _REQUEST_PLAYER_IDENTITY.reset(token)
+
+
+def _read_identity_rows() -> tuple[Iterable[pd.DataFrame], pd.DataFrame | None]:
+    """Use a valid name ledger or scan the complete declared fallback."""
+    verified = verified_generation_files() is not None
+    published = _read_published_player_names(verified=verified)
     if published is not None:
-        add_rows(published)
-    else:
-        if data_dir is None:
-            csv_paths = sorted(data_glob("raw/player_game_stats/*.csv"), key=season_file_order)
-            data_prefetch(csv_paths)
-            read_csv = data_read_csv
-        else:
-            stats_dir = data_dir / "raw" / "player_game_stats"
-            if not stats_dir.exists():
-                return names
-            csv_paths = sorted(stats_dir.glob("*.csv"), key=season_file_order)
-            read_csv = pd.read_csv
-        for csv_path in csv_paths:
-            try:
-                df = read_csv(
-                    csv_path,
-                    usecols=lambda column: column in {"player_id", "player_name"},
-                    dtype=str,
-                )
-            except Exception:
-                continue
-            if "player_name" in df.columns:
-                add_rows(df)
-    if data_dir is None:
-        _player_names_cache = set(names)
-        _player_ids_by_name_cache = {key: frozenset(ids) for key, ids in ids_by_name.items()}
-        _player_name_by_id_cache = name_by_id
-    return names
+        return [published], published
+
+    csv_paths = sorted(data_glob("raw/player_game_stats/*.csv"), key=season_file_order)
+    if verified and not csv_paths:
+        raise DataSourceError("Authenticated generation has no player identity inputs")
+    data_prefetch(csv_paths)
+    return _iter_identity_seasons(csv_paths, verified=verified), None
 
 
-def _read_published_player_names() -> pd.DataFrame | None:
-    """The generation's published name list, in game order, if usable.
+def _iter_identity_seasons(
+    csv_paths: Iterable[str | Path], *, verified: bool
+) -> Iterator[pd.DataFrame]:
+    for path in csv_paths:
+        try:
+            frame = data_read_csv(
+                path, usecols=lambda column: column in {"player_id", "player_name"}, dtype=str
+            )
+        except Exception:
+            if verified:
+                raise
+            continue
+        if verified and not _valid_identity_rows(frame):
+            raise DataSourceError("Required published player season lacks complete identity rows")
+        if "player_name" in frame.columns:
+            yield frame
 
-    Publication writes one row per (player_id, player_name, season) from the
-    same player game rows, numbered by ``first_seen`` in game order, so it
-    replaces downloading every season file at a cold start. A generation
-    without it, or a list missing ``player_id`` or ``first_seen`` (an older
-    list sorted alphabetically within a season, which can't tell which
-    spelling is newer), falls back to the full scan.
-    """
+
+def _valid_identity_rows(frame: pd.DataFrame) -> bool:
+    if not {"player_id", "player_name"} <= set(frame.columns) or frame.empty:
+        return False
+    return all(
+        frame[key].notna().all() and frame[key].str.strip().ne("").all()
+        for key in ("player_id", "player_name")
+    )
+
+
+def _read_published_player_names(*, verified: bool) -> pd.DataFrame | None:
+    """Read canonical identity and spelling order from the snapshot ledger."""
     try:
         if not data_exists(PLAYER_NAMES_PATH):
+            # Older manifests may omit this derived ledger. The fallback uses
+            # every declared player season and fails on a required read error.
             return None
-        df = data_read_csv(PLAYER_NAMES_PATH, dtype=str)
+        frame = data_read_csv(PLAYER_NAMES_PATH, dtype=str)
     except Exception:
+        if verified:
+            raise
         return None
-    if not {"player_id", "player_name", "first_seen"}.issubset(df.columns) or df.empty:
-        return None
-    order = pd.to_numeric(df["first_seen"], errors="coerce")
-    if order.isna().any():
-        return None
-    return df.iloc[order.argsort(kind="stable")]
+    if _valid_identity_rows(frame) and "first_seen" in frame.columns:
+        order = pd.to_numeric(frame["first_seen"], errors="coerce")
+        if not order.isna().any():
+            return frame.iloc[order.argsort(kind="stable")]
+    if verified:
+        raise DataSourceError("Required published player name ledger is invalid")
+    return None
 
 
 def _preferred_spelling(previous: str | None, current: str) -> str:
@@ -695,221 +725,201 @@ def _preferred_spelling(previous: str | None, current: str) -> str:
     return current
 
 
-def canonical_player_names_by_id() -> dict[str, str]:
-    """One display name per ``player_id``: the most recent spelling in the data.
+def _build_identity_bundle() -> _PlayerIdentityBundle:
+    frames, ledger = _read_identity_rows()
+    names = set(_FALLBACK_PLAYER_NAMES)
+    ids_by_name: dict[str, set[str]] = {}
+    name_by_id: dict[str, str] = {}
+    for frame in frames:
+        names.update(frame["player_name"].dropna().unique())
+        if "player_id" not in frame.columns:
+            continue
+        pairs = frame[["player_name", "player_id"]].dropna().drop_duplicates()
+        for name, player_id in pairs.itertuples(index=False):
+            ids_by_name.setdefault(_normalize_for_matching(name), set()).add(player_id)
+            name_by_id[player_id] = _preferred_spelling(name_by_id.get(player_id), name)
+    ids = {key: frozenset(values) for key, values in ids_by_name.items()}
+    first, last = _name_token_indexes(names)
+    full = _build_player_full_name_index(names, ids, name_by_id)
+    seasons_by_id, ledger_seasons = _player_ledger_seasons(ledger)
+    return _PlayerIdentityBundle(
+        ids_by_name=MappingProxyType(ids),
+        name_by_id=MappingProxyType(name_by_id),
+        last_names=MappingProxyType(last),
+        first_names=MappingProxyType(first),
+        full_names=MappingProxyType(full),
+        full_name_keys=tuple(sorted(full, key=len, reverse=True)),
+        seasons_by_id=MappingProxyType(seasons_by_id),
+        ledger_seasons=ledger_seasons,
+    )
 
-    A spelling that only drops diacritics ("Jonas Valanciunas") keeps the
-    accented form. Several players changed spelling inside a season ("Bobby
-    Portis" -> "Bobby Portis Jr." during 2024-25), so grouping by name split them.
-    """
-    _read_player_names()
-    return dict(_player_name_by_id_cache or {})
+
+def _player_ledger_seasons(
+    ledger: pd.DataFrame | None,
+) -> tuple[dict[str, frozenset[str]], frozenset[str]]:
+    if ledger is None or "season" not in ledger.columns:
+        return {}, frozenset()
+    seasons = ledger["season"].astype(str)
+    if not seasons.str.fullmatch(r"\d{4}-\d{2}").all():
+        return {}, frozenset()
+    inventory = frozenset(seasons)
+    if any((int(value[:4]) + 1) % 100 != int(value[5:]) for value in inventory):
+        return {}, frozenset()
+    return {
+        player_id: frozenset(rows["season"].astype(str))
+        for player_id, rows in ledger.groupby("player_id", sort=False)
+    }, inventory
+
+
+def _get_player_identity() -> _PlayerIdentityBundle:
+    request = _REQUEST_PLAYER_IDENTITY.get()
+    if request is not None and request.bundle is not None:
+        return request.bundle
+    with data_generation_context():
+        bundle = _identity_for_key(data_source_cache_key())
+    if request is not None:
+        request.bundle = bundle
+    return bundle
+
+
+def _identity_for_key(key: str) -> _PlayerIdentityBundle:
+    with _player_identity_lock:
+        cached = _player_identities.get(key)
+        if cached is not None:
+            _player_identities.move_to_end(key)
+            return cached
+        pending = _player_identities_pending.get(key)
+        build = pending is None
+        if build:
+            pending = Future()
+            _player_identities_pending[key] = pending
+    if not build:
+        return pending.result()
+
+    try:
+        bundle = _build_identity_bundle()
+    except BaseException as error:
+        with _player_identity_lock:
+            del _player_identities_pending[key]
+        pending.set_exception(error)
+        raise
+    with _player_identity_lock:
+        _player_identities[key] = bundle
+        del _player_identities_pending[key]
+        if len(_player_identities) > _MAX_CACHED_PLAYER_IDENTITIES:
+            _player_identities.popitem(last=False)
+    pending.set_result(bundle)
+    return bundle
+
+
+def canonical_player_names_by_id() -> dict[str, str]:
+    """One display name per player ID, preferring the most recent spelling."""
+    return dict(_get_player_identity().name_by_id)
 
 
 def player_ids_for_name(name: str) -> frozenset[str]:
-    """Every ``player_id`` the loaded data records under ``name``.
-
-    Keys use the same normalization as name matching, so "Bobby Portis" also
-    finds the rows later stored as "Bobby Portis Jr." once both spellings share
-    an id, and "Jonas Valanciunas" finds the accented rows. A name shared by
-    two different players returns both ids; callers pick one with
-    ``_player_identity.select_player_rows``. IDs are strings, as read.
-    """
-    _read_player_names()
-    return _indexed_player_ids(_normalize_for_matching(name))
+    """Return every loaded identity for the normalized name, including collisions."""
+    return _indexed_player_ids(_normalize_for_matching(name), _get_player_identity().ids_by_name)
 
 
 def player_seasons_for_name(name: str, available: list[str]) -> frozenset[str] | None:
-    """Candidate seasons from the publication-derived game-row name ledger.
-
-    Its union across season types and every matching ID/spelling is a superset
-    of rows selection can retain. This is not roster membership or absence
-    evidence. Unknown identities or an unusable ledger retain the full scan.
-    """
-    ids = player_ids_for_name(name)
-    published = _read_published_player_names()
-    if not ids or published is None or "season" not in published.columns:
+    """Narrow to the ledger's covered seasons only when it covers every candidate."""
+    bundle = _get_player_identity()
+    ids = _indexed_player_ids(_normalize_for_matching(name), bundle.ids_by_name)
+    if not ids or not set(available).issubset(bundle.ledger_seasons):
         return None
-    seasons = published["season"].astype(str)
-    if not seasons.str.fullmatch(r"\d{4}-\d{2}").all():
+    if not ids.issubset(bundle.seasons_by_id):
         return None
-    if any((int(value[:4]) + 1) % 100 != int(value[5:]) for value in seasons.unique()):
-        return None
-    if not set(available).issubset(set(seasons)):
-        return None
-    rows = published[published["player_id"].isin(ids)]
-    if set(rows["player_id"]) != set(ids):
-        return None
-    candidates = frozenset(rows["season"].astype(str))
+    candidates = frozenset(
+        season for player_id in ids for season in bundle.seasons_by_id[player_id]
+    )
     return candidates if candidates.intersection(available) else None
 
 
-def _indexed_player_ids(key: str) -> frozenset[str]:
-    """Resolve a complete normalized name against the already-loaded ID index."""
-    if _player_ids_by_name_cache is None:
-        return frozenset()
-    exact = _player_ids_by_name_cache.get(key)
+_NAME_SUFFIXES = frozenset({"jr", "sr", "ii", "iii", "iv", "v"})
+
+
+def _indexed_player_ids(key: str, ids_by_name: Mapping[str, frozenset[str]]) -> frozenset[str]:
+    exact = ids_by_name.get(key)
     if exact:
         return exact
-    # An omitted generational suffix is an alias only when the data has one
-    # possible identity. Exact unsuffixed identities always retain precedence;
-    # a father/son or other collision must never be resolved using a team.
-    suffixes = {"jr", "sr", "ii", "iii", "iv", "v"}
-    if key.split() and key.split()[-1] in suffixes:
+    # A suffix may be omitted only if the checked IDs identify a single player.
+    # Return all candidates so the consumer cannot silently resolve a collision.
+    if key.split() and key.split()[-1] in _NAME_SUFFIXES:
         return frozenset()
-    candidates = {
+    return frozenset(
         player_id
-        for stored, ids in _player_ids_by_name_cache.items()
-        if stored.rsplit(" ", 1)[-1] in suffixes and stored.rsplit(" ", 1)[0] == key
+        for stored, ids in ids_by_name.items()
+        if stored.rsplit(" ", 1)[-1] in _NAME_SUFFIXES and stored.rsplit(" ", 1)[0] == key
         for player_id in ids
-    }
-    return frozenset(candidates)
+    )
 
 
-def _build_player_index(data_dir: Path | None = None) -> dict[str, list[str]]:
-    """Build a last-name → list[full-name] index from player game stats CSVs.
-
-    Scans all available season files to capture the broadest set of
-    player names.  Returns a dict mapping lowercased last names to
-    lists of canonical full names (as they appear in the data).
-    """
-    all_names = _read_player_names(data_dir)
-
-    # Build last-name index
-    last_name_index: dict[str, list[str]] = {}
-    for name in sorted(all_names):
+def _name_token_indexes(
+    names: Iterable[str],
+) -> tuple[dict[str, tuple[str, ...]], dict[str, tuple[str, ...]]]:
+    first_names: dict[str, list[str]] = {}
+    last_names: dict[str, list[str]] = {}
+    for name in sorted(names):
         parts = name.strip().split()
         if len(parts) < 2:
             continue
-
-        # Handle "Jr.", "III", "II", "IV" suffixes
+        first = _strip_accents(parts[0]).lower()
+        if len(first) >= 3:
+            first_names.setdefault(first, []).append(name)
         last = parts[-1]
-        if last.rstrip(".").lower() in ("jr", "sr", "ii", "iii", "iv", "v"):
-            if len(parts) >= 3:
-                last = parts[-2]
-            else:
+        if last.rstrip(".").lower() in _NAME_SUFFIXES:
+            if len(parts) < 3:
                 continue
-
-        key = _strip_accents(last).lower()
-        if key not in last_name_index:
-            last_name_index[key] = []
-        if name not in last_name_index[key]:
-            last_name_index[key].append(name)
-
-    return last_name_index
+            last = parts[-2]
+        last_names.setdefault(_strip_accents(last).lower(), []).append(name)
+    return (
+        {key: tuple(values) for key, values in first_names.items()},
+        {key: tuple(values) for key, values in last_names.items()},
+    )
 
 
-# Module-level cache (built lazily)
-_player_last_name_index: dict[str, list[str]] | None = None
-_player_full_name_index: dict[str, str] | None = None
-_player_full_name_keys: tuple[str, ...] | None = None
-_player_first_name_index: dict[str, list[str]] | None = None
-_player_names_cache: set[str] | None = None
-_player_ids_by_name_cache: dict[str, frozenset[str]] | None = None
-_player_name_by_id_cache: dict[str, str] | None = None
-_player_index_generation_key: str | None = None
-
-
-def _ensure_player_index_generation() -> None:
-    """Invalidate data-backed entity indexes when the source generation changes."""
-    global _player_index_generation_key
-    generation_key = data_source_cache_key()
-    if _player_index_generation_key == generation_key:
-        return
-    reset_player_index()
-    _player_index_generation_key = generation_key
-
-
-def _get_player_index() -> dict[str, list[str]]:
-    """Get (or build) the cached player last-name index."""
-    global _player_last_name_index
-    _ensure_player_index_generation()
-    if _player_last_name_index is None:
-        _player_last_name_index = _build_player_index()
-    return _player_last_name_index
-
-
-def _build_player_full_name_index(data_dir: Path | None = None) -> dict[str, str]:
-    """Build a normalized full-name → canonical full-name index from game stats."""
-    index = {_normalize_for_matching(name): name for name in _read_player_names(data_dir)}
-    for key in _player_ids_by_name_cache or {}:
+def _build_player_full_name_index(
+    names: Iterable[str],
+    ids_by_name: Mapping[str, frozenset[str]],
+    name_by_id: Mapping[str, str],
+) -> dict[str, str]:
+    index = {}
+    for name in sorted(names):
+        key = _normalize_for_matching(name)
+        index[key] = _preferred_spelling(index.get(key), name)
+    for key in ids_by_name:
         stem, _, suffix = key.rpartition(" ")
-        if suffix not in {"jr", "sr", "ii", "iii", "iv", "v"} or stem in index:
+        if suffix not in _NAME_SUFFIXES or stem in index:
             continue
-        ids = _indexed_player_ids(stem)
+        ids = _indexed_player_ids(stem, ids_by_name)
         if len(ids) == 1:
-            canonical = (_player_name_by_id_cache or {}).get(next(iter(ids)))
+            canonical = name_by_id.get(next(iter(ids)))
             if canonical:
                 index[stem] = canonical
     return index
 
 
-def _get_player_full_name_index() -> dict[str, str]:
-    """Get (or build) the cached player full-name index."""
-    global _player_full_name_index
-    _ensure_player_index_generation()
-    if _player_full_name_index is None:
-        _player_full_name_index = _build_player_full_name_index()
-    return _player_full_name_index
+def _get_player_index() -> Mapping[str, tuple[str, ...]]:
+    return _get_player_identity().last_names
 
 
-def _build_player_first_name_index(data_dir: Path | None = None) -> dict[str, list[str]]:
-    """Build a first-name → list[full-name] index from player game stats CSVs.
-
-    A unique first name ("shai", "giannis") identifies its player as well
-    as a unique last name does; shared first names ("anthony", "jalen")
-    stay ambiguous and never auto-resolve.
-    """
-    first_name_index: dict[str, list[str]] = {}
-    for name in sorted(_read_player_names(data_dir)):
-        parts = name.strip().split()
-        if len(parts) < 2:
-            continue
-        key = _strip_accents(parts[0]).lower()
-        if len(key) < 3:
-            # Initials-style first names ("CJ", "TJ") are curated aliases,
-            # not data-driven lookups.
-            continue
-        if key not in first_name_index:
-            first_name_index[key] = []
-        if name not in first_name_index[key]:
-            first_name_index[key].append(name)
-    return first_name_index
+def _get_player_full_name_index() -> Mapping[str, str]:
+    return _get_player_identity().full_names
 
 
-def _get_player_first_name_index() -> dict[str, list[str]]:
-    """Get (or build) the cached player first-name index."""
-    global _player_first_name_index
-    _ensure_player_index_generation()
-    if _player_first_name_index is None:
-        _player_first_name_index = _build_player_first_name_index()
-    return _player_first_name_index
+def _get_player_first_name_index() -> Mapping[str, tuple[str, ...]]:
+    return _get_player_identity().first_names
 
 
 def _get_player_full_name_keys() -> tuple[str, ...]:
-    """Return data-backed full names sorted longest-first for query scanning."""
-    global _player_full_name_keys
-    _ensure_player_index_generation()
-    if _player_full_name_keys is None:
-        _player_full_name_keys = tuple(
-            sorted(_get_player_full_name_index().keys(), key=len, reverse=True)
-        )
-    return _player_full_name_keys
+    return _get_player_identity().full_name_keys
 
 
 def reset_player_index() -> None:
-    """Force rebuild of the player index (for testing)."""
-    global _player_last_name_index, _player_full_name_index, _player_full_name_keys
-    global _player_names_cache, _player_first_name_index, _player_index_generation_key
-    global _player_ids_by_name_cache, _player_name_by_id_cache
-    _player_last_name_index = None
-    _player_ids_by_name_cache = None
-    _player_name_by_id_cache = None
-    _player_full_name_index = None
-    _player_full_name_keys = None
-    _player_names_cache = None
-    _player_first_name_index = None
-    _player_index_generation_key = None
+    """Clear completed entries between isolated tests."""
+    with _player_identity_lock:
+        _player_identities.clear()
 
 
 # ---------------------------------------------------------------------------
