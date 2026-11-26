@@ -7,7 +7,7 @@
   "original_capture_sha256": "a5c718c7498f24d787866ff4e3d53220363e00588a045607e92f5947ac2074a5",
   "original_case_manifest_sha256": "096f093c24df872fca3107a1d4a23b19fc98e549b86aecfdc9df3b538ca1382a",
   "original_bound_file_count": 663,
-  "unchanged_bound_file_count": 606,
+  "unchanged_bound_file_count": 605,
   "cases": [
     {
       "id": "k12-s1",
@@ -133,9 +133,9 @@
     {
       "path": ".github/workflows/ci.yml",
       "old_sha256": "19d127d500ffc8b84a5fe6620a70177a3f3dd18f2cabfe5816109b6f14e1cb04",
-      "reviewed_sha256": "79f028e76303d044d0c18827e669030498aa3575d84604541c2c2776c8a69803",
-      "reviewed_functions": "workflow comments",
-      "semantic_reach": "Only YAML comments change (the selection description); jobs, steps, triggers, commands and conditions are byte-identical in meaning. Not part of the deployed application or any of the original 22 query executions.",
+      "reviewed_sha256": "402356013f0834f9cd80c463ab7249beb8a6c8b14dff5514d1f8818e441e9fe8",
+      "reviewed_functions": "workflow comments; pinned CI actions and locked dependency installation",
+      "semantic_reach": "Only YAML comments change (the selection description); jobs, steps, triggers, commands and conditions are byte-identical in meaning. Not part of the deployed application or any of the original 22 query executions. Preserves frontend gates and all three Python versions and test entry points. No original query or captured payload is changed by CI selection.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -350,8 +350,8 @@
     {
       "path": "docs/operations/deployment.md",
       "old_sha256": "97064848175f0dfd542c0f4ebf8fe1e799d26e70066c29b1f3fa27f87347b02a",
-      "reviewed_functions": "candidate release procedure; protected preparation, verification and uncertain-outcome procedure",
-      "semantic_reach": "Documents isolated protected upload and preview qualification; no production data, runtime calculation or acceptance outcome changes. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Documents the separate approval, conditional pointer write, and existing verification and backup steps. The application does not read this runbook. The revised runbook is operational documentation. Original query answers do not consume it.",
+      "reviewed_functions": "candidate release procedure; protected preparation, verification and uncertain-outcome procedure; Python lock, verified build baseline and CI proposal",
+      "semantic_reach": "Documents isolated protected upload and preview qualification; no production data, runtime calculation or acceptance outcome changes. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Documents the separate approval, conditional pointer write, and existing verification and backup steps. The application does not read this runbook. The revised runbook is operational documentation. Original query answers do not consume it. Documents selected build inputs and unchanged review gates, without changing an original query or historic capture.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -376,7 +376,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "08a1cdebad163b8046d294454ff4545fe62486f1bfaa958c87616b99ee494341"
+      "reviewed_sha256": "3cf9d9fe9ddbdb1609fe6e3ab96a0087b24b0206e1e11643fd6b35e2fd1c3fec"
     },
     {
       "path": "docs/operations/observability.md",
@@ -1845,6 +1845,37 @@
       "reviewed_sha256": "ea7602fd3a4dc00625163e74e3534549e69fedab1074b22131e6470395b27615",
       "reviewed_functions": "immutable Detroit calendar within each request",
       "semantic_reach": "Changes calendar context lifetime, preserving source-driven default seasons and explicit historical season selection.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ]
+    },
+    {
+      "path": ".github/workflows/r2-real-data-validation.yml",
+      "old_sha256": "123aeefd488c4adf48faaf5c871c6a16627406f220f350b82141e33d89b96b49",
+      "reviewed_sha256": "82e840f13371d97f836020e6919528b6211bf7ab3d46fd114ca3b01ceac68eaa",
+      "reviewed_functions": "pinned read-only actions and locked candidate qualification",
+      "semantic_reach": "The data tests retain generation, job permissions and separate evidence requirements. Manual historical targets preserve their earlier compatibility path.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
