@@ -1,8 +1,7 @@
 """Manual publication gates around the reviewed overlay script and immutable publisher.
 
 No arbitrary refs/artifacts/commands are accepted. The registry is reviewed code.
-Only protected ``publish`` and ``upload_candidate`` can write. Candidate upload
-cannot activate a generation. Activation requires a later reviewed qualification.
+Candidate upload and pointer-only activation are separate protected operations.
 """
 
 from __future__ import annotations
@@ -40,11 +39,11 @@ def write_json(path, value):
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
 
 
-def api(path, *, binary=False):
+def api(path, *, binary=False, accept="application/vnd.github+json"):
     """Only fixed same-repository GET endpoints; requests strips redirected auth."""
     if not path.startswith("/") or ".." in path or ":" in path:
         raise ValueError("Invalid GitHub API path")
-    headers = {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
+    headers = {"Accept": accept, "X-GitHub-Api-Version": "2022-11-28"}
     if os.environ.get("GH_TOKEN"):
         headers["Authorization"] = "Bearer " + os.environ["GH_TOKEN"]
     response = requests.get(
@@ -502,6 +501,129 @@ def verify_candidate(name, publisher, work, published_path):
     return receipt
 
 
+def read_activation_evidence(name, package, inventory):
+    """Bind the prior independent upload and the reviewed hosted cold result."""
+    if "activate_candidate" not in package.get("operations", []):
+        raise ValueError("Package does not authorize candidate activation")
+    evidence = package["activation"]
+    asset = evidence["upload_receipt_asset_id"]
+    raw = api(f"/releases/assets/{asset}", binary=True, accept="application/octet-stream")
+    if digest(raw) != evidence["upload_receipt_sha256"]:
+        raise ValueError("Independent upload receipt checksum differs")
+    uploaded = json.loads(raw)
+    bindings = {
+        "package": name,
+        "publisher_sha": package["publisher_sha"],
+        "inventory_sha256": package["inventory_sha256"],
+        "workflow_run_id": str(evidence["upload_run_id"]),
+        "publication_state": "candidate_independently_verified_not_activated",
+        "base_generation": inventory["base_generation"],
+        "base_manifest_sha256": inventory["base_manifest_sha256"],
+        "generation_id": package["generation_id"],
+        "prepared_manifest_sha256": evidence["manifest_sha256"],
+    }
+    if any(uploaded.get(key) != val for key, val in bindings.items()):
+        raise ValueError("Independent upload receipt does not bind this candidate and base")
+    hosted = evidence["hosted"]
+    pr = api(f"/pulls/{hosted['pr']}")
+    if (
+        not pr.get("merged_at")
+        or pr.get("merge_commit_sha") != hosted["runtime_sha"]
+        or pr.get("base", {}).get("ref") != "main"
+        or hosted["generation_id"] != package["generation_id"]
+        or hosted["manifest_sha256"] != evidence["manifest_sha256"]
+        or not 0 < hosted["elapsed_seconds"] <= 20
+        or hosted["first_query_passed"] is not True
+        or hosted["followup_checks_passed"] != 6
+    ):
+        raise ValueError("Hosted cold qualification does not bind this candidate")
+    return uploaded
+
+
+def prepare_activation(name, publisher, work, *, expected=None):
+    """Check current identities. The protected writer verifies all stored bodies before CAS."""
+    policy, package, inventory = load_package(name, publisher)
+    upload = read_activation_evidence(name, package, inventory)
+    publication = publisher_modules(publisher)
+    client, bucket = publication._resolve_r2_target(
+        client=None, bucket_name=None, env=None, env_file=None
+    )
+    base = upload["base_generation"]
+    generation = upload["generation_id"]
+    base_pointer, _, base_hash = verify_pointer_manifest(client, bucket, base)
+    if base_pointer != upload["base_pointer"] or base_hash != upload["base_manifest_sha256"]:
+        raise ValueError("The approved base pointer or manifest changed since the upload")
+    raw = client.get_object(
+        Bucket=bucket, Key=f"generations/{generation}/metadata/generation_manifest.json"
+    )["Body"].read()
+    manifest_hash = upload["prepared_manifest_sha256"]
+    if digest(raw) != manifest_hash:
+        raise ValueError("Uploaded candidate manifest differs from independent verification")
+    manifest = json.loads(raw)
+    count, size = len(manifest["files"]), sum(row["size_bytes"] for row in manifest["files"])
+    if (
+        manifest["generation_id"] != generation
+        or count != upload["file_count"]
+        or size != upload["total_bytes"]
+        or not 0 < count <= policy["max_snapshot_objects"]
+        or not 0 < size <= policy["max_snapshot_bytes"]
+    ):
+        raise ValueError("Uploaded candidate inventory differs from the approved bounds")
+    receipt = dict(
+        schema_version=1,
+        publication_state="activation_prepared_no_writes",
+        package=name,
+        publisher_sha=package["publisher_sha"],
+        registry_sha256=digest(REGISTRY.read_bytes()),
+        workflow_sha=os.environ["GITHUB_SHA"],
+        workflow_run_id=os.environ["GITHUB_RUN_ID"],
+        base_generation=base,
+        base_manifest_sha256=base_hash,
+        base_pointer=base_pointer,
+        generation_id=generation,
+        prepared_manifest_sha256=manifest_hash,
+        file_count=count,
+        total_bytes=size,
+        activation_evidence=package["activation"],
+        operation_budget={"active_pointer_puts": 1, "snapshot_object_puts": 0, "sdk_attempts": 1},
+    )
+    if expected is not None and receipt != expected:
+        raise ValueError("Activation differs from the owner-visible preparation")
+    work.mkdir(parents=True, exist_ok=False)
+    write_json(work / "prepared.json", receipt)
+    return receipt, publication
+
+
+def activate_candidate(name, publisher, work, prepared_path):
+    expected = json.loads(prepared_path.read_text())
+    check_main_revision(os.environ["GITHUB_SHA"])
+    audit = environment_audit()
+    approvals = api(f"/actions/runs/{os.environ['GITHUB_RUN_ID']}/approvals")
+    check_approval(audit, approvals)
+    receipt, publication = prepare_activation(name, publisher, work, expected=expected)
+    receipt.update(
+        publication_state="candidate_activation_started_outcome_unknown",
+        environment_audit=audit,
+        owner_approval=approvals,
+    )
+    write_json(work / "publication.json", receipt)
+    try:
+        result = publication.activate_r2_candidate(
+            receipt["generation_id"],
+            expected_base=receipt["base_generation"],
+            expected_base_manifest_sha256=receipt["base_manifest_sha256"],
+            expected_manifest_sha256=receipt["prepared_manifest_sha256"],
+            env_file=None,
+        )
+        receipt.update(
+            publication_state="candidate_activation_verification_pending",
+            publication=asdict(result),
+        )
+    finally:
+        write_json(work / "publication.json", receipt)
+    return receipt
+
+
 def verify_candidate_cold_response(response, *, generation, manifest_sha256, elapsed_seconds, case):
     """An actual hosted first-query miss is required; runner timings cannot qualify."""
     if response.status_code != 200 or not 0 < elapsed_seconds <= 20:
@@ -558,8 +680,8 @@ def verify_answer(case, answer):
     return {"query": case["query"], "sections": {key: actual[key] for key in expected}}
 
 
-def verify(name, publisher, work, published_path):
-    policy, package, inventory = load_package(name, publisher)
+def verify(name, publisher, work, published_path, *, activation=False):
+    _, package, inventory = load_package(name, publisher)
     receipt = json.loads(published_path.read_text())
     if (
         receipt.get("package") != name
@@ -569,8 +691,17 @@ def verify(name, publisher, work, published_path):
         or receipt.get("generation_id") != package["generation_id"]
     ):
         raise ValueError("Publication receipt does not bind this workflow/package")
+    if activation and (
+        "activate_candidate" not in package.get("operations", [])
+        or receipt.get("publication_state") != "candidate_activation_verification_pending"
+        or receipt.get("activation_evidence") != package["activation"]
+        or receipt.get("publication", {}).get("action") != "candidate_activation"
+    ):
+        raise ValueError("Activation receipt does not bind this protected candidate switch")
     publication = publisher_modules(publisher)
-    return verify_published_snapshot(package, inventory, publication, work, receipt)
+    return verify_published_snapshot(
+        package, inventory, publication, work, receipt, activation=activation
+    )
 
 
 def check_live_answers(package, receipt):
@@ -640,7 +771,30 @@ def check_live_answers(package, receipt):
     return answers
 
 
-def verify_published_snapshot(package, inventory, publication, work, receipt):
+def readiness_for_generation(response, generation, *, activation=False):
+    """Recognize the existing historical limitation without claiming readiness."""
+    if response.status_code != 200 and not (activation and response.status_code == 503):
+        return None
+    body = response.json()
+    if body.get("active_generation") != generation:
+        return None
+    if activation and (
+        body.get("immutable_generation") is not True
+        or body.get("exception", {}).get("applied") is not False
+    ):
+        return None
+    if response.status_code == 200 and body.get("ready") is True:
+        return body
+    if (
+        response.status_code == 503
+        and body.get("ready") is False
+        and [row.get("code") for row in body.get("blockers", [])] == ["new_season_not_loaded"]
+    ):
+        return body
+    return None
+
+
+def verify_published_snapshot(package, inventory, publication, work, receipt, *, activation=False):
     """Read-only core shared by same-run verification and authenticated recovery."""
     client, bucket = publication._resolve_r2_target(
         client=None, bucket_name=None, env=None, env_file=None
@@ -654,6 +808,14 @@ def verify_published_snapshot(package, inventory, publication, work, receipt):
             or manifest_hash != receipt["prepared_manifest_sha256"]
         ):
             raise ValueError("Published pointer/manifest differs from approved preparation")
+        if activation:
+            previous = client.get_object(
+                Bucket=bucket,
+                Key=f"generations/{inventory['base_generation']}/metadata/generation_manifest.json",
+            )["Body"].read()
+            if digest(previous) != inventory["base_manifest_sha256"]:
+                raise ValueError("Previous generation manifest was not preserved")
+            receipt["previous_manifest_preserved"] = True
         publication._validate_r2_manifest_inventory(
             client, bucket, package["generation_id"], manifest
         )
@@ -674,34 +836,45 @@ def verify_published_snapshot(package, inventory, publication, work, receipt):
         readiness = None
         for attempt in range(10):
             response = requests.get(base_url + "/readiness", timeout=20)
-            if response.status_code == 200:
-                value = response.json()
-                if (
-                    value.get("ready")
-                    and value.get("active_generation") == package["generation_id"]
-                ):
-                    readiness = value
-                    break
+            readiness = readiness_for_generation(
+                response, package["generation_id"], activation=activation
+            )
+            if readiness is not None:
+                break
             if attempt < 9:
                 time.sleep(15)
         if readiness is None:
             raise ValueError("Deployed readiness did not adopt the verified generation")
         receipt["deployed_readiness"] = readiness
+        if activation:
+            receipt["deployed_readiness_http_status"] = response.status_code
         answers = check_live_answers(package, receipt)
         final_pointer, _, final_hash = verify_pointer_manifest(
             client, bucket, package["generation_id"]
         )
         if final_pointer != pointer or final_hash != manifest_hash:
             raise ValueError("Active pointer moved during deployed verification")
+        if activation:
+            receipt["operational_acceptance_complete"] = readiness["ready"]
         receipt.update(
-            publication_state="published_and_verified",
+            publication_state=(
+                "candidate_activated_historical_verified"
+                if activation
+                else "published_and_verified"
+            ),
             verified_objects=checked,
             verified_pointer=pointer,
             deployed_readiness=readiness,
             deployed_answers=answers,
         )
     except Exception:
-        receipt["publication_state"] = "published_verification_failed"
+        if activation:
+            receipt["operational_acceptance_complete"] = False
+        receipt["publication_state"] = (
+            "candidate_activation_verification_failed"
+            if activation
+            else "published_verification_failed"
+        )
         raise
     finally:
         write_json(work / "receipt.json", receipt)
@@ -720,6 +893,9 @@ def main():
             "verify",
             "upload_candidate",
             "verify_candidate",
+            "prepare_activation",
+            "activate_candidate",
+            "verify_activation",
         ],
     )
     parser.add_argument("--package", default="opening-availability-v1")
@@ -729,7 +905,11 @@ def main():
     args = parser.parse_args()
     if args.mode == "resolve":
         check_main_revision(os.environ["GITHUB_SHA"])
-        if os.environ.get("PUBLICATION_MODE") in {"publish", "upload_candidate"}:
+        if os.environ.get("PUBLICATION_MODE") in {
+            "publish",
+            "upload_candidate",
+            "activate_candidate",
+        }:
             audit = environment_audit()
             if not audit.get("publication_ready"):
                 raise ValueError(
@@ -755,6 +935,20 @@ def main():
         upload_candidate(args.package, args.publisher.resolve(), args.work.resolve(), args.prepared)
     elif args.mode == "verify_candidate":
         verify_candidate(args.package, args.publisher.resolve(), args.work.resolve(), args.prepared)
+    elif args.mode == "prepare_activation":
+        prepare_activation(args.package, args.publisher.resolve(), args.work.resolve())
+    elif args.mode == "activate_candidate":
+        activate_candidate(
+            args.package, args.publisher.resolve(), args.work.resolve(), args.prepared
+        )
+    elif args.mode == "verify_activation":
+        verify(
+            args.package,
+            args.publisher.resolve(),
+            args.work.resolve(),
+            args.prepared,
+            activation=True,
+        )
     else:
         verify(args.package, args.publisher.resolve(), args.work.resolve(), args.prepared)
 

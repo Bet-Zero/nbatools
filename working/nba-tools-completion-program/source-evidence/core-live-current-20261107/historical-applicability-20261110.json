@@ -7,7 +7,7 @@
   "original_capture_sha256": "a5c718c7498f24d787866ff4e3d53220363e00588a045607e92f5947ac2074a5",
   "original_case_manifest_sha256": "096f093c24df872fca3107a1d4a23b19fc98e549b86aecfdc9df3b538ca1382a",
   "original_bound_file_count": 663,
-  "unchanged_bound_file_count": 620,
+  "unchanged_bound_file_count": 619,
   "cases": [
     {
       "id": "k12-s1",
@@ -102,9 +102,9 @@
     {
       "path": ".github/data-publication-packages.json",
       "old_sha256": "cc2042c866c201a9d764865ab3961f38ef878ea217f35b439d06cff605670c55",
-      "reviewed_sha256": "bfddef6d76747166d4a4d3db905e38be191d3877fc61b7885073b7877f960e7b",
+      "reviewed_sha256": "e63e86f8f673fa4456894b6b9be7d197d25a239bca75edc17a939e31fe1b39e1",
       "reviewed_functions": "protected publication registry",
-      "semantic_reach": "Adds separately pinned protected-workflow publication packages through the exact 2024 season inactive overlay. Every prior package/check and all storage/approval limits remain unchanged. Registry is read by manual protected publication, not historical query execution; no original22 query, data, parser or arithmetic semantics change. All22 existing cases remain eligible; no new capture or broader acceptance is claimed. The Cleveland addition pins one upload-only candidate, preserves all prior45 registered expectations and adds42 independently source-derived nonempty checks. It cannot trigger activation or affect the original22 computations.",
+      "semantic_reach": "Adds separately pinned protected-workflow publication packages through the exact 2024 season inactive overlay. Every prior package/check and all storage/approval limits remain unchanged. Registry is read by manual protected publication, not historical query execution; no original22 query, data, parser or arithmetic semantics change. All22 existing cases remain eligible; no new capture or broader acceptance is claimed. The Cleveland addition pins one candidate, preserves all prior45 registered expectations and adds42 independently source-derived nonempty checks. The registry binds upload and separate manual pointer-only activation evidence without changing the original computations. No original historical capture runs this workflow or uses the Cleveland generation.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -165,7 +165,7 @@
       "path": ".github/workflows/r2-data-publication.yml",
       "old_sha256": "562d94cdd02b0675f6df19d0441689e316c01be4615455e3de97345b1cc4ff67",
       "reviewed_functions": "manual protected candidate upload workflow",
-      "semantic_reach": "Adds an explicitly owner-approved upload-only operation and independent read verification; it cannot activate the candidate. Legacy publication retains owner/main/CI/base gates. Workflow dispatch does not execute any original historical query or change its runtime data. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed.",
+      "semantic_reach": "Adds an explicitly owner-approved upload-only operation and independent read verification; it cannot activate the candidate. Legacy publication retains owner/main/CI/base gates. Workflow dispatch does not execute any original historical query or change its runtime data. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Adds the explicit Cleveland activation branch to the existing manual owner-protected workflow. This is outside the original public query and rendering execution paths.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -190,13 +190,13 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "607b31fcf5870ee557d61cb47993a43597ccf2e2aaafa4dcec6a800a6792c332"
+      "reviewed_sha256": "7465cdc4a8187f11a4540df2bc42784406bbdd88497de2f1aafb4309512e1a20"
     },
     {
       "path": ".github/workflows/r2-publication-readonly.yml",
       "old_sha256": "14ef3a2c41bc587e4d05a1bd76b7c2382507ebf1e54997cd573ed96aa49a35b7",
       "reviewed_functions": "read-only candidate verification",
-      "semantic_reach": "Adds the candidate byte-verification branch with existing read-only credentials. Existing strict production verification remains unchanged; no historical query interpretation or arithmetic changes. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Emits the same nonsecret prepared approval JSON in existing authenticated job logs as well as the job summary so agents can inspect its actual bytes without an additional artifact-host permission. No gate, source, snapshot, credential or activation behavior changes.",
+      "semantic_reach": "Adds the candidate byte-verification branch with existing read-only credentials. Existing strict production verification remains unchanged; no historical query interpretation or arithmetic changes. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Emits the same nonsecret prepared approval JSON in existing authenticated job logs as well as the job summary so agents can inspect its actual bytes without an additional artifact-host permission. No gate, source, snapshot, credential or activation behavior changes. Adds prepare and verify commands for the exact activation mode. The read-only Actions jobs are outside the original query and rendering paths.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -221,7 +221,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "49a985f7f83ff41a83b2a72d0c3b505a6e74917773768c96ca6a9e39bce2be7a"
+      "reviewed_sha256": "a1ed5e619a116e55440865f5752dd26e6f6a04cd4f9dce3f5d6efa7636efa380"
     },
     {
       "path": "CLAUDE.md",
@@ -320,7 +320,7 @@
       "path": "docs/operations/deployment.md",
       "old_sha256": "97064848175f0dfd542c0f4ebf8fe1e799d26e70066c29b1f3fa27f87347b02a",
       "reviewed_functions": "candidate release procedure",
-      "semantic_reach": "Documents isolated protected upload and preview qualification; no production data, runtime calculation or acceptance outcome changes. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed.",
+      "semantic_reach": "Documents isolated protected upload and preview qualification; no production data, runtime calculation or acceptance outcome changes. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Documents the separate approval, conditional pointer write, and existing verification and backup steps. The application does not read this runbook.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -345,7 +345,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "3cdf4d505ccad725627f4f25901ac233fb20563054fe580801ae006d215fbd38"
+      "reviewed_sha256": "6b8f9a297620b36c623225e28a352f03150823e2c32029e378c6496dd2d1a67a"
     },
     {
       "path": "docs/reference/data_contracts.md",
@@ -1376,7 +1376,7 @@
       "path": "tools/r2_publication.py",
       "old_sha256": "8cccffc3c91511cbfb6fd9d43c2bf0839bd749ac2de2fcdd84b76e584e082f0d",
       "reviewed_functions": "manual candidate preparation/upload/verification and cold response gate",
-      "semantic_reach": "Pins the Git-retained accepted inputs, composes the complete base-preserving snapshot, checks storage/operation limits and verifies owner approval before candidate-prefix writes. The registered Cleveland package forbids combined publish and has no activation workflow operation. This manual release tool is not part of historical runtime calculations. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed.",
+      "semantic_reach": "Pins the Git-retained accepted inputs, composes the complete base-preserving snapshot, checks storage/operation limits and verifies owner approval before candidate-prefix writes. The Cleveland package uses separate protected operations for upload and pointer activation. This manual release tool is not part of historical runtime calculations. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Adds the existing-workflow wrapper for the approved Cleveland pointer change. The publication tool does not run inside any original public query or change historical result construction.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1401,7 +1401,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "543540533ec8536bc37ddb0c920356fb7448deca992e422edc6311e2aea26c17"
+      "reviewed_sha256": "f091fb5d602fd66fa9b51da8f981638f9754814fa4985954883bd39813ca3747"
     },
     {
       "path": "tools/stage_participation_collection.py",
@@ -1435,6 +1435,37 @@
       ],
       "delta_reviewer": "/root/coverage_checker (separate Codex session)",
       "delta_reviewed_revision": "a9895ea522385cbe7de21b00e6a7ab580cc5161b"
+    },
+    {
+      "path": "tools/cloud_backup.py",
+      "old_sha256": "6a07fc5ad9b35654fb630a640de702be837a38fb880402cc840a1a8fe562fc02",
+      "reviewed_sha256": "8423892db4c4a3fa005ece8fdec882b133ea69184e3d50d9641fe881489c9447",
+      "reviewed_functions": "qualified_activation_manifest, export_backup, restore_backup",
+      "semantic_reach": "The existing backup and offline restore tools use the independently qualified Cleveland manifest for exact byte verification. Both original historical generations retain their existing validation path. No original public query reads the backup tools.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ]
     }
   ],
   "original_src_python_inventory": [

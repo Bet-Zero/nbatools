@@ -5,6 +5,7 @@ import importlib.util
 import io
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 import yaml
@@ -141,7 +142,7 @@ def test_prepare_rejects_changed_reviewed_base_before_publisher(tmp_path, monkey
         gate.prepare("package", tmp_path, tmp_path / "work")
 
 
-@pytest.mark.parametrize("operation", ["publish", "upload_candidate"])
+@pytest.mark.parametrize("operation", ["publish", "upload_candidate", "activate_candidate"])
 def test_publication_cannot_reach_prepare_or_writer_without_approval(
     tmp_path, monkeypatch, operation
 ):
@@ -158,6 +159,11 @@ def test_publication_cannot_reach_prepare_or_writer_without_approval(
     monkeypatch.setattr(
         gate, "prepare", lambda *a, **k: pytest.fail("Preparation reached without approval")
     )
+    monkeypatch.setattr(
+        gate,
+        "prepare_activation",
+        lambda *a, **k: pytest.fail("Activation reached without approval"),
+    )
     with pytest.raises(ValueError, match="unverified"):
         getattr(gate, operation)("package", tmp_path, tmp_path / "work", prepared)
 
@@ -170,11 +176,16 @@ def test_publisher_workflow_is_manual_and_credentials_are_job_and_step_scoped():
     assert workflow["permissions"] == {"contents": "read", "actions": "read"}
     jobs = workflow["jobs"]
     assert jobs["publish"]["environment"]["name"] == "r2-publication"
-    assert jobs["publish"]["if"] == "inputs.mode == 'publish' || inputs.mode == 'upload_candidate'"
+    assert jobs["publish"]["if"].split(" || ") == [
+        "inputs.mode == 'publish'",
+        "inputs.mode == 'upload_candidate'",
+        "inputs.mode == 'activate_candidate'",
+    ]
     assert triggers["workflow_dispatch"]["inputs"]["mode"]["options"] == [
         "validate",
         "publish",
         "upload_candidate",
+        "activate_candidate",
     ]
     assert "env" not in jobs["publish"]
     secret_steps = [
@@ -197,6 +208,62 @@ def test_publisher_workflow_is_manual_and_credentials_are_job_and_step_scoped():
     assert (
         "secrets: inherit" not in (ROOT / ".github/workflows/r2-data-publication.yml").read_text()
     )
+
+
+def test_only_guarded_activation_records_the_known_readiness_failure():
+    body = dict(
+        active_generation="cleveland",
+        ready=False,
+        immutable_generation=True,
+        exception={"applied": False},
+        blockers=[{"code": "new_season_not_loaded"}],
+    )
+    response = SimpleNamespace(status_code=503, json=lambda: body)
+    assert gate.readiness_for_generation(response, "cleveland") is None
+    assert gate.readiness_for_generation(response, "cleveland", activation=True) == body
+    assert gate.readiness_for_generation(response, "different", activation=True) is None
+    body["blockers"].append({"code": "missing_files"})
+    assert gate.readiness_for_generation(response, "cleveland", activation=True) is None
+    body["blockers"].pop()
+    body["exception"]["applied"] = True
+    assert gate.readiness_for_generation(response, "cleveland", activation=True) is None
+
+
+def test_activation_binds_independent_receipt_and_hosted_candidate(monkeypatch):
+    packages = json.loads(gate.REGISTRY.read_bytes())["packages"]
+    name = "cleveland-team-appearances-2024-v1"
+    package = packages[name]
+    evidence = package["activation"]
+    inventory = dict(base_generation="base", base_manifest_sha256="a" * 64)
+    result = {
+        **inventory,
+        "package": name,
+        "publisher_sha": package["publisher_sha"],
+        "inventory_sha256": package["inventory_sha256"],
+        "workflow_run_id": str(evidence["upload_run_id"]),
+        "publication_state": "candidate_independently_verified_not_activated",
+        "generation_id": package["generation_id"],
+        "prepared_manifest_sha256": evidence["manifest_sha256"],
+    }
+    raw = json.dumps(result).encode()
+    evidence["upload_receipt_sha256"] = gate.digest(raw)
+    pr = dict(
+        merged_at="today", merge_commit_sha=evidence["hosted"]["runtime_sha"], base={"ref": "main"}
+    )
+    responses = {
+        f"/releases/assets/{evidence['upload_receipt_asset_id']}": raw,
+        f"/pulls/{evidence['hosted']['pr']}": pr,
+    }
+    monkeypatch.setattr(gate, "api", lambda path, **kwargs: responses[path])
+    assert gate.read_activation_evidence(name, package, inventory) == result
+    with pytest.raises(ValueError, match="candidate and base"):
+        gate.read_activation_evidence(name, package, inventory | {"base_generation": "changed"})
+    pr["merge_commit_sha"] = "different"
+    with pytest.raises(ValueError, match="Hosted cold qualification"):
+        gate.read_activation_evidence(name, package, inventory)
+    evidence["upload_receipt_sha256"] = "9" * 64
+    with pytest.raises(ValueError, match="receipt checksum"):
+        gate.read_activation_evidence(name, package, inventory)
 
 
 def test_reusable_publication_only_receives_named_readonly_r2_secrets():
@@ -274,7 +341,10 @@ def test_backup_only_follows_approved_published_and_verified_generation():
     caller = yaml.safe_load((ROOT / ".github/workflows/r2-data-publication.yml").read_text())
     backup = caller["jobs"]["backup"]
     assert backup["needs"] == ["resolve", "verify"]
-    assert backup["if"] == "inputs.mode == 'publish' && needs.verify.result == 'success'"
+    assert backup["if"] == (
+        "(inputs.mode == 'publish' || inputs.mode == 'activate_candidate') "
+        "&& needs.verify.result == 'success'"
+    )
     assert backup["with"]["backup_generation"] == "${{ needs.resolve.outputs.generation_id }}"
     assert backup["with"]["publication_package"] == ""
     assert backup["permissions"] == {"contents": "write", "actions": "read"}

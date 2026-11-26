@@ -253,8 +253,9 @@ is evidence for that change, not a full validation.
 
 The owner authorized this split process on 2026-11-24. It supplements, rather
 than bypasses, the protected publication process below. Existing packages keep
-their reviewed `publish` behavior. The Cleveland candidate permits only
-`validate` and `upload_candidate`; combined publication is rejected.
+their reviewed `publish` behavior. The Cleveland package uses `validate`,
+`upload_candidate`, and `activate_candidate`. Upload and activation require
+separate protected approvals.
 
 1. Run the existing **Protected R2 Data Publication** workflow on merged main
    with mode `validate`. This reads the authenticated active base, composes the
@@ -301,14 +302,17 @@ their reviewed `publish` behavior. The Cleveland candidate permits only
    at most eight. Runner/TestClient timings and warm responses cannot qualify
    the hosted cold limit. Record the independent review and source expectations
    already accepted in PR633–635; do not recollect or rebuild source proof.
-6. Only after successful hosted qualification, register its exact frozen proof
-   and prepare a **separate** protected activation approval. The low-level
-   `activate_r2_candidate` verifies the already uploaded bodies and changes only
-   the active pointer with same-base CAS: zero snapshot PUTs and one pointer
-   PUT. It is intentionally not exposed in the workflow before that review.
-   Do not use legacy `publish` or create another copy. Original strict
-   production readiness, registered answers and backup/restore safeguards still
-   apply after activation; the known 2026-27 readiness failure stays separate.
+6. Register the passing hosted proof and the independent upload receipt in the
+   reviewed package. Dispatch `activate_candidate` on main for that package.
+   Read-only preparation authenticates the receipt, current base and uploaded
+   manifest, then shows the exact operation awaiting **separate** owner approval
+   in `r2-publication`. The protected writer verifies the uploaded bodies and
+   changes only the active pointer with same-base CAS, with a budget of zero
+   snapshot PUTs and one pointer PUT. Read-only verification checks both
+   manifests and all registered public answers before the existing backup and
+   separate-runner restore. For the Cleveland package, the sole
+   `new_season_not_loaded` blocker is recorded as failed operational readiness
+   while the historical delivery is verified on the exact active generation.
 
 ### Agent-initiated targeted requests
 

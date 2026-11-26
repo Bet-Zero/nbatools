@@ -11,6 +11,7 @@ from nbatools.commands.pipeline.generation_publication import (
     GenerationValidationError,
     _build_staged_generation,
 )
+from tools import cloud_backup
 from tools.cloud_backup import export_backup, restore_backup
 
 
@@ -22,7 +23,7 @@ class ReadOnlyStore:
         return {"Body": io.BytesIO(self.files[Key])}
 
 
-def make_backup(tmp_path):
+def make_backup(tmp_path, *, register=None):
     source = tmp_path / "source"
     sample = source / "raw/sample.csv"
     sample.parent.mkdir(parents=True)
@@ -63,9 +64,56 @@ def make_backup(tmp_path):
             "manifest_sha256": hashlib.sha256(manifest.read_bytes()).hexdigest(),
         }
     ).encode()
+    if register is not None:
+        register(hashlib.sha256(manifest.read_bytes()).hexdigest())
     output = tmp_path / "backup"
     receipt = export_backup(output, "backup-test", client=ReadOnlyStore(files), bucket="fixture")
     return output, receipt, files
+
+
+def test_exact_qualified_backup_and_restore_verify_bytes_without_source_replay(
+    tmp_path, monkeypatch
+):
+    registry = tmp_path / "approved.json"
+    monkeypatch.setattr(cloud_backup, "REGISTRY", registry)
+    monkeypatch.setattr(
+        cloud_backup,
+        "validate_staged_generation",
+        lambda *args: pytest.fail("Source qualification replayed for an approved manifest"),
+    )
+
+    def register(manifest_sha):
+        registry.write_text(
+            json.dumps(
+                {
+                    "packages": {
+                        "fixture": {
+                            "generation_id": "backup-test",
+                            "operations": ["activate_candidate"],
+                            "activation": {"manifest_sha256": manifest_sha},
+                        }
+                    },
+                }
+            )
+        )
+        assert not cloud_backup.qualified_activation_manifest("backup-test", "0" * 64)
+        assert not cloud_backup.qualified_activation_manifest("another-generation", manifest_sha)
+
+    output, receipt, _ = make_backup(tmp_path, register=register)
+    assert receipt["source_qualification_reused"]
+    archive = output / "generation.zip"
+    restored = restore_backup(archive, receipt, tmp_path / "restore")
+    assert restored["source_qualification_reused"]
+    with zipfile.ZipFile(archive) as zipped:
+        entries = {name: zipped.read(name) for name in zipped.namelist()}
+    entries["raw/sample.csv"] = b"value\n43\n"
+    with zipfile.ZipFile(archive, "w") as zipped:
+        for key, value in entries.items():
+            zipped.writestr(key, value)
+    receipt["archive_sha256"] = hashlib.sha256(archive.read_bytes()).hexdigest()
+    receipt["archive_bytes"] = archive.stat().st_size
+    with pytest.raises(ValueError, match="differs from the qualified manifest"):
+        restore_backup(archive, receipt, tmp_path / "corrupt")
 
 
 def test_byte_exact_export_and_offline_restore(tmp_path):

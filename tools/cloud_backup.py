@@ -22,7 +22,7 @@ from nbatools.commands.pipeline.generation_publication import (
     _safe_relative_path,
     validate_staged_generation,
 )
-from tools.r2_publication import verify_pointer_manifest
+from tools.r2_publication import REGISTRY, verify_pointer_manifest
 
 MAX_FILES = 3000
 MAX_BYTES = 1_000_000_000
@@ -31,6 +31,17 @@ MAX_ARCHIVE = 200_000_000
 
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def qualified_activation_manifest(generation, manifest_sha256):
+    """Match only an exact independently qualified generation in the reviewed registry."""
+    packages = json.loads(REGISTRY.read_bytes())["packages"]
+    return any(
+        package["generation_id"] == generation
+        and "activate_candidate" in package.get("operations", [])
+        and package["activation"]["manifest_sha256"] == manifest_sha256
+        for package in packages.values()
+    )
 
 
 def inventory(manifest):
@@ -85,7 +96,11 @@ def export_backup(output, generation, *, client=None, bucket=None):
         path = stage / key
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(raw)
-    validate_staged_generation(stage, generation)
+    # Every body and the complete inventory above are authenticated by the
+    # exact independently qualified manifest. Other backups still replay.
+    qualified = qualified_activation_manifest(generation, manifest_sha)
+    if not qualified:
+        validate_staged_generation(stage, generation)
     after, _, after_sha = verify_pointer_manifest(client, bucket, generation)
     if before != after or manifest_sha != after_sha:
         raise ValueError("Active pointer changed during backup")
@@ -109,6 +124,7 @@ def export_backup(output, generation, *, client=None, bucket=None):
         "workflow_sha": os.environ.get("GITHUB_SHA"),
         "r2_writes": 0,
         "production_pointer_unchanged": True,
+        "source_qualification_reused": qualified,
     }
     shutil.rmtree(stage)  # Only this invocation's newly created validation copy.
     (output / "backup-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
@@ -149,6 +165,7 @@ def restore_backup(archive, receipt, destination):
         if (
             set(names) != {*files, GENERATION_MANIFEST_PATH.as_posix()}
             or len(files) != receipt["files"]
+            or manifest["generation_id"] != receipt["generation_id"]
         ):
             raise ValueError("Backup inventory mismatch")
         if sum(item["size_bytes"] for item in files.values()) != receipt["data_bytes"]:
@@ -158,11 +175,19 @@ def restore_backup(archive, receipt, destination):
             if expected and item.file_size != expected["size_bytes"]:
                 raise ValueError("Backup member size mismatch")
         destination.mkdir(parents=True)
+        qualified = qualified_activation_manifest(
+            receipt["generation_id"], receipt["manifest_sha256"]
+        )
         for item in entries:
             path = destination / item.filename
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_bytes(zipped.read(item))
-    validate_staged_generation(destination, receipt["generation_id"])
+            raw = zipped.read(item)
+            expected = files.get(item.filename)
+            if qualified and expected and hashlib.sha256(raw).hexdigest() != expected["sha256"]:
+                raise ValueError("Restored backup object differs from the qualified manifest")
+            path.write_bytes(raw)
+    if not qualified:
+        validate_staged_generation(destination, receipt["generation_id"])
     return {
         "generation_id": receipt["generation_id"],
         "files": len(files),
@@ -172,6 +197,7 @@ def restore_backup(archive, receipt, destination):
         "restored_at": datetime.now(UTC).isoformat(),
         "r2_credentials_used": False,
         "production_writes": 0,
+        "source_qualification_reused": qualified,
     }
 
 
