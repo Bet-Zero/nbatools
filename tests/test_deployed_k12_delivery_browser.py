@@ -172,7 +172,7 @@ def _assert_rendered(item, case):
 def _validate(receipt, bindings, sources, output):
     assert receipt["base"] in ("https://nbatools.vercel.app", "http://127.0.0.1:8765")
     assert not receipt["failures"]
-    seen, repeats, per_case = set(), [], {}
+    seen, per_case = set(), {}
     for item in receipt["receipts"]:
         pair = item["viewport"], item["id"]
         assert pair not in seen
@@ -207,17 +207,28 @@ def _validate(receipt, bindings, sources, output):
         )
         _assert_case(result, case, sources)
         _assert_rendered(item, case)
-        elapsed = item["responseElapsedMs"]
-        assert math.isfinite(elapsed) and elapsed >= 0
-        if case["id"] == "K12-H1":
-            assert elapsed <= 20_000
+        elapsed = _response_elapsed_ms(item, case)
         if re.search(r"-repeat-[1-5]$", item["id"]):
-            repeats.append(elapsed)
             per_case.setdefault(item["id"].split("-repeat-")[0], []).append(elapsed)
     assert seen == {(viewport, ident) for viewport in ("desktop", "mobile") for ident in bindings}
-    assert len(repeats) == 40
+    return _repeat_measurements(per_case)
+
+
+def _response_elapsed_ms(item, case):
+    elapsed = item["responseElapsedMs"]
+    assert math.isfinite(elapsed) and elapsed >= 0
+    if case["id"] == "K12-H1":
+        assert elapsed <= 20_000, f"K12-H1 browser response took {elapsed} ms"
+    return elapsed
+
+
+def _repeat_measurements(per_case):
+    assert set(per_case) == set(COMMON)
+    assert all(len(values) == 10 for values in per_case.values())
+    repeats = [value for values in per_case.values() for value in values]
+    assert all(math.isfinite(value) and value >= 0 for value in repeats)
     p95 = sorted(repeats)[math.ceil(0.95 * len(repeats)) - 1]
-    assert p95 <= 3000
+    assert p95 <= 3000, f"Observed K12 browser p95 {p95} ms exceeds 3000 ms"
     return dict(
         observations=40,
         p95_ms=p95,
