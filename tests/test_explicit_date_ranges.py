@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 from nbatools.commands._date_utils import (
-    CURRENT_QUERY_DATE,
+    current_query_date,
     explicit_date_is_open_ended,
     extract_date_range,
     invalid_explicit_date,
@@ -196,7 +196,7 @@ def test_impossible_dates_are_named(text, expected):
 
 
 def _through_today(rows: list[dict[str, str]], start: str) -> list[dict[str, str]]:
-    return _in_range(rows, start, CURRENT_QUERY_DATE.date().isoformat())
+    return _in_range(rows, start, current_query_date().date().isoformat())
 
 
 @pytest.mark.fixture_data

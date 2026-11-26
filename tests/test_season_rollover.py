@@ -173,3 +173,111 @@ def test_missing_new_season_blocks_readiness_and_only_an_exception_waives_it():
     waived = evaluate_readiness(overdue, checked_at=now, env=env)
     assert waived.ready is True
     assert waived.exception.applied is True
+
+
+def test_request_clock_uses_detroit_midnight_and_stays_fixed(monkeypatch):
+    class ControlledDatetime(datetime):
+        utc_now = datetime(2026, 8, 1, 3, 59, 59, tzinfo=UTC)
+
+        @classmethod
+        def now(cls, tz=None):
+            return cls.utc_now.astimezone(tz)
+
+    monkeypatch.setattr(_seasons, "datetime", ControlledDatetime)
+    with _seasons.request_calendar():
+        assert _seasons.today() == date(2026, 7, 31)
+        ControlledDatetime.utc_now = datetime(2026, 8, 1, 4, 0, 1, tzinfo=UTC)
+        assert _seasons.season_for_date(_seasons.today()) == "2025-26"
+    with _seasons.request_calendar():
+        assert _seasons.today() == date(2026, 8, 1)
+        assert _seasons.season_for_date(_seasons.today()) == "2026-27"
+
+
+def test_concurrent_admitted_queries_keep_their_own_calendar_day(monkeypatch):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Event
+
+    from nbatools.admission_control import AdmissionController
+    from nbatools.commands._date_utils import extract_date_range
+
+    class ControlledDatetime(datetime):
+        utc_now = datetime(2026, 8, 1, 3, 59, 59, tzinfo=UTC)
+
+        @classmethod
+        def now(cls, tz=None):
+            return cls.utc_now.astimezone(tz)
+
+    monkeypatch.setattr(_seasons, "datetime", ControlledDatetime)
+    controller = AdmissionController(max_concurrent_queries=2)
+    started = Event()
+    release = Event()
+
+    def old_request():
+        started.set()
+        assert release.wait(5)
+        return extract_date_range("today", None), _seasons.season_for_date(_seasons.today())
+
+    try:
+        with ThreadPoolExecutor(max_workers=1) as caller:
+            old = caller.submit(controller.run_query, "old", old_request)
+            try:
+                assert started.wait(5)
+                ControlledDatetime.utc_now = datetime(2026, 8, 1, 4, 0, 1, tzinfo=UTC)
+                new = controller.run_query("new", lambda: extract_date_range("today", None))
+            finally:
+                release.set()
+            assert old.result(timeout=5) == (("2026-07-31", "2026-07-31"), "2025-26")
+            assert new == ("2026-08-01", "2026-08-01")
+    finally:
+        controller._executor.shutdown(wait=True)
+
+
+def test_one_admitted_worker_reads_the_new_day_on_its_next_request(monkeypatch):
+    from threading import get_ident
+
+    from nbatools.admission_control import AdmissionController
+    from nbatools.commands._date_utils import extract_date_range
+
+    day = date(2026, 7, 31)
+    monkeypatch.setattr(_seasons, "_detroit_today", lambda: day)
+    controller = AdmissionController(max_concurrent_queries=1)
+
+    def answer():
+        return get_ident(), extract_date_range("yesterday", None)
+
+    try:
+        before = controller.run_query("before", answer)
+        day = date(2026, 8, 1)
+        after = controller.run_query("after", answer)
+        assert before[0] == after[0]
+        assert before[1] == ("2026-07-30", "2026-07-30")
+        assert after[1] == ("2026-07-31", "2026-07-31")
+    finally:
+        controller._executor.shutdown(wait=True)
+
+
+@pytest.mark.parametrize(
+    ("question", "target", "day"),
+    [
+        ("Cavaliers record today", "2026-11-26", "2026-11-26"),
+        ("Cavaliers record tonight", "2026-11-26", "2026-11-26"),
+        ("Cavaliers record yesterday", "2026-11-25", "2026-11-25"),
+        ("Cavaliers record this season", "2026-27", None),
+    ],
+)
+def test_stale_snapshot_cannot_replace_requested_calendar_scope(data_root, question, target, day):
+    from nbatools.commands.natural_query import parse_query
+    from nbatools.query_service import execute_natural_query
+
+    _write_games(data_root, "2025-26", "regular_season", [("0022500001", "2026-04-12", 1)])
+    with _seasons.request_calendar(date(2026, 11, 26)):
+        parsed = parse_query(question)
+        assert parsed["season"] == "2026-27"
+        assert parsed["start_date"] == day == parsed["end_date"]
+        answer = execute_natural_query(question)
+        assert answer.result_status != "ok"
+        assert target in " ".join(answer.result.notes)
+        assert parse_query("Cavaliers record")["season"] == "2025-26"
+        last_games = parse_query("Cavaliers record last 5 games")
+        assert last_games["season"] == "2025-26"
+        assert last_games["last_n"] == 5

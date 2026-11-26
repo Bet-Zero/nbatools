@@ -28,12 +28,14 @@ from __future__ import annotations
 import re
 import unicodedata
 from dataclasses import dataclass, field
+from datetime import date
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 
+from nbatools.commands import _seasons
 from nbatools.commands._compound_event_authorization import (
     is_compound_event_refusal,
     publishes_condition_metric_as_stat,
@@ -41,6 +43,7 @@ from nbatools.commands._compound_event_authorization import (
 )
 from nbatools.commands._condition_utils import normalize_stat_conditions
 from nbatools.commands._constants import contains_boolean_or
+from nbatools.commands._date_utils import literal_query_day
 from nbatools.commands._leaderboard_eligibility import is_boundary_refusal
 from nbatools.commands._natural_query_execution import (
     _execute_build_result,
@@ -56,9 +59,12 @@ from nbatools.commands.entity_resolution import (
     resolve_team,
 )
 from nbatools.commands.format_output import route_to_query_class
-from nbatools.commands.freshness import compute_current_through_for_seasons
+from nbatools.commands.freshness import compute_current_through, compute_current_through_for_seasons
 from nbatools.commands.natural_query import (
     _build_parse_state,
+    _yes_no_last_words,
+    detect_season_type,
+    names_current_season,
     normalize_text,
     parse_query,
 )
@@ -3585,12 +3591,49 @@ def _development_unavailable(query: str, reason: str) -> QueryResult:
 
 def execute_natural_query(query: str) -> QueryResult:
     """Execute a natural query against one request-pinned data generation."""
-    with data_generation_context(), player_identity_context():
+    with _seasons.request_calendar(), data_generation_context(), player_identity_context():
         clear_query_issues()
         try:
             return label_result(_execute_natural_query_in_generation(query))
         except DevelopmentDataUnavailable as exc:
             return _development_unavailable(query, str(exc))
+
+
+def _uncovered_calendar_request(
+    query: str, normalized: str, *, grouped_boolean_used: bool
+) -> QueryResult | None:
+    literal_day = literal_query_day(_yes_no_last_words(normalized))
+    if literal_day is None and not names_current_season(normalized):
+        return None
+    day = date.fromisoformat(literal_day) if literal_day is not None else _seasons.today()
+    season = _seasons.season_for_date(day)
+    season_type = detect_season_type(normalized)
+    if literal_day is None:
+        if season <= _seasons.default_end_season(season_type):
+            return None
+        through = None
+    else:
+        through = compute_current_through(season, season_type)
+        if through is not None and literal_day <= through:
+            return None
+    try:
+        parsed = parse_query(query)
+    except ValueError:
+        return None
+    route = parsed.get("route")
+    if route is None or parsed.get("route_kwargs", {}).get("unsupported_filters"):
+        return None
+    target = literal_day or season
+    result = NoResult(
+        query_class=route_to_query_class(route),
+        reason="no_data",
+        result_status=reason_to_status("no_data"),
+        current_through=through,
+        notes=[f"The served snapshot does not cover {target} for {season_type}."],
+    )
+    return _finalize_natural_query_result(
+        result, parsed, query, grouped_boolean_used=grouped_boolean_used
+    )
 
 
 def _execute_natural_query_in_generation(query: str) -> QueryResult:
@@ -3616,6 +3659,11 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
     grouped_boolean_used = expression_contains_boolean_ops(normalized) and (
         "(" in normalized or ")" in normalized
     )
+    uncovered = _uncovered_calendar_request(
+        query, normalized, grouped_boolean_used=grouped_boolean_used
+    )
+    if uncovered is not None:
+        return uncovered
 
     def _build_special_path_error_result(
         exc: FileNotFoundError | KeyError | TypeError | ValueError,
@@ -3892,7 +3940,7 @@ VALID_ROUTES = frozenset(
 
 def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
     """Execute a structured query against one request-pinned data generation."""
-    with data_generation_context(), player_identity_context():
+    with _seasons.request_calendar(), data_generation_context(), player_identity_context():
         clear_query_issues()
         try:
             return label_result(_execute_structured_query_in_generation(route, **kwargs))

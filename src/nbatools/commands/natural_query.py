@@ -3,6 +3,7 @@ from contextvars import ContextVar
 
 import pandas as pd
 
+from nbatools.commands import _seasons
 from nbatools.commands._compound_event_authorization import (
     CompoundEventAuthorization,
     authorize_compound_event_route,
@@ -22,12 +23,14 @@ from nbatools.commands._constants import (
     route_to_intent,
 )
 from nbatools.commands._date_utils import (
-    CURRENT_QUERY_DATE,
     MONTH_NAME_TO_NUM,
+    current_query_date,
     explicit_date_is_open_ended,
     extract_date_range,
     has_explicit_calendar_date,
     invalid_explicit_date,
+    literal_query_day,
+    season_span_ends_on_literal_day,
     seasons_for_explicit_dates,
     strip_explicit_calendar_date_clauses,
     unread_date_landmark,
@@ -122,6 +125,7 @@ from nbatools.commands._parse_helpers import (
     extract_min_attempts,
     names_unread_team_total,
     opponent_lists,
+    season_span_ends_in_current_season,
     text_without_min_attempts,
 )
 from nbatools.commands._parse_helpers import (
@@ -2992,6 +2996,7 @@ def _build_parse_state(query: str) -> dict:
     q = canonicalize_sample_phrases(
         _results_against_subject_first(_other_team_clause(_at_team(_over_team(_team_singular(q)))))
     )
+    calendar_day = literal_query_day(q)
     point_differential = bool(_POINT_DIFFERENTIAL.search(q))
     # "scoring margin", "point diff": the readers know "point differential"
     # (team-season boards included).
@@ -3069,6 +3074,13 @@ def _build_parse_state(query: str) -> dict:
             start_season = since_season
             end_season = default_end_season(season_type)
 
+    if (
+        start_season
+        and end_season
+        and (season_span_ends_on_literal_day(q) or season_span_ends_in_current_season(q))
+    ):
+        end_season = _seasons.season_for_date(_seasons.today())
+
     if not (start_season and end_season):
         # Try "last N seasons"
         last_n_seasons = extract_last_n_seasons(q)
@@ -3106,6 +3118,8 @@ def _build_parse_state(query: str) -> dict:
         if season is None:
             season = extract_relative_season(q, season_type)
             explicit_relative_season = season is not None
+        if season is None and calendar_day is not None:
+            season = _seasons.season_for_date(pd.Timestamp(calendar_day).date())
         if season is None:
             # An explicit "<month> <year>" or ISO date pins the season as well as the date
             # window. This has to run before the default_season_for_context
@@ -3760,11 +3774,11 @@ def _build_parse_state(query: str) -> dict:
     # Without this, a 14-day window ("last couple weeks") computed from
     # today can miss all data when the dataset hasn't been refreshed.
     anchor_date = None
-    if season:
+    if season and calendar_day is None and not names_current_season(q):
         ct = compute_current_through(season, season_type or "Regular Season")
         if ct is not None:
             ct_ts = pd.Timestamp(ct)
-            if ct_ts < CURRENT_QUERY_DATE:
+            if ct_ts < current_query_date():
                 anchor_date = ct_ts
 
     start_date, end_date = extract_date_range(q, season, anchor_date=anchor_date)
@@ -12336,6 +12350,11 @@ def _games_since(query: str) -> dict | None:
 
 
 def parse_query(query: str) -> dict:
+    with _seasons.request_calendar():
+        return _parse_query_with_calendar(query)
+
+
+def _parse_query_with_calendar(query: str) -> dict:
     since = _games_since(query)
     if since is not None:
         return since

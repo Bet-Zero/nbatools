@@ -5,12 +5,14 @@ glossary and date-extraction pipeline, including data-aware anchoring.
 """
 
 import re
+from datetime import date
 
 import pandas as pd
 import pytest
 
 from nbatools.commands._date_utils import extract_date_range
 from nbatools.commands._glossary import FUZZY_DATE_TERMS
+from nbatools.commands._seasons import request_calendar
 from nbatools.commands.natural_query import parse_query
 
 pytestmark = pytest.mark.parser
@@ -65,6 +67,16 @@ class TestExtractDateRangeWeeks:
         start, end = extract_date_range("jokic last couple weeks", None, anchor_date=anchor)
         assert end == "2026-04-04"
         assert start == "2026-03-22"
+
+    @pytest.mark.parametrize(
+        ("word", "day"), [("today", "26"), ("tonight", "26"), ("yesterday", "25")]
+    )
+    def test_literal_days_ignore_a_stale_window_anchor(self, word, day):
+        with request_calendar(date(2026, 11, 26)):
+            actual = extract_date_range(
+                f"jokic {word}", None, anchor_date=pd.Timestamp("2026-04-04")
+            )
+        assert actual == (f"2026-11-{day}", f"2026-11-{day}")
 
 
 class TestParseQueryWeeksPhrases:

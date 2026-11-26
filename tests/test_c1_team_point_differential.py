@@ -336,13 +336,12 @@ def test_unread_windows_refuse(query):
     ],
 )
 def test_read_windows_still_answer(query, monkeypatch):
-    from nbatools.commands import _date_utils, natural_query
+    from nbatools.commands import _seasons
 
     # This fixed fixture has no completeness receipt, so rolling windows use
     # the query clock. Keep that clock within its actual games on every run.
     anchor = pd.to_datetime(_team_margins()["game_date"]).max().normalize()
-    monkeypatch.setattr(_date_utils, "CURRENT_QUERY_DATE", anchor)
-    monkeypatch.setattr(natural_query, "CURRENT_QUERY_DATE", anchor)
+    monkeypatch.setattr(_seasons, "_detroit_today", lambda: anchor.date())
     kwargs = parse_query(query)["route_kwargs"]
     assert kwargs.get("start_date") and kwargs.get("end_date")
     if "last month" in query:
