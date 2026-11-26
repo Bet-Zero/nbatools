@@ -21,6 +21,7 @@ import type {
   QueryResponse,
   RoutesResponse,
 } from "./types";
+import { ApiRequestError, retryAfterSeconds } from "./requestError";
 
 const BASE = "";
 
@@ -39,29 +40,52 @@ function isErrorResponse(value: unknown): value is ErrorResponse {
 }
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(BASE + url, init);
-  const body = await res.text();
+  let res: Response;
+  let body: string;
+  try {
+    res = await fetch(BASE + url, init);
+    body = await res.text();
+  } catch (err) {
+    const aborted = typeof err === "object" && err !== null && "name" in err && err.name === "AbortError";
+    if (init?.signal?.aborted || aborted) throw err;
+    throw new ApiRequestError(
+      "The connection was interrupted. Try again when you're online.",
+      "network_error",
+    );
+  }
+  const requestId =
+    res.headers?.get("X-Request-ID") ?? res.headers?.get("X-Vercel-Id") ?? undefined;
+  const retryAfter = retryAfterSeconds(res.headers?.get("Retry-After"));
+  const failure = (message: string, code: string) =>
+    new ApiRequestError(message, code, res.status, requestId, retryAfter);
   let data: unknown = null;
 
   if (body.trim()) {
     try {
       data = JSON.parse(body);
     } catch {
-      throw new Error(
+      if (res.status === 504) {
+        throw failure("The server timed out before it returned an answer.", "execution_timeout");
+      }
+      throw failure(
         `HTTP ${res.status} returned non-JSON response: ${bodyPreview(body)}`,
+        "invalid_response",
       );
     }
   }
 
   if (!res.ok) {
     if (isErrorResponse(data)) {
-      throw new Error(data.detail ?? data.error ?? `HTTP ${res.status}`);
+      throw failure(data.detail ?? data.error ?? `HTTP ${res.status}`, data.error ?? "http_error");
     }
-    throw new Error(`HTTP ${res.status}: ${bodyPreview(body)}`);
+    if (res.status === 504) {
+      throw failure("The server timed out before it returned an answer.", "execution_timeout");
+    }
+    throw failure(`HTTP ${res.status}: ${bodyPreview(body)}`, "http_error");
   }
 
   if (data === null) {
-    throw new Error(`HTTP ${res.status}: empty response body`);
+    throw failure(`HTTP ${res.status}: empty response body`, "invalid_response");
   }
 
   return data as T;

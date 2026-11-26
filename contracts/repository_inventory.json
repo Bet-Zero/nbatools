@@ -356,7 +356,7 @@
     ]
   },
   "frontend_layout": {
-    "count": 170,
+    "count": 171,
     "files": [
       "frontend/src/AdminFeedbackPage.module.css",
       "frontend/src/AdminFeedbackPage.tsx",
@@ -368,6 +368,7 @@
       "frontend/src/VisualQaPage.module.css",
       "frontend/src/VisualQaPage.tsx",
       "frontend/src/api/client.ts",
+      "frontend/src/api/requestError.ts",
       "frontend/src/api/savedQueryTypes.ts",
       "frontend/src/api/types.ts",
       "frontend/src/assets/hero.png",

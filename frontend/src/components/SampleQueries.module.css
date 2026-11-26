@@ -1,7 +1,7 @@
 /*
  * Sidebar panel: lives in the right-hand secondary column above
  * SavedQueries. The list is internally scrollable with a fixed
- * max-height so 31 presets stay accessible without pushing the
+ * max-height so presets stay accessible without pushing the
  * neighboring panels (SavedQueries, History, DevTools) off-screen.
  *
  * Sidebar is narrow (~20rem), so groups stack vertically and chips
@@ -19,11 +19,17 @@
 }
 
 .panelHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  gap: var(--space-1);
   padding: var(--space-3) var(--space-3) var(--space-2);
   border-bottom: 1px solid var(--border-subtle);
+}
+
+.scope {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--font-small);
+  line-height: 1.35;
 }
 
 .panelTitle {

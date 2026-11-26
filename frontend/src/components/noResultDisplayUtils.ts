@@ -255,6 +255,18 @@ export function readableNoResultMessage(
   if (reason === "no_data") {
     const subject = metadata?.player_context?.player_name ?? metadata?.team_context?.team_name ?? metadata?.player ?? metadata?.team;
     const season = metadata?.season;
+    const start = typeof metadata?.start_date === "string" ? metadata.start_date.trim() : "";
+    const end = typeof metadata?.end_date === "string" ? metadata.end_date.trim() : "";
+    if (start || end) {
+      const owner = typeof subject === "string" && subject.trim() ? ` for ${subject}` : "";
+      let window: string;
+      if (start && end) {
+        window = start === end ? `on ${start}` : `from ${start} through ${end}`;
+      } else {
+        window = start ? `from ${start} onward` : `through ${end}`;
+      }
+      return `Data is unavailable${owner} ${window}.`;
+    }
     if (typeof subject === "string" && subject.trim() && typeof season === "string" && season.trim()) {
       return `Data is not available for ${subject} in ${season}.`;
     }
