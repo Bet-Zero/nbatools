@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "649b5337cd0621c05e7e348c178eafb0eeddc35e",
+  "generation": "availability-cleveland-2024-v3-20261124",
+  "tests": [
+    "tests/cloud_verified_appearance_real_data.py::test_verified_cleveland_generation_answers_against_independent_oracle"
+  ],
+  "raw_qa_cases": [
+    "pqa_availability_sentence_luka_plays",
+    "lakers_record_with_luka_public_sweep",
+    "pqa_availability_short_lakers_w_luka"
+  ]
+}
