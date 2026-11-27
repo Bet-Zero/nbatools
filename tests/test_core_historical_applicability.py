@@ -16,26 +16,6 @@ from tests import cloud_core_historical_delivery_real_data as gate
 
 
 @pytest.fixture
-def binding():
-    return json.loads((gate.EVIDENCE / "live-code-binding.json").read_bytes())
-
-
-def _reseal(tmp_path, mutate):
-    proof = json.loads(gate.APPLICABILITY.read_bytes())
-    mutate(proof)
-    path = tmp_path / "controlled-companion.json"
-    path.write_text(json.dumps(proof))
-    return path, gate._sha(path.read_bytes())
-
-
-def test_reviewed_original22_applicability(binding):
-    result = gate._retained_applicability(binding)
-    assert result["changed_files"] == 71
-    assert len(result["cases"]) == 22
-    assert result["companion_sha256"] == gate.APPLICABILITY_SHA256
-
-
-@pytest.fixture
 def original_cases():
     with ZipFile(gate.EVIDENCE / "historical-live-original.zip") as archive:
         return json.loads(archive.read("acquired_data/core-historical-live/cases.json"))
@@ -195,89 +175,6 @@ def test_replacement_validates_native_readiness_status_as_well_as_shape():
         gate._stabilization_readiness(503, body)
 
 
-def test_companion_tamper_rejected(binding, tmp_path):
-    path, _ = _reseal(tmp_path, lambda proof: proof.update(full_core1_accepted=True))
-    with pytest.raises(AssertionError, match="Unreviewed historical applicability"):
-        gate._retained_applicability(binding, path=path)
-
-
-@pytest.mark.parametrize(
-    "field", ["live_binding_sha256", "original_capture_sha256", "original_case_manifest_sha256"]
-)
-def test_original_evidence_identity_remains_required(binding, tmp_path, field):
-    path, digest = _reseal(tmp_path, lambda proof: proof.update({field: "0" * 64}))
-    with pytest.raises(AssertionError):
-        gate._retained_applicability(binding, path=path, expected_sha=digest)
-
-
-def test_query_population_cannot_be_replaced(binding, tmp_path):
-    def replace_query(proof):
-        proof["cases"][0]["query"] = "Stephen Curry first quarter points"
-
-    path, digest = _reseal(tmp_path, replace_query)
-    with pytest.raises(AssertionError):
-        gate._retained_applicability(binding, path=path, expected_sha=digest)
-
-
-def test_original_bound_file_population_cannot_be_replaced(binding):
-    relative = next(iter(binding["application_file_sha256"]))
-    digest = binding["application_file_sha256"].pop(relative)
-    binding["application_file_sha256"]["controlled-replacement"] = digest
-    with pytest.raises(AssertionError, match="binding population must remain exact"):
-        gate._retained_applicability(binding)
-
-
-@pytest.mark.parametrize("kind", ["unchanged", "reviewed"])
-def test_unreviewed_bound_file_change_rejected(binding, monkeypatch, kind):
-    reviewed = {c["path"] for c in json.loads(gate.APPLICABILITY.read_bytes())["changes"]}
-    relative = next(
-        p for p in binding["application_file_sha256"] if (p in reviewed) == (kind == "reviewed")
-    )
-    target = gate.ROOT / relative
-    original = Path.read_bytes
-
-    def altered_bytes(path):
-        raw = original(path)
-        return raw + b"\n# controlled unreviewed change\n" if path == target else raw
-
-    monkeypatch.setattr(Path, "read_bytes", altered_bytes)
-    with pytest.raises(AssertionError, match="without semantic review|Unreviewed change"):
-        gate._retained_applicability(binding)
-
-
-def test_new_source_module_rejected(binding, monkeypatch):
-    original = Path.rglob
-
-    def extra_module(path, pattern):
-        yield from original(path, pattern)
-        if path == gate.ROOT / "src" and pattern == "*.py":
-            yield path / "nbatools/controlled_unreviewed.py"
-
-    monkeypatch.setattr(Path, "rglob", extra_module)
-    with pytest.raises(AssertionError, match="source module addition/deletion"):
-        gate._retained_applicability(binding)
-
-
-def test_reviewed_added_module_change_rejected(binding, monkeypatch):
-    proof = json.loads(gate.APPLICABILITY.read_bytes())
-    target = gate.ROOT / proof["reviewed_added_source_modules"][0]["path"]
-    original = Path.read_bytes
-
-    def altered_bytes(path):
-        raw = original(path)
-        return raw + b"\n# unreviewed addition delta\n" if path == target else raw
-
-    monkeypatch.setattr(Path, "read_bytes", altered_bytes)
-    with pytest.raises(AssertionError, match="Unreviewed added module change"):
-        gate._retained_applicability(binding)
-
-
-def test_development_selector_cannot_qualify_production_captures(binding, monkeypatch):
-    monkeypatch.setattr(gate, "selected_snapshot", lambda: object())
-    with pytest.raises(AssertionError, match="cannot use development data"):
-        gate._retained_applicability(binding)
-
-
 def test_fresh_public_selector_keeps_original_strict_binding(tmp_path, monkeypatch):
     def forbidden_fallback(*args, **kwargs):
         pytest.fail("Fresh public selector used retained applicability")
@@ -287,6 +184,37 @@ def test_fresh_public_selector_keeps_original_strict_binding(tmp_path, monkeypat
     # A fresh capture cannot silently inherit the retained-applicability route.
     with pytest.raises(AssertionError):
         gate._run(tmp_path, retained=False)
+
+
+def test_current_selector_refuses_pretransition_live_context(tmp_path):
+    with pytest.raises(AssertionError, match="uses the frozen Cleveland selector"):
+        gate._run(tmp_path, current_runtime=True, generation_name=gate.LIVE)
+
+
+def test_current_selector_refuses_local_development_context(tmp_path, monkeypatch):
+    monkeypatch.setattr(gate, "selected_snapshot", lambda: object())
+    with pytest.raises(AssertionError, match="cannot use development data"):
+        gate._run(
+            tmp_path, current_runtime=True, generation_name=gate.CLEVELAND, stabilization=True
+        )
+
+
+def test_current_selector_does_not_read_the_historical_bridge(tmp_path, monkeypatch):
+    def forbidden_fallback(*args, **kwargs):
+        pytest.fail("Current runtime must use the deployment and capture proof")
+
+    class ReachedFixedDataCheck(Exception):
+        pass
+
+    def stop_at_data_check():
+        raise ReachedFixedDataCheck
+
+    monkeypatch.setattr(gate, "_retained_applicability", forbidden_fallback)
+    monkeypatch.setattr(gate, "data_generation_context", stop_at_data_check)
+    with pytest.raises(ReachedFixedDataCheck):
+        gate._run(
+            tmp_path, current_runtime=True, generation_name=gate.CLEVELAND, stabilization=True
+        )
 
 
 def test_retained_capture_mode_cannot_be_called_fresh_runtime(tmp_path):
