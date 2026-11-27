@@ -1220,9 +1220,9 @@
     {
       "path": "src/nbatools/commands/validation_control.py",
       "old_sha256": "12d4c4e78a63130a10bd63b349aad4744936c74dbb6f467b2155fa4ec2a72f44",
-      "reviewed_sha256": "c28880db6b6e6558e95fdf8828e2fe365b35d519733c5497895eb542b54631b0",
-      "reviewed_functions": "apply_cross_dataset_coverage",
-      "semantic_reach": "Offline strict OT dataset coverage, not historical query arithmetic/rendering. Full publication/readiness gate not claimed by replay.",
+      "reviewed_sha256": "414d4d2f2aea9156cc8772a32668beb9de57bc71e2ff407c93681257c36641cd",
+      "reviewed_functions": "apply_cross_dataset_coverage; bounded parallel object prefetch",
+      "semantic_reach": "Offline strict OT dataset coverage, not historical query arithmetic/rendering. Full publication/readiness gate not claimed by replay. Prefetches only sanitized, valid referenced receipt inputs before the same per-file checksum loop. Missing, unavailable and checksum-failed inputs retain existing treatment.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -2090,9 +2090,9 @@
     {
       "path": "src/nbatools/commands/season_leaders.py",
       "old_sha256": "9c6236e1a8ea35707784eea80d3a3928791a9cf7e0b34e29b4179cd67f9c4c27",
-      "reviewed_sha256": "0bd705c281d8aea18f478c593fd1b2e0ca18b2bf451f484fdecde86753ae6bb8",
-      "reviewed_functions": "build_result and _build_from_game_logs",
-      "semantic_reach": "Releases the source frames after concatenation, skips the no-op playoff-series copy for unfiltered leaderboards, and carries only the aggregate inputs through name canonicalization. K12-B1 retains the same ratio of totals, qualifier, game counts and ranking. All other original query identities retain their existing routes and results.",
+      "reviewed_sha256": "e5dd6cceb2fa2e26ac305fc7981f8d48f3f3a63fb762ca8378cf9aff48ce5286",
+      "reviewed_functions": "build_result and _build_from_game_logs; bounded parallel object prefetch",
+      "semantic_reach": "Releases the source frames after concatenation, skips the no-op playoff-series copy for unfiltered leaderboards, and carries only the aggregate inputs through name canonicalization. K12-B1 retains the same ratio of totals, qualifier, game counts and ranking. All other original query identities retain their existing routes and results. Downloads available player game-season objects in parallel before the same ordered parse. Ranking values, qualifications and output are unchanged.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -2121,9 +2121,9 @@
     {
       "path": "src/nbatools/commands/freshness.py",
       "old_sha256": "d443a17b91c1e587148298a278e6d1b74c06a659ffa212f3d16481786701dc76",
-      "reviewed_sha256": "57fb4bbe21643235d22d6dcd53a4581a48ab723157f6efa0954f44a83f810670",
-      "reviewed_functions": "build_freshness_info generation pin",
-      "semantic_reach": "Keeps the default served season, slice validation and refresh log on the same immutable generation while disk versions retire. Original freshness labels and historical query samples remain applicable.",
+      "reviewed_sha256": "f3ef39c90652013691c299a31fa7752d4370f6e7d7f7c92e7c48d86dfa20d3bc",
+      "reviewed_functions": "build_freshness_info generation pin; bounded parallel object prefetch",
+      "semantic_reach": "Keeps the default served season, slice validation and refresh log on the same immutable generation while disk versions retire. Original freshness labels and historical query samples remain applicable. Prefetches existing date sources and slice receipts inside the pinned querying generation. The same per-slice completeness results determine the latest date. Empty lists still return without looking up a source. Reuses the existing generation-keyed memoized freshness answers without speculative redownload.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",

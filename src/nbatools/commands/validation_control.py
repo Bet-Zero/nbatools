@@ -29,7 +29,7 @@ from nbatools.commands.source_invariants import (
     validate_play_by_play_trust_decisions,
     validate_team_game_pair_invariants,
 )
-from nbatools.data_source import data_exists, data_path
+from nbatools.data_source import data_exists, data_path, data_prefetch
 
 MANIFEST_SCHEMA_VERSION = 1
 MANIFEST_DIR = "dataset_manifests"
@@ -854,12 +854,22 @@ def inspect_slice_manifest(
         )
     if verify_files:
         datasets = document.get("datasets")
+        required = []
         for record in datasets if isinstance(datasets, list) else []:
             if not isinstance(record, dict):
                 continue
             validation = record.get("validation")
             if isinstance(validation, dict) and validation.get("state") == "unavailable":
                 continue
+            required.append(record)
+        # The read loop still checks every listed file and checksum. Only a
+        # valid record set can trigger speculative reads before that loop.
+        if not errors:
+            paths = [Path(record["path"]) for record in required if record["path"]]
+            data_prefetch(
+                path for path in paths if not path.is_absolute() and ".." not in path.parts
+            )
+        for record in required:
             file_path = Path(record.get("path", ""))
             try:
                 if not record.get("path") or not data_exists(file_path):

@@ -23,7 +23,7 @@ from nbatools.commands.playoff_history import (
     series_situation_label,
 )
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
-from nbatools.data_source import data_exists, data_read_csv
+from nbatools.data_source import data_exists, data_prefetch, data_read_csv
 
 ALLOWED_STATS = {
     "pts": "pts_per_game",
@@ -1009,12 +1009,11 @@ def build_result(
             "Use scoring, rebounds, assists, threes, eFG%, TS%, or threshold game counts."
         )
 
-    # Load and concatenate game logs across all seasons
-    frames: list[pd.DataFrame] = []
-    for s in seasons:
-        basic_path = Path(f"data/raw/player_game_stats/{s}_{safe}.csv")
-        if data_exists(basic_path):
-            frames.append(data_read_csv(basic_path))
+    # Download the same verified seasons in parallel before the ordered reads.
+    paths = [Path(f"data/raw/player_game_stats/{s}_{safe}.csv") for s in seasons]
+    available = [path for path in paths if data_exists(path)]
+    data_prefetch(available)
+    frames = [data_read_csv(path) for path in available]
 
     if not frames:
         return NoResult(query_class="leaderboard", reason="no_data")

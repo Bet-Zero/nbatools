@@ -2,10 +2,10 @@
 
 ## Resume checkpoint
 
-**November 27, 2026. Integration lead: Codex.** The calendar repair merged at
-`6da31ddf`. The previous production artifact was `dpl_9J2PKZ7bxgs8uqSEx2NtpY1b3bCN`.
-[Execution plan](execution-plan.md) ·
-[Prior checkpoint and receipts](https://github.com/Bet-Zero/nbatools/blob/cc14b1d329dcf6842833706096fd7ea908a663e6/working/nba-tools-completion-program/README.md)
+**November 27, 2026. Integration lead: Codex.** Main at `3012c3ac` includes
+the calendar and deadline repairs, advisory disposition, prospective recovery
+and worker observations. [Execution plan](execution-plan.md) ·
+[Prior checkpoint](https://github.com/Bet-Zero/nbatools/blob/cc14b1d329dcf6842833706096fd7ea908a663e6/working/nba-tools-completion-program/README.md)
 
 **Cleveland is delivered.** The active generation is
 `availability-cleveland-2024-v3-20261124`, manifest
@@ -16,29 +16,23 @@ Hunter. TEAM appearances cover 21/21 pilot players and rostered coverage is 14/2
 [Activation](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-45763092143) ·
 [Backup and restore](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-45763092143)
 
-**Calendar repair.** The shared range parser keeps both endpoints, including
-mixed literal and written dates across seasons. Fixture counts and the
-independent review of `d5313553` on the restored Cleveland rows passed.
-The reviewer counted 3–0 in three actual Knicks games for both April 1–7
-phrasings. All eight required CI jobs and ten authenticated numerical tests
-passed before [PR #660](https://github.com/Bet-Zero/nbatools/pull/660) merged.
+**Snapshot stabilization remains open.** Mixed date ranges preserve both bounds.
+[Calendar PR](https://github.com/Bet-Zero/nbatools/pull/660). Both native deadline
+adapters completed local replies near 16.16 s. The
+[diagnostic receipt](w3a-host-cutoff-packet.md#november-27-execution-receipt)
+records two linked 20 s provider timeouts and revoked access. The deployed
+deadline build returned complete typed 504s for two valid cold historical
+queries. Local tests confirmed that bounded prefetch reduces those waits.
+The hosted fix must return the independently derived results before acceptance.
 
-**Next.** Complete hosted deadline verification and W5 build review. Both native
-routes sent complete typed replies near the application deadline in local
-socket tests on restored Cleveland data. Both approved preview holds were
-correlated with native termination at 20 seconds and the temporary link was
-revoked. [Diagnostic receipt](w3a-host-cutoff-packet.md#november-27-execution-receipt).
-Effective memory and hosted application response margin remain open. The
-[read-only activation handoff](../../docs/operations/recovery.md#uncertain-protected-candidate-activation)
-is ready for an uncertain future activation. The [W6A transition](w6a-transition.md)
-awaits independently accepted fresh release evidence.
-
-Then freeze source, served build, configuration and Cleveland data for W3C and
-the single release run (621 Raw QA, 521 filter comparisons, full suite, 44 fresh
-captures plus 40 timing observations). After independent acceptance, retire
-the current-runtime hash bridge and preserve original evidence. Section 6
-remains open. Run-all monitoring recorded snapshot passed and Live failed
-on `new_season_not_loaded` in [run 46062906124](https://github.com/Bet-Zero/nbatools/actions/runs/46062906124).
+**Next.** Verify the corrected cold paths and resource observations on the
+exact hosted build. Finish W3C against the locked build and Cleveland data.
+Execute the single frozen release acceptance (621 Raw QA, 521 filter checks,
+full suite, 44 fresh captures and 40 timing observations). After independent
+acceptance, apply the prepared [W6A transition](w6a-transition.md).
+The [read-only recovery handoff](../../docs/operations/recovery.md#uncertain-protected-candidate-activation)
+covers a future uncertain activation. The timed experiment did not change
+pointer or hosting settings. Strict Live remains separate. [Scheduled monitor](https://github.com/Bet-Zero/nbatools/actions/runs/46062906124)
 
 **Product scope.** The original K08 ledger remains 16 PASS / 26 MISSING DATA /
 4 LIVE. [Original acceptance contract and carry-forward](acceptance-baseline-pr582.md) ·
