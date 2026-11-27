@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "229856563bd5e3304af368f91de35ccf326a4895",
+  "generation": "availability-season-inactive-2024-v1-20261116",
+  "tests": [
+    "tests/test_team_appearance_scope_real_data.py"
+  ],
+  "raw_qa_cases": []
+}
