@@ -540,6 +540,8 @@ def natural_query(body: NaturalQueryRequest, request: Request) -> QueryResponse 
             ADMISSION_CONTROLLER.run_query(
                 _client_id(request),
                 lambda: execute_natural_query(body.query),
+                deadline=request.state.request_started_at
+                + ADMISSION_CONTROLLER.query_timeout_seconds,
             )
             if admission_controls_enabled()
             else execute_natural_query(body.query)
@@ -690,6 +692,8 @@ def structured_query(
             ADMISSION_CONTROLLER.run_query(
                 _client_id(request),
                 lambda: execute_structured_query(body.route, **body.kwargs),
+                deadline=request.state.request_started_at
+                + ADMISSION_CONTROLLER.query_timeout_seconds,
             )
             if admission_controls_enabled()
             else execute_structured_query(body.route, **body.kwargs)

@@ -18,6 +18,7 @@ from concurrent.futures import (
 from concurrent.futures import (
     TimeoutError as FutureTimeout,
 )
+from contextvars import ContextVar
 from dataclasses import dataclass
 from http import HTTPStatus
 from typing import Any, Generic, TypeVar
@@ -50,6 +51,34 @@ BODY_LIMITS = {
 }
 
 T = TypeVar("T")
+_QUERY_WORK_DEADLINE: ContextVar[float | None] = ContextVar("query_work_deadline", default=None)
+
+
+class QueryWorkExpired(TimeoutError):
+    """A worker ran out of its own request budget."""
+
+
+def remaining_query_work() -> float | None:
+    """Seconds left for the admitted worker, or None outside a public query."""
+    deadline = _QUERY_WORK_DEADLINE.get()
+    if deadline is None:
+        return None
+    return _time_until(deadline)
+
+
+def _time_until(deadline: float) -> float:
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise QueryWorkExpired("Query work deadline expired")
+    return remaining
+
+
+def query_timeout() -> AdmissionRejected:
+    return AdmissionRejected(
+        HTTPStatus.GATEWAY_TIMEOUT,
+        "execution_timeout",
+        "The query did not finish within the response budget. Try narrowing the query.",
+    )
 
 
 @dataclass
@@ -243,10 +272,15 @@ class AdmissionController:
         callback: Callable[[], T],
         *,
         now: float | None = None,
+        deadline: float | None = None,
     ) -> T:
-        """Admit and execute one natural/structured query under shared budgets."""
+        """Await work until an absolute monotonic deadline, including admission."""
+        execution_limit = time.monotonic() + self.query_timeout_seconds
+        work_deadline = min(execution_limit, deadline) if deadline is not None else execution_limit
         request_day = _seasons.today()
         with self._lock:
+            if time.monotonic() >= work_deadline:
+                raise query_timeout()
             admitted_at = time.monotonic() if now is None else now
             cutoff = admitted_at - self.query_window_seconds
             _expire_idle_clients(self._query_events, cutoff)
@@ -273,25 +307,30 @@ class AdmissionController:
             self._query_events.move_to_end(client_id)
             self._active_queries += 1
 
-        def run_with_calendar() -> T:
-            with _seasons.request_calendar(request_day):
-                return callback()
+        def run_with_budget() -> T:
+            token = _QUERY_WORK_DEADLINE.set(work_deadline)
+            try:
+                with _seasons.request_calendar(request_day):
+                    remaining_query_work()
+                    result = callback()
+                    remaining_query_work()
+                    return result
+            finally:
+                _QUERY_WORK_DEADLINE.reset(token)
 
         try:
-            future = self._executor.submit(run_with_calendar)
+            future = self._executor.submit(run_with_budget)
         except Exception:
             self._release_query()
             raise
         future.add_done_callback(self._query_finished)
         try:
-            return future.result(timeout=self.query_timeout_seconds)
+            result = future.result(timeout=_time_until(work_deadline))
+            _time_until(work_deadline)
+            return result
         except FutureTimeout as exc:
             future.cancel()
-            raise AdmissionRejected(
-                HTTPStatus.GATEWAY_TIMEOUT,
-                "execution_timeout",
-                "Query execution exceeded the 20-second response budget.",
-            ) from exc
+            raise query_timeout() from exc
 
     def reserve_feedback(
         self,

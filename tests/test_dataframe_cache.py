@@ -322,3 +322,33 @@ def test_size_estimate_does_not_scale_up_categoricals() -> None:
     exact = int(frame.memory_usage(index=True, deep=True).sum())
 
     assert abs(_frame_bytes(frame) - exact) / exact < 0.02
+
+
+def test_waiter_re_elects_after_the_leaders_request_budget_expires():
+    from nbatools.admission_control import QueryWorkExpired
+
+    cache = BoundedDataFrameCache(max_entries=4, max_bytes=1_000_000)
+    leader_started = Event()
+    expire_leader = Event()
+
+    def expired_load():
+        leader_started.set()
+        assert expire_leader.wait(2)
+        raise QueryWorkExpired("leader exhausted its request budget")
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        leader = executor.submit(cache.get_or_load, "shared", expired_load)
+        assert leader_started.wait(2)
+        waiter = executor.submit(cache.get_or_load, "shared", lambda: _frame(3))
+        end = time.monotonic() + 2
+        try:
+            while cache.info().coalesced != 1 and time.monotonic() < end:
+                time.sleep(0.001)
+            assert cache.info().coalesced == 1
+        finally:
+            expire_leader.set()
+        with pytest.raises(QueryWorkExpired):
+            leader.result(timeout=2)
+        loaded = waiter.result(timeout=2)
+    assert loaded["value"].tolist() == [0, 1, 2]
+    assert cache.get_or_load("shared", lambda: pytest.fail("waiter did not cache")) is loaded

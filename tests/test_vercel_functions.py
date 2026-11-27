@@ -323,3 +323,88 @@ def test_vercel_asset_path_parses_rewrite_query():
         "assets/index-test.js"
     )
     assert _asset_path_from_request("/assets/index-test.css") == "assets/index-test.css"
+
+
+@pytest.mark.parametrize(
+    ("module", "path", "payload_name", "body"),
+    [
+        ("api.query", "/query", "natural_query_payload", {"query": "Knicks record"}),
+        (
+            "api.structured_query",
+            "/structured-query",
+            "structured_query_payload",
+            {"route": "team_record", "kwargs": {"team": "NYK", "season": "2025-26"}},
+        ),
+    ],
+)
+def test_native_deadline_includes_body_setup_and_delivers_a_complete_reply(
+    monkeypatch, module, path, payload_name, body
+):
+    from threading import Event
+    from time import monotonic, sleep
+
+    from nbatools import admission_control, vercel_http
+
+    # Make the setup/response margin visible without a 20-second wall-clock test.
+    monkeypatch.setattr(vercel_http, "NATIVE_QUERY_RESPONSE_SECONDS", 1.4)
+    monkeypatch.setattr(vercel_http, "NATIVE_QUERY_REPLY_RESERVE_SECONDS", 0.4)
+    controller = AdmissionController(max_concurrent_queries=1)
+    monkeypatch.setattr(admission_control, "ADMISSION_CONTROLLER", controller)
+    release = Event()
+    calls = []
+    expected = {"ok": True, "result": {"sections": {"summary": [{"games": 4, "wins": 4}]}}}
+
+    def work(*args, **kwargs):
+        remaining = admission_control.remaining_query_work()
+        calls.append(remaining)
+        if len(calls) == 1:
+            # Finish inside the work deadline, close to the reserved reply time.
+            sleep(remaining - 0.20)
+            return expected
+        release.wait(4)
+        return expected
+
+    monkeypatch.setattr(vercel_functions, payload_name, work)
+    encoded = json.dumps(body).encode()
+    endpoint = importlib.import_module(module)
+
+    def request(setup_delay=0):
+        class RequestBody(BytesIO):
+            def read1(self, length):
+                sleep(setup_delay)
+                return super().read1(length)
+
+        incoming = Mock()
+        incoming.makefile.return_value = RequestBody(
+            f"POST {path} HTTP/1.1\r\nHost: localhost\r\nContent-Length: {len(encoded)}\r\n\r\n".encode()
+            + encoded
+        )
+        started = monotonic()
+        endpoint.handler(incoming, ("127.0.0.1", 9876), None)
+        outgoing = Mock()
+        outgoing.makefile.return_value = BytesIO(
+            b"".join(call.args[0] for call in incoming.sendall.call_args_list)
+        )
+        response = HTTPResponse(outgoing)
+        response.begin()
+        return response.status, response.headers, json.loads(response.read()), monotonic() - started
+
+    try:
+        status, _, reply, elapsed = request(setup_delay=0.25)
+        assert status == 200 and reply == expected
+        assert 0 < calls[0] < 0.85
+        assert 0.70 <= elapsed < 1.35
+
+        status, headers, reply, elapsed = request(setup_delay=0.25)
+        assert status == 504 and reply["error"] == "execution_timeout"
+        assert reply["request_id"] == headers["X-Request-ID"]
+        assert 0.85 <= elapsed < 1.35
+
+        # The blocked worker continues to occupy its slot after the response.
+        status, headers, reply, _ = request()
+        assert status == 429 and reply["error"] == "concurrency_limited"
+        assert headers["Retry-After"] == "1"
+        assert len(calls) == 2
+    finally:
+        release.set()
+        controller._executor.shutdown(wait=True)

@@ -685,7 +685,7 @@ def _configure_r2(
     monkeypatch.setenv("R2_ACCESS_KEY_ID", "access-key-id")
     monkeypatch.setenv("R2_SECRET_ACCESS_KEY", "secret-access-key")
     monkeypatch.setenv("R2_BUCKET_NAME", "nbatools-data")
-    monkeypatch.setattr(data_source, "create_r2_client", lambda config: client)
+    monkeypatch.setattr(data_source, "create_r2_client", lambda config, **_: client)
     reset_data_source_cache()
 
 
@@ -694,3 +694,68 @@ def _configure_managed_cache(monkeypatch, tmp_path, client):
     monkeypatch.delenv(R2_CACHE_DIR_ENV)
     monkeypatch.setenv("VERCEL_ENV", "production")
     monkeypatch.setattr(data_source.tempfile, "gettempdir", lambda: str(tmp_path))
+
+
+def test_query_transport_bounds_connect_and_header_waits_only_inside_query(monkeypatch):
+    from time import monotonic
+
+    from nbatools.admission_control import AdmissionController
+
+    clients = {}
+
+    def create_client(config, *, query_io_timeout=None):
+        return clients.setdefault(query_io_timeout, FakeR2Client({}))
+
+    monkeypatch.setattr(data_source, "create_r2_client", create_client)
+    source = data_source._R2DataSource(data_source.R2Config("id", "key", "secret", "bucket"))
+    controller = AdmissionController()
+    try:
+        assert source._request_client() is clients[None]
+        assert (
+            controller.run_query("budget-9", source._request_client, deadline=monotonic() + 9)
+            is clients[4]
+        )
+        assert (
+            controller.run_query("budget-3", source._request_client, deadline=monotonic() + 3)
+            is clients[1]
+        )
+        assert (
+            controller.run_query("budget-1", source._request_client, deadline=monotonic() + 1)
+            is clients[0.25]
+        )
+        assert source._request_client() is clients[None]
+    finally:
+        controller._executor.shutdown(wait=True)
+
+
+def test_query_stream_preserves_eof_validation_and_closes_socket():
+    from io import BytesIO
+
+    from nbatools.admission_control import AdmissionController
+
+    class CheckedStream(BytesIO):
+        eof_reads = 0
+
+        def set_socket_timeout(self, seconds):
+            assert not self.closed and seconds > 0
+
+        def read(self, length=-1):
+            content = super().read(length)
+            if not content:
+                self.eof_reads += 1
+            return content
+
+    expected = b"x" * (2 * 128 * 1024 + 17)
+    stream = CheckedStream(expected)
+    controller = AdmissionController()
+    try:
+        assert (
+            controller.run_query(
+                "stream",
+                lambda: data_source._read_r2_body({"Body": stream, "ContentLength": len(expected)}),
+            )
+            == expected
+        )
+        assert stream.eof_reads == 1 and stream.closed
+    finally:
+        controller._executor.shutdown(wait=True)

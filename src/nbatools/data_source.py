@@ -14,8 +14,9 @@ from collections import Counter
 from collections.abc import Iterable, Iterator, Mapping
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
-from contextvars import ContextVar
+from contextvars import ContextVar, copy_context
 from dataclasses import dataclass
+from io import BytesIO
 from pathlib import Path
 from threading import RLock
 from types import MappingProxyType
@@ -23,6 +24,7 @@ from typing import Any
 
 import pandas as pd
 
+from nbatools.admission_control import QueryWorkExpired, remaining_query_work
 from nbatools.development_data import MANIFEST, selected_snapshot
 from nbatools.r2_errors import format_client_error, is_not_found
 
@@ -249,8 +251,8 @@ def load_r2_config(
     )
 
 
-def create_r2_client(config: R2Config) -> Any:
-    """Create a boto3 S3 client configured for Cloudflare R2."""
+def create_r2_client(config: R2Config, *, query_io_timeout: float | None = None) -> Any:
+    """Create a Cloudflare R2 client, optionally with a bounded query transport."""
     try:
         import boto3
     except ImportError as exc:
@@ -258,12 +260,22 @@ def create_r2_client(config: R2Config) -> Any:
             "boto3 is required for DATA_SOURCE=r2. Install project dependencies."
         ) from exc
 
+    options = {}
+    if query_io_timeout is not None:
+        from botocore.config import Config
+
+        options["config"] = Config(
+            connect_timeout=query_io_timeout,
+            read_timeout=query_io_timeout,
+            retries={"total_max_attempts": 1},
+        )
     return boto3.client(
         "s3",
         endpoint_url=config.endpoint_url,
         aws_access_key_id=config.access_key_id,
         aws_secret_access_key=config.secret_access_key,
         region_name="auto",
+        **options,
     )
 
 
@@ -323,6 +335,42 @@ class _LocalDataSource:
         return base
 
 
+def _read_r2_body(response: Mapping[str, Any]) -> bytes:
+    """Read a streaming R2 object within the caller's remaining work budget."""
+    body = response["Body"]
+    length = response.get("ContentLength")
+    set_socket_timeout = getattr(body, "set_socket_timeout", None)
+    try:
+        remaining = remaining_query_work()
+        if remaining is None or not callable(set_socket_timeout):
+            return body.read()
+        if type(length) is not int or length <= 0:
+            if length != 0:
+                set_socket_timeout(remaining)
+            result = body.read()
+            remaining_query_work()
+            return result
+        content = BytesIO()
+        while content.tell() < length:
+            set_socket_timeout(remaining)
+            chunk = body.read(min(128 * 1024, length - content.tell()))
+            if not chunk:
+                raise DataSourceError("R2 returned fewer bytes than its Content-Length")
+            content.write(chunk)
+            remaining = remaining_query_work()
+        # Botocore validates both content length and any streamed checksum on
+        # EOF. The SDK knows its Content-Length here; don't re-arm a socket
+        # that may already have been released after the last full chunk.
+        if body.read(1):
+            raise DataSourceError("R2 returned more bytes than its Content-Length")
+        remaining_query_work()
+        return content.getvalue()
+    finally:
+        close = getattr(body, "close", None)
+        if callable(close):
+            close()
+
+
 class _R2DataSource:
     def __init__(self, config: R2Config, client: Any | None = None) -> None:
         self.config = config
@@ -338,6 +386,7 @@ class _R2DataSource:
             self.worker_cache = tempfile.TemporaryDirectory(prefix="worker-", dir=self.cache_root)
             self.cache_root = Path(self.worker_cache.name)
         self._cache_lock = RLock()
+        self._query_clients: dict[float, Any] | None = {} if client is None else None
         self._cache_readers: Counter[_Generation] = Counter()
         self._latest_cache_generation: _Generation | None = None
         self._retired_cache_generations: set[_Generation] = set()
@@ -348,6 +397,25 @@ class _R2DataSource:
         self._generation_files: dict[str, frozenset[str] | None] = {}
         self._verified_manifests: dict[_Generation, Mapping[str, GenerationFile]] = {}
         self._known_keys: dict[str, bool] = {}
+
+    def _request_client(self) -> Any:
+        remaining = remaining_query_work()
+        if remaining is None or self._query_clients is None:
+            return self.client
+        # Bound the connect and response-header waits before the streaming
+        # socket is available. Use a few reusable pools and leave SDK retries
+        # disabled so backoff cannot consume a different request's budget.
+        timeout = next(
+            (seconds for seconds in (4.0, 2.0, 1.0, 0.25) if 2 * seconds < remaining), None
+        )
+        if timeout is None:
+            raise QueryWorkExpired("Insufficient query time for a new R2 request")
+        with self._cache_lock:
+            client = self._query_clients.get(timeout)
+            if client is None:
+                client = create_r2_client(self.config, query_io_timeout=timeout)
+                self._query_clients[timeout] = client
+        return client
 
     @contextmanager
     def pin_cache(self, generation: _Generation) -> Iterator[None]:
@@ -406,8 +474,10 @@ class _R2DataSource:
             if key in self._known_keys:
                 return self._known_keys[key]
         try:
-            self.client.head_object(Bucket=self.config.bucket_name, Key=key)
+            self._request_client().head_object(Bucket=self.config.bucket_name, Key=key)
             found = True
+        except TimeoutError:
+            raise
         except Exception as exc:
             if not is_not_found(exc):
                 raise DataSourceError(
@@ -424,11 +494,13 @@ class _R2DataSource:
             return self._generation_files[generation]
         key = self._generation_key(GENERATION_MANIFEST_PATH, generation=generation)
         try:
-            response = self.client.get_object(Bucket=self.config.bucket_name, Key=key)
-            document = json.loads(response["Body"].read().decode("utf-8"))
+            response = self._request_client().get_object(Bucket=self.config.bucket_name, Key=key)
+            document = json.loads(_read_r2_body(response).decode("utf-8"))
             files = frozenset(
                 str(record["path"]) for record in document["files"] if record.get("path")
             )
+        except TimeoutError:
+            raise
         except Exception as exc:
             if not is_not_found(exc) and not isinstance(
                 exc, (ValueError, KeyError, TypeError, AttributeError)
@@ -497,7 +569,15 @@ class _R2DataSource:
                 pass
 
         with ThreadPoolExecutor(max_workers=min(_PREFETCH_WORKERS, len(pending))) as pool:
-            list(pool.map(fetch, pending))
+            futures = [pool.submit(copy_context().run, fetch, path) for path in pending]
+            try:
+                for future in futures:
+                    future.result(timeout=remaining_query_work())
+            finally:
+                # Pending child work is expendable. The executor still joins
+                # in-flight reads before the parent worker releases its slot.
+                for future in futures:
+                    future.cancel()
 
     def _generation_cache_root(self, generation: _Generation) -> Path:
         root = self.cache_root / generation.id
@@ -522,8 +602,10 @@ class _R2DataSource:
             return cache_path
 
         try:
-            response = self.client.get_object(Bucket=self.config.bucket_name, Key=key)
-            body = response["Body"].read()
+            response = self._request_client().get_object(Bucket=self.config.bucket_name, Key=key)
+            body = _read_r2_body(response)
+        except TimeoutError:
+            raise
         except Exception as exc:
             if is_not_found(exc):
                 if expected_hash is not None:
@@ -572,7 +654,9 @@ class _R2DataSource:
             if continuation_token:
                 kwargs["ContinuationToken"] = continuation_token
             try:
-                response = self.client.list_objects_v2(**kwargs)
+                response = self._request_client().list_objects_v2(**kwargs)
+            except TimeoutError:
+                raise
             except Exception as exc:
                 raise DataSourceError(
                     f"Could not list R2 objects for {rel_pattern}: {format_client_error(exc)}"
@@ -597,8 +681,10 @@ class _R2DataSource:
     def active_generation_selection(self) -> _Generation:
         key = ACTIVE_GENERATION_PATH.as_posix()
         try:
-            response = self.client.get_object(Bucket=self.config.bucket_name, Key=key)
-            payload = response["Body"].read().decode("utf-8")
+            response = self._request_client().get_object(Bucket=self.config.bucket_name, Key=key)
+            payload = _read_r2_body(response).decode("utf-8")
+        except TimeoutError:
+            raise
         except Exception as exc:
             if is_not_found(exc):
                 return _Generation(LEGACY_GENERATION)
