@@ -1811,9 +1811,9 @@
     {
       "path": "src/nbatools/commands/_date_utils.py",
       "old_sha256": "1253924ca84be334d751876342c6d872a37e96fddfe0710d4ec0dbca858579ca",
-      "reviewed_sha256": "466abdcf7f6f2ac8de0532be8258e22f59efbaa306e7c2da7a8a848a53c3ea87",
-      "reviewed_functions": "literal date and relative range endpoint resolution",
-      "semantic_reach": "Literal days use Detroit calendar scope. The full historical API-shaped cohort was compared byte for byte using the restored Cleveland generation.",
+      "reviewed_sha256": "0e28d20b672859b5b6148ae44ae22fce73f8e637d3dc7e1c2ac128f5461b8df9",
+      "reviewed_functions": "literal date and relative range endpoint resolution; shared two-bound lexical reader and masking",
+      "semantic_reach": "Literal days use Detroit calendar scope. The full historical API-shaped cohort was compared byte for byte using the restored Cleveland generation. The calendar checker reviewed the fixed day-level mixed endpoint forms at d5313553. The original questions do not request mixed literal calendar endpoints.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",

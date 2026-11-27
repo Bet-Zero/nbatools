@@ -159,22 +159,49 @@ def test_literal_calendar_and_last_games_use_the_requested_raw_sample():
 
 @pytest.mark.needs_data
 @pytest.mark.parametrize(
-    ("question", "start", "seasons"),
+    ("question", "request_day", "start", "end", "seasons"),
     [
-        ("Cavaliers record since January 2026 through yesterday", "2026-01-01", ["2025-26"]),
-        ("Cavaliers record from March 1, 2025 to yesterday", "2025-03-01", ["2024-25", "2025-26"]),
+        (
+            "Cavaliers record since January 2026 through yesterday",
+            date(2026, 4, 10),
+            "2026-01-01",
+            "2026-04-09",
+            ["2025-26"],
+        ),
+        (
+            "Cavaliers record from March 1, 2025 to yesterday",
+            date(2026, 4, 10),
+            "2025-03-01",
+            "2026-04-09",
+            ["2024-25", "2025-26"],
+        ),
+        (
+            "Cavaliers record between March 1st, 2025 and last night",
+            date(2026, 4, 10),
+            "2025-03-01",
+            "2026-04-09",
+            ["2024-25", "2025-26"],
+        ),
+        (
+            "Cavaliers record from yesterday thru April 9, 2026",
+            date(2026, 4, 2),
+            "2026-04-01",
+            "2026-04-09",
+            ["2025-26"],
+        ),
     ],
 )
-def test_literal_range_preserves_both_ends_in_the_served_record(question, start, seasons):
+def test_literal_range_preserves_both_ends_in_the_served_record(
+    question, request_day, start, end, seasons
+):
     from nbatools.data_source import data_read_csv
     from nbatools.query_service import execute_natural_query
 
-    end = "2026-04-09"
     raw = pd.concat([data_read_csv(f"raw/team_game_stats/{s}_regular_season.csv") for s in seasons])
     dates = raw["game_date"]
     selected = raw.loc[(raw["team_id"] == 1610612739) & dates.between(start, end)]
     assert len(selected) > 1
-    with request_calendar(date(2026, 4, 10)):
+    with request_calendar(request_day):
         result = execute_natural_query(question)
     assert result.result_status == "ok", (result.result_reason, result.metadata)
     assert result.metadata["start_date"] == start
