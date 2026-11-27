@@ -4,8 +4,12 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import resource
 import sys
+from functools import lru_cache
+from pathlib import Path
+from tempfile import gettempdir
 from typing import Any
 from urllib.parse import urlsplit
 
@@ -122,6 +126,8 @@ def log_request_complete(
         event["blocker_codes"] = list(outcome["blocker_codes"][:10])
 
     try:
+        if os.environ.get("VERCEL") == "1" and normalized in {"/query", "/structured-query"}:
+            event.update(_native_worker_limits())
         _LOGGER.info(json.dumps(event, sort_keys=True, separators=(",", ":")))
     except Exception:
         # Monitoring must never change the public response path.
@@ -148,3 +154,46 @@ def _rss_peak_mb() -> float:
     raw = float(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
     divisor = 1024 * 1024 if sys.platform == "darwin" else 1024
     return round(raw / divisor, 3)
+
+
+@lru_cache(maxsize=1)
+def _native_worker_memory() -> dict[str, int]:
+    """Read numerical worker limits supplied by the runtime or its cgroup."""
+    limits = {}
+    try:
+        allocated_mb = int(os.environ.get("AWS_LAMBDA_FUNCTION_MEMORY_SIZE", ""))
+        if allocated_mb > 0:
+            limits["worker_allocated_memory_mib"] = allocated_mb
+    except ValueError:
+        pass
+    try:
+        membership = Path("/proc/self/cgroup").read_text(encoding="ascii")
+        for entry in membership.splitlines():
+            hierarchy, _, relative = entry.split(":", 2)
+            if hierarchy != "0":
+                continue
+            subgroup = Path(relative.lstrip("/"))
+            if ".." in subgroup.parts:
+                break
+            limit = Path("/sys/fs/cgroup") / subgroup / "memory.max"
+            limit_bytes = int(limit.read_text(encoding="ascii").strip())
+            if limit_bytes > 0:
+                limits["worker_cgroup_memory_bytes"] = limit_bytes
+            break
+    except (OSError, ValueError):
+        # Virtualized workers may expose neither a finite cgroup nor a limit.
+        pass
+    return limits
+
+
+def _native_worker_limits() -> dict[str, int]:
+    limits = dict(_native_worker_memory())
+    try:
+        volume = os.statvfs(gettempdir())
+        limits.update(
+            worker_tmp_volume_bytes=volume.f_blocks * volume.f_frsize,
+            worker_tmp_available_bytes=volume.f_bavail * volume.f_frsize,
+        )
+    except OSError:
+        pass
+    return limits
