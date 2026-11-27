@@ -587,6 +587,25 @@ whether any new finding affects a distributed runtime package or the build
 toolchain. Keep the advisory identifiers, applicable versions and decision in the
 change's PR so a later run can recheck the same scope.
 
+### November 27, 2026 development-advisory disposition
+
+The audit of the November 26 lock reported 12 affected dependency nodes. This
+table records the direct advisories and how those dependencies are used. The
+production audit reported zero findings before and after these changes.
+
+| Dependency and locked versions | Reachability and disposition |
+| --- | --- |
+| Vite `8.1.5` → `8.1.6` | The configured local Vite server runs with a repository file allowlist, React middleware and API proxies. The deployment runs `vite build` and serves built assets. Patch the development-server surface, including Windows launcher cases. [GHSA-698v-4r3x-3vcv](https://github.com/advisories/GHSA-698v-4r3x-3vcv), [GHSA-r825-w8mm-5pxw](https://github.com/advisories/GHSA-r825-w8mm-5pxw), [GHSA-587h-7wmj-h5pm](https://github.com/advisories/GHSA-587h-7wmj-h5pm), [GHSA-9jrq-w75r-8gcw](https://github.com/advisories/GHSA-9jrq-w75r-8gcw), [GHSA-rq7h-c2jc-7f22](https://github.com/advisories/GHSA-rq7h-c2jc-7f22) |
+| Vitest and its Mocker `4.1.11` → `4.1.12` | CI runs repository unit tests with jsdom and local development also offers watch mode. Browser-mode and Vitest UI are absent from the project's script/configuration. Apply the compatible test runner patch and its companion package updates. [GHSA-qxg6-89mg-rqv8](https://github.com/advisories/GHSA-qxg6-89mg-rqv8), [GHSA-xp26-3454-mjgp](https://github.com/advisories/GHSA-xp26-3454-mjgp) |
+| Undici through jsdom `7.30.0` → `7.30.2` | jsdom supplies the local/CI test environment. The affected network-client routes are outside the shipped application. Its transitive client still runs in a developer process, so raise the existing jsdom override to the compatible patched range. [GHSA-4qv8-2p9j-2685](https://github.com/advisories/GHSA-4qv8-2p9j-2685), [GHSA-f72v-6w45-q472](https://github.com/advisories/GHSA-f72v-6w45-q472), [GHSA-xjj6-f33q-929c](https://github.com/advisories/GHSA-xjj6-f33q-929c), [GHSA-4w7w-5xrc-9h26](https://github.com/advisories/GHSA-4w7w-5xrc-9h26), [GHSA-2m5v-pch6-74hx](https://github.com/advisories/GHSA-2m5v-pch6-74hx), [GHSA-qrxm-fqhp-jwvm](https://github.com/advisories/GHSA-qrxm-fqhp-jwvm), [GHSA-9fm3-97px-rjf6](https://github.com/advisories/GHSA-9fm3-97px-rjf6), [GHSA-55wc-3pg8-jfw6](https://github.com/advisories/GHSA-55wc-3pg8-jfw6) |
+| Zod through ESLint's React Hooks plugin `4.3.6` → `4.6.7` | The lint plugin uses Zod on local/CI configuration. Public query input uses the Python API. Keep the patched range scoped to this transitive lint dependency. [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5) |
+| minimatch through `@typescript-eslint/typescript-estree` `10.2.5` | ESLint/TypeScript tooling reads repository glob configuration. Neither public request data nor game data provides these patterns. The fix is in `11.0.1`, outside the parent's `^10.2.2` range. Retain the advisory and retest when the parent supports a fixed version or the lint tooling begins handling externally supplied patterns. [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249) |
+
+The fresh full-tree audit reports seven moderate dependency nodes, all from the
+remaining minimatch finding and its TypeScript ESLint consumers. The full-tree
+audit remains informational and reports those nodes. The production gate remains
+blocking.
+
 The proposed minimum required checks for `main` are `change-scope`, `lint`,
 `docs-governance`, `frontend-security`, `frontend-verify`, and `test-fast` on
 Python 3.11, 3.12 and 3.13. The existing scope job governs intentional skips.

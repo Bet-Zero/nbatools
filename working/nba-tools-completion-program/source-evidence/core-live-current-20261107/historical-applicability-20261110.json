@@ -7,7 +7,7 @@
   "original_capture_sha256": "a5c718c7498f24d787866ff4e3d53220363e00588a045607e92f5947ac2074a5",
   "original_case_manifest_sha256": "096f093c24df872fca3107a1d4a23b19fc98e549b86aecfdc9df3b538ca1382a",
   "original_bound_file_count": 663,
-  "unchanged_bound_file_count": 595,
+  "unchanged_bound_file_count": 593,
   "cases": [
     {
       "id": "k12-s1",
@@ -350,8 +350,8 @@
     {
       "path": "docs/operations/deployment.md",
       "old_sha256": "97064848175f0dfd542c0f4ebf8fe1e799d26e70066c29b1f3fa27f87347b02a",
-      "reviewed_functions": "candidate release procedure; protected preparation, verification and uncertain-outcome procedure; Python lock, verified build baseline and CI proposal",
-      "semantic_reach": "Documents isolated protected upload and preview qualification; no production data, runtime calculation or acceptance outcome changes. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Documents the separate approval, conditional pointer write, and existing verification and backup steps. The application does not read this runbook. The revised runbook is operational documentation. Original query answers do not consume it. Documents selected build inputs and unchanged review gates, without changing an original query or historic capture.",
+      "reviewed_functions": "candidate release procedure; protected preparation, verification and uncertain-outcome procedure; Python lock, verified build baseline and CI proposal; development advisory disposition",
+      "semantic_reach": "Documents isolated protected upload and preview qualification; no production data, runtime calculation or acceptance outcome changes. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Documents the separate approval, conditional pointer write, and existing verification and backup steps. The application does not read this runbook. The revised runbook is operational documentation. Original query answers do not consume it. Documents selected build inputs and unchanged review gates, without changing an original query or historic capture. Records applicable dev dependency advisories and preserves the blocking production audit. No request semantics or data inputs change.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -376,7 +376,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "3cf9d9fe9ddbdb1609fe6e3ab96a0087b24b0206e1e11643fd6b35e2fd1c3fec"
+      "reviewed_sha256": "c21776312acd36339528cd98558b38eae12d8c1ec0dccf90aba1d1c6dc5167a8"
     },
     {
       "path": "docs/operations/observability.md",
@@ -2210,6 +2210,68 @@
         "live-owned-opponent"
       ],
       "reviewed_sha256": "a87e137ceecf6296c15e4d37b836017a08de6aeac4856044125789ba536d4e5e"
+    },
+    {
+      "path": "frontend/package.json",
+      "old_sha256": "8c870176d6e098693324f3af92c9f12ed13f5c44581490fc598f1eb56014db60",
+      "reviewed_functions": "development build and test tooling bump",
+      "semantic_reach": "Applies compatible fixes to Vite, Vitest, jsdom dependencies and lint-only dependencies. Keeps frontend runtime package requirements and existing test gates.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ],
+      "reviewed_sha256": "76d63359d87bbabc347242c2b75592bda20897965e51b1eb4cebc2cb255a4de6"
+    },
+    {
+      "path": "frontend/package-lock.json",
+      "old_sha256": "6ccf63e2790b36f9c70150f41b2c858fdf55aa0dd1f18e68b55daa914dd6510e",
+      "reviewed_functions": "locked transitive development inputs",
+      "semantic_reach": "Updates only the development dependency graph and root metadata. Independent frontend install, build, lint, tests and desktop/mobile scope checks ran. The original served asset remains evidence of its own build; a new artifact must pass frozen release acceptance.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ],
+      "reviewed_sha256": "eaf6007aad229f4626abce602af8fa92bc9e4ebddf785743beedb2a74bfc6cee"
     }
   ],
   "original_src_python_inventory": [
