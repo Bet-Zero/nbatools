@@ -7,7 +7,7 @@
   "original_capture_sha256": "a5c718c7498f24d787866ff4e3d53220363e00588a045607e92f5947ac2074a5",
   "original_case_manifest_sha256": "096f093c24df872fca3107a1d4a23b19fc98e549b86aecfdc9df3b538ca1382a",
   "original_bound_file_count": 663,
-  "unchanged_bound_file_count": 593,
+  "unchanged_bound_file_count": 592,
   "cases": [
     {
       "id": "k12-s1",
@@ -2272,6 +2272,37 @@
         "live-owned-opponent"
       ],
       "reviewed_sha256": "eaf6007aad229f4626abce602af8fa92bc9e4ebddf785743beedb2a74bfc6cee"
+    },
+    {
+      "path": "src/nbatools/operational_observability.py",
+      "old_sha256": "5879c5e4444bc82807387a1ab7474ccb17b26bfdd9e3dcf0cc5a864a6e62cadd",
+      "reviewed_functions": "; native worker resource observation",
+      "semantic_reach": " Emits bounded numeric memory and temporary filesystem observations after response completion. Original query interpretation, runtime computation, output and original receipts remain in their existing scope.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ],
+      "reviewed_sha256": "f34456753a7e0d982f5a20e645e0b455779b8dbc61817e7c3cdaf5451494d6eb"
     }
   ],
   "original_src_python_inventory": [
