@@ -685,7 +685,7 @@ def _configure_r2(
     monkeypatch.setenv("R2_ACCESS_KEY_ID", "access-key-id")
     monkeypatch.setenv("R2_SECRET_ACCESS_KEY", "secret-access-key")
     monkeypatch.setenv("R2_BUCKET_NAME", "nbatools-data")
-    monkeypatch.setattr(data_source, "create_r2_client", lambda config: client)
+    monkeypatch.setattr(data_source, "create_r2_client", lambda config, **_: client)
     reset_data_source_cache()
 
 
