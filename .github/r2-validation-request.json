@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "810806fb6043a5860107ba0a8c1740ce56039430",
+  "generation": "availability-cleveland-2024-v3-20261124",
+  "tests": [
+    "tests/test_cleveland_candidate_real_data.py::test_exact_cleveland_candidate_snapshot_and_registered_answers",
+    "tests/test_team_appearance_scope_real_data.py::test_explicit_role_cannot_reduce_a_mixed_request_on_published_catalog"
+  ],
+  "raw_qa_cases": ["pqa_availability_sentence_luka_plays"]
+}
