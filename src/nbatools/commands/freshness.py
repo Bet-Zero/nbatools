@@ -36,6 +36,7 @@ from nbatools.data_source import (
     LEGACY_GENERATION,
     data_exists,
     data_generation_context,
+    data_prefetch,
     data_read_csv,
     data_read_text,
     data_source_cache_key,
@@ -272,12 +273,27 @@ def compute_current_through_for_seasons(
     for that season but still reports the max across those that are confirmed.
     Returns None only when no season has a determinable current_through.
     """
+    if not seasons:
+        return None
     latest: str | None = None
-    for season in seasons:
-        ct = compute_current_through(season, season_type, data_root)
-        if ct is not None:
-            if latest is None or ct > latest:
-                latest = ct
+    with data_generation_context():
+        safe = normalize_season_type(season_type)
+        inputs = (
+            path
+            for season in seasons
+            for path in (
+                validation_control.manifest_path(data_root, season, season_type),
+                data_root / "raw" / "games" / f"{season}_{safe}.csv",
+            )
+        )
+        # Fetch the date rows alongside the receipts. An available CSV still
+        # contributes only after the existing completeness checks pass.
+        data_prefetch(path for path in inputs if data_exists(path))
+        for season in seasons:
+            ct = compute_current_through(season, season_type, data_root)
+            if ct is not None:
+                if latest is None or ct > latest:
+                    latest = ct
     return latest
 
 
