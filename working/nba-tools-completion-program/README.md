@@ -1,279 +1,44 @@
-# NBA Tools execution queue
-
-This file is the project's only active queue. Rules are in `AGENTS.md`, direction
-in `ROADMAP.md`. The [data-quality worklist](data-quality/README.md) holds data
-exceptions only. No background worker is running.
-
-The full previous checkpoint (to 2026-11-12, with every run ID, hash, reviewer and
-receipt) is kept unchanged in
-[checkpoint-history-20261112.md](checkpoint-history-20261112.md). Use it for exact
-evidence; don't extend it.
+# NBA Tools completion program
 
 ## Resume checkpoint
 
-**November 26, 2026. Lead and operations writer: Codex.** W0 landed in
-[PR #645](https://github.com/Bet-Zero/nbatools/pull/645), W4A in
-[PR #646](https://github.com/Bet-Zero/nbatools/pull/646), and the W2 recovery
-guard in [PR #647](https://github.com/Bet-Zero/nbatools/pull/647). W2
-publication safeguards landed in [PR #648](https://github.com/Bet-Zero/nbatools/pull/648),
-and W1 landed in [PR #649](https://github.com/Bet-Zero/nbatools/pull/649).
-PR #644 was the accepted activation artifact. Production is on `b55cc244`
-from [PR #658](https://github.com/Bet-Zero/nbatools/pull/658).
-The only unrelated open PR is blocked
-[#462](https://github.com/Bet-Zero/nbatools/pull/462). No other writer or background
-worker is active. [Execution plan](execution-plan.md)
+**November 27, 2026. Integration lead: Codex.** Live main was `cc14b1d3`; the
+active production artifact is `dpl_9J2PKZ7bxgs8uqSEx2NtpY1b3bCN` at `b55cc244`.
+[Execution plan](execution-plan.md) ·
+[Prior checkpoint and receipts](https://github.com/Bet-Zero/nbatools/blob/cc14b1d329dcf6842833706096fd7ea908a663e6/working/nba-tools-completion-program/README.md)
 
-**Cleveland is active and its historical answers and backup are verified.**
-The owner approved [run 45763092143](https://github.com/Bet-Zero/nbatools/actions/runs/45763092143).
-One conditional pointer write and zero snapshot uploads selected
+**Cleveland is delivered.** The active generation is
 `availability-cleveland-2024-v3-20261124`, manifest
 `d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034`.
-The independent receipt records 1,461 verified objects, all 87 registered public
-answers and the retained previous manifest. Cleveland's 2024-25 record without
-Caris LeVert is 31–13 in 44 games. TEAM appearances cover all 21 pilot players;
-rostered missed-game coverage remains 14/21. [Activation receipt](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-45763092143)
+Its 87 public controls passed. The original backup and independent restore cover
+1,461 verified files. Cleveland went 31–13 without LeVert and 44–11 without
+Hunter. TEAM appearances cover 21/21 pilot players and rostered coverage is 14/21.
+[Activation](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-45763092143) ·
+[Backup and restore](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-45763092143)
 
-**Recovery and proof.** The separate credential-free runner restored the 1,461
-files byte-exact from the 66,763,469-byte candidate archive. The qualified restore
-path checked every hash and reused source qualification. A credential-free
-follow-up using the actual verified R2 reader over the restored filesystem
-returned 31–13 in 44 games without LeVert. The separate checker independently
-derived and recovered 44–11 in 55 games without Hunter. The public website
-rendered the LeVert result through its regular query form. This exercised the loader with an
-offline object transport, using the retained verified pointer and archive. The previous generation
-`availability-season-inactive-2024-v1-20261116` retains its exact backup and
-restore. No prospective candidate ZIP preflight or production rollback rehearsal
-was found in the activation evidence. Reuse the accepted PR #643 cold proof
-(5.8248 s and six follow-ups) and #644 independent review and post-merge CI.
-[Candidate backup](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-45763092143)
-· [Previous backup](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-44062070685)
-· [PR #643](https://github.com/Bet-Zero/nbatools/pull/643)
-· [PR #644](https://github.com/Bet-Zero/nbatools/pull/644)
+**Calendar repair.** The shared range parser keeps both endpoints, including
+mixed literal and written dates across seasons. Fixture counts and the
+independent review of `d5313553` on the restored Cleveland rows passed.
+The reviewer counted 3–0 in three actual Knicks games for both April 1–7
+phrasings. Exact-head CI and authenticated numerical validation precede merge.
 
-**Live and stabilization remain open.** Public readiness reports 503 with sole
-`new_season_not_loaded`, on the intended Cleveland generation. Scheduled
-monitor run 45768634065 failed before its representative query. W5A logs for
-the earlier unlocked deployment show Python 3.12 and uv 0.13.5, initial install from
-`pyproject.toml` and subsequent build-step installs from an untracked build
-`uv.lock`. The logs omit a complete installed inventory and say that Active CPU
-billing ignores the configured memory value. Original K08 remains 16 PASS /
-26 MISSING DATA / 4 LIVE. Full original acceptance, Live freshness, league-wide
-participation, K12 timing, DQ-005 and the 484 labeled unavailable rates retain
-their existing scope and authority.
-[Monitor run](https://github.com/Bet-Zero/nbatools/actions/runs/45768634065)
-· [Production build](https://vercel.com/zeros-projects-686e97fc/nbatools/E4SfKHXdhXx2dnKbL2qnGeSMaXN9)
+**Next.** Finish W3A application deadline review and show complete replies
+through both native endpoints. The [host cutoff packet](w3a-host-cutoff-packet.md)
+has an independently checked source/ref mapping and awaits the reserved
+preview/access decision. Read-only inspection did not expose effective settings.
+Proceed with dependency triage and W6A preparation. The reviewed read-only
+uncertain-activation handoff is due before the next protected activation.
 
-**W4A.** Run-all monitoring is merged and its production build is live.
-[Manual run](https://github.com/Bet-Zero/nbatools/actions/runs/45777149868)
-reported snapshot passed and Live failed, with the representative scoring
-query returning HTTP 200 in 2.58 s. Strict alerts still fail on the Live gap.
-[Main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45777118682)
-passed all three Python full-suite jobs. [Scheduled run 45782818838](https://github.com/Bet-Zero/nbatools/actions/runs/45782818838)
-also attempted all three checks. Its representative query returned HTTP 200
-in 7.47 s and snapshot probes passed. Strict readiness still failed on the
-sole Live blocker. [Scheduled run 45800466145](https://github.com/Bet-Zero/nbatools/actions/runs/45800466145)
-again passed snapshot probes and the representative scoring query (HTTP 200
-in 0.523 s, `req_01a19bea06f24678bc71e380ae673c30`). Strict Live stayed red.
-Any alert/recovery policy change remains reserved.
+Then freeze source, served build, configuration and Cleveland data for W3C and
+the single release run (621 Raw QA, 521 filter comparisons, full suite, 44 fresh
+captures plus 40 timing observations). After independent acceptance, retire
+the current-runtime hash bridge and preserve original evidence. Section 6
+remains open. Run-all monitoring recorded snapshot passed and Live failed
+on `new_season_not_loaded` in [run 46062906124](https://github.com/Bet-Zero/nbatools/actions/runs/46062906124).
 
-**W2 recovery safeguards.** The exact guarded rollback path is merged.
-[Authenticated read-only preflight](https://github.com/Bet-Zero/nbatools/actions/runs/45777409867)
-passed 1/1 required tests with no skips. It checked the live pointer, previous
-manifest and all 1,216 retained files without a write. The publication verifier
-requires native typed readiness, health and exact pre-activation backup sizing.
-On the restored Cleveland bytes it measured the same 66,763,469-byte ZIP as the
-durable release. This is current proof. The previous activation's prospective
-preflight timing remains unproven. If an uncertain future write actually
-activated the candidate, the existing normal verifier still needs a dedicated
-read-only handoff to consume that receipt and complete backup. Future writes
-require separate authority.
-
-**W1.** Request-pinned immutable identity and required-object validation
-are merged. Exact-head independent review, blocking CI and
-[authenticated R2](https://github.com/Bet-Zero/nbatools/actions/runs/45781851935)
-passed. All 12 identity checks ran with zero required skips, and all 22 retained
-API-shaped results were identical on the restored Cleveland data.
-[Main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45782678499) passed all
-three full-suite jobs. Production `dpl_J9KedKBHdcUQKZRoFrgGmxH2ajpg` returned
-31–13 in 44 Cleveland games through the natural endpoint
-(`req_79f810c65bcc4d4bbdb25adb1b9723e8`) and 49 games, 680 points and 411 rebounds
-for Bobby Portis Jr. through the structured endpoint
-(`req_d377df6f6926481fa4836a0ae16538a7`).
-
-**W3A.** Bounded request reads and inactive-client cleanup merged at `c4d1be10`
-and deployed on `dpl_FjNusyfWTmWqGrKCVPgL3qkEH4L6`. The independent checker
-passed 110 focused tests at the exact PR revision. Both offline HTTP adapters
-returned the known Cleveland result from the restored archive. Production
-returned typed 413 for an over-budget body (`req_3caf4ff6ea8647d3b71b60d375f13467`)
-and 31–13 in 44 games for a normal question (`req_194f3cd4c2a840db90b665dd68ef7db7`,
-5.330 s externally, 5.042 s in the handler). The
-[blocking PR gates](https://github.com/Bet-Zero/nbatools/actions/runs/45784086988)
-and [all three full main suites](https://github.com/Bet-Zero/nbatools/actions/runs/45785294622)
-passed. The existing frontend development audit remained advisory and red.
-The response deadline remains open. These timing samples do not establish the
-effective host cutoff or near-deadline response completion.
-
-**W3B.** The checker approved calendar runtime `9546cfa3` after 244
-focused passes and independent checks of date windows and current-season ranks.
-All 22 archived historical payloads matched byte for byte on the restored
-Cleveland snapshot. [Authenticated R2](https://github.com/Bet-Zero/nbatools/actions/runs/45788049013)
-passed all three selected raw-row checks with zero required skips. The exact
-PR matrix exposed four test assertions that still specified the prior
-cutoff flag or upper season boundary. The follow-up preserves the approved
-runtime and updates only those calendar assertions and the checkpoint. The
-independent checker approved final head `8d670d16`. All three blocking PR
-matrices passed. [PR #651](https://github.com/Bet-Zero/nbatools/pull/651) merged at
-`dce81e08`. [Main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45790182679)
-passed all three full jobs. The
-[deployed revision](https://vercel.com/zeros-projects-686e97fc/nbatools/CLQbm4a4WV7QXFCyqARMJ5W5MHcb)
-reported unavailable November 25 and 2026–27 coverage for the two literal
-queries. The explicit LeVert record kept its 31–13 result in 44 games. The PR
-records all three request IDs.
-
-**W5.** The Python lock merged at `2615c940`. Preview and
-[production](https://vercel.com/zeros-projects-686e97fc/nbatools/GGy5uCzq2sBdeLLPW3CyM5bhwBPt)
-used the committed lock for the first Python 3.12 install with uv 0.13.5. The
-local Python builder produced a 223,239,050-byte query bundle from the chosen
-source and lock. That local artifact retains the configured 20-second value;
-the effective hosted cutoff and near-deadline response timing remain unproven.
-All 22 historical payloads matched under the locked dependencies, the exact
-PR gates passed, and [authenticated R2](https://github.com/Bet-Zero/nbatools/actions/runs/45790777737)
-passed 10 required source-row tests without skips. Production's natural and
-structured queries both returned 31–13 in 44 games without LeVert. The PR holds
-the request IDs and [main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45791747173)
-receipt. Settings remain under the owner's authority.
-
-**W4B.** All 514 locked frontend tests, lint and build passed. Local
-built desktop/mobile browsers used the public API for the verified Cleveland
-example. The desktop check used the keyboard. On mobile a controlled 429
-displayed its retry delay and request ID, and manual retry rendered the correct
-sample with no automatic second request. The independent review identified misleading
-copy for date ranges. The updated range message preserves its requested bounds.
-The checker approved exact head `b0898973`. All blocking PR jobs passed.
-[PR #653](https://github.com/Bet-Zero/nbatools/pull/653) merged at `da104fbf`.
-[Main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45795324415) passed
-all blocking checks, including three full Python suites. The exact preview
-built and requires SSO. The public
-[production build](https://vercel.com/zeros-projects-686e97fc/nbatools/BZ9H2smKA5oU6fGX93SL5dNv1hmi)
-passed fresh desktop keyboard and mobile discovery. Both rendered 31–13 in
-44 games without horizontal overflow. Mobile displayed a controlled 429 and
-recovered after one manual retry. The PR records both real production request IDs.
-
-**W6A preparation.** The fresh Cleveland selector preserves the original
-22 question identities and every numerical and rendered check. It binds the
-immutable hosted deployment, locked build inputs and active pointer on both
-sides of capture, and requires 44 fresh IDs and screenshots. The legacy gate
-continues. The read-only provider lookup matched the last locked production
-build's full source tree (674 files) and exact immutable URL. The restored
-Cleveland preflight verified all original cases and four retained source-file
-prefixes. The independent checker approved `ceef7e4d` after 37 checks, including
-mutated readiness and sample data and rejection of old browser rows as fresh.
-[PR #654](https://github.com/Bet-Zero/nbatools/pull/654) merged at `1f8fad88` after
-[blocking CI](https://github.com/Bet-Zero/nbatools/actions/runs/45796678276).
-[Main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45797731404) passed.
-Vercel compared against the actual W4B deployment and suppressed the gate-only
-build. The original and legacy gates remain. No first-release broad capture has run.
-
-**W3A timing.** On the locked build, Patrick Ewing's historical summary matched
-all 348 games and 5,027 points. Request `req_9bda12cb015d4fbb98954b85bdff1d14`
-took 13.940 s externally and 11.293 s in the handler. The metric is one successful
-sample. Effective host cutoff and near-deadline completion remain open.
-
-**W3C broad ranking.** The locked W4B build returned the five independently
-verified leaders for a 30-season attempt-qualified ranking in 13.977 s.
-Request `req_4cdd9bac9bd34ca289335a55045f48df` logged 13.694 s in the handler
-and 1,011.609 MiB peak process RSS. In two fresh local Python 3.12 processes
-using the actual HTTP handler and restored Cleveland objects, the focused
-repair reduced peak RSS from 899.664 to 590.145 MiB. The identical 3,729-byte
-answers came from 736,417 player-game rows. The reader fetched the same 94
-objects and 253,468,131 bytes in each run. These are controlled resource
-measurements. The [merged repair](https://github.com/Bet-Zero/nbatools/pull/655)
-passed exact-head independent review and [three authenticated raw-row tests](https://github.com/Bet-Zero/nbatools/actions/runs/45798294354)
-with zero skips. The [hosted repair](https://vercel.com/zeros-projects-686e97fc/nbatools/64jSJzEC9VcH8BZoM9DmJx9PqTW3)
-returned the exact same five rows in 15.152 s. Request
-`req_db8bf3485e074cbf9675339e9369974e` logged 14.836 s in the handler and
-637.211 MiB peak process RSS. This is one sample per build.
-
-**W3A public error regression.** After the calendar change, the request
-scope failed to propagate the frozen admission exception. A real oversized
-request returned internal 500 on the ranking build
-(`req_a1d928dac11d43948e7a4d50f5bbffc5`). Vercel logged
-`FrozenInstanceError`. Both native adapters now preserve 413, 429 with
-`Retry-After`, and 504 under their request-calendar scope in local tests.
-Actual local HTTP with three occupied slots rejected one excess request with
-429, then correctly delivered the three retained summary, team-record and
-ranking responses. This is controlled same-process proof against restored
-Cleveland data. The separate checker approved exact `1933a332` and independently
-proved a controlled 504, occupied-slot 429 and a correct Boston 64–18 result
-after worker release. The [merged main suite](https://github.com/Bet-Zero/nbatools/actions/runs/45801545598)
-passed. The [production repair](https://vercel.com/zeros-projects-686e97fc/nbatools/2mqvQpLGjh8ss7bLXkGyw6FAeTdL)
-returned typed 413 on both native endpoints, then the correct LeVert result
-with HTTP 200. The PR records all three request IDs. Hosted cutoff and final
-capacity remain open.
-
-**W3C version rollover.** Two authentic backup archives reproduced
-506,874,532 retained logical bytes after one sequential ranking per version
-in an actual controlled worker. The managed path retained 253,467,843 bytes
-with identical correct answers. [PR #658](https://github.com/Bet-Zero/nbatools/pull/658)
-merged as `b55cc244`. The checker verified old/new pinned reads, safe retirement,
-redownload, failed closed reads for absent/corrupt rollback inputs, and
-native freshness through a pointer change. A delayed old reader leaves the
-newer cache in place. All 232 focused lead tests, the 66 exact checker tests,
-[PR CI](https://github.com/Bet-Zero/nbatools/actions/runs/45804036199)
-and the [one authenticated raw-row test](https://github.com/Bet-Zero/nbatools/actions/runs/45804242041)
-passed. The [production build](https://vercel.com/zeros-projects-686e97fc/nbatools/9J2PKZ7bxgs8uqSEx2NtpY1b3bCN)
-returned the June 13, 2026 cutoff, Cleveland's known strict Live readiness
-gap, and 44–11 in 55 games without Hunter. The actual project configuration
-has no explicit production cache-directory or generation override. The PR
-records request IDs and [main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45805158080).
-Hosted disk pressure with two simultaneously pinned versions and final
-resource qualification remain open.
-
-**W3C/W6A browser preparation.** [PR #657](https://github.com/Bet-Zero/nbatools/pull/657)
-merged at `e6d8c93a` and passed [main CI](https://github.com/Bet-Zero/nbatools/actions/runs/45802916602).
-Vercel suppressed its new build against the actual previous artifact. One
-frozen run retains 44 original captures and collects the 40 declared K12
-timing repeats in their existing sequence. The checker exercised altered
-order, timing, request identity, asset bytes and sample size. The runner
-reuses the [Cleveland activation receipt](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-45763092143)
-for the two legacy diagnostic topics outside the original 22 cases. The
-2025–26 Boston result and canonical Seattle wording have actual activation
-receipts. The Thunder alias was also checked on the exact restored data.
-The current frozen browser run and broad replay have not started.
-
-**W3A host measurement.** The [reviewed diagnostic](https://github.com/Bet-Zero/nbatools/tree/codex/w3a-cutoff-review-production-gate)
-is `f9aaf7a1`, staged on a branch with Vercel deployment disabled. Both
-native routes passed independent local checks. The owner decision is pending
-for one SSO-protected diagnostic preview and a temporary link, for two
-ordinary positive controls and two fixed native cutoff probes. The preview
-has not been deployed. The tool supports a ten-minute link.
-
-**Next.** On approval, deploy the exact guarded diagnostic ref as a protected
-preview. Correlate the elapsed requests with the provider cutoff for both
-endpoints. Use that evidence to set the deadline and verify a useful
-near-deadline response. Freeze the app, build, configuration and Cleveland
-manifest, then complete W3C and the release checks once. Prepared selections
-cover 621 Raw QA cases, 521 filter comparisons, and the 44 original browser
-observations plus 40 timing repeats. Stabilization and Live remain open.
-No new collection, historical backfill, spending, automatic refresh or Live work is authorized for this assignment.
-The checkout's existing `work` branch and the saved work below are preserved.
-
-## Preserved scope
-
-- **Acceptance contract:** [acceptance-baseline-pr582.md](acceptance-baseline-pr582.md),
-  byte-exact, SHA256 `433f49eb4467401184f15231e0d80520a9d8bef44eb81c5bb4b3988f9f916bfd`.
-  Its status cells are historical; its requirements still apply, as revised only by
-  the owner's recorded scope decisions, including [the November 14 decisions](https://github.com/Bet-Zero/nbatools/pull/611).
-- **Bindings per group:** [K01](k01-binding.md), [K02](k02-binding.md),
-  [K03](k03-binding.md), [K04](k04-binding.md), [K05](k05-binding.md),
-  [K06](k06-binding.md), [K07](k07-binding.md), [K09](k09-binding.md),
-  [K10](k10-binding.md), [K11](k11-binding.md), [K12](k12-binding.md). K08 uses the
-  [46 original PR462 positives](https://github.com/Bet-Zero/nbatools/pull/462#issuecomment-6440042622).
-- **Carry-forward scope:** section 8 of the baseline lists the work Core-1 does
-  not complete (wider combinations, roles/context data, play-by-play/lineups,
-  unattended freshness, guided tools). Use the execution plan for the current sequence.
-- **Saved unreviewed work:** Tatum branch at
-  `b835874e7c31dc29c38d62fcda263af404c881fe`. Don't treat it as accepted or
-  overwrite it.
-- **Agent 2 launch prompt**, if it's ever restarted:
-  [data-quality/agent-2-prompt.md](data-quality/agent-2-prompt.md).
+**Product scope.** The original K08 ledger remains 16 PASS / 26 MISSING DATA /
+4 LIVE. [Original acceptance contract and carry-forward](acceptance-baseline-pr582.md) ·
+[Owner scope decisions](https://github.com/Bet-Zero/nbatools/pull/611) ·
+[Older checkpoint](checkpoint-history-20261112.md). Held work and paths
+remain recorded in the prior checkpoint. The [data-quality worklist](data-quality/README.md)
+tracks data exceptions. There is no continuing background worker.

@@ -151,6 +151,10 @@ def _extract_since_explicit_calendar_date(
 
 
 _ISO_DATE = r"(?:19|20)\d{2}-\d{2}-\d{2}"
+_LITERAL_DAY_TOKEN = "|".join(
+    f"(?:{term.regex})" for term in FUZZY_DATE_TERMS if term.same_day or term.yesterday
+)
+_LITERAL_DAY_MATCH = re.compile(_LITERAL_DAY_TOKEN)
 
 
 def _date_token_pattern() -> str:
@@ -165,6 +169,8 @@ def _date_token_pattern() -> str:
 def _parse_date_token(token: str, season: str | None) -> str | None:
     """Return the ISO date a ``_date_token_pattern`` match names, or None if invalid."""
     token = token.strip()
+    if _LITERAL_DAY_MATCH.fullmatch(token):
+        return _resolve_literal_day(token, current_query_date())
     if re.fullmatch(_ISO_DATE, token):
         try:
             return date.fromisoformat(token).isoformat()
@@ -186,11 +192,28 @@ def _parse_date_token(token: str, season: str | None) -> str | None:
 
 def _explicit_date_range_pattern() -> str:
     """One shared lexical contract for reading and masking a two-ended range."""
-    token = _date_token_pattern()
+    token = rf"(?:{_date_token_pattern()}|{_LITERAL_DAY_TOKEN})"
     return (
-        rf"\b(?:(?:from\s+)?({token})\s+(?:to|through|thru|until|till)"
-        rf"|between\s+({token})\s+and)\s+({token})(?!\d)"
+        rf"\b(?:(?:from\s+)?(?P<first>{token})\s+(?:to|through|thru|until|till|til|up\s+to)"
+        rf"|between\s+(?P<between>{token})\s+and"
+        rf"|(?:from|since|after|post)\s+(?P<exclusive_first>{token})\s+"
+        rf"(?:before|prior\s+to))\s+(?P<last>{token})(?![\w-])"
     )
+
+
+def _read_explicit_date_bounds(
+    match: re.Match[str], season: str | None
+) -> tuple[str | None, str | None]:
+    exclusive_first = match.group("exclusive_first")
+    start = _parse_date_token(
+        match.group("first") or match.group("between") or exclusive_first, season
+    )
+    end = _parse_date_token(match.group("last"), season)
+    if start is None or end is None:
+        return None, None
+    if exclusive_first is not None:
+        end = (date.fromisoformat(end) - timedelta(days=1)).isoformat()
+    return start, end
 
 
 def _extract_explicit_date_range(
@@ -198,20 +221,8 @@ def _extract_explicit_date_range(
     season: str | None,
     anchor_date: pd.Timestamp,
 ) -> tuple[str | None, str | None]:
-    """Explicit two-ended ranges, ``since <date>`` and lone ISO dates.
-
-    "from November 1 to December 15" must bound both ends; the single-date
-    matcher alone read it as November 1 only.
-    """
+    """Read an open date bound or a lone ISO date."""
     token = _date_token_pattern()
-    m = re.search(_explicit_date_range_pattern(), text)
-    if m:
-        start = _parse_date_token(m.group(1) or m.group(2), season)
-        end = _parse_date_token(m.group(3), season)
-        if start and end:
-            return start, end
-        return None, None
-
     m = re.search(rf"\b(?:since|after|post)\s+({token})(?!\d)", text)
     if m and (re.fullmatch(_ISO_DATE, m.group(1)) or re.search(r"\d{4}$", m.group(1))):
         start = _parse_date_token(m.group(1), season)
@@ -279,10 +290,6 @@ _SEASON_SPAN_TO_TODAY = re.compile(
     r"\b(?:from|since|starting|in|for|during)\s+(?:the\s+)?(?:19|20)\d{2}(?:-\d{2})?(?:\s+(?:nba\s+)?season)?"
     r"\s+(?:up\s+to|to|through|thru|until|till|til)\s+(?:today|tonight)\b"
 )
-_LITERAL_DAY_TOKEN = "|".join(
-    f"(?:{term.regex})" for term in FUZZY_DATE_TERMS if term.same_day or term.yesterday
-)
-_LITERAL_DAY_MATCH = re.compile(_LITERAL_DAY_TOKEN)
 _LITERAL_RANGE_END = re.compile(
     r"\b(?:up\s+to|prior\s+to|before|to|through|thru|until|till|til)\s+"
     rf"(?P<day>{_LITERAL_DAY_TOKEN})"
@@ -621,6 +628,10 @@ def extract_date_range(
     if re.search(r"\b(?:since|after|post)\s+(?:the\s+)?all[- ]star\s+break\b", text):
         return _infer_all_star_break_start(season), literal
 
+    # Parse complete windows before any literal-day or open-bound fallback.
+    if literal is not None and (match := re.search(_explicit_date_range_pattern(), text)):
+        return _read_explicit_date_bounds(match, season)
+
     anchor = anchor_date if anchor_date is not None else current_query_date()
     if literal is not None:
         if season_span_ends_on_literal_day(text):
@@ -642,7 +653,7 @@ def extract_date_range(
                 if start is not None:
                     _, end = _extract_explicit_date_range(after, season, literal_anchor)
                     return start, end or literal
-            literal_range = _extract_explicit_date_range(before + after, season, literal_anchor)
+            literal_range = _extract_explicit_date_range(after, season, literal_anchor)
             if literal_range != (None, None):
                 return literal_range
         return literal, literal
@@ -665,6 +676,9 @@ def extract_date_range(
             return start, end
 
     month_pattern = "|".join(MONTH_NAME_TO_NUM.keys())
+
+    if match := re.search(_explicit_date_range_pattern(), text):
+        return _read_explicit_date_bounds(match, season)
 
     range_start, range_end = _extract_explicit_date_range(text, season, anchor)
     if range_start or range_end:
