@@ -5,10 +5,15 @@ from __future__ import annotations
 import json
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler
-from time import perf_counter
+from time import monotonic, perf_counter
 from typing import Any
 
-from nbatools.admission_control import BODY_LIMITS, parse_and_validate_json_body, validate_body_size
+from nbatools.admission_control import (
+    BODY_LIMITS,
+    parse_and_validate_json_body,
+    query_timeout,
+    validate_body_size,
+)
 from nbatools.operational_observability import (
     extract_request_outcome,
     log_request_complete,
@@ -24,6 +29,12 @@ from nbatools.public_errors import (
     new_request_id,
 )
 
+# Provisional application budget pending effective host qualification. Start at
+# native handler entry. Leave 3 s outside the handler against the declared 20 s
+# (retained cold sample: 2.647 s outside the handler), plus 0.5 s for the reply.
+NATIVE_QUERY_RESPONSE_SECONDS = 17.0
+NATIVE_QUERY_REPLY_RESERVE_SECONDS = 0.5
+
 
 class JsonHandler(BaseHTTPRequestHandler):
     """Base handler with JSON/text response helpers and CORS headers."""
@@ -33,6 +44,7 @@ class JsonHandler(BaseHTTPRequestHandler):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self._nbatools_request_started_at = perf_counter()
+        self._request_started_at = monotonic()
         super().__init__(*args, **kwargs)
 
     @property
@@ -49,17 +61,38 @@ class JsonHandler(BaseHTTPRequestHandler):
         self.send_header(REQUEST_ID_HEADER, self.request_id)
         self.end_headers()
 
+    def query_work_deadline(self) -> float:
+        return self.query_response_deadline() - NATIVE_QUERY_REPLY_RESERVE_SECONDS
+
+    def query_response_deadline(self) -> float:
+        return self._request_started_at + NATIVE_QUERY_RESPONSE_SECONDS
+
     def send_json(
         self,
         payload: dict[str, Any],
         status: int = HTTPStatus.OK,
         *,
         headers: dict[str, str] | None = None,
+        deadline: float | None = None,
     ) -> None:
         response_payload = dict(payload)
         if response_payload.get("ok") is False:
             response_payload.setdefault("request_id", self.request_id)
         body = json.dumps(response_payload, separators=(",", ":"), default=str).encode("utf-8")
+        if deadline is not None:
+            now = monotonic()
+            if now >= deadline:
+                # Headers are still unsent. Try to deliver a small typed error
+                # within the host allowance if setup or encoding used the budget.
+                if status < HTTPStatus.BAD_REQUEST:
+                    rejected = query_timeout()
+                    return self.send_json(
+                        rejected.payload(),
+                        status=rejected.status,
+                        deadline=now + NATIVE_QUERY_REPLY_RESERVE_SECONDS,
+                    )
+                deadline = now + NATIVE_QUERY_REPLY_RESERVE_SECONDS
+            self.connection.settimeout(deadline - now)
         self.send_response(status)
         self._send_cors_headers()
         self.send_header("Content-Type", "application/json")
@@ -69,6 +102,11 @@ class JsonHandler(BaseHTTPRequestHandler):
             self.send_header(key, value)
         self.end_headers()
         if getattr(self, "command", "") != "HEAD":
+            if deadline is not None:
+                remaining = deadline - monotonic()
+                if remaining <= 0:
+                    raise TimeoutError("Query response deadline expired after headers")
+                self.connection.settimeout(remaining)
             self.wfile.write(body)
         endpoint = normalize_endpoint(getattr(self, "path", ""))
         log_request_complete(
@@ -148,7 +186,7 @@ class JsonHandler(BaseHTTPRequestHandler):
             PUBLIC_INTERNAL_ERROR_DETAIL,
         )
 
-    def read_json_body(self, path: str) -> dict[str, Any]:
+    def read_json_body(self, path: str, *, deadline: float | None = None) -> dict[str, Any]:
         lengths = self.headers.get_all("Content-Length", [])
         if len(lengths) > 1:
             raise ValueError("Expected a single Content-Length header")
@@ -168,7 +206,27 @@ class JsonHandler(BaseHTTPRequestHandler):
             validate_body_size(limit + 1, path)
         length = int(digits)
         validate_body_size(length, path)
-        raw_body = self.rfile.read(length)
+        if deadline is None:
+            raw_body = self.rfile.read(length)
+        else:
+            chunks = bytearray()
+            try:
+                while len(chunks) < length:
+                    remaining = deadline - monotonic()
+                    if remaining <= 0:
+                        raise query_timeout()
+                    self.connection.settimeout(remaining)
+                    chunk = self.rfile.read1(length - len(chunks))
+                    if not chunk:
+                        break
+                    chunks.extend(chunk)
+            except TimeoutError as exc:
+                raise query_timeout() from exc
+            finally:
+                # Return the socket to the server's normal mode for the reply,
+                # including typed errors after a request body timed out.
+                self.connection.settimeout(self.timeout)
+            raw_body = bytes(chunks)
         validate_body_size(len(raw_body), path)
         if len(raw_body) != length:
             raise ValueError("Request body length does not match Content-Length")

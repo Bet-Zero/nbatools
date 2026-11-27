@@ -2,8 +2,8 @@
 
 ## Resume checkpoint
 
-**November 27, 2026. Integration lead: Codex.** Live main was `cc14b1d3`; the
-active production artifact is `dpl_9J2PKZ7bxgs8uqSEx2NtpY1b3bCN` at `b55cc244`.
+**November 27, 2026. Integration lead: Codex.** The calendar repair merged at
+`6da31ddf`. The previous production artifact was `dpl_9J2PKZ7bxgs8uqSEx2NtpY1b3bCN`.
 [Execution plan](execution-plan.md) ·
 [Prior checkpoint and receipts](https://github.com/Bet-Zero/nbatools/blob/cc14b1d329dcf6842833706096fd7ea908a663e6/working/nba-tools-completion-program/README.md)
 
@@ -20,14 +20,17 @@ Hunter. TEAM appearances cover 21/21 pilot players and rostered coverage is 14/2
 mixed literal and written dates across seasons. Fixture counts and the
 independent review of `d5313553` on the restored Cleveland rows passed.
 The reviewer counted 3–0 in three actual Knicks games for both April 1–7
-phrasings. Exact-head CI and authenticated numerical validation precede merge.
+phrasings. All eight required CI jobs and ten authenticated numerical tests
+passed before [PR #660](https://github.com/Bet-Zero/nbatools/pull/660) merged.
 
-**Next.** Finish W3A application deadline review and show complete replies
-through both native endpoints. The [host cutoff packet](w3a-host-cutoff-packet.md)
-has an independently checked source/ref mapping and awaits the reserved
-preview/access decision. Read-only inspection did not expose effective settings.
-Proceed with dependency triage and W6A preparation. The reviewed read-only
-uncertain-activation handoff is due before the next protected activation.
+**Next.** Complete hosted deadline verification and W5 build review. Both native
+routes sent complete typed replies near the application deadline in local
+socket tests on restored Cleveland data. The owner approved the [host cutoff
+packet](w3a-host-cutoff-packet.md). The reserved preview is limited to the reviewed
+diagnostic source. The hold can witness native cutoff on that preview. The
+reviewed read-only activation handoff remains due before the next protected
+activation. The [W6A transition](w6a-transition.md) awaits independently accepted
+fresh release evidence.
 
 Then freeze source, served build, configuration and Cleveland data for W3C and
 the single release run (621 Raw QA, 521 filter comparisons, full suite, 44 fresh

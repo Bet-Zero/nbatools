@@ -11,6 +11,8 @@ from threading import RLock
 
 import pandas as pd
 
+from nbatools.admission_control import QueryWorkExpired, remaining_query_work
+
 FRAME_CACHE_MAX_ENTRIES_ENV = "NBATOOLS_FRAME_CACHE_MAX_ENTRIES"
 FRAME_CACHE_MAX_BYTES_ENV = "NBATOOLS_FRAME_CACHE_MAX_BYTES"
 DEFAULT_FRAME_CACHE_MAX_ENTRIES = 16
@@ -59,6 +61,11 @@ class BoundedDataFrameCache:
         loader: Callable[[], pd.DataFrame],
     ) -> pd.DataFrame:
         """Return a cached frame or coalesce one load for concurrent callers."""
+        return self._get_or_load(key, loader, retry_expired_leader=True)
+
+    def _get_or_load(
+        self, key: Hashable, loader: Callable[[], pd.DataFrame], *, retry_expired_leader: bool
+    ) -> pd.DataFrame:
         with self._lock:
             cached = self._entries.get(key)
             if cached is not None:
@@ -79,7 +86,15 @@ class BoundedDataFrameCache:
                 leader = False
 
         if not leader:
-            return future.result()
+            try:
+                return future.result(timeout=remaining_query_work())
+            except QueryWorkExpired:
+                if not retry_expired_leader:
+                    raise
+                # The shared loader's request expired. A waiter with time left
+                # can elect another loader once, within its own budget.
+                remaining_query_work()
+                return self._get_or_load(key, loader, retry_expired_leader=False)
 
         try:
             frame = loader()
@@ -92,11 +107,17 @@ class BoundedDataFrameCache:
             future.set_result(frame)
             return frame
         except BaseException as exc:
+            if isinstance(exc, QueryWorkExpired):
+                # Remove the expired load before waking waiters so they can
+                # re-elect a leader instead of reusing this failed future.
+                with self._lock:
+                    self._inflight.pop(inflight_key, None)
             future.set_exception(exc)
             raise
         finally:
             with self._lock:
-                self._inflight.pop(inflight_key, None)
+                if self._inflight.get(inflight_key) is future:
+                    self._inflight.pop(inflight_key)
 
     def clear(self) -> None:
         """Drop retained frames and reset counters without disrupting active loads."""

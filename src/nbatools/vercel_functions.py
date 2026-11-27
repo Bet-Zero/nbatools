@@ -73,6 +73,7 @@ def query_response(
     *,
     source_page: str | None = None,
     client_id: str | None = None,
+    deadline: float | None = None,
 ) -> tuple[int, dict[str, Any]]:
     """Validate and execute a natural query request body."""
     try:
@@ -87,6 +88,7 @@ def query_response(
         payload = ADMISSION_CONTROLLER.run_query(
             client_id,
             bind_qualification(lambda: natural_query_payload(request.query)),
+            deadline=deadline,
         )
     else:
         payload = natural_query_payload(request.query)
@@ -130,6 +132,7 @@ def structured_query_response(
     body: Any,
     *,
     client_id: str | None = None,
+    deadline: float | None = None,
 ) -> tuple[int, dict[str, Any]]:
     """Validate and execute a structured query request body."""
     try:
@@ -142,6 +145,7 @@ def structured_query_response(
         payload = ADMISSION_CONTROLLER.run_query(
             client_id,
             lambda: structured_query_payload(request.route, request.kwargs),
+            deadline=deadline,
         )
     else:
         payload = structured_query_payload(request.route, request.kwargs)

@@ -7,7 +7,7 @@
   "original_capture_sha256": "a5c718c7498f24d787866ff4e3d53220363e00588a045607e92f5947ac2074a5",
   "original_case_manifest_sha256": "096f093c24df872fca3107a1d4a23b19fc98e549b86aecfdc9df3b538ca1382a",
   "original_bound_file_count": 663,
-  "unchanged_bound_file_count": 597,
+  "unchanged_bound_file_count": 595,
   "cases": [
     {
       "id": "k12-s1",
@@ -319,8 +319,8 @@
     {
       "path": "api/query.py",
       "old_sha256": "8a8d3610a1987623d0f114e2c53599664cdfa560b9bc4fd3f78febc8946b509f",
-      "reviewed_functions": "handler.do_POST preview qualification context; request calendar binding before body parsing",
-      "semantic_reach": "Wraps the same admitted query call in preview-only telemetry and passes its optional response header. With no candidate manifest environment pin, the wrapper has no source requests, state changes or added headers; production queries and all original22 requests retain their existing engine. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. The same natural HTTP and cold qualification paths run inside one request day. Historical controls on the restored verified snapshot keep their exact payloads.",
+      "reviewed_functions": "handler.do_POST preview qualification context; request calendar binding before body parsing; native natural adapter",
+      "semantic_reach": "Wraps the same admitted query call in preview-only telemetry and passes its optional response header. With no candidate manifest environment pin, the wrapper has no source requests, state changes or added headers; production queries and all original22 requests retain their existing engine. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. The same natural HTTP and cold qualification paths run inside one request day. Historical controls on the restored verified snapshot keep their exact payloads. Starts the absolute work budget before body read and reserves time for delivery of typed errors and complete JSON. Successful result semantics and the request calendar are preserved.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -345,7 +345,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "47312f988be4c89676a859590ac68c7e0fdd5a8a3c8fb78c6b233470d0412c19"
+      "reviewed_sha256": "7535d14b29587bcb20f3610585711d7c51b1313e6b1cc6f8332f47c104daead1"
     },
     {
       "path": "docs/operations/deployment.md",
@@ -1251,8 +1251,8 @@
     {
       "path": "src/nbatools/data_source.py",
       "old_sha256": "cebe4cbd4e6a1451b0c383072eaaf47ef9b53e7b5a3148f4b5b921f04c1b9474",
-      "reviewed_functions": "_resolve_active_data_generation; data_generation_context; data_source_cache_key; _R2DataSource manifest and object reads; R2 source cache identity; worker-local R2 cache lifetime in data_generation_context and _R2DataSource; active-generation observation and pinned worker cache retirement",
-      "semantic_reach": "Only a present preview manifest environment pin triggers the additional preview-only manifest check; an absent pin resolves the same existing request/environment/active generation. No original22 production request carries this pin, and no HTTP input can select it. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. The R2 request now pins the active generation and its published manifest checksum together. Manifest-listed data is the same byte-exact input to the original queries, and absent optional data stays absent, including the 2026-27 case. This adds integrity checks and generation-scoped cache binding without changing historical query inputs, arithmetic or labels. Separates accounts even with the same bucket and cache path, retaining generation and manifest scope. The retained 22-question replay on the exact snapshot returned identical payloads. Retires default Vercel disk paths for idle verified snapshots, while pinned readers and fresh downloads retain full existing generation, size and digest controls. Saved original answers retain their source semantics and verified data. Records the selected generation at pointer observation so an older delayed reader can safely read its own data without evicting the latest observed disk cache. Retains immutable manifest and file integrity validation.",
+      "reviewed_functions": "_resolve_active_data_generation; data_generation_context; data_source_cache_key; _R2DataSource manifest and object reads; R2 source cache identity; worker-local R2 cache lifetime in data_generation_context and _R2DataSource; active-generation observation and pinned worker cache retirement; query-time R2 reads in _R2DataSource",
+      "semantic_reach": "Only a present preview manifest environment pin triggers the additional preview-only manifest check; an absent pin resolves the same existing request/environment/active generation. No original22 production request carries this pin, and no HTTP input can select it. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. The R2 request now pins the active generation and its published manifest checksum together. Manifest-listed data is the same byte-exact input to the original queries, and absent optional data stays absent, including the 2026-27 case. This adds integrity checks and generation-scoped cache binding without changing historical query inputs, arithmetic or labels. Separates accounts even with the same bucket and cache path, retaining generation and manifest scope. The retained 22-question replay on the exact snapshot returned identical payloads. Retires default Vercel disk paths for idle verified snapshots, while pinned readers and fresh downloads retain full existing generation, size and digest controls. Saved original answers retain their source semantics and verified data. Records the selected generation at pointer observation so an older delayed reader can safely read its own data without evicting the latest observed disk cache. Retains immutable manifest and file integrity validation. Includes per-call connection/header budgets, per-chunk body budget and SDK checksum continuity. Successful reads still use the same immutable verified bytes; no new data means or outputs.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1277,7 +1277,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "bbb46c632ffcc6b466203927cab4694090d4a780e6a92e02e6e2023feb1d95f3"
+      "reviewed_sha256": "0e5141dc993dcab9bb619c22c9fca44b887b719a5437c911304f539a5a9e1851"
     },
     {
       "path": "src/nbatools/development_data.py",
@@ -1406,8 +1406,8 @@
     {
       "path": "src/nbatools/vercel_functions.py",
       "old_sha256": "7af56ca9a5cf6a064eed76cf3466dce4a53447213b63a0f2d1d2d11f8f729e23",
-      "reviewed_functions": "query_response admitted callback binding",
-      "semantic_reach": "Preserves the same admitted executor and deadlines, carrying qualification context only while preview telemetry is enabled. With no preview context the identical callback is returned. No interpretation, data selection or calculation changes for original22. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed.",
+      "reviewed_functions": "query_response admitted callback binding; query_response and structured_query_response",
+      "semantic_reach": "Preserves the same admitted executor and deadlines, carrying qualification context only while preview telemetry is enabled. With no preview context the identical callback is returned. No interpretation, data selection or calculation changes for original22. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Passes the native handler deadline to the shared admission controller for both existing query forms.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1432,7 +1432,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "bc4605a8395cd7d1dca55537b84b820b533a271dfc7c0ae0054866590c99293f"
+      "reviewed_sha256": "cde71519fad92746ee75cbac1de86a6ce7abeb3d2c777a0313797e2096a01b34"
     },
     {
       "path": "tools/cloud_backup.py",
@@ -1718,9 +1718,9 @@
     {
       "path": "src/nbatools/admission_control.py",
       "old_sha256": "e939ff8936bac643dcc56783b0c6273057ea8f964d922df58f96a712a27e6b03",
-      "reviewed_sha256": "5d7ffd9e96095825105f14504d0ca29d2d6d06d5dc2b0cdd39fccc8e5d306ae0",
-      "reviewed_functions": "endpoint byte budget and bounded idle query/feedback clients; request clock through ASGI validation and the admitted executor; AdmissionRejected traceback handling",
-      "semantic_reach": "Preserves the existing admitted-query samples, public errors, and active rate windows. It rejects no normal original case with an in-budget body, and adds no calculation or selection change. Both real adapters returned the independently established Cleveland total from the exact restored data. Window clocks, request budgets, quota handling and generation ownership continue through the existing worker. Explicit archived samples do not move. Preserves the existing typed rejection when Python attaches its traceback through the request-calendar scope. Admitted queries, successful historical results, calendar scope and quota thresholds remain the same.",
+      "reviewed_sha256": "eba7d0dc00edf16038b9602cacaf2530ccbf60f4fc8d289a29604a1268848aff",
+      "reviewed_functions": "endpoint byte budget and bounded idle query/feedback clients; request clock through ASGI validation and the admitted executor; AdmissionRejected traceback handling; AdmissionController.run_query and remaining worker time",
+      "semantic_reach": "Preserves the existing admitted-query samples, public errors, and active rate windows. It rejects no normal original case with an in-budget body, and adds no calculation or selection change. Both real adapters returned the independently established Cleveland total from the exact restored data. Window clocks, request budgets, quota handling and generation ownership continue through the existing worker. Explicit archived samples do not move. Preserves the existing typed rejection when Python attaches its traceback through the request-calendar scope. Admitted queries, successful historical results, calendar scope and quota thresholds remain the same. The budget covers setup and admission and keeps slots occupied through actual worker completion. A completed query uses its original numerical path.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1749,9 +1749,9 @@
     {
       "path": "src/nbatools/vercel_http.py",
       "old_sha256": "048ec1c8d0764f409f959fb4f402cbf7a88290a81b0cdfd407cacf1d86a1dc5e",
-      "reviewed_sha256": "2a23c9b919bc7ab3b0c413391b06e705ead2ece77c6aa0efcca09170853226d4",
-      "reviewed_functions": "JsonHandler.read_json_body",
-      "semantic_reach": "Validates request framing and the fixed endpoint budget before reading input. Accepted normal bodies still enter the same parser and answer engine. This changes no question identity, sample, or rendering in the retained historical cohort.",
+      "reviewed_sha256": "7327fdf2f4cc7e906b524230135b79cbd203fe522dc0b211b7ab37725d28e998",
+      "reviewed_functions": "JsonHandler.read_json_body; JsonHandler read and response deadlines",
+      "semantic_reach": "Validates request framing and the fixed endpoint budget before reading input. Accepted normal bodies still enter the same parser and answer engine. This changes no question identity, sample, or rendering in the retained historical cohort. Body setup counts in the work budget. Reserve reply time for encoding and delivery before the application cutoff. The scope of retained original captures is historical.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1780,9 +1780,9 @@
     {
       "path": "api/structured_query.py",
       "old_sha256": "b943363992d8f6e3f75f98a90ace8c893d22e78cc712f06a9ab861e94ea8e3dc",
-      "reviewed_sha256": "fcd9ba0f2d4fa66f79fe076b9101818b5d519964bf12033cf96af19cae1581f9",
-      "reviewed_functions": "request calendar binding before body parsing",
-      "semantic_reach": "The same structured handler receives the original route and immutable data. Calendar context keeps validation and worker on one day.",
+      "reviewed_sha256": "b93b9677869ab40cb27f722c4a2147bd247b1b4c1d68b1d8789a97f7692faa95",
+      "reviewed_functions": "request calendar binding before body parsing; native structured adapter",
+      "semantic_reach": "The same structured handler receives the original route and immutable data. Calendar context keeps validation and worker on one day. Uses the same work and response deadlines as the natural endpoint. The joined result is still built from the same structured request.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -2148,6 +2148,68 @@
         "live-owned-team",
         "live-owned-opponent"
       ]
+    },
+    {
+      "path": "src/nbatools/api.py",
+      "old_sha256": "013274d1ad3ce57369d059bd332251e911cdb92baedb157c31f937de8f2c2fd2",
+      "reviewed_functions": "natural and structured FastAPI admission",
+      "semantic_reach": "Includes request setup in the absolute deadline when the existing admission control is enabled. Successful result processing is unchanged.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ],
+      "reviewed_sha256": "19fca3108beaa48d22d48a72d5890f2b83b5ef57bcbe90226d22e3aa217985d1"
+    },
+    {
+      "path": "src/nbatools/dataframe_cache.py",
+      "old_sha256": "c5a2526b0fd2323508694e9d1d2f045c78a3642dc95a757a71a4871760ad32f0",
+      "reviewed_functions": "BoundedDataFrameCache.get_or_load",
+      "semantic_reach": "Coalesced waiters use their own budget and may re-elect a loader once after the original owner exhausts its budget. Cache identity and numerical population are preserved.",
+      "eligible_existing_case_ids": [
+        "k12-s1",
+        "k12-r1",
+        "k12-b1",
+        "k12-c1",
+        "k12-l1",
+        "k12-x1",
+        "k12-m1",
+        "k12-z1",
+        "k12-e1",
+        "k12-n1",
+        "k12-h1",
+        "k12-r1-win-loss",
+        "live-k05",
+        "live-k09",
+        "live-k10",
+        "live-k08",
+        "live-s4-team-with",
+        "live-s4-team-without",
+        "live-s4-player-with",
+        "live-s4-player-without",
+        "live-owned-team",
+        "live-owned-opponent"
+      ],
+      "reviewed_sha256": "a87e137ceecf6296c15e4d37b836017a08de6aeac4856044125789ba536d4e5e"
     }
   ],
   "original_src_python_inventory": [
