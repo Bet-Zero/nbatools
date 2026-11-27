@@ -350,8 +350,8 @@
     {
       "path": "docs/operations/deployment.md",
       "old_sha256": "97064848175f0dfd542c0f4ebf8fe1e799d26e70066c29b1f3fa27f87347b02a",
-      "reviewed_functions": "candidate release procedure; protected preparation, verification and uncertain-outcome procedure; Python lock, verified build baseline and CI proposal; development advisory disposition",
-      "semantic_reach": "Documents isolated protected upload and preview qualification; no production data, runtime calculation or acceptance outcome changes. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Documents the separate approval, conditional pointer write, and existing verification and backup steps. The application does not read this runbook. The revised runbook is operational documentation. Original query answers do not consume it. Documents selected build inputs and unchanged review gates, without changing an original query or historic capture. Records applicable dev dependency advisories and preserves the blocking production audit. No request semantics or data inputs change.",
+      "reviewed_functions": "candidate release procedure; protected preparation, verification and uncertain-outcome procedure; Python lock, verified build baseline and CI proposal; development advisory disposition; read-only uncertain-activation handoff",
+      "semantic_reach": "Documents isolated protected upload and preview qualification; no production data, runtime calculation or acceptance outcome changes. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Documents the separate approval, conditional pointer write, and existing verification and backup steps. The application does not read this runbook. The revised runbook is operational documentation. Original query answers do not consume it. Documents selected build inputs and unchanged review gates, without changing an original query or historic capture. Records applicable dev dependency advisories and preserves the blocking production audit. No request semantics or data inputs change. The guarded, separately selected incident verification and recovery export apply only to a future uncertain activation. The original playback, existing data, serving behavior, and historical artifacts retain their scope.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -376,7 +376,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "c21776312acd36339528cd98558b38eae12d8c1ec0dccf90aba1d1c6dc5167a8"
+      "reviewed_sha256": "11050a9c05f430cd548e95a37e238d72fd5a313890a521db80d2388505de81dd"
     },
     {
       "path": "docs/operations/observability.md",
@@ -1437,9 +1437,9 @@
     {
       "path": "tools/cloud_backup.py",
       "old_sha256": "6a07fc5ad9b35654fb630a640de702be837a38fb880402cc840a1a8fe562fc02",
-      "reviewed_sha256": "c7e716306146ec593f0a33a68484894496867a6eb974073c1386a439ab7e71a7",
-      "reviewed_functions": "qualified_activation_manifest, export_backup, restore_backup; candidate ZIP size and shared verified object read",
-      "semantic_reach": "The existing backup and offline restore tools use the independently qualified Cleveland manifest for exact byte verification. Both original historical generations retain their existing validation path. No original public query reads the backup tools. Measures the exact candidate data under the existing backup bounds in disposable storage. The active backup/restore remain byte-exact. No historical answering route executes the backup tool.",
+      "reviewed_sha256": "524a70ac1b6f911cca315a431e4943bf6ec10b710391ada439dbccbb96016d0f",
+      "reviewed_functions": "qualified_activation_manifest, export_backup, restore_backup; candidate ZIP size and shared verified object read; read-only uncertain-activation handoff",
+      "semantic_reach": "The existing backup and offline restore tools use the independently qualified Cleveland manifest for exact byte verification. Both original historical generations retain their existing validation path. No original public query reads the backup tools. Measures the exact candidate data under the existing backup bounds in disposable storage. The active backup/restore remain byte-exact. No historical answering route executes the backup tool. The guarded, separately selected incident verification and recovery export apply only to a future uncertain activation. The original playback, existing data, serving behavior, and historical artifacts retain their scope.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1530,8 +1530,8 @@
     {
       "path": "tools/r2_publication.py",
       "old_sha256": "8cccffc3c91511cbfb6fd9d43c2bf0839bd749ac2de2fcdd84b76e584e082f0d",
-      "reviewed_functions": "manual candidate preparation/upload/verification and cold response gate; candidate preflight digest, typed readiness and health",
-      "semantic_reach": "Pins the Git-retained accepted inputs, composes the complete base-preserving snapshot, checks storage/operation limits and verifies owner approval before candidate-prefix writes. The Cleveland package uses separate protected operations for upload and pointer activation. This manual release tool is not part of historical runtime calculations. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Adds the existing-workflow wrapper for the approved Cleveland pointer change. The publication tool does not run inside any original public query or change historical result construction. Adds stricter evidence to the protected activation tool, which is outside the public query runtime. No changes to original historical sample, calculation, capture or oracle.",
+      "reviewed_functions": "manual candidate preparation/upload/verification and cold response gate; candidate preflight digest, typed readiness and health; read-only uncertain-activation handoff",
+      "semantic_reach": "Pins the Git-retained accepted inputs, composes the complete base-preserving snapshot, checks storage/operation limits and verifies owner approval before candidate-prefix writes. The Cleveland package uses separate protected operations for upload and pointer activation. This manual release tool is not part of historical runtime calculations. All22 existing cases remain eligible; no new capture, full Core-1 acceptance or fresh deployment is claimed. Adds the existing-workflow wrapper for the approved Cleveland pointer change. The publication tool does not run inside any original public query or change historical result construction. Adds stricter evidence to the protected activation tool, which is outside the public query runtime. No changes to original historical sample, calculation, capture or oracle. The guarded, separately selected incident verification and recovery export apply only to a future uncertain activation. The original playback, existing data, serving behavior, and historical artifacts retain their scope.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",
@@ -1556,7 +1556,7 @@
         "live-owned-team",
         "live-owned-opponent"
       ],
-      "reviewed_sha256": "2f2bec61efc49fb7c82dc3c72fc76ffea6439c4898e4ea66efeefe982f75ea59"
+      "reviewed_sha256": "44cb1520e4933f4255c17f5e5990df2edf087364ebae103429acd2d7eeae05cb"
     },
     {
       "path": "tools/stage_participation_collection.py",
@@ -1625,9 +1625,9 @@
     {
       "path": "docs/operations/recovery.md",
       "old_sha256": "319584f18c69fb131ab133770b310c5571f6daf95d3ada01499bd5d5c2b3f7e1",
-      "reviewed_sha256": "b642e0538880609d3b8254837e98e278176ccb1ef059965b7d018311171e79ac",
-      "reviewed_functions": "immutable rollback procedure",
-      "semantic_reach": "Documents authorized recovery and uncertain-outcome reconciliation. No public result calculation reads this procedure.",
+      "reviewed_sha256": "e9593d21e001a45d129ed150da5f675e18068c496a36131a85ad9c9dec3f4cd1",
+      "reviewed_functions": "immutable rollback procedure; read-only uncertain-activation handoff",
+      "semantic_reach": "Documents authorized recovery and uncertain-outcome reconciliation. No public result calculation reads this procedure. The guarded, separately selected incident verification and recovery export apply only to a future uncertain activation. The original playback, existing data, serving behavior, and historical artifacts retain their scope.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",

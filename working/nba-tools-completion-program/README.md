@@ -26,13 +26,12 @@ passed before [PR #660](https://github.com/Bet-Zero/nbatools/pull/660) merged.
 **Next.** Complete hosted deadline verification and W5 build review. Both native
 routes sent complete typed replies near the application deadline in local
 socket tests on restored Cleveland data. Both approved preview holds were
-correlated with native termination at 20 seconds. The temporary link was
-revoked. The [diagnostic receipt](w3a-host-cutoff-packet.md#november-27-execution-receipt)
-scopes that result to the preview. Effective memory and the hosted application
-response margin remain open. The
-reviewed read-only activation handoff remains due before the next protected
-activation. The [W6A transition](w6a-transition.md) awaits independently accepted
-fresh release evidence.
+correlated with native termination at 20 seconds and the temporary link was
+revoked. [Diagnostic receipt](w3a-host-cutoff-packet.md#november-27-execution-receipt).
+Effective memory and hosted application response margin remain open. The
+[read-only activation handoff](../../docs/operations/recovery.md#uncertain-protected-candidate-activation)
+is ready for an uncertain future activation. The [W6A transition](w6a-transition.md)
+awaits independently accepted fresh release evidence.
 
 Then freeze source, served build, configuration and Cleveland data for W3C and
 the single release run (621 Raw QA, 521 filter comparisons, full suite, 44 fresh

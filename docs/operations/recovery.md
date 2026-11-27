@@ -303,6 +303,92 @@ restored generation. Validate the restored generation and preserve both the
 pre-incident active generation and the recovered target until the incident is
 closed.
 
+### Uncertain protected candidate activation
+
+Use this handoff when a protected `activate_candidate` writer failed after its
+artifact recorded `candidate_activation_started_outcome_unknown`. The normal
+same-run verifier needs a successful writer response. An HTTP or SDK failure
+can conceal a successful conditional pointer update. Leave the original run,
+its result and any durable receipt intact. Pause further activation and
+rollback attempts while reconciling the pointer.
+
+1. Pin the original package, main workflow SHA, run ID, failed owner-approval
+   job ID, `publication-result-<run-id>` artifact ID and ZIP SHA-256 from
+   GitHub's run, job and artifact metadata. Record these in an independently
+   reviewed incident-specific selector on the original workflow revision
+   with the reviewed reconciliation code. Keep the registry byte-exact.
+   Preserve the raw result artifact while retained. A missing or expired
+   artifact, missing proof of approval, or an attempt whose provenance cannot
+   be established leaves the outcome open.
+2. Use the existing read-only `r2-validation` context. Prepare a single
+   `needs_data` test, following
+   `tests/cloud_publication_recovery_real_data.py`, that checks out the
+   registry's pinned publisher, invokes the command below via
+   `subprocess.run(..., check=True)`, then copies `receipt.json` to
+   `NBATOOLS_ACQUISITION_OUTPUT/publication-recovery/` in a `finally` block.
+   Assert that the observed outcome is one of the three documented states and
+   distinguish classification from full verification when reviewing the
+   receipt. Use an ordinary independently reviewed targeted validation request
+   with that one test and no Raw QA cases. Pin the retained approved base
+   generation in the manifest so credential preflight has a known immutable
+   snapshot to inspect. The reconciliation reads the actual R2 pointer
+   directly, independent of that preflight generation.
+   Read-only R2 secrets stay inside that job. Never use the publishing context.
+
+   ```bash
+   python -m tools.reconcile_candidate_activation \
+     --package "$PACKAGE" --publisher "$PINNED_PUBLISHER" --work "$NEW_WORK_DIR" \
+     --source-sha "$SOURCE_SHA" --source-run "$SOURCE_RUN" --source-job "$SOURCE_JOB" \
+     --source-artifact "$SOURCE_ARTIFACT" --source-zip-sha256 "$SOURCE_ARTIFACT_SHA256"
+   ```
+
+   The tool checks the original protected workflow and first failed writer job,
+   the same-run registry and both artifact receipts, current GitHub evidence
+   of the original owner approval, and the pre-activation backup sizing. It
+   compares the actual pointer with the approved base and candidate, including
+   the writer job window for the candidate's publication timestamp. It never
+   calls a pointer writer. Retain its new receipt beside the original proof.
+
+3. Act on the receipt.
+
+   - **`base_unchanged`.** The complete approved base pointer and manifest
+     still match. Keep the candidate staged. Diagnose the failed attempt
+     before a new, separately authorized activation.
+   - **`exact_candidate_active`.** Require the same pointer through the
+     existing full read-only verifier. It rechecks the previous manifest
+     and all candidate byte hashes, then runs native readiness, health and
+     every registered deployed answer with existing pacing. Its final
+     `publication_state` must be `candidate_activated_historical_verified`
+     before backup. The observation alone is insufficient. Strict Live
+     readiness retains its recorded result.
+   - **`conflicting_publication`, malformed evidence or any read failure.**
+     Preserve the observed outcome and stop. A later publication could have
+     the same generation ID. Compare its complete pointer, including prior
+     generation, manifest and publication timestamp. No activation, rollback
+     or backup of a different generation follows this path.
+
+4. After separate review of exact-candidate verification, pin the accepted
+   reconciliation receipt bytes and SHA-256 on the incident's reviewed
+   backup branch. In that branch's existing
+   `tests/cloud_operations_real_data.py::test_full_generation_backup`
+   selector, call
+   `export_reconciled_candidate_backup(root, receipt_path, expected_receipt_sha256=reviewed_sha256)`
+   from `tools.cloud_backup` in place of `export_backup`. Keep the selector
+   name, output path and existing assertions. The recovery export compares
+   the full independently verified pointer before reading snapshot objects
+   and requires the same pointer at completion. A later publication of the
+   same candidate and manifest fails this comparison.
+5. Submit a manifest-only `r2-validation/cloud-backup-<unique-id>` request
+   from that exact reviewed backup revision. Pin the candidate generation
+   and select only the backup test. Retain the durable GitHub backup and
+   separate credential-free restore. Compare the backup receipt's
+   `verified_pointer`, manifest, file count and expanded byte count with the
+   reconciliation receipt. The backup and restore receipts both preserve that
+   pointer and the reconciliation receipt SHA-256. Match the restore to the
+   same archive SHA-256 and manifest. A mismatch, pointer change during export,
+   or failed restore leaves the handoff unfinished. Record the original write as uncertain and
+   the later read-only verification and backup by their own identities.
+
 ## Backup and retention boundary
 
 The publication layer creates content-addressed manifests under immutable

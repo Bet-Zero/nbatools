@@ -35,7 +35,9 @@ from tools.r2_publication import (
 from tools.r2_publication import (
     BACKUP_MAX_MANIFEST_BYTES,
     REGISTRY,
+    same_pointer,
     verify_pointer_manifest,
+    write_json,
 )
 
 
@@ -124,7 +126,7 @@ def candidate_backup_preflight(client, bucket, generation, manifest_sha256, mani
     }
 
 
-def export_backup(output, generation, *, client=None, bucket=None):
+def export_backup(output, generation, *, client=None, bucket=None, expected_pointer=None):
     output = Path(output)
     if output.exists() and any(output.iterdir()):
         raise ValueError("Backup output must be empty")
@@ -132,6 +134,8 @@ def export_backup(output, generation, *, client=None, bucket=None):
     if client is None:
         client, bucket = _resolve_r2_target(client=None, bucket_name=None, env=None, env_file=None)
     before, manifest, manifest_sha = verify_pointer_manifest(client, bucket, generation)
+    if expected_pointer is not None and not same_pointer(before, expected_pointer):
+        raise ValueError("Active pointer differs from the independently verified activation")
     files = inventory(manifest)
     stage = output / "validation"
     stage.mkdir()
@@ -163,7 +167,7 @@ def export_backup(output, generation, *, client=None, bucket=None):
     if not qualified:
         validate_staged_generation(stage, generation)
     after, _, after_sha = verify_pointer_manifest(client, bucket, generation)
-    if before != after or manifest_sha != after_sha:
+    if not same_pointer(before, after) or manifest_sha != after_sha:
         raise ValueError("Active pointer changed during backup")
     archive = output / "generation.zip"
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zipped:
@@ -187,8 +191,42 @@ def export_backup(output, generation, *, client=None, bucket=None):
         "production_pointer_unchanged": True,
         "source_qualification_reused": qualified,
     }
+    if expected_pointer is not None:
+        receipt["verified_pointer"] = before
     shutil.rmtree(stage)  # Only this invocation's newly created validation copy.
     (output / "backup-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+    return receipt
+
+
+def export_reconciled_candidate_backup(
+    output, reconciliation_receipt, *, expected_receipt_sha256, client=None, bucket=None
+):
+    """Back up only the unchanged pointer from a reviewed reconciliation receipt."""
+    raw = Path(reconciliation_receipt).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != expected_receipt_sha256:
+        raise ValueError("Activation reconciliation receipt differs from the reviewed bytes")
+    result = json.loads(raw)
+    observation = result["reconciliation"]
+    pointer = result.get("verified_pointer")
+    generation = result["generation_id"]
+    if (
+        result.get("publication_state") != "candidate_activated_historical_verified"
+        or observation.get("status") != "exact_candidate_active"
+        or observation.get("production_writes") != 0
+        or not isinstance(pointer, dict)
+        or not same_pointer(pointer, observation["observed_pointer"])
+        or pointer.get("generation_id") != generation
+        or pointer.get("previous_generation_id") != result["base_generation"]
+        or pointer.get("manifest_sha256") != result["prepared_manifest_sha256"]
+    ):
+        raise ValueError("Backup requires independently verified candidate activation evidence")
+    receipt = export_backup(
+        output, generation, client=client, bucket=bucket, expected_pointer=pointer
+    )
+    if receipt["files"] != result["file_count"] or receipt["data_bytes"] != result["total_bytes"]:
+        raise ValueError("Backup inventory differs from the verified candidate inventory")
+    receipt["reconciliation_receipt_sha256"] = expected_receipt_sha256
+    write_json(Path(output) / "backup-receipt.json", receipt)
     return receipt
 
 
@@ -197,6 +235,18 @@ def restore_backup(archive, receipt, destination):
     archive, destination = Path(archive), Path(destination)
     if destination.exists():
         raise ValueError("Restore target must not exist")
+    reconciliation = {}
+    if "reconciliation_receipt_sha256" in receipt:
+        pointer = receipt["verified_pointer"]
+        if (
+            pointer.get("generation_id") != receipt["generation_id"]
+            or pointer.get("manifest_sha256") != receipt["manifest_sha256"]
+        ):
+            raise ValueError("Reconciliation pointer differs from the backup identity")
+        reconciliation = {
+            "verified_pointer": pointer,
+            "reconciliation_receipt_sha256": receipt["reconciliation_receipt_sha256"],
+        }
     if (
         archive.stat().st_size > MAX_ARCHIVE
         or archive.stat().st_size != receipt["archive_bytes"]
@@ -250,6 +300,7 @@ def restore_backup(archive, receipt, destination):
     if not qualified:
         validate_staged_generation(destination, receipt["generation_id"])
     return {
+        **reconciliation,
         "generation_id": receipt["generation_id"],
         "files": len(files),
         "data_bytes": receipt["data_bytes"],
