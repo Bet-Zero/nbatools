@@ -755,9 +755,9 @@
     {
       "path": "src/nbatools/commands/_participation_observations.py",
       "old_sha256": "20ef1ab3b4c2f22ffaabaad899d026356f4fa9acc29e878bc8443138572e78f6",
-      "reviewed_sha256": "4fa592b1938202d9861e196a7cec3cf1a967302d684451fccf7d0078e0116693",
-      "reviewed_functions": "load_observations",
-      "semantic_reach": "Optional separate inactive-dataset merge only; original published capture generations have no such dataset, so the original observation rows and all 22 retained queries are unchanged. New source rows require strict replay and cannot replace old qualified source/clock authority. Nonregular season types explicitly exclude the regular-season inactive dataset; original playoff and regular capture scopes stay intact.",
+      "reviewed_sha256": "34124d4754731b7a0191e67c6172542397e73ab1d10c6e71e918439e5378eb94",
+      "reviewed_functions": "load_observations; resolve_observed_name canonical display",
+      "semantic_reach": "Optional separate inactive-dataset merge only; original published capture generations have no such dataset, so the original observation rows and all 22 retained queries are unchanged. New source rows require strict replay and cannot replace old qualified source/clock authority. Nonregular season types explicitly exclude the regular-season inactive dataset; original playoff and regular capture scopes stay intact. The qualified observed-name resolver keeps its exact matching key and unique identity before using the registered display spelling. Different keys and source-only names retain their observed spelling. No original query gains or loses a condition.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",

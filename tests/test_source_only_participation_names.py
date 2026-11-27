@@ -171,6 +171,30 @@ def test_normalized_full_source_name_is_already_read_in_while_clause(listed_root
     assert result.result.to_dict()["sections"]["summary"][0]["games"] == 1
 
 
+def test_observed_spelling_uses_canonical_name_for_the_same_player_id(listed_root):
+    root, target, rows, _ = listed_root
+    players = pd.read_csv(root / "data/raw/player_game_stats/2025-26_regular_season.csv")
+    played = players.loc[
+        players.player_id.eq(1629029) & players.team_abbr.eq("LAL") & players.minutes.gt(0)
+    ].iloc[0]
+    observed = rows.iloc[:1].assign(
+        player_id=played.player_id,
+        player_name="Luka Doncic",
+        game_id=played.game_id,
+        team_id=played.team_id,
+        game_date=played.game_date,
+        participation_state="played",
+    )
+    observed.to_csv(target, index=False)
+    result = execute_natural_query(
+        bounded("What is the Lakers record when Luka Doncic plays?", observed)
+    )
+    assert result.result_status == "ok", result.metadata
+    assert result.metadata["with_player"] == "Luka Dončić"
+    games = result.result.to_dict()["sections"]["game_log"]
+    assert [int(game["game_id"]) for game in games] == [int(played.game_id)]
+
+
 def test_raw_answer_checker_preserves_source_condition_and_primary(listed_root):
     from tools.raw_query_answer_qa import run_case
 
