@@ -8,7 +8,11 @@ from dataclasses import replace
 import pandas as pd
 
 from nbatools.commands._player_identity import player_name_key, player_name_mask
-from nbatools.commands.entity_resolution import ResolutionResult, player_ids_for_name
+from nbatools.commands.entity_resolution import (
+    ResolutionResult,
+    canonical_player_names_by_id,
+    player_ids_for_name,
+)
 from nbatools.data_source import data_exists, data_read_csv, data_source_cache_key
 from nbatools.dataframe_cache import FRAME_CACHE
 
@@ -114,6 +118,10 @@ def resolve_observed_name(phrase: str, seasons: list[str], season_type: str) -> 
     ids = set(matched.player_id.astype(str)) | set(player_ids_for_name(phrase))
     if len(ids) != 1:
         return ResolutionResult(candidates=names, confidence="ambiguous", source="participation")
+    canonical = canonical_player_names_by_id().get(next(iter(ids)))
+    # Preserve exact observed-name matching for spellings with different keys.
+    if canonical and player_name_key(canonical) == key:
+        names = [canonical]
     return ResolutionResult(
         resolved=names[0], candidates=names, confidence="confident", source="participation"
     )
