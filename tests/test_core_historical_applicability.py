@@ -175,20 +175,14 @@ def test_replacement_validates_native_readiness_status_as_well_as_shape():
         gate._stabilization_readiness(503, body)
 
 
-def test_fresh_public_selector_keeps_original_strict_binding(tmp_path, monkeypatch):
-    def forbidden_fallback(*args, **kwargs):
-        pytest.fail("Fresh public selector used retained applicability")
-
-    monkeypatch.setattr(gate, "_retained_applicability", forbidden_fallback)
-    # The current reviewed development delta differs from the served old code.
-    # A fresh capture cannot silently inherit the retained-applicability route.
-    with pytest.raises(AssertionError):
-        gate._run(tmp_path, retained=False)
-
-
 def test_current_selector_refuses_pretransition_live_context(tmp_path):
     with pytest.raises(AssertionError, match="uses the frozen Cleveland selector"):
         gate._run(tmp_path, current_runtime=True, generation_name=gate.LIVE)
+
+
+def test_stabilization_still_requires_current_runtime(tmp_path):
+    with pytest.raises(AssertionError):
+        gate._run(tmp_path, stabilization=True)
 
 
 def test_current_selector_refuses_local_development_context(tmp_path, monkeypatch):

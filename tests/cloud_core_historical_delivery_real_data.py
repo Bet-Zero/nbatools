@@ -514,6 +514,7 @@ def _run(
 ):
     assert not (retained and current_runtime), "Retained captures cannot be fresh runtime evidence"
     assert generation_name == BASE or current_runtime, "Only a fresh capture may use LIVE"
+    assert not stabilization or (current_runtime and generation_name == CLEVELAND)
     if current_runtime:
         assert stabilization and generation_name == CLEVELAND, (
             "Current-runtime acceptance uses the frozen Cleveland selector"
