@@ -191,3 +191,31 @@ def test_vercel_json_response_emits_correlated_completion_event(
     assert event["request_id"] == "req_test"
     assert event["endpoint"] == "/query"
     assert event["result_status"] == "ok"
+
+
+def test_native_query_worker_limits_are_logged_without_exposing_inputs(monkeypatch, caplog):
+    from nbatools import operational_observability as obs
+
+    monkeypatch.setenv("VERCEL", "1")
+    monkeypatch.setattr(obs, "_native_worker_memory", lambda: {"worker_allocated_memory_mib": 2048})
+    monkeypatch.setattr(obs, "gettempdir", lambda: "/tmp")
+    with caplog.at_level(logging.INFO):
+        log_request_complete(
+            request_id="req_native_limits",
+            endpoint="/query?irrelevant=1",
+            method="POST",
+            status=200,
+            duration_ms=10,
+        )
+        log_request_complete(
+            request_id="req_health",
+            endpoint="/health",
+            method="GET",
+            status=200,
+            duration_ms=2,
+        )
+    native, health = [json.loads(record.message) for record in caplog.records]
+    assert native["worker_allocated_memory_mib"] == 2048
+    assert 0 <= native["worker_tmp_available_bytes"] <= native["worker_tmp_volume_bytes"]
+    assert all("worker_" not in key for key in health.keys())
+    assert "irrelevant" not in caplog.text
