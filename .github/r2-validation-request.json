@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "229856563bd5e3304af368f91de35ccf326a4895",
+  "generation": "availability-cleveland-2024-v3-20261124",
+  "tests": [
+    "tests/cloud_verified_appearance_real_data.py::test_verified_cleveland_generation_answers_against_independent_oracle",
+    "tests/test_b1_rankings_and_counts_real_data.py::test_broad_three_point_ranking_matches_all_raw_seasons",
+    "tests/test_natural_date_queries.py::test_literal_range_preserves_both_ends_in_the_served_record"
+  ],
+  "raw_qa_cases": []
+}
