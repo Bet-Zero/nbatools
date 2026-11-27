@@ -260,6 +260,11 @@ def publisher_modules(publisher):
     return publication
 
 
+def same_pointer(observed, expected):
+    """Compare complete JSON pointers without treating bool or float as int."""
+    return json.dumps(observed, sort_keys=True) == json.dumps(expected, sort_keys=True)
+
+
 def verify_pointer_manifest(client, bucket, generation):
     pointer = json.loads(
         client.get_object(Bucket=bucket, Key="metadata/active_generation.json")["Body"].read()
@@ -907,7 +912,9 @@ def check_activation_health(base_url):
     return {"http_status": response.status_code, "status": "ok"}
 
 
-def verify_published_snapshot(package, inventory, publication, work, receipt, *, activation=False):
+def verify_published_snapshot(
+    package, inventory, publication, work, receipt, *, activation=False, expected_pointer=None
+):
     """Read-only core shared by same-run verification and authenticated recovery."""
     client, bucket = publication._resolve_r2_target(
         client=None, bucket_name=None, env=None, env_file=None
@@ -919,6 +926,7 @@ def verify_published_snapshot(package, inventory, publication, work, receipt, *,
         if (
             pointer.get("previous_generation_id") != inventory["base_generation"]
             or manifest_hash != receipt["prepared_manifest_sha256"]
+            or (expected_pointer is not None and not same_pointer(pointer, expected_pointer))
         ):
             raise ValueError("Published pointer/manifest differs from approved preparation")
         if activation:
@@ -942,7 +950,7 @@ def verify_published_snapshot(package, inventory, publication, work, receipt, *,
                 raise ValueError("Published object byte verification failed")
             checked.append(item)
         after, _, _ = verify_pointer_manifest(client, bucket, package["generation_id"])
-        if after != pointer:
+        if not same_pointer(after, pointer):
             raise ValueError("Active pointer moved during verification")
         receipt.update(verified_objects=checked, verified_pointer=pointer)
         base_url = "https://nbatools.vercel.app"
@@ -966,7 +974,7 @@ def verify_published_snapshot(package, inventory, publication, work, receipt, *,
         final_pointer, _, final_hash = verify_pointer_manifest(
             client, bucket, package["generation_id"]
         )
-        if final_pointer != pointer or final_hash != manifest_hash:
+        if not same_pointer(final_pointer, pointer) or final_hash != manifest_hash:
             raise ValueError("Active pointer moved during deployed verification")
         if activation:
             receipt["operational_acceptance_complete"] = readiness["ready"]

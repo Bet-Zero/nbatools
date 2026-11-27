@@ -12,14 +12,21 @@ from nbatools.commands.pipeline.generation_publication import (
     _build_staged_generation,
 )
 from tools import cloud_backup
-from tools.cloud_backup import candidate_backup_preflight, export_backup, restore_backup
+from tools.cloud_backup import (
+    candidate_backup_preflight,
+    export_backup,
+    export_reconciled_candidate_backup,
+    restore_backup,
+)
 
 
 class ReadOnlyStore:
     def __init__(self, files):
         self.files = files
+        self.reads = []
 
     def get_object(self, *, Bucket, Key):
+        self.reads.append(Key)
         return {"Body": io.BytesIO(self.files[Key])}
 
 
@@ -126,6 +133,75 @@ def test_byte_exact_export_and_offline_restore(tmp_path):
             assert (target / key.removeprefix("generations/backup-test/")).read_bytes() == value
     with pytest.raises(ValueError, match="must not exist"):
         restore_backup(output / "generation.zip", receipt, target)
+
+
+@pytest.mark.parametrize(
+    ("pointer_patch", "error"),
+    [
+        ({}, None),
+        ({"published_at": "2026-11-28T12:00:00Z"}, "independently verified activation"),
+        ({"previous_generation_id": "later"}, "independently verified activation"),
+        ({"schema_version": True}, "independently verified activation"),
+        ({"schema_version": 1.0}, "independently verified activation"),
+    ],
+)
+def test_reconciled_backup_requires_the_exact_verified_pointer(tmp_path, pointer_patch, error):
+    _, ordinary_receipt, files = make_backup(tmp_path)
+    pointer_key = "metadata/active_generation.json"
+    pointer = json.loads(files[pointer_key]) | {
+        "schema_version": 1,
+        "previous_generation_id": "base",
+        "published_at": "2026-11-27T12:00:00Z",
+    }
+    verified = {
+        "publication_state": "candidate_activated_historical_verified",
+        "generation_id": "backup-test",
+        "base_generation": "base",
+        "prepared_manifest_sha256": pointer["manifest_sha256"],
+        "file_count": ordinary_receipt["files"],
+        "total_bytes": ordinary_receipt["data_bytes"],
+        "verified_pointer": pointer,
+        "reconciliation": {
+            "status": "exact_candidate_active",
+            "observed_pointer": pointer,
+            "production_writes": 0,
+        },
+    }
+    evidence = tmp_path / "reconciliation.json"
+    evidence.write_text(json.dumps(verified))
+    digest = hashlib.sha256(evidence.read_bytes()).hexdigest()
+    store = ReadOnlyStore(files)
+    files[pointer_key] = json.dumps(pointer | pointer_patch).encode()
+    output = tmp_path / "reconciled-backup"
+    kwargs = {"expected_receipt_sha256": digest, "client": store, "bucket": "fixture"}
+    if error:
+        with pytest.raises(ValueError, match=error):
+            export_reconciled_candidate_backup(output, evidence, **kwargs)
+        assert store.reads == [
+            pointer_key,
+            "generations/backup-test/metadata/generation_manifest.json",
+        ]
+        assert not (output / "generation.zip").exists()
+        assert not (output / "backup-receipt.json").exists()
+    else:
+        receipt = export_reconciled_candidate_backup(output, evidence, **kwargs)
+        assert receipt["verified_pointer"] == pointer
+        assert receipt["reconciliation_receipt_sha256"] == digest
+        assert json.loads((output / "backup-receipt.json").read_text()) == receipt
+        assert receipt["r2_writes"] == 0
+        restore = restore_backup(output / "generation.zip", receipt, tmp_path / "restore")
+        assert restore["manifest_sha256"] == pointer["manifest_sha256"]
+        assert restore["archive_sha256"] == receipt["archive_sha256"]
+        assert restore["verified_pointer"] == pointer
+        assert restore["reconciliation_receipt_sha256"] == digest
+        tampered = receipt | {"verified_pointer": pointer | {"manifest_sha256": "0" * 64}}
+        with pytest.raises(ValueError, match="pointer differs from the backup identity"):
+            restore_backup(output / "generation.zip", tampered, tmp_path / "tampered-restore")
+        store.reads.clear()
+        evidence.write_text(json.dumps(verified | {"base_generation": "different"}))
+        with pytest.raises(ValueError, match="differs from the reviewed bytes"):
+            export_reconciled_candidate_backup(tmp_path / "other-backup", evidence, **kwargs)
+        assert not store.reads
 
 
 def test_candidate_preflight_measures_exact_zip_without_active_pointer(tmp_path, monkeypatch):

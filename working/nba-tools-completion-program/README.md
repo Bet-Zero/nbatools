@@ -28,8 +28,8 @@ routes sent complete typed replies near the application deadline in local
 socket tests on restored Cleveland data. The owner approved the [host cutoff
 packet](w3a-host-cutoff-packet.md). The reserved preview is limited to the reviewed
 diagnostic source. The hold can witness native cutoff on that preview. The
-reviewed read-only activation handoff remains due before the next protected
-activation. The [W6A transition](w6a-transition.md) awaits independently accepted
+[reviewed read-only activation handoff](../../docs/operations/recovery.md#uncertain-protected-candidate-activation)
+is ready for a future uncertain write. The [W6A transition](w6a-transition.md) awaits independently accepted
 fresh release evidence.
 
 Then freeze source, served build, configuration and Cleveland data for W3C and
