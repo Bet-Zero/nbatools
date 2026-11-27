@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "605d71af787ff2ff02811bba45635560d7f4f657",
+  "generation": "availability-cleveland-2024-v3-20261124",
+  "tests": [
+    "tests/cloud_core_historical_delivery_real_data.py::test_stabilization_original_historical_api_and_ui"
+  ],
+  "raw_qa_cases": []
+}
