@@ -2121,9 +2121,9 @@
     {
       "path": "src/nbatools/commands/freshness.py",
       "old_sha256": "d443a17b91c1e587148298a278e6d1b74c06a659ffa212f3d16481786701dc76",
-      "reviewed_sha256": "4d8963eee9ae8b690f515d61cd77a9d6ee89494548a6ce5b09c48913ee3e54b3",
+      "reviewed_sha256": "f3ef39c90652013691c299a31fa7752d4370f6e7d7f7c92e7c48d86dfa20d3bc",
       "reviewed_functions": "build_freshness_info generation pin; bounded parallel object prefetch",
-      "semantic_reach": "Keeps the default served season, slice validation and refresh log on the same immutable generation while disk versions retire. Original freshness labels and historical query samples remain applicable. Prefetches existing date sources and slice receipts inside the pinned querying generation. The same per-slice completeness results determine the latest date. Empty lists still return without looking up a source.",
+      "semantic_reach": "Keeps the default served season, slice validation and refresh log on the same immutable generation while disk versions retire. Original freshness labels and historical query samples remain applicable. Prefetches existing date sources and slice receipts inside the pinned querying generation. The same per-slice completeness results determine the latest date. Empty lists still return without looking up a source. Reuses the existing generation-keyed memoized freshness answers without speculative redownload.",
       "eligible_existing_case_ids": [
         "k12-s1",
         "k12-r1",

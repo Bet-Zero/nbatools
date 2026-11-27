@@ -276,11 +276,19 @@ def compute_current_through_for_seasons(
     if not seasons:
         return None
     latest: str | None = None
-    with data_generation_context():
+    with data_generation_context() as generation:
+        unchecked = seasons
+        if data_root == _DATA_ROOT and generation != LEGACY_GENERATION:
+            source_key = data_source_cache_key()
+            unchecked = [
+                season
+                for season in seasons
+                if (source_key, season, season_type) not in _IMMUTABLE_CURRENT_THROUGH
+            ]
         safe = normalize_season_type(season_type)
         inputs = (
             path
-            for season in seasons
+            for season in unchecked
             for path in (
                 validation_control.manifest_path(data_root, season, season_type),
                 data_root / "raw" / "games" / f"{season}_{safe}.csv",
