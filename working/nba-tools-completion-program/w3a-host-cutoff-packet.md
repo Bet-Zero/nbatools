@@ -78,3 +78,28 @@ exceeded the completed hold. Inactive guards, uncorrelated 504s, SSO and
 network failures are inconclusive. The branch predates production cache and
 freshness changes. Timing the hold supplies neither current query response
 headroom nor concurrency, disk, memory or overall release acceptance.
+
+## November 27 execution receipt
+
+The authorized diagnostic ref was created at the reviewed SHA. The Git push
+produced no preview record. One Git-source build through the connected Vercel
+project created `dpl_AZoXaPJtqCbEnePaqFsdnCC2KXgm`. It was READY on the exact
+preview ref/SHA in iad1. An unauthenticated request redirected to protection.
+The build used Python 3.12 and `uv.lock` and reported that Active CPU billing
+ignored the declared memory. The scoped link reported a 600-second expiry
+and was revoked without regeneration immediately after the fourth POST.
+
+| POST | HTTP and elapsed | Result |
+| --- | --- | --- |
+| Natural control | 200, 7.830 s | 31–13 in 44, `req_18c3a4bdbca84539aca740fc40ed7904` |
+| Structured control | 200, 6.711 s | 44–11 in 55, `req_9443590b4e8c40c8bf99cc20ed2ad202` |
+| Natural hold | 504, 20.271 s | `jtm2d-1795816886282-73d1456e4ed5` |
+| Structured hold | 504, 20.239 s | `kn6fb-1795816906498-33ecc432ffce` |
+
+For each hold, Vercel correlated the matching probe-start event with
+`Task timed out after 20 seconds` on the same invocation. The start-event
+application IDs were `req_e772e0b44b5d4e478a67e334475414f8` and
+`req_796741ed40e1418d96f519f13e0c2dae`. These results witness effective
+native termination on this diagnostic build. Effective per-function memory
+and the current application's hosted response margin are still open.
+[Diagnostic deployment](https://vercel.com/zeros-projects-686e97fc/nbatools/AZoXaPJtqCbEnePaqFsdnCC2KXgm)

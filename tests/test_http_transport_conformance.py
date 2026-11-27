@@ -38,6 +38,8 @@ def _new_vercel_handler(path: str, *, method: str):
     handler.headers = HTTPMessage()
     handler._nbatools_request_id = "req_contract"
     handler._nbatools_request_started_at = time.perf_counter()
+    handler._request_started_at = time.monotonic()
+    handler.connection = Mock()
     handler.send_response = Mock()
     handler.send_header = Mock()
     handler.end_headers = Mock()

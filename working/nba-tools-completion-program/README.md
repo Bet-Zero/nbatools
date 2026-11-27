@@ -25,9 +25,11 @@ passed before [PR #660](https://github.com/Bet-Zero/nbatools/pull/660) merged.
 
 **Next.** Complete hosted deadline verification and W5 build review. Both native
 routes sent complete typed replies near the application deadline in local
-socket tests on restored Cleveland data. The owner approved the [host cutoff
-packet](w3a-host-cutoff-packet.md). The reserved preview is limited to the reviewed
-diagnostic source. The hold can witness native cutoff on that preview. The
+socket tests on restored Cleveland data. Both approved preview holds were
+correlated with native termination at 20 seconds. The temporary link was
+revoked. The [diagnostic receipt](w3a-host-cutoff-packet.md#november-27-execution-receipt)
+scopes that result to the preview. Effective memory and the hosted application
+response margin remain open. The
 reviewed read-only activation handoff remains due before the next protected
 activation. The [W6A transition](w6a-transition.md) awaits independently accepted
 fresh release evidence.
