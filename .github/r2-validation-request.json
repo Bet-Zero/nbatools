@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "79af16b737dbdca129333e46d546099e1ae77ead",
+  "generation": "availability-lebron-season-v1-20261031",
+  "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "tests": [
+    "tests/test_mixed_participation_real_data.py::test_qualified_season_mixed_team_record_and_api"
+  ],
+  "raw_qa_cases": []
+}
