@@ -1,0 +1,478 @@
+{
+  "deployment": "dpl_BbLgFqmkwD5f9ZMXbjHfhiTDH9ba",
+  "source": "adcbe8e1b14b967a19878dfbd89ce37497980d5a",
+  "reviewed_source": "cee3df5ff1d3c8b85c7feb0b13e1446425dea423",
+  "tree": "781f71cac8f36c6148482a926bfff514dc4bcb02",
+  "region": "iad1",
+  "ready_unix_ms": 1795825917045,
+  "alias": "https://nbatools.vercel.app",
+  "asset_before": {
+    "endpoint": "https://nbatools.vercel.app",
+    "served_asset": "/assets/index-Cm6684hl.js",
+    "sha256": "2283d4d9a67e5d5387bf93687ebaaee426e28574bd1dc7898b1c9430140830af",
+    "size_bytes": 435189,
+    "status": 200,
+    "vercel_id": "sfo1::vbzgz-1795825951480-e24125e5a798"
+  },
+  "asset_after": {
+    "endpoint": "https://nbatools.vercel.app",
+    "served_asset": "/assets/index-Cm6684hl.js",
+    "sha256": "2283d4d9a67e5d5387bf93687ebaaee426e28574bd1dc7898b1c9430140830af",
+    "size_bytes": 435189,
+    "status": 200,
+    "vercel_id": "sfo1::kdm9n-1795825973936-8d326b0b9f18"
+  },
+  "data_generation": "availability-cleveland-2024-v3-20261124",
+  "manifest_sha256": "d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034",
+  "packaging": {
+    "vercel_cli": "66.6.0",
+    "python": "3.12",
+    "uv": "0.13.5",
+    "vite": "8.1.6",
+    "node_project_target": "24.x"
+  },
+  "inputs": {
+    "vercel.json": "be68d6a90210a144711069bef4f0af844893a1a8d07b388a2a30c016daa71ae1",
+    "uv.lock": "9e37abdc3e4c0cf95670157638ff9e8d936470cd9376c3ca26c3005899b223f3",
+    "frontend/package-lock.json": "eaf6007aad229f4626abce602af8fa92bc9e4ebddf785743beedb2a74bfc6cee"
+  },
+  "independent_player_game_rows_read": 736417,
+  "observed_capacity": {
+    "query_process_rss_high_water_mib": 821.855,
+    "query_worker_tmp_volume_bytes": 550461440,
+    "query_worker_tmp_min_available_observed_bytes": 266285056,
+    "query_effective_memory_limit_reported": false
+  },
+  "warm_native_overlap_start_utc": "2026-11-28T00:32:47.830240+00:00",
+  "warm_native_overlap_finish_utc": "2026-11-28T00:32:48.730000+00:00",
+  "warm_rank_ty_cache_tuple": [
+    122927974,
+    9,
+    13,
+    12,
+    3
+  ],
+  "warm_curry_cache_tuple": [
+    23351354,
+    1,
+    0,
+    1,
+    0
+  ],
+  "controlled_loopback_receipt_sha256": "90103a858b4ad657d513ee2d427c9f1bff2e5224c08657f03352458c7e65c979",
+  "notes": [
+    "All seven final hosted queries independently passed. Initial observations have no provider cold marker.",
+    "The final warm ranking and rostered answers share the exact evolving cache; Curry has a different cache and inherited the distinct initial ranking process high-water value.",
+    "The final deployment gave three overlapping successes across two worker processes. Exact final runtime gave three admitted answers and recovery in one controlled native process.",
+    "Hosted allocated memory and temporary filesystem peak were absent from the available telemetry. Provider logs include process RSS high-water and available volume space sampled at completion."
+  ],
+  "requests": [
+    {
+      "name": "readiness",
+      "request": null,
+      "started": "2026-11-28T00:32:31.642720+00:00",
+      "elapsed_s": 2.343,
+      "status": 503,
+      "request_id": "req_986c37892099483fa5b2556fb63503ee",
+      "vercel_id": "sfo1::iad1::8wp6t-1795825951766-b20731ccdeee",
+      "cache": "MISS",
+      "response_bytes": 1197,
+      "phase": "before",
+      "completed_utc": "2026-11-28T00:32:33.948Z",
+      "event": {
+        "active_generation": "availability-cleveland-2024-v3-20261124",
+        "blocker_codes": [
+          "new_season_not_loaded"
+        ],
+        "cache_bytes": 0,
+        "cache_entries": 0,
+        "cache_evictions": 0,
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "data_status": "not_ready",
+        "duration_ms": 2041.097,
+        "endpoint": "/readiness",
+        "event": "public_request_complete",
+        "method": "GET",
+        "ready": false,
+        "request_id": "req_986c37892099483fa5b2556fb63503ee",
+        "rss_peak_mb": 189.027,
+        "season_state": "offseason",
+        "status": 503,
+        "status_class": "5xx"
+      },
+      "expected": {
+        "strict_live_unavailable": true
+      }
+    },
+    {
+      "name": "ewing",
+      "request": {
+        "query": "Patrick Ewing career stats"
+      },
+      "started": "2026-11-28T00:32:34.087956+00:00",
+      "elapsed_s": 11.742,
+      "status": 200,
+      "request_id": "req_943b93628a484860a9ed1d71d43c78a5",
+      "vercel_id": "sfo1::iad1::8mhfm-1795825954215-47f59c839610",
+      "cache": "MISS",
+      "response_bytes": 201636,
+      "phase": "first",
+      "completed_utc": "2026-11-28T00:32:45.684Z",
+      "event": {
+        "cache_bytes": 120409312,
+        "cache_entries": 6,
+        "cache_evictions": 1,
+        "cache_hits": 0,
+        "cache_misses": 7,
+        "duration_ms": 9438.469,
+        "endpoint": "/query",
+        "event": "public_request_complete",
+        "method": "POST",
+        "request_id": "req_943b93628a484860a9ed1d71d43c78a5",
+        "result_status": "ok",
+        "route": "player_game_summary",
+        "rss_peak_mb": 352.188,
+        "status": 200,
+        "status_class": "2xx",
+        "worker_tmp_available_bytes": 367845376,
+        "worker_tmp_volume_bytes": 550461440
+      },
+      "expected": [
+        348,
+        5027.0,
+        2928.0,
+        412.0,
+        2.0
+      ]
+    },
+    {
+      "name": "ranking",
+      "request": {
+        "query": "Top 5 players by three point percentage from 1996-97 to 2025-26 minimum 300 attempts"
+      },
+      "started": "2026-11-28T00:32:34.088314+00:00",
+      "elapsed_s": 11.182,
+      "status": 200,
+      "request_id": "req_eb4e9ac0bdff4854a39795fccd8118b8",
+      "vercel_id": "sfo1::iad1::lxxn6-1795825954214-852fd250cf99",
+      "cache": "MISS",
+      "response_bytes": 3729,
+      "phase": "first",
+      "completed_utc": "2026-11-28T00:32:45.231Z",
+      "event": {
+        "cache_bytes": 0,
+        "cache_entries": 0,
+        "cache_evictions": 0,
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "duration_ms": 10959.12,
+        "endpoint": "/query",
+        "event": "public_request_complete",
+        "method": "POST",
+        "request_id": "req_eb4e9ac0bdff4854a39795fccd8118b8",
+        "result_status": "ok",
+        "route": "season_leaders",
+        "rss_peak_mb": 687.289,
+        "status": 200,
+        "status_class": "2xx",
+        "worker_tmp_available_bytes": 284545024,
+        "worker_tmp_volume_bytes": 550461440
+      },
+      "expected": [
+        [
+          1628379,
+          538,
+          1020,
+          2307
+        ],
+        [
+          1642285,
+          97,
+          165,
+          377
+        ],
+        [
+          203925,
+          504,
+          1026,
+          2354
+        ],
+        [
+          93,
+          423,
+          411,
+          945
+        ],
+        [
+          2574,
+          509,
+          457,
+          1054
+        ]
+      ]
+    },
+    {
+      "name": "levert",
+      "request": {
+        "query": "Cavaliers record without Caris LeVert in 2024-25"
+      },
+      "started": "2026-11-28T00:32:34.087435+00:00",
+      "elapsed_s": 6.245,
+      "status": 200,
+      "request_id": "req_dd10034916264251acbed10a832f8a14",
+      "vercel_id": "sfo1::iad1::d29jk-1795825954209-4db5df9553cc",
+      "cache": "MISS",
+      "response_bytes": 27997,
+      "phase": "first",
+      "completed_utc": "2026-11-28T00:32:40.294Z",
+      "event": {
+        "cache_bytes": 36980704,
+        "cache_entries": 5,
+        "cache_evictions": 0,
+        "cache_hits": 2,
+        "cache_misses": 5,
+        "duration_ms": 4079.644,
+        "endpoint": "/query",
+        "event": "public_request_complete",
+        "method": "POST",
+        "request_id": "req_dd10034916264251acbed10a832f8a14",
+        "result_status": "ok",
+        "route": "team_record",
+        "rss_peak_mb": 224.727,
+        "status": 200,
+        "status_class": "2xx",
+        "worker_tmp_available_bytes": 471990272,
+        "worker_tmp_volume_bytes": 550461440
+      },
+      "expected": [
+        44,
+        31,
+        13
+      ]
+    },
+    {
+      "name": "rostered-positive",
+      "request": {
+        "query": "Cavaliers record without Ty Jerome while on the team in 2024-25"
+      },
+      "started": "2026-11-28T00:32:45.940633+00:00",
+      "elapsed_s": 1.594,
+      "status": 200,
+      "request_id": "req_b35b5509e56349f0a5abbeee257b63be",
+      "vercel_id": "sfo1::iad1::mw59k-1795825966031-8cfb5ff4dd5b",
+      "cache": "MISS",
+      "response_bytes": 9980,
+      "phase": "prime",
+      "completed_utc": "2026-11-28T00:32:47.496Z",
+      "event": {
+        "cache_bytes": 122927974,
+        "cache_entries": 9,
+        "cache_evictions": 3,
+        "cache_hits": 4,
+        "cache_misses": 12,
+        "duration_ms": 1398.293,
+        "endpoint": "/query",
+        "event": "public_request_complete",
+        "method": "POST",
+        "request_id": "req_b35b5509e56349f0a5abbeee257b63be",
+        "result_status": "ok",
+        "route": "team_record",
+        "rss_peak_mb": 352.188,
+        "status": 200,
+        "status_class": "2xx",
+        "worker_tmp_available_bytes": 363282432,
+        "worker_tmp_volume_bytes": 550461440
+      },
+      "expected": [
+        12,
+        9,
+        3
+      ]
+    },
+    {
+      "name": "ranking",
+      "request": {
+        "query": "Top 5 players by three point percentage from 1996-97 to 2025-26 minimum 300 attempts"
+      },
+      "started": "2026-11-28T00:32:47.615682+00:00",
+      "elapsed_s": 5.657,
+      "status": 200,
+      "request_id": "req_964f546779a94a0c8eab849015310f29",
+      "vercel_id": "sfo1::iad1::vxfr9-1795825967727-ae3715b21770",
+      "cache": "MISS",
+      "response_bytes": 3729,
+      "phase": "warm",
+      "completed_utc": "2026-11-28T00:32:53.234Z",
+      "event": {
+        "cache_bytes": 122927974,
+        "cache_entries": 9,
+        "cache_evictions": 3,
+        "cache_hits": 13,
+        "cache_misses": 12,
+        "duration_ms": 5432.302,
+        "endpoint": "/query",
+        "event": "public_request_complete",
+        "method": "POST",
+        "request_id": "req_964f546779a94a0c8eab849015310f29",
+        "result_status": "ok",
+        "route": "season_leaders",
+        "rss_peak_mb": 821.855,
+        "status": 200,
+        "status_class": "2xx",
+        "worker_tmp_available_bytes": 266285056,
+        "worker_tmp_volume_bytes": 550461440
+      },
+      "expected": [
+        [
+          1628379,
+          538,
+          1020,
+          2307
+        ],
+        [
+          1642285,
+          97,
+          165,
+          377
+        ],
+        [
+          203925,
+          504,
+          1026,
+          2354
+        ],
+        [
+          93,
+          423,
+          411,
+          945
+        ],
+        [
+          2574,
+          509,
+          457,
+          1054
+        ]
+      ]
+    },
+    {
+      "name": "curry",
+      "request": {
+        "query": "Stephen Curry averages in 2023-24"
+      },
+      "started": "2026-11-28T00:32:47.616035+00:00",
+      "elapsed_s": 1.164,
+      "status": 200,
+      "request_id": "req_514f81440fe34284ad6d8153a7f38e52",
+      "vercel_id": "sfo1::iad1::d5w4z-1795825967760-94173100c027",
+      "cache": "MISS",
+      "response_bytes": 46094,
+      "phase": "warm",
+      "completed_utc": "2026-11-28T00:32:48.730Z",
+      "event": {
+        "cache_bytes": 23351354,
+        "cache_entries": 1,
+        "cache_evictions": 0,
+        "cache_hits": 0,
+        "cache_misses": 1,
+        "duration_ms": 899.76,
+        "endpoint": "/query",
+        "event": "public_request_complete",
+        "method": "POST",
+        "request_id": "req_514f81440fe34284ad6d8153a7f38e52",
+        "result_status": "ok",
+        "route": "player_game_summary",
+        "rss_peak_mb": 687.289,
+        "status": 200,
+        "status_class": "2xx",
+        "worker_tmp_available_bytes": 282943488,
+        "worker_tmp_volume_bytes": 550461440
+      },
+      "expected": [
+        74,
+        1956.0,
+        330.0,
+        379.0,
+        357.0
+      ]
+    },
+    {
+      "name": "rostered-positive",
+      "request": {
+        "query": "Cavaliers record without Ty Jerome while on the team in 2024-25"
+      },
+      "started": "2026-11-28T00:32:47.615252+00:00",
+      "elapsed_s": 1.515,
+      "status": 200,
+      "request_id": "req_abe4b784c68140e7b6ee8aa3e51a4d7c",
+      "vercel_id": "sfo1::iad1::nsvk8-1795825967753-2307e715e0a7",
+      "cache": "MISS",
+      "response_bytes": 9980,
+      "phase": "warm",
+      "completed_utc": "2026-11-28T00:32:49.088Z",
+      "event": {
+        "cache_bytes": 122927974,
+        "cache_entries": 9,
+        "cache_evictions": 3,
+        "cache_hits": 13,
+        "cache_misses": 12,
+        "duration_ms": 1283.672,
+        "endpoint": "/query",
+        "event": "public_request_complete",
+        "method": "POST",
+        "request_id": "req_abe4b784c68140e7b6ee8aa3e51a4d7c",
+        "result_status": "ok",
+        "route": "team_record",
+        "rss_peak_mb": 358.547,
+        "status": 200,
+        "status_class": "2xx",
+        "worker_tmp_available_bytes": 285261824,
+        "worker_tmp_volume_bytes": 550461440
+      },
+      "expected": [
+        12,
+        9,
+        3
+      ]
+    },
+    {
+      "name": "readiness",
+      "request": null,
+      "started": "2026-11-28T00:32:53.356148+00:00",
+      "elapsed_s": 0.336,
+      "status": 503,
+      "request_id": "req_f919bfd5d6614f3bb9024f23948dbcae",
+      "vercel_id": "sfo1::iad1::rwzx9-1795825973443-4a2e9e652fd1",
+      "cache": "MISS",
+      "response_bytes": 1197,
+      "phase": "after",
+      "completed_utc": "2026-11-28T00:32:53.650Z",
+      "event": {
+        "active_generation": "availability-cleveland-2024-v3-20261124",
+        "blocker_codes": [
+          "new_season_not_loaded"
+        ],
+        "cache_bytes": 0,
+        "cache_entries": 0,
+        "cache_evictions": 0,
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "data_status": "not_ready",
+        "duration_ms": 125.43,
+        "endpoint": "/readiness",
+        "event": "public_request_complete",
+        "method": "GET",
+        "ready": false,
+        "request_id": "req_f919bfd5d6614f3bb9024f23948dbcae",
+        "rss_peak_mb": 189.027,
+        "season_state": "offseason",
+        "status": 503,
+        "status_class": "5xx"
+      },
+      "expected": {
+        "strict_live_unavailable": true
+      }
+    }
+  ]
+}

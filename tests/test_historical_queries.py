@@ -563,7 +563,7 @@ class TestLiveSmokeHistorical:
     def test_career_leaders_assists(self):
         parsed = parse_query("career leaders in assists")
         assert parsed["route"] == "season_leaders"
-        assert parsed["route_kwargs"]["stat"] == "ast"
+        assert parsed["route_kwargs"]["stat"] == "ast_total"
         assert parsed["route_kwargs"]["start_season"] == EARLIEST_SEASON
 
     def test_top_scorers_since_2020_live(self):

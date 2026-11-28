@@ -135,4 +135,49 @@ repair reduced 217 to 166 GETs for the same 163 distinct keys and saved
 follow-up rostered result. Peak observed RSS fell from 900.824 to 784.719 MiB
 with 271,658,867 sampled disk bytes in both runs. A two-slot comparison rejected
 an otherwise valid third answer and had higher measured RSS. The existing
-three-slot policy is retained. The final-build hosted recheck follows integration.
+three-slot policy is retained.
+
+## Corrected release acceptance
+
+[PR #668](https://github.com/Bet-Zero/nbatools/pull/668) merged at
+`adcbe8e1b14b967a19878dfbd89ce37497980d5a`. Its tree
+`781f71cac8f36c6148482a926bfff514dc4bcb02` exactly matches reviewed candidate
+`cee3df5ff1d3c8b85c7feb0b13e1446425dea423`.
+The [full authenticated run](https://github.com/Bet-Zero/nbatools/actions/runs/46087190603)
+executed every configured check: 1,907 numerical tests, 621 Raw QA cases, and
+521 filter comparisons. There were zero snapshot-scope failures. The full
+numerical verdict records 1,696 passes, 144 original historical-context
+failures, 65 literal-current failures, and two incomplete participation
+positives. Raw QA records 482 passes and 139 unfinished positive cases.
+The sweep preserves all 148 applied comparisons. Its 37 changed verdicts
+are explicit limitations for the previously dropped combinations.
+The [authenticated exact-manifest consumer](https://github.com/Bet-Zero/nbatools/actions/runs/46087458901)
+passed with zero skips.
+
+The stable alias before and after qualification resolved to
+[deployment `dpl_BbLgFqmkwD5f9ZMXbjHfhiTDH9ba`](https://vercel.com/zeros-projects-686e97fc/nbatools/dpl_BbLgFqmkwD5f9ZMXbjHfhiTDH9ba)
+in `iad1`, with the original browser asset SHA-256
+`2283d4d9a67e5d5387bf93687ebaaee426e28574bd1dc7898b1c9430140830af`.
+The provider built with Python 3.12 and uv 0.13.5 from the exact lock.
+The corrected application returned all seven independently checked hosted
+answers. The initial concurrent Ewing, ranking and LeVert responses
+completed in 11.742, 11.182 and 6.245 seconds. The warm ranking, Curry and Ty
+Jerome responses completed in 5.657, 1.164 and 1.515 seconds across two
+workers, with ranking and Ty Jerome sharing a worker during overlap.
+Observed process peak was 821.855 MiB, with at least 266,285,056 bytes free
+on the temporary filesystem at completion.
+
+The exact reviewed runtime admitted three together on one controlled native
+worker. Correct Ewing, ranking and LeVert replies completed in 9.357, 8.787
+and 4.467 seconds, followed by a correct rostered response in 0.442 seconds.
+The worker issued 166 GETs and transferred 271,659,455 bytes. Observed
+peak RSS was 732.820 MiB and disk usage was 271,658,867 bytes. Focused
+controls verified generation retirement, checksum failure, timeout handoff
+and recovery. Hosted results qualify the measured workload. The provider
+does not expose an effective memory ceiling within the available access,
+and the final hosted cohort did not place all three requests on one worker.
+Earlier hosted three-way overlap and the exact controlled three-way result
+give the applicable single-worker measurements. The separate unprimed K12
+claim stays parked.
+
+[Final request and provider receipt](source-evidence/stabilization-20261127/hosted-final.json)

@@ -16,30 +16,23 @@ Hunter. TEAM participation covers 21/21 pilot players and rostered coverage is
 14/21. [Activation](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-45763092143) ·
 [Backup and restore](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-45763092143)
 
-**Snapshot stabilization remains open.** Mixed date ranges preserve both bounds.
-Native deadlines count body and setup, keep running workers charged, and
-delivered useful local replies near 16.16 s. Two protected preview holds
-confirmed native termination at 20 s. The deadline and cold-read repairs
-returned independently correct hosted Ewing and ranking results in 10.939–11.677 s.
-The local three-request and rollover envelope passed in its controlled scope.
-Effective hosted memory and the same-worker resource envelope remain unqualified.
-[Calendar](https://github.com/Bet-Zero/nbatools/pull/660) ·
-[Deadline](https://github.com/Bet-Zero/nbatools/pull/661) ·
-[Advisories](https://github.com/Bet-Zero/nbatools/pull/662)
+**Snapshot release accepted within the measured operating range.** All 1,907
+numerical tests, 621 Raw QA cases and 521 filter comparisons executed with
+zero snapshot-scope failures. The release preserves all original Live and
+full-product requirements. The final deployment returned all seven checked
+answers, including both concurrent cohorts. The exact native three-request
+test and failure controls passed. The [W6A transition](w6a-transition.md)
+uses independently accepted current evidence and retains the original
+archive. [Release evidence](stabilization-evidence-20261127.md#corrected-release-acceptance)
 
-**Current queue.** Validate the integrated release and its public deployment
-using the [reconciled release checks](stabilization-evidence-20261127.md#release-check-reconciliation).
-All 232 prior numerical failure IDs and 39 dropped conditions have explicit
-dispositions. Qualified history keeps its original evidence binding. The new
-download coalescer preserves request deadlines and avoids repeated verified
-object transfers. On release acceptance, land the prepared
-[W6A transition](w6a-transition.md) with its independent equivalence receipt.
-The prospective
+**Current queue.** The remaining Section 6 decision is the scoped snapshot
+alert and recovery policy. Scheduled monitoring runs every check and
+reports snapshot success separately from strict Live HTTP 503 for
+`new_season_not_loaded`. The project owner's existing strict overall policy
+applies until a scoped decision. The prospective
 [read-only recovery handoff](../../docs/operations/recovery.md#uncertain-protected-candidate-activation)
-is ready before the next protected activation. Strict Live remains 503 for
-`new_season_not_loaded`. The scheduled monitor separately executed historical
-scoring successfully. Its overall alert and recovery policy awaits the owner's
-decision on the scoped snapshot exception. [Scheduled monitor](https://github.com/Bet-Zero/nbatools/actions/runs/46075927174)
+is ready before the next protected activation.
+[Scheduled monitor](https://github.com/Bet-Zero/nbatools/actions/runs/46075927174)
 
 **Original product ledger.** K08 remains 16 PASS / 26 MISSING DATA / 4 LIVE.
 The next capability is #33, “Lakers record without Davis.” The held 2025–26
