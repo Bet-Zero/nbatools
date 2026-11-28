@@ -12,7 +12,7 @@ import shutil
 import tempfile
 from collections import Counter
 from collections.abc import Iterable, Iterator, Mapping
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import contextmanager
 from contextvars import ContextVar, copy_context
 from dataclasses import dataclass
@@ -391,6 +391,7 @@ class _R2DataSource:
         self._latest_cache_generation: _Generation | None = None
         self._retired_cache_generations: set[_Generation] = set()
         self._downloaded_keys: set[str] = set()
+        self._pending_downloads: dict[Path, Future[Path]] = {}
         # Published generations are immutable, so what exists in one never
         # changes. Answer from its file manifest (one GET) and remember HEAD
         # results, instead of a network round trip on every check.
@@ -600,7 +601,60 @@ class _R2DataSource:
         cache_path = self._cache_path(rel_path, generation)
         if str(cache_path) in self._downloaded_keys and cache_path.exists():
             return cache_path
+        if expected_hash is None:
+            return self._download(key, cache_path, expected_hash, expected_size)
+        return self._download_verified(key, cache_path, expected_hash, expected_size)
 
+    def _download_verified(
+        self,
+        key: str,
+        cache_path: Path,
+        expected_hash: str,
+        expected_size: int | None,
+        *,
+        retry_expired_leader: bool = True,
+    ) -> Path:
+        # The cache path includes the generation and digest. Parallel prefetches
+        # can share a verified download without sharing any request's deadline.
+        with self._cache_lock:
+            if str(cache_path) in self._downloaded_keys and cache_path.exists():
+                return cache_path
+            pending = self._pending_downloads.get(cache_path)
+            leader = pending is None
+            if pending is None:
+                pending = Future()
+                self._pending_downloads[cache_path] = pending
+
+        if not leader:
+            try:
+                return pending.result(timeout=remaining_query_work())
+            except TimeoutError:
+                if not retry_expired_leader:
+                    raise
+                remaining_query_work()
+                return self._download_verified(
+                    key, cache_path, expected_hash, expected_size, retry_expired_leader=False
+                )
+
+        try:
+            result = self._download(key, cache_path, expected_hash, expected_size)
+            pending.set_result(result)
+            return result
+        except BaseException as exc:
+            if isinstance(exc, TimeoutError):
+                # A waiter with time left can become the next download leader.
+                with self._cache_lock:
+                    self._pending_downloads.pop(cache_path, None)
+            pending.set_exception(exc)
+            raise
+        finally:
+            with self._cache_lock:
+                if self._pending_downloads.get(cache_path) is pending:
+                    del self._pending_downloads[cache_path]
+
+    def _download(
+        self, key: str, cache_path: Path, expected_hash: str | None, expected_size: int | None
+    ) -> Path:
         try:
             response = self._request_client().get_object(Bucket=self.config.bucket_name, Key=key)
             body = _read_r2_body(response)
@@ -620,8 +674,7 @@ class _R2DataSource:
             raise DataSourceError(f"R2 object checksum differs from its published digest: {key}")
 
         cache_path.parent.mkdir(parents=True, exist_ok=True)
-        # Write then rename: another process or thread sharing the cache may be
-        # reading this path, and must never see a truncated file.
+        # Readers sharing the cache must never see a truncated file.
         fd, temp_name = tempfile.mkstemp(dir=cache_path.parent, prefix=f".{cache_path.name}.")
         try:
             with os.fdopen(fd, "wb") as handle:

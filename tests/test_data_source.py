@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import hashlib
 import json
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
 from pathlib import Path
 from threading import Event
+from time import monotonic
 
 import pytest
 
 from nbatools import data_source
+from nbatools.admission_control import _QUERY_WORK_DEADLINE, QueryWorkExpired
 from nbatools.data_source import (
     ACTIVE_GENERATION_PATH,
     DATA_GENERATION_ENV,
@@ -222,6 +224,86 @@ def test_published_reads_use_pointer_digest_and_only_manifested_bytes(tmp_path, 
         assert data_path("raw/sample.csv").read_bytes() == b"valid"
     assert not client.head_calls
     assert client.get_calls.count(prefix + "metadata/generation_manifest.json") == 1
+
+
+@pytest.mark.parametrize("first_read", ["valid", "expired", "corrupt", "waiter-expired"])
+def test_overlapping_verified_reads_share_only_the_exact_download(
+    tmp_path, monkeypatch, first_read
+):
+    path = "raw/shared.csv"
+    key = "generations/published/" + path
+    other = "raw/independent.csv"
+    objects, _ = published_generation_objects("published", {path: b"valid", other: b"other"})
+    downloading = Event()
+    waiting = Event()
+    finish = Event()
+
+    class BlockingClient(FakeR2Client):
+        def get_object(self, *, Bucket, Key):
+            response = super().get_object(Bucket=Bucket, Key=Key)
+            if Key == key and not downloading.is_set():
+                downloading.set()
+                assert finish.wait(5)
+                if first_read == "expired":
+                    raise QueryWorkExpired("The first reader exhausted its budget")
+                if first_read == "corrupt":
+                    return {"Body": FakeBody(b"wrong")}
+            return response
+
+    class ObservedDownload(Future):
+        def result(self, timeout=None):
+            waiting.set()
+            return super().result(timeout=timeout)
+
+    client = BlockingClient(objects)
+    _configure_managed_cache(monkeypatch, tmp_path, client)
+    with data_generation_context():
+        assert data_exists(path)  # Warm the manifest separately from the object.
+    monkeypatch.setattr(data_source, "Future", ObservedDownload)
+
+    def read(relative):
+        with data_generation_context():
+            return data_path(relative).read_bytes()
+
+    def wait_for_shared():
+        if first_read != "waiter-expired":
+            return read(path)
+        with data_generation_context():
+            token = _QUERY_WORK_DEADLINE.set(monotonic() + 0.25)
+            try:
+                return data_path(path).read_bytes()
+            finally:
+                _QUERY_WORK_DEADLINE.reset(token)
+
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        leader = pool.submit(read, path)
+        try:
+            assert downloading.wait(5)
+            waiter = pool.submit(wait_for_shared)
+            assert waiting.wait(5)
+            assert pool.submit(read, other).result(timeout=2) == b"other"
+            assert client.get_calls.count(key) == 1
+            if first_read == "waiter-expired":
+                with pytest.raises(QueryWorkExpired):
+                    waiter.result(timeout=2)
+                assert not leader.done()
+        finally:
+            finish.set()
+        if first_read == "expired":
+            with pytest.raises(QueryWorkExpired):
+                leader.result(timeout=5)
+            assert waiter.result(timeout=5) == b"valid"
+        elif first_read == "corrupt":
+            for pending in (leader, waiter):
+                with pytest.raises(DataSourceError, match="checksum"):
+                    pending.result(timeout=5)
+        else:
+            assert leader.result(timeout=5) == b"valid"
+            if first_read == "valid":
+                assert waiter.result(timeout=5) == b"valid"
+
+    assert read(path) == b"valid"
+    assert client.get_calls.count(key) == (2 if first_read in {"expired", "corrupt"} else 1)
 
 
 def test_hosted_cache_retires_a_generation_only_after_the_last_reader(tmp_path, monkeypatch):
