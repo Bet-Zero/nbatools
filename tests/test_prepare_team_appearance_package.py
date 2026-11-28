@@ -11,6 +11,7 @@ import pytest
 from nbatools.commands.pipeline import generation_publication as publication
 from nbatools.commands.pipeline.structured_participation import stage_structured_game
 from nbatools.commands.pipeline.team_appearance_coverage import qualify_retained_appearances
+from nbatools.participation_source_packs import INDEX, SOURCE_DIR
 from tests.test_structured_participation import REV, source  # noqa: F401
 from tools import compose_participation_overlays as composition
 from tools.prepare_team_appearance_package import _append_appearance_scope, prepare
@@ -245,10 +246,13 @@ def grouped_inputs(source, tmp_path):  # noqa: F811 - reuse the existing source 
     return base, artifacts, packet, full
 
 
+@pytest.mark.parametrize("packed", [False, True])
 def test_grouped_scopes_compose_and_run_the_real_validator_once(
-    grouped_inputs, tmp_path, monkeypatch
+    grouped_inputs, tmp_path, monkeypatch, packed
 ):
-    base, artifacts, _, independently_replayed = grouped_inputs
+    base, artifacts, packet, independently_replayed = grouped_inputs
+    if packed:
+        (artifacts / "package.json").write_text(json.dumps(dict(packet, pack_sources=True)))
     base_bytes = {p: p.read_bytes() for p in base.rglob("*") if p.is_file()}
     composed, validated = [], []
     native_compose, native_validate = (
@@ -274,6 +278,15 @@ def test_grouped_scopes_compose_and_run_the_real_validator_once(
         independently_replayed["sides"], key=lambda side: (side["team_id"], side["game_id"])
     )
     assert composed == [2] and validated == [result.generation_id]
+    if packed:
+        index = json.loads((stage / INDEX).read_bytes())["files"]
+        assert not (stage / SOURCE_DIR).exists()
+        assert len({item["pack"] for item in index.values()}) == 1
+        assert all(
+            index[name]["sha256"] == sha
+            for side in day_sides["sides"]
+            for name, sha in side["source_files"].items()
+        )
     metrics = json.loads((work / "preparation-metrics.json").read_bytes())
     assert metrics["qualified_side_count"] == 4 and metrics["production_writes"] == 0
     assert {p: p.read_bytes() for p in base_bytes} == base_bytes

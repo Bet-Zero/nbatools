@@ -400,19 +400,28 @@ def validate_staged_generation(stage: Path, generation_id: str) -> dict[str, Any
         if item.sha256 != _file_sha256(path):
             raise GenerationValidationError(f"Generation file checksum mismatch: {key}")
 
-    _validate_dataset_receipts(stage)
-    if (stage / "raw/player_game_availability").exists():
-        from nbatools.commands.pipeline.pull_player_game_availability import validate_publication
+    from nbatools.participation_source_packs import (
+        expanded_source_tree,
+        read_disk,
+        read_source_index,
+    )
 
-        try:
-            validate_publication(stage)
-        except (ValueError, KeyError, OSError, TypeError, AttributeError) as exc:
-            raise GenerationValidationError(f"Availability validation failed: {exc}") from exc
-    for proof in sorted((stage / "raw/team_game_appearances").glob("*.json")):
-        try:
-            _validate_staged_appearance_proof(stage, json.loads(proof.read_bytes()))
-        except (ValueError, KeyError, OSError, TypeError, AttributeError) as exc:
-            raise GenerationValidationError(f"Appearance proof validation failed: {exc}") from exc
+    _validate_dataset_receipts(stage)
+    try:
+        index = read_source_index(expected_by_path, lambda name: read_disk(stage, name))
+        with expanded_source_tree(stage, expected_by_path, index) as view:
+            if (view / "raw/player_game_availability").exists():
+                from nbatools.commands.pipeline.pull_player_game_availability import (
+                    validate_publication,
+                )
+
+                validate_publication(view)
+            for proof in sorted((view / "raw/team_game_appearances").glob("*.json")):
+                _validate_staged_appearance_proof(view, json.loads(proof.read_bytes()))
+    except (ValueError, KeyError, OSError, TypeError, AttributeError) as exc:
+        raise GenerationValidationError(
+            f"Availability or appearance validation failed: {exc}"
+        ) from exc
     return document
 
 

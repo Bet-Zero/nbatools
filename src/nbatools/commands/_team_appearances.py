@@ -18,15 +18,18 @@ from nbatools.commands.entity_resolution import (
     player_ids_for_name,
 )
 from nbatools.data_source import (
+    current_data_generation,
     data_exists,
     data_path,
     data_source_cache_key,
     verified_generation_files,
 )
 from nbatools.dataframe_cache import FRAME_CACHE
+from nbatools.generation_manifest import MANIFEST_PATH, parse_generation_files
+from nbatools.participation_source_packs import INDEX, read_source_index, unpack_sources
 
 
-def _replay_unpublished_proof(proof, files, availability):
+def _replay_unpublished_proof(proof, files, availability, packed, physical):
     from nbatools.commands.pipeline.team_appearance_coverage import (
         validate_complete_appearance_proof,
     )
@@ -34,8 +37,20 @@ def _replay_unpublished_proof(proof, files, availability):
     # Local and unverified generations still need original source qualification.
     with tempfile.TemporaryDirectory() as temp:
         root = Path(temp)
+        archived = dict(
+            unpack_sources(
+                packed,
+                physical,
+                lambda name: data_path("data/" + name).read_bytes(),
+                selected=files,
+            )
+        )
         for relative, digest in files.items():
-            raw = data_path("data/" + relative).read_bytes()
+            raw = (
+                archived[relative]
+                if relative in packed
+                else data_path("data/" + relative).read_bytes()
+            )
             if hashlib.sha256(raw).hexdigest() != digest:
                 raise ValueError("Stale or altered complete appearance proof")
             target = root / relative
@@ -55,6 +70,16 @@ def _coverage(seasons, kind, observations):
         appearance_load_event()
         result = {}
         manifest = verified_generation_files()
+        physical = manifest
+        if physical is None and data_exists("data/" + INDEX):
+            document = json.loads(data_path("data/" + MANIFEST_PATH).read_bytes())
+            physical = parse_generation_files(document, current_data_generation())
+            if INDEX not in physical:
+                raise ValueError("Unmanifested participation source pack index")
+        packed = read_source_index(
+            physical or {}, lambda name: data_path("data/" + name).read_bytes()
+        )
+        proof_inventory = (dict(manifest) | packed) if manifest is not None else None
         played_by_side = None
         for season in seasons:
             season_type = kind.lower().replace(" ", "_")
@@ -102,12 +127,12 @@ def _coverage(seasons, kind, observations):
                 f"raw/player_game_availability/{suffix}{ending}"
                 for ending in (".csv", ".imports.json")
             ]
-            if manifest is None:
-                _replay_unpublished_proof(proof, files, availability)
+            if proof_inventory is None:
+                _replay_unpublished_proof(proof, files, availability, packed, physical or {})
             elif any(
-                relative not in manifest or manifest[relative].sha256 != digest
+                relative not in proof_inventory or proof_inventory[relative].sha256 != digest
                 for relative, digest in files.items()
-            ) or any(relative not in manifest for relative in availability):
+            ) or any(relative not in proof_inventory for relative in availability):
                 raise ValueError("Complete appearance provenance differs from published manifest")
 
             # Publication proved each list complete against the original container.

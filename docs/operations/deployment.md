@@ -354,6 +354,23 @@ manifests exist. Plan storage and recovery with the active, previous, candidate
 and referenced origin objects retained. Deploy readers that support shared
 objects before qualifying a candidate that uses them.
 
+### Packed participation originals
+
+A reviewed team-season package can set `pack_sources: true` to compact the
+original availability evidence into bounded, deterministic ZIP files. Future
+packages on that base keep the old packs and add a new pack only for new
+originals. The physical manifest authenticates the packs and their index. The
+index preserves every original path, byte count and SHA-256. Older generations
+retain their loose files and continue to load.
+
+The planner and grouped stager reuse the exact original members when checking
+held coverage. Publication and credential-free restore both authenticate the
+members and run the native original-source replay in temporary storage. Hosted
+appearance queries authenticate proof dependencies from the index and use the
+prepared participation rows. Check packed candidate serving and restore before
+requesting activation. Report the physical object count and logical source
+count separately.
+
 ### Agent-initiated targeted requests
 
 The owner authorized automatic targeted validation on 2026-10-15. An agent with

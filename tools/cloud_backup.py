@@ -163,7 +163,11 @@ def export_backup(output, generation, *, client=None, bucket=None, expected_poin
     (stage / key).write_bytes(raw_manifest)
     # Every body and the complete inventory above are authenticated by the
     # exact independently qualified manifest. Other backups still replay.
-    qualified = qualified_activation_manifest(generation, manifest_sha)
+    from nbatools.participation_source_packs import PACK_DIR
+
+    qualified = not any(name.startswith(PACK_DIR + "/") for name in files) and (
+        qualified_activation_manifest(generation, manifest_sha)
+    )
     if not qualified:
         validate_staged_generation(stage, generation)
     after, _, after_sha = verify_pointer_manifest(client, bucket, generation)
@@ -286,8 +290,10 @@ def restore_backup(archive, receipt, destination):
             if expected and item.file_size != expected.size_bytes:
                 raise ValueError("Backup member size mismatch")
         destination.mkdir(parents=True)
-        qualified = qualified_activation_manifest(
-            receipt["generation_id"], receipt["manifest_sha256"]
+        from nbatools.participation_source_packs import PACK_DIR
+
+        qualified = not any(name.startswith(PACK_DIR + "/") for name in files) and (
+            qualified_activation_manifest(receipt["generation_id"], receipt["manifest_sha256"])
         )
         for item in entries:
             path = destination / item.filename
