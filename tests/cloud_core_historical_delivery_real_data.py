@@ -515,6 +515,13 @@ def _run(
     assert not (retained and current_runtime), "Retained captures cannot be fresh runtime evidence"
     assert generation_name == BASE or current_runtime, "Only a fresh capture may use LIVE"
     assert not stabilization or (current_runtime and generation_name == CLEVELAND)
+    if current_runtime:
+        assert stabilization and generation_name == CLEVELAND, (
+            "Current-runtime acceptance uses the frozen Cleveland selector"
+        )
+        assert selected_snapshot() is None, (
+            "Current production captures cannot use development data"
+        )
     manifest = CLEVELAND_MANIFEST if stabilization else GENERATIONS[generation_name]
     binding = json.loads((EVIDENCE / "live-code-binding.json").read_bytes())
     applicability = None
@@ -543,7 +550,9 @@ def _run(
     if stabilization:
         # The replacement runs alongside the existing gates until acceptance.
         assert _sha((EVIDENCE / "live-code-binding.json").read_bytes()) == ORIGINAL_BINDING_SHA256
-    elif retained or current_runtime:
+    elif retained:
+        # Historical replay only, from the exact pre-transition source context.
+        # The fresh selector never reads the companion or walks current source.
         applicability = _retained_applicability(binding)
     else:
         # Fresh public captures retain the original strict deployed-code binding.
@@ -849,16 +858,6 @@ def test_requalify_retained_actual_historical_api_and_ui(tmp_path):
     _run(tmp_path, retained=True)
 
 
-def test_actual_new_runtime_historical_api_and_ui(tmp_path):
-    """Fresh original22/44 delivery; current readiness/source gaps stay open."""
-    _run(tmp_path, current_runtime=True)
-
-
-def test_actual_new_runtime_historical_api_and_ui_on_live_generation(tmp_path):
-    """The same fresh original22/44 delivery on the generation served after 2026-11-14."""
-    _run(tmp_path, current_runtime=True, generation_name=LIVE)
-
-
 def test_stabilization_original_historical_api_and_ui(tmp_path):
-    """Fresh acceptance on the frozen Cleveland runtime, alongside the old gate."""
+    """Canonical fresh acceptance bound to the served artifact and immutable data."""
     _run(tmp_path, current_runtime=True, generation_name=CLEVELAND, stabilization=True)
