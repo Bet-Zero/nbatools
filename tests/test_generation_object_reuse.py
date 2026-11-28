@@ -11,6 +11,10 @@ from nbatools.commands.pipeline.generation_refresh import (
     prune_r2_generations,
 )
 from nbatools.data_source import (
+    DATA_GENERATION_ENV,
+    DATA_GENERATION_MANIFEST_ENV,
+    DataSourceConfigError,
+    DataSourceError,
     data_generation_context,
     data_glob,
     data_path,
@@ -135,6 +139,22 @@ def test_two_reused_releases_and_previous_standalone_reader(tmp_path, monkeypatc
                 assert STABLE.removeprefix("raw/") in {p.name for p in data_glob("raw/*.csv")}
         assert f"generations/base/{STABLE}" in reader.get_calls
         assert f"generations/second/{STABLE}" not in reader.get_calls
+        # Prove the reviewed historical pin works with a different active release.
+        first_sha = json.loads(pointers["first"])["manifest_sha256"]
+        monkeypatch.setenv(DATA_GENERATION_ENV, "first")
+        monkeypatch.setenv(DATA_GENERATION_MANIFEST_ENV, first_sha)
+        with data_generation_context() as pinned:
+            assert pinned == "first"
+            assert data_path(STABLE).read_text() == "value\noriginal\n"
+            assert data_path(CHANGED).read_text() == "value\nfirst\n"
+        with monkeypatch.context() as isolated:
+            isolated.setenv(DATA_GENERATION_MANIFEST_ENV, "0" * 64)
+            with pytest.raises(DataSourceError, match="checksum differs"):
+                data_path(STABLE)
+        with monkeypatch.context() as isolated:
+            isolated.setenv("VERCEL_ENV", "production")
+            with pytest.raises(DataSourceConfigError, match="non-Vercel"):
+                data_path(STABLE)
     finally:
         reset_data_source_cache()
 
@@ -151,14 +171,19 @@ def test_two_reused_releases_and_previous_standalone_reader(tmp_path, monkeypatc
     assert not prune.deleted
 
 
-def test_corrupt_shared_bytes_fail_before_any_candidate_write(tmp_path):
+@pytest.mark.parametrize("corruption", ["body", "metadata"])
+def test_corrupt_shared_bytes_fail_before_any_candidate_write(tmp_path, corruption):
     source = tmp_path / "source"
     client = FakeR2Client()
     _source(source, "original")
     pub.publish_r2_generation("base", source_dir=source, client=client, bucket_name="isolated")
     _source(source, "first")
     _, _, options = _plan(tmp_path, client, source, "base", "first")
-    client.objects[f"generations/base/{STABLE}"] = b"value\nnot-base\n"
+    borrowed = f"generations/base/{STABLE}"
+    if corruption == "body":
+        client.objects[borrowed] = b"value\nnot-base\n"
+    else:
+        client.metadata[borrowed][pub.SHA256_METADATA_KEY] = "0" * 64
     client.put_order.clear()
     with pytest.raises(pub.GenerationValidationError, match="object checksum"):
         pub.upload_r2_candidate("first", source_dir=source, reuse_unchanged=True, **options)

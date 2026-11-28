@@ -360,7 +360,7 @@ fresh `r2-validation/<task>-<candidate-short-sha>` branch at that exact candidat
 The candidate must include this workflow extension. Add one final commit changing
 only `.github/r2-validation-request.json`, then push that branch normally (never
 force-push another session's work). That dedicated branch/path push starts the
-existing workflow automatically. The manifest has exactly these fields:
+existing workflow automatically. The request manifest uses these required fields:
 
 ```json
 {
@@ -378,6 +378,10 @@ example is a historical snapshot, not a freshness claim. Selectors are existing
 Python files under `tests/` or individual pytest node ids, and Raw QA ids name
 existing corpus cases. At least one selection is required. A misspelled node or
 case, unmarked numerical selection, or required skip fails acceptance.
+
+For a shared-object generation, add `manifest_sha256` with the exact
+independently verified digest. The read-only workflow uses it to authenticate
+the specified generation even when it is no longer active.
 
 The resolver checks the push repository, full branch ref and exact pushed SHA.
 The request commit must have **one parent equal to `reviewed_sha`** and change

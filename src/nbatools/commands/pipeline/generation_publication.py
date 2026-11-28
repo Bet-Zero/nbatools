@@ -777,10 +777,16 @@ def verify_r2_generation_bodies(client, bucket, generation, manifest):
 
 
 def _verify_object_body(client, bucket, key, item):
-    body = client.get_object(Bucket=bucket, Key=key)["Body"]
+    response = client.get_object(Bucket=bucket, Key=key)
+    body = response["Body"]
     digest = hashlib.sha256()
     remaining = item.size_bytes
     try:
+        if (
+            response.get("ContentLength") != item.size_bytes
+            or (response.get("Metadata") or {}).get(SHA256_METADATA_KEY) != item.sha256
+        ):
+            raise GenerationValidationError(f"Candidate object checksum differs: {key}")
         while remaining:
             chunk = body.read(min(remaining, 1024 * 1024))
             if not chunk:

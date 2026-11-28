@@ -19,6 +19,7 @@ from typing import Any
 
 from nbatools.commands.pipeline.generation_publication import (
     GENERATION_MANIFEST_PATH,
+    SHA256_METADATA_KEY,
     GenerationConflictError,
     GenerationPublicationError,
     GenerationValidationError,
@@ -167,19 +168,32 @@ def prune_r2_generations(
     pointer = _read_r2_pointer(s3_client, bucket)
     if pointer.generation_id == LEGACY_GENERATION:
         raise GenerationPublicationError("No active generation pointer; refusing to prune")
+    if pointer.manifest_sha256 is None:
+        raise GenerationPublicationError("Active manifest is unauthenticated; refusing to prune")
     protected = {pointer.generation_id, pointer.previous_generation_id}
 
     published: list[tuple[Any, str]] = []
     result = PruneResult(dry_run=dry_run)
-    for generation in _list_generation_ids(s3_client, bucket):
-        head = _head_r2_object(
-            s3_client, bucket, f"{GENERATIONS_DIR}/{generation}/{GENERATION_MANIFEST_PATH}"
-        )
-        if head is None or head.get("LastModified") is None:
+    candidates = set(_list_generation_ids(s3_client, bucket)) | {pointer.generation_id}
+    for generation in sorted(candidates):
+        manifest_key = f"{GENERATIONS_DIR}/{generation}/{GENERATION_MANIFEST_PATH}"
+        head = _head_r2_object(s3_client, bucket, manifest_key)
+        if head is None and generation != pointer.generation_id:
             result.ignored.append(generation)
             continue
-        manifest_key = f"{GENERATIONS_DIR}/{generation}/{GENERATION_MANIFEST_PATH}"
-        document = json.loads(_get_bytes(s3_client, bucket, manifest_key))
+        if head is None or head.get("LastModified") is None:
+            raise GenerationPublicationError(
+                f"Missing immutable manifest for pruning: {generation}"
+            )
+        raw = _get_bytes(s3_client, bucket, manifest_key)
+        digest = hashlib.sha256(raw).hexdigest()
+        if (
+            digest != (head.get("Metadata") or {}).get(SHA256_METADATA_KEY)
+            or generation == pointer.generation_id
+            and digest != pointer.manifest_sha256
+        ):
+            raise GenerationPublicationError(f"Manifest checksum differs for pruning: {generation}")
+        document = json.loads(raw)
         if document.get("schema_version") != STANDALONE_SCHEMA:
             raise GenerationPublicationError(
                 "Pruning requires a reviewed reachability and retention policy for shared objects"

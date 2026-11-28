@@ -323,12 +323,13 @@ def prepare_reuse(publication, staging, generation, local, base):
     document = json.loads(raw)
     if document.get("generation_id") != generation:
         raise ValueError("Standalone candidate generation differs")
-    _, reuse = publication.plan_object_reuse(document, base)
+    reused_manifest, reuse = publication.plan_object_reuse(document, base)
     if (reuse["logical_files"], reuse["logical_data_bytes"]) != (
         local["file_count"],
         local["total_bytes"],
     ):
         raise ValueError("Object-reuse proposal differs from locally validated inventory")
+    (staging / "reuse-manifest.json").write_bytes(reused_manifest)
     return reuse
 
 

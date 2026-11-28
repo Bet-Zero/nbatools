@@ -36,6 +36,7 @@ from nbatools.generation_manifest import (
 from nbatools.r2_errors import format_client_error, is_not_found
 
 DATA_SOURCE_ENV = "DATA_SOURCE"
+DATA_GENERATION_MANIFEST_ENV = "NBATOOLS_DATA_GENERATION_MANIFEST_SHA256"
 LOCAL_DATA_ROOT_ENV = "NBATOOLS_DATA_ROOT"
 R2_CACHE_DIR_ENV = "NBATOOLS_R2_CACHE_DIR"
 DATA_GENERATION_ENV = "NBATOOLS_DATA_GENERATION"
@@ -129,6 +130,11 @@ def season_file_order(path: object) -> tuple[str, int, str]:
 def current_data_generation() -> str:
     """Return the request-pinned generation or resolve the current active one."""
     return _current_generation().id
+
+
+def current_data_manifest_sha256() -> str | None:
+    """Return the trusted digest of the selected immutable generation."""
+    return _current_generation().manifest_sha256
 
 
 def _current_generation() -> _Generation:
@@ -791,8 +797,21 @@ def _resolve_active_data_generation() -> _Generation:
     if snapshot is not None:
         return _Generation("development-" + snapshot.manifest_sha256)
     configured = os.environ.get(DATA_GENERATION_ENV, "").strip()
+    digest = os.environ.get(DATA_GENERATION_MANIFEST_ENV, "")
     from nbatools.candidate_preview import MANIFEST_ENV, verify_pin
 
+    if digest:
+        if (
+            MANIFEST_ENV in os.environ
+            or os.environ.get("VERCEL")
+            or os.environ.get("VERCEL_ENV")
+            or not isinstance(_get_data_source(), _R2DataSource)
+            or not configured
+            or configured == LEGACY_GENERATION
+            or not _SHA256_PATTERN.fullmatch(digest)
+        ):
+            raise DataSourceConfigError("Manifest pin requires a non-Vercel immutable R2 selection")
+        return _Generation(validate_data_generation_id(configured), digest)
     if MANIFEST_ENV in os.environ:
         digest = verify_pin(_get_data_source(), configured)
         return _Generation(configured, digest)
