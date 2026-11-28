@@ -73,6 +73,96 @@ def test_single_catalog_surname_does_not_override_unresolved_team_context(monkey
     assert out["route_kwargs"]["unsupported_filters"] == ["unresolved_player_availability"]
 
 
+@pytest.mark.parametrize(
+    "clause,accepted",
+    [
+        ("without Davis in 2025-26", True),
+        ("w/o Davis in 2025-26", True),
+        ("without Davis or Smith in 2025-26", False),
+        ("except without Davis in 2025-26", False),
+        ("without Davis while rostered in 2025-26", False),
+        ("without Davis anywhere in the game in 2025-26", False),
+    ],
+)
+def test_contextual_name_requires_a_consumed_team_appearance_clause(monkeypatch, clause, accepted):
+    from nbatools.commands._team_participation_query import apply_team_participation_scope
+
+    def resolve(name, team, season, kind):
+        assert (name, team, season, kind) == ("davis", "LAL", "2025-26", "Regular Season")
+        return "First Davis"
+
+    monkeypatch.setattr(appearances, "resolve_complete_team_actor", resolve)
+    parsed = {
+        "route": "team_record",
+        "route_kwargs": {
+            "team": "LAL",
+            "season": "2025-26",
+            "unresolved_availability_player": "davis",
+            "unsupported_filters": ["unresolved_player_availability"],
+        },
+        "entity_ambiguity": {"type": "player", "candidates": ["First Davis", "Second Davis"]},
+    }
+    apply_team_participation_scope(f"Lakers record {clause}", parsed)
+    if accepted:
+        assert parsed["entity_ambiguity"] is None
+        assert parsed["route_kwargs"]["without_player"] == "First Davis"
+        assert parsed["route_kwargs"]["participation_scope"] == "team"
+        assert "unsupported_filters" not in parsed["route_kwargs"]
+    else:
+        assert parsed["entity_ambiguity"]
+        assert not parsed["route_kwargs"].get("without_player")
+        assert parsed["route_kwargs"]["unsupported_filters"]
+
+
+@pytest.mark.parametrize(
+    "played,listed,covered,expected",
+    [
+        (set(), [], True, "Former Davis"),
+        ({11}, [], True, "Recent Davis"),
+        (set(), [11], True, "Recent Davis"),
+        ({11}, [12], True, None),
+        (set(), [], False, None),
+    ],
+)
+def test_complete_team_name_context_keeps_missing_and_multiple_matches_unresolved(
+    monkeypatch, played, listed, covered, expected
+):
+    from nbatools.commands import _teammate_resolution, data_utils
+
+    games = pd.DataFrame(
+        [dict(game_id=g, team_id=1, team_abbr="LAL", game_date=f"2026-01-0{g}") for g in (1, 2)]
+    )
+    observations = pd.DataFrame(
+        [(1, 1, player_id) for player_id in listed], columns=["game_id", "team_id", "player_id"]
+    )
+    complete = {(1, 1): ("2026-01-01", played)}
+    if covered:
+        complete[2, 1] = ("2026-01-02", set())
+
+    def previous_name(reference, *, team, season, **_):
+        assert (reference, team, season) == ("Davis", "LAL", "2024-25")
+        return "Former Davis"
+
+    monkeypatch.setattr(appearances, "data_exists", lambda _: True)
+    monkeypatch.setattr(data_utils, "load_team_games_for_seasons", lambda *_: games)
+    monkeypatch.setattr(appearances, "combined_observations", lambda *_: (observations, {}))
+    monkeypatch.setattr(appearances, "_coverage", lambda *_: complete)
+    monkeypatch.setattr(
+        _teammate_resolution, "teammate_reference_ids", lambda _: {"11", "12", "13"}
+    )
+    monkeypatch.setattr(_teammate_resolution, "resolve_teammate", previous_name)
+    monkeypatch.setattr(appearances, "canonical_player_names_by_id", lambda: {"11": "Recent Davis"})
+    monkeypatch.setattr(
+        appearances,
+        "player_ids_for_name",
+        lambda name: {"11" if name == "Recent Davis" else "13"},
+    )
+    assert (
+        appearances.resolve_complete_team_actor("Davis", "LAL", "2025-26", "Regular Season")
+        == expected
+    )
+
+
 def test_actual_unless_query_does_not_enable_an_unread_condition():
     from nbatools.commands.natural_query import parse_query
 

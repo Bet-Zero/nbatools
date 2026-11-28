@@ -45,6 +45,18 @@ def name_before_scope(fragment: str | None) -> str:
     return _SCOPE_WORD.sub("", (fragment or "").strip().lower())
 
 
+def teammate_reference_ids(fragment: str) -> set[str]:
+    """Find indexed identities for one complete first or last name."""
+    word = fragment.strip().lower()
+    if not re.fullmatch(r"[a-z][a-z.'\-]+", word) or _NOT_A_NAME.match(word):
+        return set()
+    key = _strip_accents(word)
+    candidates = set(player_last_name_candidates(key)) | set(
+        _get_player_first_name_index().get(key, [])
+    )
+    return {player_id for name in candidates for player_id in player_ids_for_name(name)}
+
+
 def resolve_teammate(
     fragment: str | None,
     *,
@@ -56,20 +68,9 @@ def resolve_teammate(
     season_type: str,
 ) -> str | None:
     """The one teammate ``fragment`` (a single first or last name) names, or None."""
-    word = name_before_scope(fragment)
-    if not re.fullmatch(r"[a-z][a-z.'\-]+", word) or _NOT_A_NAME.match(word):
-        return None
     if not (team or player):
         return None
-    key = _strip_accents(word)
-    candidates = set(player_last_name_candidates(key)) | set(
-        _get_player_first_name_index().get(key, [])
-    )
-    if not candidates:
-        return None
-    ids: set[str] = set()
-    for name in candidates:
-        ids |= set(player_ids_for_name(name))
+    ids = teammate_reference_ids(name_before_scope(fragment))
     if not ids:
         return None
 

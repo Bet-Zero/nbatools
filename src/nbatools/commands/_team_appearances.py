@@ -11,7 +11,8 @@ import pandas as pd
 
 from nbatools.commands._participation_observations import combined_observations
 from nbatools.commands._player_identity import player_name_mask
-from nbatools.commands.entity_resolution import player_ids_for_name
+from nbatools.commands._team_participation_query import AppearanceScope, ParticipationPredicate
+from nbatools.commands.entity_resolution import canonical_player_names_by_id, player_ids_for_name
 from nbatools.data_source import (
     data_exists,
     data_path,
@@ -133,16 +134,94 @@ def _coverage(seasons, kind, observations):
     return {(r.game_id, r.team_id): (r.day, r.players) for r in frame.itertuples()}
 
 
+def resolve_complete_team_actor(reference: str, team: str, season: str, kind: str) -> str | None:
+    """Resolve shorthand using a complete selected side and recent club history.
+
+    The immediately preceding season can identify a departed actor when no
+    current-season namesake is listed. Only the requested games determine
+    participation.
+    """
+    if kind != "Regular Season" or not re.fullmatch(r"(?:19|20)\d{2}-\d{2}", season):
+        return None
+    if not data_exists(f"data/raw/team_game_appearances/{season}_regular_season.json"):
+        return None
+
+    from nbatools.commands._franchise import team_value_mask
+    from nbatools.commands._seasons import int_to_season, season_to_int
+    from nbatools.commands._teammate_resolution import resolve_teammate, teammate_reference_ids
+    from nbatools.commands.data_utils import load_team_games_for_seasons
+
+    candidate_ids = {int(player_id) for player_id in teammate_reference_ids(reference)}
+    if not candidate_ids:
+        return None
+    games = load_team_games_for_seasons([season], kind)
+    selected = games.loc[team_value_mask(games, team)]
+    if selected.empty or selected.team_id.nunique() != 1 or not selected.game_id.is_unique:
+        return None
+    observations, _ = combined_observations([season], kind)
+    complete = _coverage([season], kind, observations)
+    current_ids = set()
+    for row in selected.itertuples():
+        key = (int(row.game_id), int(row.team_id))
+        if (
+            key not in complete
+            or complete[key][0] != pd.Timestamp(row.game_date).date().isoformat()
+        ):
+            return None
+        current_ids.update(candidate_ids.intersection(complete[key][1]))
+
+    # A namesake listed as a nonparticipant still matters to identity.
+    listed = observations.loc[
+        observations.team_id.eq(selected.team_id.iloc[0])
+        & observations.game_id.isin(selected.game_id)
+        & observations.player_id.isin(candidate_ids),
+        "player_id",
+    ]
+    current_ids.update(listed.astype(int))
+    if len(current_ids) > 1:
+        return None
+    if current_ids:
+        name = canonical_player_names_by_id().get(str(next(iter(current_ids))))
+    else:
+        name = resolve_teammate(
+            reference,
+            team=team,
+            player=None,
+            season=int_to_season(season_to_int(season) - 1),
+            start_season=None,
+            end_season=None,
+            season_type=kind,
+        )
+    return name if name and len(player_ids_for_name(name)) == 1 else None
+
+
 def select_appearances(candidates, names, seasons, kind, *, played, scope="team"):
-    """Unknown is never the complement of played. Roles are exact-game sides."""
+    return select_appearance_predicates(
+        candidates,
+        (ParticipationPredicate.from_reference(names, played=played),),
+        seasons,
+        kind,
+        scope=scope,
+    )
+
+
+def select_appearance_predicates(
+    candidates,
+    predicates: tuple[ParticipationPredicate, ...],
+    seasons,
+    kind,
+    *,
+    scope: AppearanceScope,
+):
+    """Qualify each condition against the same exact games before intersecting."""
     if scope not in {"team", "opponent", "game"}:
         raise ValueError("Unknown appearance side scope")
-    if candidates.empty:
+    if candidates.empty or not predicates:
         return candidates.copy()
     observations, _ = combined_observations(seasons, kind)
     complete = _coverage(seasons, kind, observations)
     keep = pd.Series(True, index=candidates.index)
-    for name in re.split(r"\s+and\s+", names, flags=re.I):
+    for name, played in ((name, p.played) for p in predicates for name in p.names):
         ids = {int(x) for x in player_ids_for_name(name)} | set(
             observations.loc[player_name_mask(observations, name), "player_id"].astype(int)
         )

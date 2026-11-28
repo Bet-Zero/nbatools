@@ -3995,9 +3995,17 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
     if route == "team_record" and kwargs.get("without_player_reason"):
         kwargs["participation_scope"] = "legacy"
     elif route == "team_record":
-        from nbatools.commands._team_participation_query import participation_scope_for
+        from nbatools.commands._team_participation_query import (
+            contextual_team_actor,
+            participation_scope_for,
+        )
 
-        kwargs["participation_scope"] = participation_scope_for(kwargs)
+        scope = kwargs["participation_scope"] = participation_scope_for(kwargs)
+        actor_keys = [key for key in ("with_player", "without_player") if kwargs.get(key)]
+        if len(actor_keys) == 1 and not kwargs.get("unsupported_filters"):
+            (key,) = actor_keys
+            if name := contextual_team_actor(kwargs[key], kwargs, scope):
+                kwargs[key] = name
     query_class = route_to_query_class(route)
 
     # Build metadata from kwargs

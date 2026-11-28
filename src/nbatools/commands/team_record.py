@@ -288,18 +288,24 @@ def build_team_record_result(
     from nbatools.commands.data_utils import validate_last_n_scope
 
     validate_last_n_scope(last_n_scope, allow_original_window=True)
-    from nbatools.commands._team_participation_query import participation_scope_for
+    from nbatools.commands._team_participation_query import TeamRecordParticipation
 
-    participation_scope = participation_scope_for(
+    participation = TeamRecordParticipation.from_record(
         dict(
+            team=team,
+            season=season,
+            season_type=season_type,
             participation_scope=participation_scope,
             with_player=with_player,
             without_player=without_player,
             opponent=opponent,
+            last_n=last_n,
+            last_n_scope=last_n_scope,
+            wins_only=wins_only,
+            losses_only=losses_only,
         )
     )
-    if participation_scope not in {"team", "rostered", "opponent", "game", "legacy"}:
-        raise ValueError("Unknown participation scope")
+    participation_scope = participation.scope
 
     def _with_filter(frame, names, years, kind, **options):
         if participation_scope == "legacy":
@@ -325,12 +331,38 @@ def build_team_record_result(
             frame, names, years, kind, played=False, scope=participation_scope
         )
 
-    def _qualify_mixed(frame):
-        # A false sibling must not hide unknowns in another predicate, including
-        # original and qualifying last-N windows. No change to legacy filters.
-        if participation_scope in {"team", "opponent", "game"} and with_player and without_player:
+    def _apply_participation(frame, *, include_reason=False):
+        if frame.empty or not (with_player or without_player):
+            return frame
+        if participation.appearance_scope is not None and without_player_reason is None:
+            from nbatools.commands._team_appearances import select_appearance_predicates
+
+            return select_appearance_predicates(
+                frame,
+                participation.predicates,
+                seasons,
+                participation.season_type,
+                scope=participation.appearance_scope,
+            )
+        if participation.appearance_scope is not None and with_player and without_player:
             _with_filter(frame, with_player, seasons, season_type)
             _without_filter(frame, without_player, seasons, season_type)
+        options = dict(team=participation.team, strict_team_match=True, opponent=opponent)
+        if without_player:
+            reason = (
+                dict(
+                    without_player_reason=without_player_reason,
+                    reason_evidence=_reported_reason_evidence,
+                )
+                if include_reason
+                else {}
+            )
+            frame = _without_filter(
+                frame, without_player, seasons, season_type, **options, **reason
+            )
+        if with_player and not frame.empty:
+            frame = _with_filter(frame, with_player, seasons, season_type, **options)
+        return frame
 
     from nbatools.commands.entity_resolution import (
         ALL_TEAM_ABBRS,
@@ -338,7 +370,7 @@ def build_team_record_result(
         resolve_player,
     )
 
-    original_window = last_n_scope == "original_window"
+    original_window = participation.last_n_scope == "original_window"
     if (
         with_player
         and without_player
@@ -367,12 +399,12 @@ def build_team_record_result(
         if scalar_reason_window
         else [with_player, without_player]
         if mixed_participation
-        else re.split(r"\s+and\s+", (with_player or "").strip(), flags=re.IGNORECASE)
+        else next((p.names for p in participation.predicates if p.played), ())
     )
     resolved_names = [resolve_player(name).resolved for name in names] if original_window else []
     if original_window and (
-        last_n is None
-        or not isinstance(season, str)
+        participation.last_n is None
+        or not isinstance(participation.season, str)
         or team not in ALL_TEAM_ABBRS
         or start_season
         or end_season
@@ -565,7 +597,9 @@ def build_team_record_result(
         df = base_df
 
     window_game_ids = None
-    if last_n is not None and (last_n_scope in WINDOW_SCOPES or original_window):
+    if participation.last_n is not None and (
+        participation.last_n_scope in WINDOW_SCOPES or original_window
+    ):
         # "how many games over 120 in their last 10": the window is the
         # team's N most recent games in play; results and stat conditions
         # are then counted inside it.
@@ -579,27 +613,7 @@ def build_team_record_result(
             end_date=end_date,
         )
         if not original_window:
-            _qualify_mixed(sample)
-        if without_player and not sample.empty and not original_window:
-            sample = _without_filter(
-                sample,
-                without_player,
-                seasons,
-                season_type,
-                team=team,
-                strict_team_match=True,
-                opponent=opponent,
-            )
-        if with_player and not sample.empty and not original_window:
-            sample = _with_filter(
-                sample,
-                with_player,
-                seasons,
-                season_type,
-                team=team,
-                strict_team_match=True,
-                opponent=opponent,
-            )
+            sample = _apply_participation(sample)
         sample, _ = apply_schedule_context_filters(
             sample,
             seasons,
@@ -610,7 +624,11 @@ def build_team_record_result(
             nationally_televised=nationally_televised,
         )
         window_game_ids = last_n_window_game_ids(
-            sample, last_n, last_n_outcome(last_n_scope, wins_only, losses_only)
+            sample,
+            participation.last_n,
+            last_n_outcome(
+                participation.last_n_scope, participation.wins_only, participation.losses_only
+            ),
         )
 
     if original_window:
@@ -618,29 +636,7 @@ def build_team_record_result(
         # complete original window before a false sibling predicate can hide
         # missing evidence; older out-of-window rows are not required.
         df = apply_last_n_sample(sample, last_n, window_game_ids)
-        _qualify_mixed(df)
-        if without_player and not df.empty:
-            df = _without_filter(
-                df,
-                without_player,
-                seasons,
-                season_type,
-                team=team,
-                strict_team_match=True,
-                opponent=opponent,
-                without_player_reason=without_player_reason,
-                reason_evidence=_reported_reason_evidence,
-            )
-        if with_player and not df.empty:
-            df = _with_filter(
-                df,
-                with_player,
-                seasons,
-                season_type,
-                team=team,
-                strict_team_match=True,
-                opponent=opponent,
-            )
+        df = _apply_participation(df, include_reason=True)
         qualified_window_games = len(df)
         predicates = "participation" if mixed_participation else "both played"
         notes.append(
@@ -678,31 +674,10 @@ def build_team_record_result(
         else:
             clutch_executed = True
 
-    if not original_window:
-        _qualify_mixed(df)
-
     # Absence must be known across the original scoped candidates. A played
     # sibling that is false cannot conceal an unknown nonparticipation state.
-    if without_player and not df.empty and not original_window:
-        df = _without_filter(
-            df,
-            without_player,
-            seasons,
-            season_type,
-            team=team,
-            strict_team_match=True,
-            opponent=opponent,
-        )
-    if with_player and not df.empty and not original_window:
-        df = _with_filter(
-            df,
-            with_player,
-            seasons,
-            season_type,
-            team=team,
-            strict_team_match=True,
-            opponent=opponent,
-        )
+    if not original_window:
+        df = _apply_participation(df)
 
     df, schedule_notes = apply_schedule_context_filters(
         df,

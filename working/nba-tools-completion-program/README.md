@@ -16,7 +16,7 @@ Hunter. TEAM participation covers 21/21 pilot players and rostered coverage is
 14/21. [Activation](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-45763092143) ·
 [Backup and restore](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-45763092143)
 
-**Snapshot release accepted within the measured operating range.** All 1,907
+**Section 6 complete within the measured snapshot operating range.** All 1,907
 numerical tests, 621 Raw QA cases and 521 filter comparisons executed with
 zero snapshot-scope failures. The release preserves all original Live and
 full-product requirements. The final deployment returned all seven checked
@@ -25,14 +25,16 @@ test and failure controls passed. The [W6A transition](w6a-transition.md)
 uses independently accepted current evidence and retains the original
 archive. [Release evidence](stabilization-evidence-20261127.md#corrected-release-acceptance)
 
-**Current queue.** The owner approved scoped snapshot alerts and an eight-hour
-snapshot recovery objective on November 27. Verify the approved monitor and
-the required snapshot recovery smoke on the serving deployment. Strict Live
-continues to report the unmet `new_season_not_loaded` requirement separately.
-Once the operational checks are accepted, qualify the 2025–26 Lakers as one
-reusable team-season slice for W7 and W8.
-[Monitoring policy](../../docs/operations/observability.md#approved-production-monitoring-policy) ·
-[Recovery policy](../../docs/operations/recovery.md#approved-recovery-objectives)
+The approved monitor passed scheduled execution after one timely retry, with
+strict Live readiness still reporting `new_season_not_loaded`. All eight
+production snapshot recovery cases passed and the isolated clock control kept
+the clock running until the last case passed. The owner approved an eight-hour
+recovery objective. [Monitoring and recovery evidence](stabilization-evidence-20261127.md#approved-monitoring-and-recovery) ·
+[Scheduled run](https://github.com/Bet-Zero/nbatools/actions/runs/46097846832)
+
+**Current queue.** Qualify the 2025–26 Lakers as one reusable team-season slice
+for W7 and W8. Verify the scoped shared query path and exact 82-game source
+coverage, then measure serving, preparation, publication and recovery.
 
 **Original product ledger.** K08 remains 16 PASS / 26 MISSING DATA / 4 LIVE.
 The 2025–26 Lakers team-season slice uses all 82 final games. Requirement #33,

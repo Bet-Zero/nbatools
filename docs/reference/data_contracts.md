@@ -2294,12 +2294,21 @@ An individual-game association is not a tenure interval. Complete lists support
 team-scoped WITH/WITHOUT and explicit opponent/anywhere predicates; rostered-only
 missed games still require the existing membership engine.
 
-Initial immutable qualified staging: `team-appearances-cleveland-2024-v1`,
-82 Cleveland regular-season sides for 2024-25, replayed from unchanged
-`cleveland-full-boxscore-2024-v2`. No Brooklyn replacement side or additional
-opponent scope is certified. Originals, quarantines and inactive observations
-remain unchanged. This data is not active in production; a later combined data
-release requires its own exact protected approval.
+For a TEAM record in one regular season, certified selected sides can resolve
+a first or last name in a fully parsed participation condition. Multiple
+matching identities remain ambiguous, including listed nonparticipants. When
+there are no current matches, a unique appearance for the same team among the
+previous season's matching identities can identify a departed player. Only the
+requested games determine the record. Player-owned, rostered, and explicit
+opponent and anywhere predicates keep their own qualification.
+
+The Cleveland 2024–25 proof certifies 82 selected sides and serves through the
+protected Cleveland generation. Preparation of another team-season uses the
+same retained-source replay and append-only composer. It binds the selected
+game population, source overlay, side proof and expected base manifest in a
+reviewed packet. Additional sides in a season preserve the existing side
+claims and exact prerequisites through full staged-generation validation.
+[Cleveland delivery](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-45763092143)
 
 ### Archived season inactive observations
 
