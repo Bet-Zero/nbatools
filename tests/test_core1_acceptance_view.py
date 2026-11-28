@@ -26,7 +26,8 @@ def test_map_covers_all_46_original_questions_once():
 def test_answer_expectations_are_the_audited_live_checks():
     live = {
         c["query"]: c
-        for c in REGISTRY["packages"]["participation-2025-durant-v1"]["deployed_checks"]
+        for name in ("participation-2025-durant-v1", "lakers-team-appearances-2025-v1")
+        for c in REGISTRY["packages"][name]["deployed_checks"]
     }
     # Original wordings that reuse one specific audited live check.
     aliases = {
@@ -36,6 +37,7 @@ def test_answer_expectations_are_the_audited_live_checks():
         "Thunder record without Durant in 2007-08": (
             "Seattle SuperSonics record without Kevin Durant in 2007-08"
         ),
+        "Lakers record without Davis": "Lakers record without Davis in 2025-26",
     }
     used = 0
     for entry in SPEC["k08"]:
@@ -47,7 +49,7 @@ def test_answer_expectations_are_the_audited_live_checks():
             used += 1
         if "rest_count_case" in check:
             assert live[check["rest_count_case"]["query"]] == check["rest_count_case"]
-    assert used == 6
+    assert used == 7
 
 
 def test_independent_oracle_is_pinned():
@@ -108,20 +110,74 @@ def test_matching_answer_passes_and_changed_answer_is_a_software_failure():
 
 
 def test_refusal_is_missing_data_but_a_numeric_answer_is_a_failure():
-    entry = _entry(33)
+    entry = _entry(34)
+    query = "Lakers record when Davis sits"
     refused = dict(result_status="no_result", result_reason="filter_not_supported", result={})
-    assert (
-        view._k08(entry, _Client({"Lakers record without Davis": refused}), {}, [])["verdict"]
-        == view.MISSING
-    )
-    invented = _Client({"Lakers record without Davis": _record(5, 3, 2, 110.0)})
+    assert view._k08(entry, _Client({query: refused}), {}, [])["verdict"] == view.MISSING
+    invented = _Client({query: _record(5, 3, 2, 110.0)})
     assert view._k08(entry, invented, {}, [])["verdict"] == view.FAIL
     # "No games" is also a claim about absence, so it is not an honest refusal.
     empty = dict(result_status="no_result", result_reason="no_match", result={})
-    assert (
-        view._k08(entry, _Client({"Lakers record without Davis": empty}), {}, [])["verdict"]
-        == view.FAIL
-    )
+    assert view._k08(entry, _Client({query: empty}), {}, [])["verdict"] == view.FAIL
+
+
+def test_lakers_record_preserves_selected_team_scope_and_actor():
+    entry = _entry(33)
+    body = _record(82, 53, 29, 116.341)
+    body["result"]["metadata"] = {"participation_scope": "team", "without_player": "Anthony Davis"}
+    client = _Client({"Lakers record without Davis": body})
+    assert view._k08(entry, client, {}, [])["verdict"] == view.PASS
+    body["result"]["metadata"]["participation_scope"] = "rostered"
+    assert view._k08(entry, client, {}, [])["verdict"] == view.FAIL
+    body["result"]["metadata"] = {"participation_scope": "team"}
+    assert view._k08(entry, client, {}, [])["verdict"] == view.FAIL
+
+
+def test_empty_lakers_rest_query_preserves_canonical_actor_and_reported_reason():
+    entry = _entry(18)
+    check = entry["check"]
+    record = {
+        "route": "team_record",
+        "result_status": "no_result",
+        "result_reason": "no_match",
+        "result": {
+            "metadata": {"without_player": "Luka Dončić", "without_player_reason": "reported_rest"},
+            "sections": {},
+        },
+    }
+    rest = {
+        "result_status": "ok",
+        "route": "game_finder",
+        "result": {"sections": {"count": [{"count": 0}]}},
+    }
+    client = _Client({entry["queries"][0]: record, check["rest_count_case"]["query"]: rest})
+    assert view._k08(entry, client, {}, [])["verdict"] == view.PASS
+    record["result"]["metadata"]["without_player_reason"] = None
+    assert view._k08(entry, client, {}, [])["verdict"] == view.FAIL
+
+
+def test_original_tatum_union_requires_both_opponents_and_the_opponent_role():
+    entry = _entry(26)
+    assert entry["original_query"] == "Lakers record vs Celtics and Knicks without Tatum"
+    body = {
+        "result_status": "no_result",
+        "result_reason": "unsupported",
+        "result": {
+            "metadata": {
+                "team": "LAL",
+                "opponents": ["BOS", "NYK"],
+                "participation_scope": "opponent",
+                "without_player": "Jayson Tatum",
+            },
+            "sections": {},
+        },
+    }
+    client = _Client({entry["queries"][0]: body})
+    assert view._k08(entry, client, {}, [])["verdict"] == view.MISSING
+    body["result"]["metadata"]["opponents"] = ["BOS"]
+    assert view._k08(entry, client, {}, [])["verdict"] == view.FAIL
+    body["result"]["metadata"].update(opponents=["BOS", "NYK"], participation_scope="team")
+    assert view._k08(entry, client, {}, [])["verdict"] == view.FAIL
 
 
 def test_a_skipped_or_absent_verifier_never_counts_as_passing():
