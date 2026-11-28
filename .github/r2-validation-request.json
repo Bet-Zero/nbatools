@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "645e39de1cf665284795fd83e00263591aecf92a",
+  "generation": "availability-season-inactive-2024-v1-20261116",
+  "tests": [
+    "tests/test_core1_limited_participation_real_data.py::test_published_membership_distinctions_and_original_blockers"
+  ],
+  "raw_qa_cases": []
+}
