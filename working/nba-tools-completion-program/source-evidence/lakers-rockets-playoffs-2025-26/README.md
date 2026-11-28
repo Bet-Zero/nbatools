@@ -15,6 +15,12 @@ references 1,541 Lakers-origin files and 42 Boston-origin files directly.
 The new prefix would contain 33 new data files and the manifest, totaling
 1,018,318 bytes in 34 PUTs. Regular-season proofs remain byte-identical.
 
+The native three-origin backup and credential-free restore recovered all
+1,616 files byte for byte. Backup took 86.260 seconds and produced a
+67,271,076-byte archive. Restore took 66.920 seconds. The
+[local recovery receipt](local-recovery.json) records exact digests,
+operation counts and preserved origin inventories.
+
 The package is bound to
 `availability-bos-team-2025-v1-20261128` at manifest
 `e075b2b7969ed2e068952f2c307b0b39f015b7fc2118e9fb002afc5d2f5a343b`.
