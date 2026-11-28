@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from concurrent.futures import Future, ThreadPoolExecutor
+from contextvars import ContextVar
 from pathlib import Path
 from threading import Event
 from time import monotonic
@@ -226,7 +227,9 @@ def test_published_reads_use_pointer_digest_and_only_manifested_bytes(tmp_path, 
     assert client.get_calls.count(prefix + "metadata/generation_manifest.json") == 1
 
 
-@pytest.mark.parametrize("first_read", ["valid", "expired", "corrupt", "waiter-expired"])
+@pytest.mark.parametrize(
+    "first_read", ["valid", "expired", "transport-timeout", "corrupt", "waiter-expired"]
+)
 def test_overlapping_verified_reads_share_only_the_exact_download(
     tmp_path, monkeypatch, first_read
 ):
@@ -246,6 +249,8 @@ def test_overlapping_verified_reads_share_only_the_exact_download(
                 assert finish.wait(5)
                 if first_read == "expired":
                     raise QueryWorkExpired("The first reader exhausted its budget")
+                if first_read == "transport-timeout":
+                    raise TimeoutError("The transport timed out")
                 if first_read == "corrupt":
                     return {"Body": FakeBody(b"wrong")}
             return response
@@ -297,13 +302,104 @@ def test_overlapping_verified_reads_share_only_the_exact_download(
             for pending in (leader, waiter):
                 with pytest.raises(DataSourceError, match="checksum"):
                     pending.result(timeout=5)
+        elif first_read == "transport-timeout":
+            for pending in (leader, waiter):
+                with pytest.raises(TimeoutError, match="The transport timed out"):
+                    pending.result(timeout=5)
+            assert client.get_calls.count(key) == 1
         else:
             assert leader.result(timeout=5) == b"valid"
             if first_read == "valid":
                 assert waiter.result(timeout=5) == b"valid"
 
     assert read(path) == b"valid"
-    assert client.get_calls.count(key) == (2 if first_read in {"expired", "corrupt"} else 1)
+    assert client.get_calls.count(key) == (
+        2 if first_read in {"expired", "corrupt", "transport-timeout"} else 1
+    )
+
+
+@pytest.mark.parametrize("last_budget", [8, None], ids=["request-deadline", "no-deadline"])
+def test_verified_download_handoff_obeys_each_waiters_budget(tmp_path, monkeypatch, last_budget):
+    path = "raw/shared.csv"
+    key = "generations/published/" + path
+    objects, _ = published_generation_objects("published", {path: b"valid"})
+    first_started, second_started = Event(), Event()
+    finish_first, finish_second = Event(), Event()
+    second_waiting, last_waiting, last_rejoined = Event(), Event(), Event()
+    reader = ContextVar("reader")
+
+    class ExpiringClient(FakeR2Client):
+        def get_object(self, *, Bucket, Key):
+            response = super().get_object(Bucket=Bucket, Key=Key)
+            if Key == key:
+                if reader.get() == "first":
+                    first_started.set()
+                    assert finish_first.wait(5)
+                    raise QueryWorkExpired("First leader expired")
+                if reader.get() == "second":
+                    second_started.set()
+                    assert finish_second.wait(5)
+                    raise QueryWorkExpired("Second leader expired")
+            return response
+
+    class OrderedDownload(Future):
+        def result(self, timeout=None):
+            if reader.get() == "second":
+                second_waiting.set()
+                return super().result(timeout=timeout)
+            if second_started.is_set():
+                last_rejoined.set()
+                return super().result(timeout=timeout)
+            last_waiting.set()
+            try:
+                return super().result(timeout=timeout)
+            except QueryWorkExpired:
+                assert second_started.wait(5)
+                raise
+
+    client = ExpiringClient(objects)
+    _configure_managed_cache(monkeypatch, tmp_path, client)
+    with data_generation_context():
+        assert data_exists(path)
+    monkeypatch.setattr(data_source, "Future", OrderedDownload)
+
+    def read(name, budget):
+        mark = reader.set(name)
+        deadline = _QUERY_WORK_DEADLINE.set(monotonic() + budget if budget is not None else None)
+        try:
+            with data_generation_context():
+                return data_path(path).read_bytes()
+        finally:
+            _QUERY_WORK_DEADLINE.reset(deadline)
+            reader.reset(mark)
+
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        first = pool.submit(read, "first", 8)
+        try:
+            assert first_started.wait(5)
+            second = pool.submit(read, "second", 8)
+            assert second_waiting.wait(5)
+            last = pool.submit(read, "last", last_budget)
+            assert last_waiting.wait(5)
+            finish_first.set()
+            assert second_started.wait(5)
+            assert last_rejoined.wait(5)
+        finally:
+            finish_first.set()
+            finish_second.set()
+        with pytest.raises(QueryWorkExpired, match="First leader expired"):
+            first.result(timeout=5)
+        with pytest.raises(QueryWorkExpired, match="Second leader expired"):
+            second.result(timeout=5)
+        if last_budget is not None:
+            assert last.result(timeout=5) == b"valid"
+            assert client.get_calls.count(key) == 3
+        else:
+            with pytest.raises(QueryWorkExpired, match="Second leader expired"):
+                last.result(timeout=5)
+            assert client.get_calls.count(key) == 2
+    assert read("new-reader", 8) == b"valid"
+    assert client.get_calls.count(key) == 3
 
 
 def test_hosted_cache_retires_a_generation_only_after_the_last_reader(tmp_path, monkeypatch):

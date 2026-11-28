@@ -611,37 +611,36 @@ class _R2DataSource:
         cache_path: Path,
         expected_hash: str,
         expected_size: int | None,
-        *,
-        retry_expired_leader: bool = True,
     ) -> Path:
         # The cache path includes the generation and digest. Parallel prefetches
         # can share a verified download without sharing any request's deadline.
-        with self._cache_lock:
-            if str(cache_path) in self._downloaded_keys and cache_path.exists():
-                return cache_path
-            pending = self._pending_downloads.get(cache_path)
-            leader = pending is None
-            if pending is None:
-                pending = Future()
-                self._pending_downloads[cache_path] = pending
-
-        if not leader:
+        retried_without_deadline = False
+        while True:
+            with self._cache_lock:
+                if str(cache_path) in self._downloaded_keys and cache_path.exists():
+                    return cache_path
+                pending = self._pending_downloads.get(cache_path)
+                if pending is None:
+                    pending = Future()
+                    self._pending_downloads[cache_path] = pending
+                    break
             try:
                 return pending.result(timeout=remaining_query_work())
+            except QueryWorkExpired:
+                if remaining_query_work() is None:
+                    if retried_without_deadline:
+                        raise
+                    retried_without_deadline = True
             except TimeoutError:
-                if not retry_expired_leader:
-                    raise
                 remaining_query_work()
-                return self._download_verified(
-                    key, cache_path, expected_hash, expected_size, retry_expired_leader=False
-                )
+                raise
 
         try:
             result = self._download(key, cache_path, expected_hash, expected_size)
             pending.set_result(result)
             return result
         except BaseException as exc:
-            if isinstance(exc, TimeoutError):
+            if isinstance(exc, QueryWorkExpired):
                 # A waiter with time left can become the next download leader.
                 with self._cache_lock:
                     self._pending_downloads.pop(cache_path, None)
