@@ -1205,7 +1205,7 @@ class TestWithoutPlayer:
         assert by_season["wins"] + by_season["losses"] == by_season["games"]
 
     @pytest.mark.needs_data
-    def test_points_allowed_leaderboard_ranks_opponent_ppg(self):
+    def test_points_allowed_leaderboard_ranks_opponent_ppg(self, april_2026_request_clock):
         qr = execute_natural_query("Which team has allowed the fewest points per game this season?")
 
         assert qr.route == "season_team_leaders"
@@ -1242,7 +1242,9 @@ class TestWithoutPlayer:
         assert top_row["team_abbr"] != "BKN"
 
     @pytest.mark.needs_data
-    def test_most_points_allowed_leaderboard_ranks_highest_opponent_ppg(self):
+    def test_most_points_allowed_leaderboard_ranks_highest_opponent_ppg(
+        self, april_2026_request_clock
+    ):
         qr = execute_natural_query("which teams allow the most points per game this season")
 
         assert qr.route == "season_team_leaders"
@@ -1258,7 +1260,7 @@ class TestWithoutPlayer:
         assert top_row["team_abbr"] != "DEN"
 
     @pytest.mark.needs_data
-    def test_opponent_ppg_leaders_use_team_leaderboard_rows(self):
+    def test_opponent_ppg_leaders_use_team_leaderboard_rows(self, april_2026_request_clock):
         qr = execute_natural_query("opponent PPG leaders this season")
 
         assert qr.route == "season_team_leaders"
@@ -1411,7 +1413,9 @@ class TestDateFilterDropPrevention:
         assert qr.to_dict()["sections"]["summary"]
 
     @pytest.mark.needs_data
-    def test_date_window_cases_preserve_supported_filters_and_refuse_advanced_fallback(self):
+    def test_date_window_cases_preserve_supported_filters_and_refuse_advanced_fallback(
+        self, april_2026_request_clock
+    ):
         march = execute_natural_query("top scorers in March")
         assert march.route == "season_leaders"
         assert march.result.result_status == "ok"
@@ -1453,7 +1457,7 @@ class TestDateFilterDropPrevention:
         assert offensive.to_dict()["sections"] == {}
 
         last_night = execute_natural_query("Who scored the most points last night?")
-        assert last_night.route == "season_leaders"
+        assert last_night.route == "top_player_games"
         assert last_night.result.result_status == "no_result"
         assert last_night.result.result_reason == "no_match"
         assert {
@@ -1491,7 +1495,9 @@ class TestOpponentQualityPlayoffTeamSemantics:
         assert (summary["games"], summary["wins"], summary["losses"]) != (11, 6, 5)
 
     @pytest.mark.needs_data
-    def test_tatum_against_playoff_teams_uses_regular_season_quality_sample(self):
+    def test_tatum_against_playoff_teams_uses_regular_season_quality_sample(
+        self, april_2026_request_clock
+    ):
         qr = execute_natural_query("How has Jayson Tatum played against playoff teams this season?")
 
         assert qr.route == "player_game_summary"

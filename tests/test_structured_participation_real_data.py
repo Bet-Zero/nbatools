@@ -152,10 +152,24 @@ def test_historical_pair_bound_and_same_game_other_team(tmp_path, monkeypatch):
         team="IND",
         season="1997-98",
         without_player="Kerry Kittles",
+        participation_scope="legacy",
         start_date="1997-10-31",
         end_date="1997-10-31",
     )
     assert result.result_reason == "no_match"
+    team_scoped = execute_structured_query(
+        "team_record",
+        team="IND",
+        season="1997-98",
+        without_player="Kerry Kittles",
+        start_date="1997-10-31",
+        end_date="1997-10-31",
+    )
+    assert team_scoped.result_status == "ok"
+    sections = team_scoped.result.to_dict()["sections"]
+    assert [int(row["game_id"]) for row in sections["game_log"]] == [29700002]
+    row = sections["summary"][0]
+    assert (row["games"], row["wins"], row["losses"], row["pts_avg"]) == (1, 0, 1, 95)
     from fastapi.testclient import TestClient
 
     from nbatools.api import app
@@ -582,6 +596,35 @@ def test_published_absence_clauses_preserve_subject_bound_and_pair():
     assert [
         (int(r["game_id"]), r["pts"]) for r in source_only.result.to_dict()["sections"]["finder"]
     ] == [(21400001, 26)]
-    # Completing 2025-26 participation does not qualify a different season.
-    unknown = execute_natural_query("Lakers record with LeBron James out in 2024-25")
+    # PR #626 independently qualified the 2024-25 archived inactive rows.
+    archived = data_read_csv("data/raw/player_game_inactive/2024-25_regular_season.csv")
+    inactive = archived.loc[
+        archived.player_id.eq(2544)
+        & archived.team_id.eq(1610612747)
+        & archived.participation_state.eq("did_not_play")
+    ]
+    game_ids = {
+        22400358,
+        22400435,
+        22400537,
+        22400742,
+        22400930,
+        22400955,
+        22400965,
+        22400977,
+        22400996,
+        22401006,
+        22401199,
+        22401210,
+    }
+    assert len(inactive) == 12 and set(inactive.game_id) == game_ids
+    previous = execute_natural_query("Lakers record with LeBron James out in 2024-25")
+    assert previous.result_status == "ok", previous.metadata
+    sections = previous.result.to_dict()["sections"]
+    assert {int(row["game_id"]) for row in sections["game_log"]} == game_ids
+    row = sections["summary"][0]
+    assert (row["games"], row["wins"], row["losses"], row["pts_avg"]) == (12, 6, 6, 109.333)
+
+    # Qualified adjacent seasons cannot supply participation in a different slice.
+    unknown = execute_natural_query("Lakers record with LeBron James out in 2022-23")
     assert unknown.result_status != "ok"

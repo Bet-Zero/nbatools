@@ -12358,7 +12358,37 @@ def _games_since(query: str) -> dict | None:
 
 def parse_query(query: str) -> dict:
     with _seasons.request_calendar():
-        return _parse_query_with_calendar(query)
+        parsed = _parse_query_with_calendar(query)
+    return _preserve_sample_qualifiers(query, parsed)
+
+
+_EXPLICIT_PLAYER_ROLE = re.compile(r"\bas\s+(?:a\s+)?starter\b|\boff\s+the\s+bench\b")
+
+
+def _preserve_sample_qualifiers(query: str, parsed: dict) -> dict:
+    """Keep role and games-played qualifiers through the final route selection."""
+    kwargs = parsed["route_kwargs"]
+    if kwargs.get("unsupported_filters"):
+        return parsed
+    markers = []
+    text = normalize_text(query)
+    if _EXPLICIT_PLAYER_ROLE.search(text) and not kwargs.get("role"):
+        markers.append("role")
+    # Route normalization can turn a margin such as "decided by 4+ points"
+    # into wording that resembles a games-played floor.
+    minimum = extract_min_games(text)
+    if minimum is not None and minimum != kwargs.get("min_games"):
+        if parsed["route"] == "team_occurrence_leaders":
+            kwargs["min_games"] = minimum
+        elif minimum not in (kwargs.get("min_occurrences"), kwargs.get("min_streak_length")):
+            markers.append("min_games")
+    if markers:
+        kwargs["unsupported_filters"] = markers
+        parsed["notes"] = [
+            *parsed.get("notes", []),
+            f"unsupported_boundary: no execution path for {', '.join(markers)} on this route",
+        ]
+    return parsed
 
 
 def _parse_query_with_calendar(query: str) -> dict:
