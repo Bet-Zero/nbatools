@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "43284bbc76c276fd91ce75e7bd84e9d012a37479",
+  "generation": "availability-cleveland-2024-v3-20261124",
+  "manifest_sha256": "d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034",
+  "tests": [
+    "tests/cloud_verified_appearance_real_data.py::test_verified_cleveland_generation_answers_against_independent_oracle",
+    "tests/cloud_operations_real_data.py::test_full_generation_backup"
+  ],
+  "raw_qa_cases": []
+}
