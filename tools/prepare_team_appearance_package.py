@@ -1,4 +1,11 @@
-"""Compose a retained team-season appearance package against its immutable base."""
+"""Prepare retained team-season appearance proofs against one immutable base.
+
+Schema 1 keeps the single-team package and its filenames. Schema 2 declares
+``team_scopes`` with the same season, type, team ID, game IDs and proof SHA256
+per scope; each proof is named ``<season>_<type>-<team_id>.json`` (use
+``regular_season`` or ``playoffs``). ``overlays`` maps ZIP filenames to SHA256s.
+The existing publication workflow still owns protected approval.
+"""
 
 from __future__ import annotations
 
@@ -10,6 +17,7 @@ import re
 import shutil
 import subprocess
 import sys
+from collections import defaultdict
 from dataclasses import asdict
 from pathlib import Path
 from time import perf_counter
@@ -42,33 +50,160 @@ def _append_appearance_scope(previous: dict, incoming: dict) -> dict:
     }
 
 
-def _final_team_games(data, before, relative, team_id, season, kind):
+def _final_team_games(data, before, relative, team_ids, season, kind):
     source = data / relative
     if _file_sha(source) != before[relative]["sha256"]:
         raise ValueError("Team-season denominator differs from the immutable base")
-    population = {}
+    teams = {str(team_id): {} for team_id in team_ids}
     with source.open(newline="", encoding="utf-8") as rows:
         for row in csv.DictReader(rows):
-            if str(team_id) not in {
+            selected = teams.keys() & {
                 row["team_a_id"],
                 row["team_b_id"],
                 row["home_team_id"],
                 row["away_team_id"],
-            }:
+            }
+            if not selected:
                 continue
             home, away = int(row["home_team_id"]), int(row["away_team_id"])
             game = int(row["game_id"])
             if (
-                team_id not in {home, away}
+                not selected <= {str(home), str(away)}
                 or row["status"].casefold() != "final"
                 or row["season"] != season
                 or row["season_type"] != kind
                 or home == away
-                or game in population
+                or any(game in teams[team_id] for team_id in selected)
             ):
                 raise ValueError("Team-season denominator contains unfinished or conflicting games")
-            population[game] = (row["game_date"], home, away)
-    return population
+            for team_id in selected:
+                teams[team_id][game] = (row["game_date"], home, away)
+    return {int(team_id): games for team_id, games in teams.items()}
+
+
+def _package_inputs(artifact_dir, generation):
+    from tools.availability_overlay import _unique_object
+
+    packet_path = artifact_dir / "package.json"
+    if packet_path.is_symlink():
+        raise ValueError("Unexpected team-season package inputs")
+    packet = json.loads(packet_path.read_bytes(), object_pairs_hook=_unique_object)
+    version = packet.get("schema_version")
+    if (
+        generation != packet["generation_id"]
+        or generation == packet["base_generation"]
+        or type(version) is not int
+        or version not in (1, 2)
+    ):
+        raise ValueError("Invalid team-season package scope")
+    if version == 1:
+        scopes = [packet]
+        zip_names = {"qualified-overlay.zip": packet["overlay_sha256"]}
+    else:
+        scopes, zip_names = packet["team_scopes"], packet["overlays"]
+        if not isinstance(scopes, list) or len(scopes) < 2 or not isinstance(zip_names, dict):
+            raise ValueError("A grouped package requires multiple exact team-season scopes")
+    if not zip_names or any(
+        not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]*\.zip", name) for name in zip_names
+    ):
+        raise ValueError("A team-season package requires pinned local overlay ZIP names")
+
+    overlays = [(artifact_dir / name, digest) for name, digest in sorted(zip_names.items())]
+    proofs = defaultdict(dict)
+    retained = {packet_path, *(path for path, _ in overlays)}
+    for spec in scopes:
+        season, kind, team_id = spec["season"], spec["season_type"], spec["team_id"]
+        game_ids = spec["game_ids"]
+        if (
+            not re.fullmatch(r"(?:19|20)\d{2}-\d{2}", season)
+            or kind not in {"Regular Season", "Playoffs"}
+            or type(team_id) is not int
+            or team_id <= 0
+            or not isinstance(game_ids, list)
+            or not game_ids
+            or any(type(game) is not int or game <= 0 for game in game_ids)
+            or len(set(game_ids)) != len(game_ids)
+            or team_id in proofs[season, kind]
+        ):
+            raise ValueError("Invalid or duplicate team-season package scope")
+        suffix = f"{season}_{kind.lower().replace(' ', '_')}"
+        proof_name = f"{suffix}.json" if version == 1 else f"{suffix}-{team_id}.json"
+        path = artifact_dir / proof_name
+        retained.add(path)
+        proofs[season, kind][team_id] = (path, spec)
+    if set(artifact_dir.iterdir()) != retained or any(p.is_symlink() for p in retained):
+        raise ValueError("Unexpected team-season package inputs")
+    if any(_file_sha(archive) != digest for archive, digest in overlays):
+        raise ValueError("Retained team-season package checksum mismatch")
+
+    qualified = {}
+    for (season, kind), team_scopes in sorted(proofs.items()):
+        qualified[season, kind] = {}
+        for team_id, (path, spec) in sorted(team_scopes.items()):
+            body = path.read_bytes()
+            if hashlib.sha256(body).hexdigest() != spec["appearance_proof_sha256"]:
+                raise ValueError("Retained team-season package checksum mismatch")
+            proof = json.loads(body, object_pairs_hook=_unique_object)
+            games = set(spec["game_ids"])
+            if (
+                proof["season"] != season
+                or proof["season_type"] != kind
+                or proof["scope"] != "complete_team_appearance_lists"
+                or any(side["team_id"] != team_id for side in proof["sides"])
+                or len(proof["sides"]) != len(games)
+                or {side["game_id"] for side in proof["sides"]} != games
+                or version == 2
+                and proof.get("schema_version") != 1
+            ):
+                raise ValueError("Proof does not cover the exact reviewed team-season population")
+            qualified[season, kind][team_id] = (games, body, proof)
+    return packet, overlays, qualified
+
+
+def _verify_denominators(data, before, scopes):
+    for (season, kind), team_scopes in scopes.items():
+        suffix = f"{season}_{kind.lower().replace(' ', '_')}"
+        games, schedule = (
+            _final_team_games(data, before, f"raw/{family}/{suffix}.csv", team_scopes, season, kind)
+            for family in ("games", "schedule")
+        )
+        if games != schedule or any(
+            games[team_id].keys() != game_ids
+            or any(
+                side["game_date"] != games[team_id][side["game_id"]][0] for side in proof["sides"]
+            )
+            for team_id, (game_ids, _, proof) in team_scopes.items()
+        ):
+            raise ValueError("Package omits or conflicts with a finalized team-season game")
+
+
+def _install_proofs(data, before, scopes):
+    paths = set()
+    for (season, kind), team_scopes in scopes.items():
+        suffix = f"{season}_{kind.lower().replace(' ', '_')}"
+        relative = f"raw/team_game_appearances/{suffix}.json"
+        target = data / relative
+        if any(path.is_symlink() for path in (target, target.parent, target.parent.parent)):
+            raise ValueError("Symlink in team-season proof destination")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        combined = original_bytes = None
+        if relative in before:
+            if _file_sha(target) != before[relative]["sha256"]:
+                raise ValueError("Retained team-season proof differs from the immutable base")
+            combined = json.loads(target.read_bytes())
+        elif target.exists():
+            raise ValueError("Unmanifested proof would replace accepted season authority")
+        for _, body, proof in team_scopes.values():
+            if combined is None:
+                combined, original_bytes = proof, body
+            else:
+                combined, original_bytes = _append_appearance_scope(combined, proof), None
+        if original_bytes is None:
+            target.write_text(json.dumps(combined, indent=2) + "\n")
+        else:
+            target.write_bytes(original_bytes)
+        paths.add(relative)
+    return paths
 
 
 def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, base_data=None):
@@ -77,50 +212,13 @@ def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, ba
     from tools.compose_participation_overlays import compose_overlays
 
     started = perf_counter()
-    packet_path = artifact_dir / "package.json"
-    packet = json.loads(packet_path.read_bytes())
-    season, kind, team_id = packet["season"], packet["season_type"], packet["team_id"]
-    game_ids = packet["game_ids"]
     if base_data is not None and (
         base_data.resolve() == work.resolve() or base_data.resolve() in work.resolve().parents
     ):
         raise ValueError("Preparation workspace must be outside the restored base")
-    if (
-        work.exists()
-        or packet.get("schema_version") != 1
-        or generation != packet["generation_id"]
-        or generation == packet["base_generation"]
-        or not re.fullmatch(r"(?:19|20)\d{2}-\d{2}", season)
-        or kind not in {"Regular Season", "Playoffs"}
-        or type(team_id) is not int
-        or team_id <= 0
-        or not game_ids
-        or any(type(game) is not int or game <= 0 for game in game_ids)
-        or len(set(game_ids)) != len(game_ids)
-    ):
-        raise ValueError("Invalid team-season package or preparation workspace")
-
-    suffix = f"{season}_{kind.lower().replace(' ', '_')}"
-    overlay = artifact_dir / "qualified-overlay.zip"
-    proof_path = artifact_dir / f"{suffix}.json"
-    retained = {packet_path, overlay, proof_path}
-    if set(artifact_dir.iterdir()) != retained or any(p.is_symlink() for p in retained):
-        raise ValueError("Unexpected team-season package inputs")
-    if (_file_sha(overlay), _file_sha(proof_path)) != (
-        packet["overlay_sha256"],
-        packet["appearance_proof_sha256"],
-    ):
-        raise ValueError("Retained team-season package checksum mismatch")
-    proof = json.loads(proof_path.read_bytes())
-    if (
-        proof["season"] != season
-        or proof["season_type"] != kind
-        or proof["scope"] != "complete_team_appearance_lists"
-        or any(side["team_id"] != team_id for side in proof["sides"])
-        or len(proof["sides"]) != len(game_ids)
-        or {side["game_id"] for side in proof["sides"]} != set(game_ids)
-    ):
-        raise ValueError("Proof does not cover the exact reviewed team-season population")
+    if work.exists():
+        raise ValueError("Invalid team-season preparation workspace")
+    packet, overlays, scopes = _package_inputs(artifact_dir, generation)
 
     work.mkdir(parents=True)
     data = work / "data"
@@ -138,19 +236,10 @@ def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, ba
     ):
         raise ValueError("Preparation base differs from the retained package")
     before = {item["path"]: item for item in manifest["files"]}
-    games, schedule = (
-        _final_team_games(data, before, f"raw/{family}/{suffix}.csv", team_id, season, kind)
-        for family in ("games", "schedule")
-    )
-    if (
-        games != schedule
-        or games.keys() != set(game_ids)
-        or any(side["game_date"] != games[side["game_id"]][0] for side in proof["sides"])
-    ):
-        raise ValueError("Package omits or conflicts with a finalized team-season game")
+    _verify_denominators(data, before, scopes)
     base_ready = perf_counter()
     staged = compose_overlays(
-        [(overlay, packet["overlay_sha256"])],
+        overlays,
         data,
         work / "composed",
         base_generation=packet["base_generation"],
@@ -164,19 +253,7 @@ def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, ba
         target = data / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(work / "composed" / relative, target)
-    relative_proof = f"raw/team_game_appearances/{proof_path.name}"
-    target = data / relative_proof
-    target.parent.mkdir(parents=True, exist_ok=True)
-    if relative_proof in before:
-        if _file_sha(target) != before[relative_proof]["sha256"]:
-            raise ValueError("Retained team-season proof differs from the immutable base")
-        previous = json.loads(target.read_bytes())
-        combined = _append_appearance_scope(previous, proof)
-        target.write_text(json.dumps(combined, indent=2) + "\n")
-    elif target.exists():
-        raise ValueError("Unmanifested proof would replace accepted season authority")
-    else:
-        shutil.copyfile(proof_path, target)
+    proof_paths = _install_proofs(data, before, scopes)
     composed_at = perf_counter()
 
     result = publish_local_generation(generation, source_dir=data, data_root=work / "validation")
@@ -185,7 +262,7 @@ def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, ba
     )
     after = {item["path"]: item for item in json.loads(new_manifest.read_bytes())["files"]}
     changes = {name for name in before.keys() | after.keys() if before.get(name) != after.get(name)}
-    allowed = {entry["path"] for entry in staged["overlay_files"]} | {relative_proof}
+    allowed = {entry["path"] for entry in staged["overlay_files"]} | proof_paths
     if changes != allowed or before.keys() - after.keys():
         raise ValueError("Prepared generation differs outside the qualified overlay and proof")
     metrics = {
@@ -198,7 +275,11 @@ def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, ba
         "changed_object_bytes": sum(after[path]["size_bytes"] for path in changes),
         "new_objects": len(after.keys() - before.keys()),
         "manifest_bytes": new_manifest.stat().st_size,
-        "qualified_side_count": len(proof["sides"]),
+        "qualified_side_count": sum(
+            len(game_ids)
+            for team_scopes in scopes.values()
+            for game_ids, _, _ in team_scopes.values()
+        ),
         "production_writes": 0,
     }
     (work / "local-validation.json").write_text(json.dumps(asdict(result), indent=2) + "\n")
