@@ -1,0 +1,73 @@
+{
+  "generation": "availability-lal-team-2025-v1-20261127",
+  "manifest_sha256": "2239be14825fed08e13da1cc118dd1082ea1f1edca86661ea39a7503ed5cce50",
+  "activation_run": 46126604835,
+  "started_at": "2026-11-28T09:13:13.180214+00:00",
+  "request_id": "sfo1::iad1::tjxj4-1795857193891-6f2550d70eb6",
+  "readiness_request_id": "sfo1::iad1::2rmnx-1795857193329-e3a672cb2759",
+  "http_seconds": 0.65,
+  "body_sha256": "e5238e65019833c35943ced7aaed3d76b115785490fdf197d73eda8dc98f4f6a",
+  "readiness_status": 503,
+  "blockers": [
+    "new_season_not_loaded"
+  ],
+  "query": "Lakers record without Davis",
+  "expected_source_game_count": 82,
+  "verdict": "PASS",
+  "participation_scope": "team",
+  "without_player": "Anthony Davis",
+  "games": 82,
+  "wins": 53,
+  "losses": 29,
+  "pts_avg": 116.341,
+  "source_package_sha256": "7efdc46aa6ec5b1ef5d8b1767fd216cb6c5e8ca95b938421b73f5ec598090fff",
+  "runtime_commit": "99d63aecbe89cda47faeb01e178d37cd44ca6bf0",
+  "activation_receipt_sha256": "9e7db490aa9282c99a15ecdc293be95d9339b9f175ddd9971a6f8a85025ccba7",
+  "response_archive": {
+    "path": "original-33-production-response.zip",
+    "sha256": "d7562c06c937ecb99c1163d579ec4ce3b62ca1cb542f4e0db163cc8d6421cc47"
+  },
+  "k08_frozen_local_replay": {
+    "original_cases": 46,
+    "counts": {
+      "MISSING DATA": 25,
+      "LIVE": 4,
+      "PASS": 17
+    },
+    "changed_bindings": [
+      {
+        "id": 18,
+        "verdict": "PASS"
+      },
+      {
+        "id": 26,
+        "verdict": "MISSING DATA"
+      },
+      {
+        "id": 33,
+        "verdict": "PASS"
+      },
+      {
+        "id": 34,
+        "verdict": "MISSING DATA"
+      }
+    ]
+  },
+  "workflow_recovery": {
+    "archive_bytes": 67053005,
+    "archive_sha256": "fb732268c98c5c8e4e26dcc2d9a474c3140dfefa957ba19a24a3c59fd7017603",
+    "files": 1544,
+    "data_bytes": 425016983,
+    "restore_job": 140931452675,
+    "restore_receipt_sha256": "d44f5a1bb89a754c354fb02aa7662cd84c769f271511e3d5d9b2d48a0fd7b879"
+  },
+  "production_monitor": {
+    "run": 46129690500,
+    "snapshot_status": "passed",
+    "live_readiness": "failed",
+    "readiness_status": 503,
+    "blockers": [
+      "new_season_not_loaded"
+    ]
+  }
+}

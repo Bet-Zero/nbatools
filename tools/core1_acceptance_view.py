@@ -127,6 +127,10 @@ def _k08(entry, client, oracle, results):
         body = client.post("/query", json={"query": query}).json()
         observed.append(dict(query=query, **_short(body)))
         expect, check = entry["expect"], entry.get("check", {})
+        metadata = (body.get("result") or {}).get("metadata") or {}
+        for key, value in check.get("metadata", {}).items():
+            if metadata.get(key) != value:
+                problems.append(f"{query!r}: answer changed required metadata: {key}")
         if expect == "missing_data" and not _honest_refusal(body):
             # An answer, or an empty "no match" (zero games), could only come
             # from inferring absence from rows that are not there.
@@ -142,13 +146,15 @@ def _k08(entry, client, oracle, results):
                 case = next(c for c in check["cases"] if c["query"] == query)
                 verify_answer(case, body)
             elif check["kind"] == "no_match":
-                metadata = (body.get("result") or {}).get("metadata") or {}
                 assert body.get("route") == check["route"], body.get("route")
                 assert (body.get("result_status"), body.get("result_reason")) == (
                     "no_result",
                     "no_match",
                 ), _short(body)
                 assert metadata.get("without_player") == check["without_player"], metadata
+                assert metadata.get("without_player_reason") == check["without_player_reason"], (
+                    metadata
+                )
                 rest = client.post("/query", json={"query": check["rest_count_case"]["query"]})
                 verify_answer(check["rest_count_case"], rest.json())
         except Exception as exc:  # any failure to verify is a failure, never a pass

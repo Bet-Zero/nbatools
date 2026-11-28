@@ -92,12 +92,12 @@ def test_published_membership_distinctions_and_original_blockers():
             assert body["result"]["metadata"]["participation_scope"] == "team"
             assert "Incomplete team appearance coverage for Jayson Tatum" in notes
 
-    # Owner-approved clarification changes meaning descriptions, not real-NBA
-    # qualification or the denominator. ID39's WITH variant and current40 remain.
-    assert {
-        kind: sum(e["expect"] == kind for e in spec["k08"])
-        for kind in ("pass", "missing_data", "live")
-    } == {"pass": 16, "missing_data": 26, "live": 4}
+    # This release keeps its dated ledger and the same original denominator.
+    # A later snapshot can qualify an original case without rewriting this proof.
+    limited = spec["participation_expectations"]["limited_snapshot"]
+    assert limited["generation"] == generation
+    assert limited["counts"] == {"pass": 16, "missing_data": 26, "live": 4}
+    assert [entry["id"] for entry in spec["k08"]] == list(range(1, 47))
     output = os.environ.get("NBATOOLS_ACQUISITION_OUTPUT")
     if output:
         path = Path(output) / "core1-limited-participation"

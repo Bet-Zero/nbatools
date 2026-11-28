@@ -288,7 +288,8 @@
       "check": {
         "kind": "no_match",
         "route": "team_record",
-        "without_player": "Luka Doncic",
+        "without_player": "Luka Dončić",
+        "without_player_reason": "reported_rest",
         "rest_count_case": {
           "query": "How many games did Luka Doncic rest in 2025-26?",
           "expected_route": "game_finder",
@@ -377,11 +378,20 @@
     {
       "id": 26,
       "original_node_id": "tests/test_c1_availability_words.py::test_team_record_with_an_opposing_player_out[Lakers record vs Celtics and Knicks without Tatum-opponents3]",
+      "original_query": "Lakers record vs Celtics and Knicks without Tatum",
       "queries": [
-        "Lakers record vs Celtics and Knicks without Tatum"
+        "Lakers record vs Celtics and Knicks without opponent Jayson Tatum"
       ],
       "expect": "missing_data",
-      "reason": "Missing data: needs dated Knicks-side membership or nonmembership for Tatum on every selected date."
+      "reason": "The original opponent eligibility requirement keeps the full BOS/NYK union and excludes verified nonmembers. It still needs dated Knicks-side membership or nonmembership for Tatum. Explicit opponent wording checks this unresolved scope; the original bare wording now uses the approved selected-team appearance default.",
+      "check": {
+        "metadata": {
+          "team": "LAL",
+          "opponents": ["BOS", "NYK"],
+          "participation_scope": "opponent",
+          "without_player": "Jayson Tatum"
+        }
+      }
     },
     {
       "id": 27,
@@ -452,8 +462,30 @@
       "queries": [
         "Lakers record without Davis"
       ],
-      "expect": "missing_data",
-      "reason": "Missing data: needs dated official Davis club membership (or per-game inactive lists) for 2025-26 Lakers dates, the default season. Never inferred from absent rows."
+      "expect": "pass",
+      "reason": "The default historical snapshot is the 2025-26 regular season. All 82 qualified Lakers appearance lists exclude Anthony Davis from the selected team side. Deployed proof is recorded with the Lakers release.",
+      "check": {
+        "kind": "answers",
+        "metadata": {
+          "participation_scope": "team",
+          "without_player": "Anthony Davis"
+        },
+        "cases": [
+          {
+            "query": "Lakers record without Davis",
+            "expected_route": "team_record",
+            "summary": {
+              "team_name": "Los Angeles Lakers",
+              "season_start": "2025-26",
+              "season_end": "2025-26",
+              "season_type": "Regular Season",
+              "games": 82,
+              "wins": 53,
+              "losses": 29
+            }
+          }
+        ]
+      }
     },
     {
       "id": 34,
@@ -662,6 +694,12 @@
     "fixture_vs_real_nba": "The original controlled positives stipulate membership and test software capability. They do not certify that Davis belonged to the Lakers in the served 2025-26 default season.",
     "mixed_opponents": "Original26 keeps the full BOS/NYK union. Verified Knicks nonmembership excludes those games; unknown Knicks dates block a complete union answer. Do not substitute the Boston subset.",
     "variant_scope": "Original39 also includes WITH Davis, a positive coappearance question. Original40 includes a literal-current variant that remains Live. Do not silently change seasons or collapse these meanings.",
-    "real_nba_reclassification": "None authorized by new factual qualification in this change: 16 pass /26 missing_data /4 live remain unchanged."
+    "limited_snapshot": {
+      "generation": "availability-season-inactive-2024-v1-20261116",
+      "recorded_ledger_revision": "99d63aecbe89cda47faeb01e178d37cd44ca6bf0",
+      "recorded_ledger_sha256": "06d6bb34ab8115a4aad9797072a73cb338a197126fb73f97d058a5f7ee87bc06",
+      "counts": {"pass": 16, "missing_data": 26, "live": 4}
+    },
+    "real_nba_reclassification": "The Lakers 2025-26 release qualifies original #33 for selected-team historical appearances. The original rostered, opponent-eligibility and literal-current requirements remain separate."
   }
 }

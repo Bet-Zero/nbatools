@@ -5,9 +5,9 @@
 **November 28, 2026. Integration lead Codex.** Start with the
 [adopted plan and Section 6](execution-plan.md#6-completion-and-first-execution-assignment)
 and [current frozen release evidence](stabilization-evidence-20261127.md).
-[Prior checkpoint](https://github.com/Bet-Zero/nbatools/blob/cc14b1d329dcf6842833706096fd7ea908a663e6/working/nba-tools-completion-program/README.md)
+[Prior checkpoint](https://github.com/Bet-Zero/nbatools/blob/f512933a02309c1a33ad4b68096e6878371699ea/working/nba-tools-completion-program/README.md)
 
-**Cleveland is delivered.** The active generation is
+**Cleveland is delivered and retained for recovery.** The last-good generation is
 `availability-cleveland-2024-v3-20261124`, manifest
 `d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034`.
 All 87 public controls passed. The original backup and independent full restore
@@ -32,33 +32,34 @@ the clock running until the last case passed. The owner approved an eight-hour
 recovery objective. [Monitoring and recovery evidence](stabilization-evidence-20261127.md#approved-monitoring-and-recovery) ·
 [Scheduled run](https://github.com/Bet-Zero/nbatools/actions/runs/46097846832)
 
-**Current queue.** W7 and W8 prepared and qualified the 2025–26 Lakers candidate
+**The Lakers snapshot is active.** The owner approved the switch to
 `availability-lal-team-2025-v1-20261127`, manifest
 `2239be14825fed08e13da1cc118dd1082ea1f1edca86661ea39a7503ed5cce50`.
-It certifies all 82 Lakers sides. Independent upload verification checked all
-1,544 data files and confirmed zero active-pointer writes. The protected preview
-passed the 6.11-second cold query and all six follow-ups. Cleveland is serving.
-Run the exact read-only activation preparation and check the scheduled monitor
-against the verified publication record. The owner then decides on the
-one-pointer activation. [Upload receipt](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-46121655390) ·
-[Hosted qualification](source-evidence/lakers-team-season-2025-26/hosted-qualification.json)
+All six registered production answers and the exact original omitted-season
+question passed. The owner-approved switch used one conditional pointer write
+and retained Cleveland. A separate credential-free runner restored all 1,544
+files from the 67,053,005-byte backup. The production monitor passed snapshot
+health and scoring on the verified Lakers manifest. Strict Live readiness still
+reports only `new_season_not_loaded`.
+[Activation](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-46126604835) ·
+[Backup and restore](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-46126604835) ·
+[Production monitor](https://github.com/Bet-Zero/nbatools/actions/runs/46129690500) ·
+[Original query proof](source-evidence/lakers-team-season-2025-26/original-33-production.json)
 
-**W8 and W9.** The independent acquisition and shared-object candidates are in
-[PR 673](https://github.com/Bet-Zero/nbatools/pull/673) and
-[PR 674](https://github.com/Bet-Zero/nbatools/pull/674). An exact offline Lakers
-comparison projected 86 PUTs and 3,115,859 bytes with reuse. The complete
-1,544-file archive and clean restore passed locally. W8 still requires the
-applicable R2 checks, grouped preparation review and a second independently
-qualified real scope for grouped expansion evidence. W6B remains an archive
-migration trigger. W9 still requires selected Live scope, fresh source evidence,
-positive deployed answers and a measured publication and recovery cadence.
+**Next action for W8.** Run the pinned two-game Boston source batch against
+the restored Lakers base, then replay it through native preparation.
+Boston has 69 of 82 verified sides and 13 archive-indexed gaps. Integrate
+reviewed [acquisition](https://github.com/Bet-Zero/nbatools/pull/673),
+[shared storage](https://github.com/Bet-Zero/nbatools/pull/674), and
+[grouped preparation](https://github.com/Bet-Zero/nbatools/pull/676).
+Prove a real authorized shared-object release and clean recovery within
+the existing budget. W6B remains an archive migration trigger. W9 still
+needs fresh source evidence, positive Live answers and a measured cadence.
 
-**Original product ledger.** K08 remains 16 PASS / 26 MISSING DATA / 4 LIVE.
-The 2025–26 Lakers team-season slice uses all 82 final games. Requirement #33,
-“Lakers record without Davis,” is one acceptance case for the slice. Verify
-complete selected-side appearance coverage, contextual identity and independent
-game records. Measure preparation, serving, publication and recovery effort
-before proposing a wider cadence. Rostered cases require dated club membership
-and qualified nonparticipation. [Original acceptance](acceptance-baseline-pr582.md) ·
+**Original product ledger.** K08 is 17 PASS / 25 MISSING DATA / 4 LIVE.
+Requirement #33, “Lakers record without Davis,” returns 53–29 across the 82
+qualified selected-team games. Rostered and opponent eligibility cases still
+require dated club evidence. [Current ledger](core1-acceptance-map.json) ·
+[Original acceptance](acceptance-baseline-pr582.md) ·
 [Coverage record](data-quality/DQ-006.json) ·
 [Carry-forward](checkpoint-history-20261112.md)
