@@ -32,14 +32,34 @@ class Receipts:
     def registry(self, sha):
         return self.registries[sha]
 
-    def add(self, run_id, state, *, mutate=None):
+    def add(self, run_id, state, *, mutate=None, reuse=False):
         tag = f"data-publication-{run_id}"
-        commit, manifest = f"{run_id:040x}", f"{run_id:064x}"
+        commit = f"{run_id:040x}"
         generation, base = f"fixture-next-{run_id}", "fixture-base"
+        objects = [{"path": "raw/verified.csv", "size_bytes": 42, "sha256": "5" * 64}]
+        if reuse:
+            objects[0]["storage_generation"] = base
+        manifest_body = (
+            json.dumps(
+                {
+                    "schema_version": 2 if reuse else 1,
+                    "files": objects,
+                    "generation_id": generation,
+                },
+                indent=2,
+                sort_keys=True,
+            ).encode()
+            + b"\n"
+        )
+        manifest = hashlib.sha256(manifest_body).hexdigest()
         candidate = state == "candidate_activated_historical_verified"
         operation = "activate_candidate" if candidate else "publish"
         activation = dict(manifest_sha256=manifest, upload_run_id=31)
-        package = dict(generation_id=generation, publisher_sha="e" * 40)
+        checks = [
+            {"query": "fixture team record", "summary": {"games": 2}},
+            {"query": "fixture team games", "sections": {"finder": [{"game_id": 314}]}},
+        ]
+        package = dict(generation_id=generation, publisher_sha="e" * 40, deployed_checks=checks)
         if candidate:
             package.update(activation=activation, operations=[operation])
         registry = json.dumps(
@@ -74,11 +94,26 @@ class Receipts:
                 manifest_sha256=manifest,
                 pointer="metadata/active_generation.json",
                 file_count=1,
+                total_bytes=42,
             ),
-            deployed_readiness=dict(active_generation=generation, ready=not candidate),
-            deployed_answers=[{"ok": True}],
+            deployed_readiness=dict(
+                active_generation=generation,
+                ready=True,
+                status="ready",
+                immutable_generation=True,
+                blockers=[],
+            ),
+            deployed_readiness_http_status=200,
+            deployed_health={"http_status": 200, "status": "ok"},
+            operational_acceptance_complete=True,
+            deployed_answers=checks,
+            deployed_query_attempts=[
+                dict(index=i, query=check["query"], attempt=1, status=200)
+                for i, check in enumerate(checks, 1)
+            ],
             file_count=1,
-            verified_objects=[{"path": "verified"}],
+            total_bytes=42,
+            verified_objects=objects,
             package="example",
             registry_sha256=hashlib.sha256(registry).hexdigest(),
             publisher_sha=package["publisher_sha"],
@@ -158,7 +193,7 @@ def test_verified_ordinary_publication_uses_historical_publish_registry_default(
         (lambda r: r["publication"].update(action="candidate_upload"), "pointer or manifest"),
         (
             lambda r: r["deployed_readiness"].update(active_generation="other"),
-            "pointer or manifest",
+            "readiness does not match",
         ),
         (lambda r: r["activation_evidence"].update(upload_run_id=123), "approved operation"),
         (lambda r: r.update(registry_sha256="0" * 64), "exact reviewed registry"),
@@ -195,6 +230,72 @@ def test_no_accepted_outcome_fails_closed():
     repo = Receipts()
     repo.add(20, "candidate_independently_verified_not_activated")
     with pytest.raises(evidence.PublicationEvidenceError, match="bounded receipt history"):
+        evidence.resolve_verified_publication(repo)
+
+
+@pytest.mark.parametrize(
+    ("mutate", "message"),
+    [
+        (lambda r: r.update(verified_objects="x", deployed_answers="invalid"), "inventory"),
+        (lambda r: r.update(deployed_answers="invalid"), "registered records"),
+        (lambda r: r["verified_pointer"].update(schema_version=True), "pointer or manifest"),
+        (lambda r: r["verified_objects"][0].update(path="raw/../data"), "paths or hashes"),
+        (lambda r: r["verified_objects"][0].update(sha256="bogus"), "paths or hashes"),
+        (lambda r: r["verified_objects"][0].update(sha256="f" * 64), "prepared manifest"),
+        (lambda r: r["verified_objects"][0].update(size_bytes=True), "paths or hashes"),
+        (lambda r: r["publication"].update(file_count=True), "counts or totals"),
+        (lambda r: r.update(total_bytes=41), "counts or totals"),
+        (lambda r: r["deployed_readiness"].update(ready="bad"), "readiness does not match"),
+        (lambda r: r["deployed_health"].update(http_status=503, status="failed"), "health"),
+        (lambda r: r.pop("deployed_health"), "health"),
+        (lambda r: r.update(deployed_answers=r["deployed_answers"][::-1]), "registered checks"),
+        (lambda r: r.update(deployed_answers=r["deployed_answers"][:1]), "registered records"),
+        (
+            lambda r: r["deployed_answers"].__setitem__(
+                0, {"query": "fixture team record", "summary": {"games": "2"}}
+            ),
+            "registered values or rows",
+        ),
+        (lambda r: r["deployed_query_attempts"][0].update(status=503), "successful response"),
+        (lambda r: r["deployed_query_attempts"][0].update(attempt=True), "registered records"),
+    ],
+)
+def test_malformed_success_with_valid_release_asset_is_untrusted(mutate, message):
+    repo = Receipts()
+    repo.add(20, "candidate_activated_historical_verified", mutate=mutate)
+    with pytest.raises(evidence.PublicationEvidenceError, match=message):
+        evidence.resolve_verified_publication(repo)
+
+
+def test_shared_object_manifest_and_one_approved_retry_are_accepted():
+    def accepted_retry(receipt):
+        attempts = receipt["deployed_query_attempts"]
+        attempts[0:1] = [dict(attempts[0], status=429), dict(attempts[0], attempt=2)]
+
+    repo = Receipts()
+    generation, manifest = repo.add(
+        20, "candidate_activated_historical_verified", reuse=True, mutate=accepted_retry
+    )
+    result = evidence.resolve_verified_publication(repo)
+    assert (result.generation_id, result.manifest_sha256) == (generation, manifest)
+
+
+def test_legacy_health_exception_requires_the_original_run_commit_and_bytes(monkeypatch):
+    repo = Receipts()
+    repo.add(
+        20, "candidate_activated_historical_verified", mutate=lambda r: r.pop("deployed_health")
+    )
+    tag = "data-publication-20"
+    raw = repo.bodies[tag]
+    sha = hashlib.sha256(raw).hexdigest()
+    commit = repo.releases[0]["target_commitish"]
+    monkeypatch.setattr(evidence, "CLEVELAND_LEGACY_HEALTH_RECEIPT", ("20", commit, sha))
+    assert evidence.resolve_verified_publication(repo).receipt_sha256 == sha
+    repo.bodies[tag] += b"\n"
+    repo.releases[0]["assets"][0].update(
+        size=len(repo.bodies[tag]), digest="sha256:" + hashlib.sha256(repo.bodies[tag]).hexdigest()
+    )
+    with pytest.raises(evidence.PublicationEvidenceError, match="health"):
         evidence.resolve_verified_publication(repo)
 
 

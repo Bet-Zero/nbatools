@@ -967,9 +967,8 @@ def verify_published_snapshot(
         if readiness is None:
             raise ValueError("Deployed readiness did not adopt the verified generation")
         receipt["deployed_readiness"] = readiness
-        if activation:
-            receipt["deployed_readiness_http_status"] = response.status_code
-            receipt["deployed_health"] = check_activation_health(base_url)
+        receipt["deployed_readiness_http_status"] = response.status_code
+        receipt["deployed_health"] = check_activation_health(base_url)
         answers = check_live_answers(package, receipt)
         final_pointer, _, final_hash = verify_pointer_manifest(
             client, bucket, package["generation_id"]
