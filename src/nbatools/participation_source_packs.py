@@ -160,12 +160,9 @@ def unpack_sources(
                     ):
                         raise ValueError(f"Invalid participation source ZIP member: {relative}")
                     if selected is None or relative in selected:
-                        yield (
-                            relative,
-                            _checked_bytes(
-                                zipped.read(member), item.size_bytes, item.sha256, relative
-                            ),
-                        )
+                        with zipped.open(member) as body:
+                            raw = body.read(item.size_bytes + 1)
+                        yield relative, _checked_bytes(raw, item.size_bytes, item.sha256, relative)
         except BadZipFile as exc:
             raise ValueError(f"Malformed participation source ZIP: {pack}") from exc
 
