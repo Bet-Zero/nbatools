@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 
 import pandas as pd
+import pytest
 
+from nbatools import readiness
 from nbatools.readiness import (
     ReadinessSnapshot,
     SeasonState,
@@ -14,6 +17,34 @@ from nbatools.readiness import (
 )
 
 NOW = datetime(2026, 7, 14, 12, tzinfo=UTC)
+
+
+@pytest.mark.parametrize(
+    ("schema", "storage", "accepted"),
+    [
+        (1, {}, True),
+        (2, {"storage_generation": "previous-release"}, True),
+        (2, {"storage_generation": "current-release"}, False),
+        (2, {"storage_generation": "../other-prefix"}, False),
+        (1, {"storage_generation": "previous-release"}, False),
+        (3, {}, False),
+    ],
+)
+def test_readiness_uses_the_runtime_immutable_manifest_rules(
+    monkeypatch, schema, storage, accepted
+):
+    data = {
+        "generation_id": "current-release",
+        "schema_version": schema,
+        "files": [
+            {"path": "raw/games/season.csv", "size_bytes": 10, "sha256": "a" * 64, **storage}
+        ],
+    }
+    monkeypatch.setattr(readiness, "data_exists", lambda path: True)
+    monkeypatch.setattr(readiness, "data_read_text", lambda path: json.dumps(data))
+    immutable, error = readiness._inspect_runtime_generation(data["generation_id"])
+    assert immutable is accepted
+    assert (error is None) is accepted
 
 
 def _slice(

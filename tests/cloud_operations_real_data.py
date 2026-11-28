@@ -11,6 +11,7 @@ import json
 import os
 import subprocess
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -23,6 +24,30 @@ from nbatools.commands.pipeline.sync_r2 import create_r2_client, load_r2_config
 from tools.cloud_backup import export_backup
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.engine]
+
+
+def test_pinned_snapshot_has_only_the_actual_live_readiness_gap():
+    from nbatools import data_source, readiness
+
+    expected = {
+        "availability-lal-team-2025-v1-20261127": (
+            "2239be14825fed08e13da1cc118dd1082ea1f1edca86661ea39a7503ed5cce50"
+        ),
+        "availability-bos-team-2025-v1-20261128": (
+            "e075b2b7969ed2e068952f2c307b0b39f015b7fc2118e9fb002afc5d2f5a343b"
+        ),
+    }
+    with data_source.data_generation_context() as generation:
+        raw = data_source.data_read_text("data/metadata/generation_manifest.json").encode()
+        assert hashlib.sha256(raw).hexdigest() == expected[generation]
+        result = readiness.build_readiness_info(
+            checked_at=datetime(2026, 11, 28, 12, tzinfo=UTC), env={}
+        )
+    assert result.active_generation == generation
+    assert result.immutable_generation is True
+    assert result.ready is False
+    assert result.max_active_lag_hours == 24
+    assert [blocker.code for blocker in result.blockers] == ["new_season_not_loaded"]
 
 
 def test_full_generation_backup(capfd):
