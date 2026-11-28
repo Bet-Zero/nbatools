@@ -279,6 +279,23 @@ def test_grouped_scopes_compose_and_run_the_real_validator_once(
     assert {p: p.read_bytes() for p in base_bytes} == base_bytes
 
 
+def test_group_rejects_native_changes_outside_declared_games(grouped_inputs, tmp_path, monkeypatch):
+    base, artifacts, _, _ = grouped_inputs
+    native_compose = composition.compose_overlays
+
+    def with_outside_game(*args, **kwargs):
+        staged = native_compose(*args, **kwargs)
+        csv_path = f"raw/player_game_availability/{SUFFIX}.csv"
+        staged["manifest_absent_creations"][csv_path]["added_game_ids"].append("0022500004")
+        return staged
+
+    monkeypatch.setattr(composition, "compose_overlays", with_outside_game)
+    work = tmp_path / "outside-group"
+    with pytest.raises(ValueError, match="outside the declared games"):
+        prepare(artifacts, CODE_ROOT, work, "candidate", base)
+    assert not (work / "validation").exists()
+
+
 @pytest.mark.parametrize(
     "fault", ["omitted_game", "wrong_side", "forged_players", "duplicate_scope"]
 )

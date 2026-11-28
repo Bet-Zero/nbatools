@@ -177,6 +177,28 @@ def _verify_denominators(data, before, scopes):
             raise ValueError("Package omits or conflicts with a finalized team-season game")
 
 
+def _verify_grouped_overlay(staged, scopes):
+    allowed = {}
+    for (season, kind), team_scopes in scopes.items():
+        suffix = f"{season}_{kind.lower().replace(' ', '_')}"
+        games = set().union(*(game_ids for game_ids, _, _ in team_scopes.values()))
+        prefix = f"raw/player_game_availability/{suffix}"
+        allowed[prefix + ".csv"] = games
+        allowed[prefix + ".imports.json"] = games
+    changed_tables = staged["append_only"] | staged["manifest_absent_creations"]
+    for path, change in changed_tables.items():
+        if path not in allowed or any(
+            int(game) not in allowed[path] for game in change["added_game_ids"]
+        ):
+            raise ValueError("Grouped overlay adds observations outside the declared games")
+    if any(
+        not item["path"].startswith("raw/player_game_availability_sources/")
+        for item in staged["overlay_files"]
+        if item["path"] not in changed_tables
+    ):
+        raise ValueError("Grouped overlay includes an unrelated source family")
+
+
 def _install_proofs(data, before, scopes):
     paths = set()
     for (season, kind), team_scopes in scopes.items():
@@ -235,7 +257,10 @@ def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, ba
         or manifest["generation_id"] != packet["base_generation"]
     ):
         raise ValueError("Preparation base differs from the retained package")
-    before = {item["path"]: item for item in manifest["files"]}
+    before = {
+        item["path"]: {key: value for key, value in item.items() if key != "storage_generation"}
+        for item in manifest["files"]
+    }
     _verify_denominators(data, before, scopes)
     base_ready = perf_counter()
     staged = compose_overlays(
@@ -248,6 +273,8 @@ def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, ba
             ["git", "-C", str(code_root), "rev-parse", "HEAD"], text=True
         ).strip(),
     )
+    if packet["schema_version"] == 2:
+        _verify_grouped_overlay(staged, scopes)
     for entry in staged["overlay_files"]:
         relative = Path(entry["path"])
         target = data / relative
