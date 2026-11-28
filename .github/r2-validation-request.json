@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "c6e884ef54a96476899386f24fa7771fb70925e3",
+  "generation": "availability-cleveland-2024-v3-20261124",
+  "tests": ["tests/cloud_team_season_clock_fallback_real_data.py::test_capture_two_pinned_team_season_final_boxes"],
+  "raw_qa_cases": []
+}
