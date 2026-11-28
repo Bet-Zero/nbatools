@@ -12,7 +12,12 @@ from fastapi.testclient import TestClient
 
 from nbatools.api import app
 from nbatools.commands.pipeline.team_appearance_coverage import qualify_retained_appearances
-from nbatools.data_source import data_generation_context, data_path, reset_data_source_cache
+from nbatools.data_source import (
+    data_generation_context,
+    data_path,
+    data_read_text,
+    reset_data_source_cache,
+)
 from nbatools.dataframe_cache import clear_frame_cache
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.query]
@@ -20,6 +25,44 @@ PROGRAM = Path(__file__).resolve().parents[1] / "working/nba-tools-completion-pr
 SOURCES = PROGRAM / "source-evidence"
 CLE = 1610612739
 PROOF = SOURCES / "team-appearances-cleveland-2024-v1/2024-25_regular_season.json"
+
+
+def test_published_lakers_mixed_record_preserves_written_dates():
+    with data_generation_context() as generation:
+        assert generation == "availability-lal-team-2025-v1-20261127"
+        manifest = data_read_text("data/metadata/generation_manifest.json")
+        assert hashlib.sha256(manifest.encode()).hexdigest() == (
+            "2239be14825fed08e13da1cc118dd1082ea1f1edca86661ea39a7503ed5cce50"
+        )
+        # The existing independent final reports establish the only game in
+        # this window with Dončić playing and James explicitly absent.
+        query = (
+            "Lakers record from October 24, 2025 to October 27, 2025 when "
+            "Luka Doncic played but LeBron James did not play in 2025-26"
+        )
+        response = TestClient(app).post("/query", json={"query": query})
+        assert response.status_code == 200
+        body = response.json()
+        assert (body["route"], body["result_status"]) == ("team_record", "ok"), body
+        result = body["result"]
+        metadata = result["metadata"]
+        assert (
+            metadata["participation_scope"],
+            metadata["with_player"],
+            metadata["without_player"],
+        ) == (
+            "team",
+            "Luka Dončić",
+            "LeBron James",
+        )
+        (summary,) = result["sections"]["summary"]
+        assert (summary["games"], summary["wins"], summary["losses"], summary["pts_avg"]) == (
+            1,
+            1,
+            0,
+            128,
+        )
+        assert [row["game_id"] for row in result["sections"]["game_log"]] == [22500019]
 
 
 def test_explicit_role_cannot_reduce_a_mixed_request_on_published_catalog():

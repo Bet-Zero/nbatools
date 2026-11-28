@@ -209,17 +209,7 @@ def test_qualified_season_mixed_team_record_and_api(tmp_path, monkeypatch):
                     and result.metadata["with_player"]
                 )
                 _assert_numeric(result.result.to_dict(), expected)
-            if bounded:
-                calendar = execute_natural_query(
-                    f"Lakers record from October 24, 2025 to October 27, 2025 when "
-                    f"{name} played but LeBron James did not play in 2025-26"
-                )
-                assert calendar.route == "team_record"
-                assert calendar.result_status == "ok", calendar.metadata
-                assert calendar.metadata["with_player"] == natural.metadata["with_player"]
-                assert calendar.metadata["without_player"] == "LeBron James"
-                _assert_numeric(calendar.result.to_dict(), expected)
-            else:
+            if not bounded:
                 swapped = execute_natural_query(
                     f"Lakers record with {name} and with LeBron James out in 2025-26"
                 )
