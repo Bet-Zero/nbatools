@@ -150,6 +150,22 @@ def compose_overlays(
     entries = {_path(item["path"]): item for item in manifest["files"]}
     if len(entries) != len(manifest["files"]):
         raise ValueError("Duplicate BASE manifest path")
+    from nbatools.participation_source_packs import (
+        packed_sources_from_manifest,
+        read_disk,
+        unpack_sources,
+    )
+
+    def read(name):
+        return read_disk(baseline_root, name)
+
+    physical, packed = packed_sources_from_manifest(manifest, read)
+    entries.update(
+        {
+            name: dict(path=name, size_bytes=item.size_bytes, sha256=item.sha256)
+            for name, item in packed.items()
+        }
+    )
     baseline, combined, inputs = {}, {}, []
 
     def base(relative):
@@ -161,7 +177,12 @@ def compose_overlays(
                 raise ValueError("Manifest-absent path has a configured BASE file")
             return None
         if relative not in baseline:
-            raw = path.read_bytes()
+            if relative in packed:
+                if path.exists():
+                    raise ValueError("Packed participation source also exists loose in BASE")
+                raw = dict(unpack_sources(packed, physical, read, selected={relative}))[relative]
+            else:
+                raw = path.read_bytes()
             if any(entries[relative].get(k) != v for k, v in _metadata(relative, raw).items()):
                 raise ValueError("Actual BASE bytes differ from immutable manifest")
             baseline[relative] = raw

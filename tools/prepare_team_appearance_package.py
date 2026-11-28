@@ -4,6 +4,8 @@ Schema 1 keeps the single-team package and its filenames. Schema 2 declares
 ``team_scopes`` with the same season, type, team ID, game IDs and proof SHA256
 per scope; each proof is named ``<season>_<type>-<team_id>.json`` (use
 ``regular_season`` or ``playoffs``). ``overlays`` maps ZIP filenames to SHA256s.
+An explicit ``pack_sources: true`` compacts loose originals. A packed base
+keeps its existing packs and appends new ones for additional originals.
 The existing publication workflow still owns protected approval.
 """
 
@@ -94,6 +96,7 @@ def _package_inputs(artifact_dir, generation):
         or generation == packet["base_generation"]
         or type(version) is not int
         or version not in (1, 2)
+        or ("pack_sources" in packet and packet["pack_sources"] is not True)
     ):
         raise ValueError("Invalid team-season package scope")
     if version == 1:
@@ -231,6 +234,11 @@ def _install_proofs(data, before, scopes):
 def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, base_data=None):
     from nbatools.commands.pipeline.generation_publication import publish_local_generation
     from nbatools.commands.pipeline.generation_refresh import download_active_generation
+    from nbatools.participation_source_packs import (
+        pack_sources,
+        packed_sources_from_manifest,
+        read_disk,
+    )
     from tools.compose_participation_overlays import compose_overlays
 
     started = perf_counter()
@@ -261,6 +269,7 @@ def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, ba
         item["path"]: {key: value for key, value in item.items() if key != "storage_generation"}
         for item in manifest["files"]
     }
+    _, existing_packs = packed_sources_from_manifest(manifest, lambda name: read_disk(data, name))
     _verify_denominators(data, before, scopes)
     base_ready = perf_counter()
     staged = compose_overlays(
@@ -281,6 +290,21 @@ def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, ba
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(work / "composed" / relative, target)
     proof_paths = _install_proofs(data, before, scopes)
+    overlay = {entry["path"]: entry for entry in staged["overlay_files"]}
+    allowed = set(overlay) | proof_paths
+    removed = set()
+    if existing_packs or packet.get("pack_sources"):
+        packed, pack_changes = pack_sources(data, existing_packs)
+        newly_packed = packed.keys() - existing_packs.keys()
+        for name in newly_packed:
+            expected = overlay.get(name, before.get(name))
+            if expected is None or (packed[name].size_bytes, packed[name].sha256) != (
+                expected["size_bytes"],
+                expected["sha256"],
+            ):
+                raise ValueError("Packing changed or introduced unqualified source bytes")
+        removed = newly_packed & before.keys()
+        allowed = (allowed - newly_packed) | removed | pack_changes
     composed_at = perf_counter()
 
     result = publish_local_generation(generation, source_dir=data, data_root=work / "validation")
@@ -289,8 +313,7 @@ def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, ba
     )
     after = {item["path"]: item for item in json.loads(new_manifest.read_bytes())["files"]}
     changes = {name for name in before.keys() | after.keys() if before.get(name) != after.get(name)}
-    allowed = {entry["path"] for entry in staged["overlay_files"]} | proof_paths
-    if changes != allowed or before.keys() - after.keys():
+    if changes != allowed or before.keys() - after.keys() != removed:
         raise ValueError("Prepared generation differs outside the qualified overlay and proof")
     metrics = {
         "base_seconds": base_ready - started,
@@ -299,7 +322,7 @@ def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, ba
         "base_files": len(before),
         "base_bytes": sum(item["size_bytes"] for item in before.values()),
         "changed_paths": sorted(changes),
-        "changed_object_bytes": sum(after[path]["size_bytes"] for path in changes),
+        "changed_object_bytes": sum(after[path]["size_bytes"] for path in changes & after.keys()),
         "new_objects": len(after.keys() - before.keys()),
         "manifest_bytes": new_manifest.stat().st_size,
         "qualified_side_count": sum(

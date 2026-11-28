@@ -233,11 +233,24 @@ def plan_collection(
     entries = {item["path"]: item for item in manifest["files"]}
     if len(entries) != len(manifest["files"]):
         raise ValueError("Duplicate manifest paths")
+    from nbatools.participation_source_packs import (
+        expanded_source_tree,
+        packed_sources_from_manifest,
+        read_disk,
+    )
+
+    physical, packed = packed_sources_from_manifest(manifest, lambda name: read_disk(root, name))
+    entries.update(
+        {
+            name: {"size_bytes": item.size_bytes, "sha256": item.sha256}
+            for name, item in packed.items()
+        }
+    )
     generation = manifest["generation_id"]
     dependencies = {}
 
     def verify(relative, *, optional=False):
-        path = root / relative
+        path = (view if relative in packed else root) / relative
         if optional and relative not in entries and not path.exists():
             return None
         if relative not in dependencies:
@@ -256,8 +269,9 @@ def plan_collection(
     archive = _reviewed_archive_trees(
         tree_files, archive_index_receipt, archive_index_receipt_sha256
     )
-    verify("metadata/player_names.csv")
-    games = _collect_sides(root, scopes, dependencies, verify)
+    with expanded_source_tree(root, physical, packed) as view:
+        verify("metadata/player_names.csv")
+        games = _collect_sides(view, scopes, dependencies, verify)
     batches, selected_games, selected_calls, selected_bytes = _select_batch(
         root, games, originals, archive, failures, max_games, max_remote_calls, max_remote_bytes
     )

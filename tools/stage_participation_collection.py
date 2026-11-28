@@ -213,6 +213,12 @@ def build_stage(
         if len(entries) != len(manifest["files"]):
             raise ValueError("Duplicate manifest paths")
         root, baseline = work / "data", {}
+        from nbatools.participation_source_packs import packed_sources_from_manifest, unpack_sources
+
+        def read(relative):
+            return data_path("data/" + relative).read_bytes()
+
+        physical, packed = packed_sources_from_manifest(manifest, read)
 
         def copy(relative, *, optional=False):
             if optional and relative not in entries:
@@ -261,6 +267,12 @@ def build_stage(
             raise ValueError("Served retained source set differs from manifest")
         for relative in sorted(listed):
             copy(relative)
+        for relative, raw in unpack_sources(packed, physical, read):
+            target = root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with target.open("xb") as file:
+                file.write(raw)
+            baseline[relative] = raw
         game_ids = list(groups)
         if not creating and set(map(int, game_ids)) & set(
             pd.to_numeric(pd.read_csv(root / csv).game_id)
