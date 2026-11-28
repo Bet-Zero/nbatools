@@ -62,22 +62,23 @@ def _binary_bytes(root):
     }
 
 
-def _manifest(root, monkeypatch):
+def _manifest(root, monkeypatch, *, shared=False):
     entries = []
     for p in sorted(root.rglob("*")):
         if p.is_file() and p.name != "generation_manifest.json":
             raw = p.read_bytes()
-            entries.append(
-                dict(
-                    path=p.relative_to(root).as_posix(),
-                    sha256=hashlib.sha256(raw).hexdigest(),
-                    size_bytes=len(raw),
-                )
+            entry = dict(
+                path=p.relative_to(root).as_posix(),
+                sha256=hashlib.sha256(raw).hexdigest(),
+                size_bytes=len(raw),
             )
+            if shared and entry["path"].startswith(reasons.SOURCES):
+                entry["storage_generation"] = "retained-v1"
+            entries.append(entry)
     metadata = root / "metadata"
     metadata.mkdir(exist_ok=True)
     (metadata / "generation_manifest.json").write_text(
-        json.dumps(dict(generation_id="legacy", files=entries))
+        json.dumps(dict(schema_version=2 if shared else 1, generation_id="legacy", files=entries))
     )
     monkeypatch.setenv("DATA_SOURCE", "local")
     monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(root.parent))
@@ -86,7 +87,8 @@ def _manifest(root, monkeypatch):
     clear_frame_cache()
 
 
-def test_original_replay_idempotence_and_runtime_without_conversion(staged, monkeypatch):
+@pytest.mark.parametrize("shared", [False, True])
+def test_original_replay_idempotence_and_runtime_without_conversion(staged, monkeypatch, shared):
     root, _, _ = staged
     before = _binary_bytes(root)
     row = _stage(staged)
@@ -94,7 +96,7 @@ def test_original_replay_idempotence_and_runtime_without_conversion(staged, monk
     _stage(staged)
     producer.validate_publication(root)
     assert _binary_bytes(root) == before
-    _manifest(root, monkeypatch)
+    _manifest(root, monkeypatch, shared=shared)
     monkeypatch.setattr(
         producer.report, "_report_text", lambda *_: pytest.fail("Runtime must not convert PDFs")
     )
@@ -103,6 +105,19 @@ def test_original_replay_idempotence_and_runtime_without_conversion(staged, monk
     assert list(observed.player_id) == [12]
     clear_frame_cache()
     reset_data_source_cache()
+
+
+def test_shared_source_still_requires_the_exact_logical_digest(staged, monkeypatch):
+    root, _, _ = staged
+    _stage(staged)
+    _manifest(root, monkeypatch, shared=True)
+    path = root / "metadata/generation_manifest.json"
+    manifest = json.loads(path.read_bytes())
+    shared = next(item for item in manifest["files"] if "storage_generation" in item)
+    shared["sha256"] = "0" * 64
+    path.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match="source binding differs"):
+        reasons.load_observations(["2025-26"], "Regular Season")
 
 
 def test_jointly_forged_csv_and_ledger_still_fail_original_replay(staged):

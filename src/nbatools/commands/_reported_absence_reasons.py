@@ -151,7 +151,13 @@ def load_observations(seasons, season_type):
 
                 def source_entry(path):
                     if snapshot is None:
-                        return entries[path]
+                        # Lineage certifies the logical file. The storage
+                        # resolver binds and verifies its physical origin.
+                        return {
+                            key: value
+                            for key, value in entries[path].items()
+                            if key != "storage_generation"
+                        }
                     # The explicit local selector already authenticates the entire
                     # provisional inventory. Do not invent a production generation
                     # manifest or relax any original/identity lineage requirements.
