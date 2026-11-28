@@ -76,20 +76,27 @@ def test_opponent_played_has_qualified_same_game_membership(case, consumer):
             assert positive.empty
     if consumer == "structured":
         result = execute_structured_query(
-            "team_record", team="LAL", opponent="BOS", with_player="Jayson Tatum", season=season
+            "team_record",
+            team="LAL",
+            opponent="BOS",
+            with_player="Jayson Tatum",
+            participation_scope="opponent",
+            season=season,
         )
     else:
-        query = (
-            case["query"]
+        declaration = (
+            "when opponent Jayson Tatum plays"
             if consumer == "natural"
-            else case["query"].replace("with Jayson Tatum playing", "when Jayson Tatum plays")
+            else "when the opponent Jayson Tatum plays"
         )
+        query = case["query"].replace("with Jayson Tatum playing", declaration)
         result = execute_natural_query(query)
     assert result.route == "team_record"
     meta = result.metadata
     assert meta["team_context"]["team_id"] == case["subject_id"]
     assert meta["opponent_context"]["team_id"] == case["predicate_side_id"]
     assert meta["with_player"] == "Jayson Tatum" and not meta["without_player"]
+    assert meta["participation_scope"] == "opponent"
     sections = result.result.to_dict()["sections"]
     expected = case["expected"]
     if not expected["games"]:
@@ -159,9 +166,20 @@ def test_additional_qualified_clause_returns_source_proven_conjunction_empty():
 def test_understood_road_setting_is_not_an_unresolved_second_player(
     mode, season, game, wins, totals
 ):
-    result = execute_natural_query(
-        f"Lakers record against Celtics {mode} Tatum and on the road in {season}"
-    )
+    question = f"Lakers record against Celtics {mode} Tatum and on the road in {season}"
+    result = execute_natural_query(question)
+    assert result.metadata["participation_scope"] == "team"
+    assert {"label": "Location", "value": "Away", "kind": "location"} in result.metadata[
+        "applied_filters"
+    ]
+    if mode == "with":
+        # The selected Lakers never get credit for Tatum's Boston appearance.
+        assert result.result_reason == "no_match"
+        assert not result.result.to_dict()["sections"]
+        result = execute_natural_query(
+            f"Lakers road record against Celtics when opponent Jayson Tatum plays in {season}"
+        )
+        assert result.metadata["participation_scope"] == "opponent"
     assert result.result_status == "ok", result.metadata
     rows = result.result.to_dict()["sections"]["game_log"]
     assert len(rows) == 1 and int(rows[0]["game_id"]) == game

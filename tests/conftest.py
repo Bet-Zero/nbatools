@@ -79,6 +79,14 @@ def pytest_configure(config: pytest.Config) -> None:
     )
 
 
+@pytest.fixture
+def april_2026_request_clock(monkeypatch):
+    """Replay relative wording with its original historical numerical oracle."""
+    from nbatools.commands import _seasons
+
+    monkeypatch.setattr(_seasons, "_detroit_today", lambda: date(2026, 4, 12))
+
+
 @pytest.fixture(autouse=True)
 def _skip_needs_data(request: pytest.FixtureRequest) -> None:
     marker = request.node.get_closest_marker("needs_data")

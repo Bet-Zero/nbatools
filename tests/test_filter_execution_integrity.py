@@ -200,6 +200,38 @@ def test_games_played_minimum_is_not_read_as_a_stat_threshold() -> None:
     assert leaders["pts_per_game"].iloc[0] > 25
 
 
+@pytest.mark.parametrize(
+    "question",
+    ["team points leaders in 2023-24", "which team had the most 120 point games in 2023-24"],
+)
+def test_team_leaderboards_apply_a_games_played_floor(question: str) -> None:
+    control, _, _ = _run(question)
+    assert control.result_status == "ok"
+    assert control.result.leaders["games_played"].between(1, 82).all()
+    filtered, _, _ = _run(f"{question} with at least 100 games")
+    assert filtered.result_status == "no_result" and filtered.result_reason == "no_match"
+
+
+@pytest.mark.parametrize(
+    ("question", "qualifier", "marker"),
+    [
+        ("Lakers record in 2023-24", "off the bench", "role"),
+        ("best 10 game stretch in 2023-24", "as a starter", "role"),
+        ("Jokic averages in 2023-24", "with at least 40 games", "min_games"),
+        ("Lakers home vs away splits in 2023-24", "with at least 40 games", "min_games"),
+    ],
+)
+def test_unsupported_sample_qualifier_cannot_return_an_unfiltered_answer(
+    question: str, qualifier: str, marker: str
+) -> None:
+    control, _, _ = _run(question)
+    assert control.result_status == "ok"
+    filtered, badges, _ = _run(f"{question} {qualifier}")
+    assert filtered.result_reason == "filter_not_supported"
+    assert marker in filtered.metadata["unsupported_filters"]
+    assert not badges and not filtered.result.to_dict()["sections"]
+
+
 def test_at_least_does_not_flip_leaderboard_sort() -> None:
     """The 'least' inside 'at least' must not turn a leaderboard upside down."""
     executed, _badges, _fp = _run("points leaders with at least 50 games in 2023-24")

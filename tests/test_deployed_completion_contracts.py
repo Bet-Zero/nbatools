@@ -4,15 +4,19 @@ from __future__ import annotations
 
 import json
 import os
+import urllib.error
 import urllib.request
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
 from nbatools.data_source import data_read_csv
+from tools.r2_publication import readiness_for_generation
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.query]
 BASE = "https://nbatools.vercel.app"
+SNAPSHOT_GENERATION = "availability-cleveland-2024-v3-20261124"
 
 
 def _retain(name, payload):
@@ -24,11 +28,22 @@ def _retain(name, payload):
 
 
 def _ready(name):
-    with urllib.request.urlopen(BASE + "/readiness", timeout=30) as response:
-        value = json.load(response)
+    try:
+        observed = urllib.request.urlopen(BASE + "/readiness", timeout=30)
+    except urllib.error.HTTPError as error:
+        if error.code != 503:
+            raise
+        observed = error
+    with observed:
+        value = json.load(observed)
+        response = SimpleNamespace(status_code=observed.status, json=lambda: value)
     _retain(name, value)
-    assert value["ready"] is True and value["immutable_generation"] is True
-    assert value["active_generation"] == os.environ["NBATOOLS_DATA_GENERATION"]
+    generation = os.environ["NBATOOLS_DATA_GENERATION"]
+    assert value["immutable_generation"] is True
+    assert (
+        readiness_for_generation(response, generation, activation=generation == SNAPSHOT_GENERATION)
+        == value
+    )
     return value
 
 

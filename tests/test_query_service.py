@@ -1667,7 +1667,7 @@ class TestExportParity:
 
 @pytest.mark.needs_data
 class TestOpponentConferenceTeamRecords:
-    def test_celtics_current_season_record_against_east(self):
+    def test_celtics_current_season_record_against_east(self, april_2026_request_clock):
         qr = execute_natural_query("Celtics record against the East this season")
 
         assert qr.route == "team_record"
@@ -1786,7 +1786,9 @@ class TestOpponentConferenceTeamRecords:
         assert qr.metadata["unsupported_filters"] == ["conference_coverage"]
         assert qr.to_dict()["sections"] == {}
 
-    def test_missing_membership_file_falls_back_to_historical_alignment(self, monkeypatch):
+    def test_missing_membership_file_falls_back_to_historical_alignment(
+        self, monkeypatch, april_2026_request_clock
+    ):
         import nbatools.commands.data_utils as data_utils
 
         def missing_membership_file(*args, **kwargs):
@@ -1805,7 +1807,7 @@ class TestOpponentConferenceTeamRecords:
         assert qr.metadata["opponent_team_abbrs"] == expected.metadata["opponent_team_abbrs"]
         assert qr.to_dict()["sections"]["summary"] == expected.to_dict()["sections"]["summary"]
 
-    def test_conference_record_matches_explicit_opponent_list(self):
+    def test_conference_record_matches_explicit_opponent_list(self, april_2026_request_clock):
         natural = execute_natural_query("Celtics record against the East this season")
         explicit = execute_structured_query(
             "team_record",

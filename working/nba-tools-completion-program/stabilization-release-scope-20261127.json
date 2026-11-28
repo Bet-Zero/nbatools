@@ -1,0 +1,776 @@
+{
+  "baseline_run": 46077661280,
+  "previous_numerical_run": 43658019032,
+  "baseline_source": "605d71af787ff2ff02811bba45635560d7f4f657",
+  "generation": "availability-cleveland-2024-v3-20261124",
+  "manifest_sha256": "d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034",
+  "numerical": {
+    "population_sha256": "062e6987a52e624b0bf3693f7b11a827423536d85f15231503015d79f080612d",
+    "failures": {
+      "full_participation": {
+        "additional": {
+          "tests/test_compound_event_routing_integrity.py::test_execution_backed_availability_still_answers[Warriors record with Stephen Curry-with_player-Stephen Curry]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_leaderboard_metric_boundary.py::test_named_player_availability_still_answers[Nuggets record when Jokic plays]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48"
+        }
+      },
+      "historical_acquisition": {
+        "prior": {
+          "tests/test_k01_source_acquisition.py::test_retain_k01_historical_sources": "edd9660bb165351a62f19295600b03757bacd1dc1d3a593eaea8f4cc4d8710e5",
+          "tests/test_pipeline_player_game_availability_real_data.py::test_official_opening_report_qualified_absence_consumers": "90758d6622ac54a78ffcc425f3363c45e4935a68f5396fdf7b7870e42250dc0b",
+          "tests/test_pipeline_player_game_availability_real_data.py::test_official_opening_report_retains_real_source_and_explicit_absences": "90758d6622ac54a78ffcc425f3363c45e4935a68f5396fdf7b7870e42250dc0b"
+        }
+      },
+      "historical_deployment": {
+        "prior": {
+          "tests/test_core_identity_find_count_browser.py::test_deployed_core_identity_find_count_desktop_and_mobile": "50324b254ffc5260b389018604edc461d9ee473f94223a902fee267508461b30",
+          "tests/test_deployed_k09_sequences_browser.py::test_deployed_k09_sequences_desktop_and_mobile": "50324b254ffc5260b389018604edc461d9ee473f94223a902fee267508461b30",
+          "tests/test_deployed_k10_history_browser.py::test_deployed_k10_history_desktop_and_mobile": "50324b254ffc5260b389018604edc461d9ee473f94223a902fee267508461b30",
+          "tests/test_deployed_k11_population_browser.py::test_deployed_k11_population_desktop_and_mobile": "50324b254ffc5260b389018604edc461d9ee473f94223a902fee267508461b30",
+          "tests/test_deployed_k12_delivery_browser.py::test_deployed_k12_delivery_desktop_and_mobile": "50324b254ffc5260b389018604edc461d9ee473f94223a902fee267508461b30",
+          "tests/test_deployed_latest_both_browser.py::test_deployed_latest_both_desktop_and_mobile": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_deployed_leading_list_browser.py::test_deployed_leading_list_desktop_and_mobile": "50324b254ffc5260b389018604edc461d9ee473f94223a902fee267508461b30",
+          "tests/test_deployed_medical_subject_browser.py::test_deployed_medical_subject_desktop_and_mobile": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_deployed_opponent_played_browser.py::test_deployed_opponent_played_desktop_and_mobile": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_deployed_or_scope_browser.py::test_deployed_or_scope_desktop_and_mobile": "50324b254ffc5260b389018604edc461d9ee473f94223a902fee267508461b30",
+          "tests/test_deployed_original_minutes_browser.py::test_deployed_original_minutes_desktop_and_mobile": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_deployed_original_pair_browser.py::test_deployed_original_pair_desktop_and_mobile": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_deployed_original_stat_pair_browser.py::test_deployed_original_stat_pair_desktop_and_mobile": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_deployed_owned_or_browser.py::test_deployed_owned_or_desktop_and_mobile": "50324b254ffc5260b389018604edc461d9ee473f94223a902fee267508461b30",
+          "tests/test_deployed_player_comparison_team_browser.py::test_deployed_player_comparison_team_desktop_and_mobile": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_deployed_scalar_played_browser.py::test_deployed_scalar_played_desktop_and_mobile": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_deployed_self_union_browser.py::test_deployed_self_union_desktop_and_mobile": "50324b254ffc5260b389018604edc461d9ee473f94223a902fee267508461b30",
+          "tests/test_deployed_union_pair_browser.py::test_deployed_union_pair_desktop_and_mobile": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_ownership_comparison_browser.py::test_deployed_ownership_comparison_desktop_and_mobile": "50324b254ffc5260b389018604edc461d9ee473f94223a902fee267508461b30",
+          "tests/test_participation_coverage_real_data.py::test_deployed_absence_answers_on_qualified_population": "8f30ff92f25f1e754b6e7c7fa4423d5fb313b1f2af9737a2e1a1a3b22fb87d96",
+          "tests/test_split_browser.py::test_deployed_split_desktop_and_mobile": "50324b254ffc5260b389018604edc461d9ee473f94223a902fee267508461b30",
+          "tests/test_structured_participation_real_data.py::test_deployed_source_only_presence_on_published_snapshot": "1b25a53d76723153b7ff105d6772997176f0438eab647eef4641a49bcac2b57a",
+          "tests/test_summary_ranking_browser.py::test_deployed_summary_ranking_desktop_and_mobile": "50324b254ffc5260b389018604edc461d9ee473f94223a902fee267508461b30"
+        }
+      },
+      "historical_profile": {
+        "prior": {
+          "tests/test_runtime_profile_real_data.py::test_k12_controlled_delivery_budgets[common]": "213572676831e6a1e8abf4a5651011c43abbdd2803ff6d54bdc567d11d4da8c1",
+          "tests/test_runtime_profile_real_data.py::test_k12_controlled_delivery_budgets[historical]": "2c982cc7764099f14f4fd9ee653a65e32faaf068a558dc26c0a4d9b8442a50f9"
+        }
+      },
+      "historical_source_oracle": {
+        "prior": {
+          "tests/test_latest_original_both_real_data.py::test_latest_original_both_from_qualified_official_facts[known-false]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_latest_original_both_real_data.py::test_latest_original_both_from_qualified_official_facts[known-true]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_latest_original_both_real_data.py::test_revealed_root_preimplementation_boolean_source_controls[leading-for-yes]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_latest_original_both_real_data.py::test_revealed_root_preimplementation_boolean_source_controls[opposite-subject-no]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_medical_subject_scope_real_data.py::test_accepted_available_win_count_guard_keeps_operation_without_played_equivalence": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_empty_statistical_candidate_cannot_establish_medical_qualification": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_player_primary_summary_target_survives_unavailable_status": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_qualified_played_and_unfiltered_team_samples_remain_original_source_games[team_played_positive]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_qualified_played_and_unfiltered_team_samples_remain_original_source_games[team_unfiltered_positive]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_revealed_poststart_conditional_roles_preserve_source_team_subject[Boston record against Lakers in 2025-26 when Derrick White and Jaylen Brown are healthy.]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_revealed_poststart_conditional_roles_preserve_source_team_subject[Boston record against Lakers in 2025-26 when Derrick White is cleared for contact.]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_revealed_poststart_conditional_roles_preserve_source_team_subject[Boston record against Lakers in 2025-26 when Derrick White is medically cleared to return.]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_revealed_poststart_conditional_roles_preserve_source_team_subject[Boston record against Lakers in 2025-26 when medical clearance for Derrick White has been granted.]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_revealed_poststart_conditional_roles_preserve_source_team_subject[Boston record against Lakers in 2025-26 when neither Derrick White nor Jaylen Brown is injured.]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_revealed_poststart_conditional_roles_preserve_source_team_subject[Boston record against Lakers in 2025-26 with a healthy Derrick White.]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_revealed_poststart_conditional_roles_preserve_source_team_subject[Boston record against Lakers in 2025-26 with a medically cleared Derrick White.]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_revealed_poststart_conditional_roles_preserve_source_team_subject[With medically cleared Derrick White, Boston record against Lakers in 2025-26.]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_revealed_poststart_conditional_roles_preserve_source_team_subject[query5]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_revealed_poststart_conditional_roles_preserve_source_team_subject[query6]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_revealed_poststart_conditional_roles_preserve_source_team_subject[query7]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_status_condition_never_returns_white_or_unfiltered_team_arithmetic[injury_status]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_status_condition_never_returns_white_or_unfiltered_team_arithmetic[negative_medical]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_status_condition_never_returns_white_or_unfiltered_team_arithmetic[prefix_team_healthy]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_status_condition_never_returns_white_or_unfiltered_team_arithmetic[prefix_team_medical]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_status_condition_never_returns_white_or_unfiltered_team_arithmetic[primary_team_medical]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_status_condition_never_returns_white_or_unfiltered_team_arithmetic[team_healthy]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_status_condition_never_returns_white_or_unfiltered_team_arithmetic[team_questionable]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_status_condition_never_returns_white_or_unfiltered_team_arithmetic[unknown_status_owner]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_unavailable_condition_keeps_both_actual_primary_comparison_identities[comparison_healthy]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_unavailable_condition_keeps_both_actual_primary_comparison_identities[comparison_other_owner]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_unavailable_condition_keeps_both_actual_primary_comparison_identities[prefix_comparison_medical]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_unavailable_condition_keeps_both_actual_primary_comparison_identities[primary_comparison_medical]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_medical_subject_scope_real_data.py::test_unfiltered_comparison_keeps_independent_observed_samples": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_opponent_played_real_data.py::test_opponent_played_has_qualified_same_game_membership[natural-case0]": "3aa8332fc8faac02b567c9ef654e311564ee8965ca692692887ec5bca4e155b4",
+          "tests/test_opponent_played_real_data.py::test_opponent_played_has_qualified_same_game_membership[natural-case1]": "29d91233f9040c3ec1175faa6399358ac145c62171d2692e77aff17beb62ee67",
+          "tests/test_opponent_played_real_data.py::test_opponent_played_has_qualified_same_game_membership[structured-case0]": "3aa8332fc8faac02b567c9ef654e311564ee8965ca692692887ec5bca4e155b4",
+          "tests/test_opponent_played_real_data.py::test_opponent_played_has_qualified_same_game_membership[structured-case1]": "29d91233f9040c3ec1175faa6399358ac145c62171d2692e77aff17beb62ee67",
+          "tests/test_opponent_played_real_data.py::test_opponent_played_has_qualified_same_game_membership[when_plays-case0]": "3aa8332fc8faac02b567c9ef654e311564ee8965ca692692887ec5bca4e155b4",
+          "tests/test_opponent_played_real_data.py::test_opponent_played_has_qualified_same_game_membership[when_plays-case1]": "29d91233f9040c3ec1175faa6399358ac145c62171d2692e77aff17beb62ee67",
+          "tests/test_original_window_played_pair_real_data.py::test_legacy_played_pair_windows_and_native_bare_last_n_keep_christmas[None]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_original_window_played_pair_real_data.py::test_legacy_played_pair_windows_and_native_bare_last_n_keep_christmas[qualifying]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_original_window_played_pair_real_data.py::test_legacy_played_pair_windows_and_native_bare_last_n_keep_christmas[window]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_original_window_played_pair_real_data.py::test_original_and_qualifying_windows_keep_source_order_identity_and_numbers[latest-qualifying]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_original_window_played_pair_real_data.py::test_original_and_qualifying_windows_keep_source_order_identity_and_numbers[positive-original]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_original_window_played_pair_real_data.py::test_original_and_qualifying_windows_keep_source_order_identity_and_numbers[qualified-empty-original]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_original_window_played_pair_real_data.py::test_root_preimplementation_temporal_controls_now_revealed[original_window-opposite-subject]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_original_window_played_pair_real_data.py::test_root_preimplementation_temporal_controls_now_revealed[original_window-other-season]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_original_window_played_pair_real_data.py::test_root_preimplementation_temporal_controls_now_revealed[qualifying-opposite-subject]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_original_window_played_pair_real_data.py::test_root_preimplementation_temporal_controls_now_revealed[qualifying-other-season]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_qualified_original_minutes_real_data.py::test_qualified_original_minutes_source_obligations[ad-dnp-minimum]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_minutes_real_data.py::test_qualified_original_minutes_source_obligations[ad-dnp-upper-bound]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_minutes_real_data.py::test_qualified_original_minutes_source_obligations[ad-game-membership-unknown]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_minutes_real_data.py::test_qualified_original_minutes_source_obligations[brown-exact-strict-bound-true]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_minutes_real_data.py::test_qualified_original_minutes_source_obligations[tatum-exact-minimum-false]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_minutes_real_data.py::test_qualified_original_minutes_source_obligations[tatum-exact-upper-bound-true]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_minutes_real_data.py::test_qualified_original_minutes_source_obligations[tatum-positive-minimum]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_stat_pair_real_data.py::test_original_stat_pair_source_explicit_dnp_never_old_row_or_numeric_zero[at least 1 assist]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_stat_pair_real_data.py::test_original_stat_pair_source_explicit_dnp_never_old_row_or_numeric_zero[at most 0 rebounds]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_stat_pair_real_data.py::test_original_stat_pair_source_positive_fields[have at least 1 assist and play at least 21 minutes-True-AST-1]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_stat_pair_real_data.py::test_original_stat_pair_source_positive_fields[play at least 21 minutes and at least 1 assist-True-AST-1]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_stat_pair_real_data.py::test_original_stat_pair_source_positive_fields[play at least 21 minutes and have at least 1 assist-True-AST-1]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_stat_pair_real_data.py::test_original_stat_pair_source_positive_fields[play at least 21 minutes and have at most 0 rebounds-True-REB-0]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_stat_pair_real_data.py::test_original_stat_pair_source_positive_fields[play at least 21 minutes and have fewer than 1 assist-False-AST-1]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_stat_pair_real_data.py::test_original_stat_pair_source_positive_fields[play at least 21 minutes and have recorded at least 1 assist-True-AST-1]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_stat_pair_real_data.py::test_original_stat_pair_source_positive_fields[play at least 21 minutes and record at least 1 assist-True-AST-1]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_stat_pair_real_data.py::test_original_stat_pair_source_positive_fields[play at least 21 minutes and record at least 1.00001 assists-False-AST-1]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_stat_pair_real_data.py::test_original_stat_pair_source_positive_fields[play at least 21 minutes and record at most 0.99999 assists-False-AST-1]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_stat_pair_real_data.py::test_original_stat_pair_source_positive_fields[play at least 21 minutes and record over 0.99999 assists-True-AST-1]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_stat_pair_real_data.py::test_original_stat_pair_source_positive_fields[play at least 21 minutes and record under 1.00001 assists-True-AST-1]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_stat_pair_real_data.py::test_original_stat_pair_source_positive_fields[play at least 21 minutes and score at least 1 point-True-PTS-8]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_original_stat_pair_real_data.py::test_original_stat_pair_source_positive_fields[play between 21 and 22 minutes and have between 0 and 1 assists-True-AST-1]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_participation_pair_real_data.py::test_existing_source_qualifies_pair_and_independent_values": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_participation_pair_real_data.py::test_pair_never_drops_a_third_player_who_did_not_play": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_participation_pair_real_data.py::test_qualified_pair_structured_execution[player]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_participation_pair_real_data.py::test_qualified_pair_structured_execution[team]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_participation_pair_real_data.py::test_qualified_pair_wording_and_subject_bound[Lakers record vs Celtics with LeBron James and Anthony Davis DNP in 2023-24-False]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_participation_pair_real_data.py::test_qualified_pair_wording_and_subject_bound[Lakers record vs Celtics with LeBron James and Anthony Davis both out in 2023-24-False]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_participation_pair_real_data.py::test_qualified_pair_wording_and_subject_bound[Lakers record with at least 110 points vs Celtics without LeBron James and Anthony Davis in 2023-24-False]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_participation_pair_real_data.py::test_qualified_pair_wording_and_subject_bound[query3-True]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_played_pair_real_data.py::test_independent_revealed_played_pair_keeps_source_side_and_exact_sample[opposite-subject]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_played_pair_real_data.py::test_independent_revealed_played_pair_keeps_source_side_and_exact_sample[other-season]": "888fa41ffe8768a562dbf5ab1661ca68c50d8de72c4b8be61d55535ca3a62658",
+          "tests/test_qualified_played_pair_real_data.py::test_natural_played_pair_source_identity_sample_numbers_and_labels[both-played]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_played_pair_real_data.py::test_natural_played_pair_source_identity_sample_numbers_and_labels[qualified-empty]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_scalar_played_real_data.py::test_scalar_participation_from_original_game_and_qualified_sources[basic-lebron-positive]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_scalar_played_real_data.py::test_scalar_participation_from_original_game_and_qualified_sources[curry-unknown]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_scalar_played_real_data.py::test_scalar_participation_from_original_game_and_qualified_sources[davis-explicit-dnp]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_scalar_played_real_data.py::test_scalar_participation_from_original_game_and_qualified_sources[davis-membership-unknown]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_scalar_played_real_data.py::test_scalar_participation_from_original_game_and_qualified_sources[tatum-explicit-dnp]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_scalar_played_real_data.py::test_scalar_participation_from_original_game_and_qualified_sources[tatum-positive]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c",
+          "tests/test_qualified_scalar_played_real_data.py::test_scalar_participation_from_original_game_and_qualified_sources[tatum-unknown]": "fd6e15a629efacb9a57455bdc7b0708c75a8043152a6ed9b848b2c41d4c1996c"
+        }
+      },
+      "historical_stage": {
+        "additional": {
+          "tests/test_cleveland_candidate_real_data.py::test_exact_cleveland_candidate_snapshot_and_registered_answers": "73071361df9e77c0b88bf11b82e84273e4041f18f7448ea204358a7535127eb9",
+          "tests/test_cleveland_full_boxscore_real_data.py::test_cleveland_full_boxscore_pilot_preserves_unknowns_and_adds_complete_answers": "fbda373bc6c83b250609d28314d451cb5eabdf7b3123472783131e4e9c39fd18",
+          "tests/test_cleveland_two_game_replacement_real_data.py::test_two_report_replacement_unlocks_four_cases_without_membership_guesses": "fbda373bc6c83b250609d28314d451cb5eabdf7b3123472783131e4e9c39fd18",
+          "tests/test_core1_limited_participation_real_data.py::test_published_membership_distinctions_and_original_blockers": "fbda373bc6c83b250609d28314d451cb5eabdf7b3123472783131e4e9c39fd18",
+          "tests/test_game_participation_collection_real_data.py::test_retained_game_requests_recover_all_listed_players_and_preserve_unknowns": "fa9d21f924d26f6a68a290fc66d97cc3d0866ae768bbd33e20907d4009e397e8",
+          "tests/test_season_inactive_2024_publication_real_data.py::test_exact_pr626_bundle_complete_snapshot_prepare": "73071361df9e77c0b88bf11b82e84273e4041f18f7448ea204358a7535127eb9",
+          "tests/test_season_inactive_2024_real_data.py::test_next_season_batch_adds_complete_answers_without_inventing_membership": "3c6e2dde8c8b0db3457d1ec6e6a595d7217d5514315dd2d209ab3a534558ede8",
+          "tests/test_season_inactive_pilot_real_data.py::test_retained_season_batch_unlocks_complete_season_answers": "fa9d21f924d26f6a68a290fc66d97cc3d0866ae768bbd33e20907d4009e397e8",
+          "tests/test_season_inactive_publication_real_data.py::test_exact_pr623_bundle_complete_snapshot_prepare": "73071361df9e77c0b88bf11b82e84273e4041f18f7448ea204358a7535127eb9",
+          "tests/test_team_appearance_scope_real_data.py::test_explicit_role_cannot_reduce_a_mixed_request_on_published_catalog": "fbda373bc6c83b250609d28314d451cb5eabdf7b3123472783131e4e9c39fd18",
+          "tests/test_team_appearance_scope_real_data.py::test_retained_complete_team_lists_unlock_real_team_records": "fbda373bc6c83b250609d28314d451cb5eabdf7b3123472783131e4e9c39fd18",
+          "tests/test_team_membership_sample_real_data.py::test_bulk_opening_and_movements_expose_membership_unknowns": "fa9d21f924d26f6a68a290fc66d97cc3d0866ae768bbd33e20907d4009e397e8"
+        },
+        "prior": {
+          "tests/test_bos_participation_stage_real_data.py::test_retained_boston_sources_close_both_populations_and_mixed_records": "e26351273d93c623e5fe77ab1bac5006b83b7a175ca784d32eae23eaaaab42fb",
+          "tests/test_cloud_independence_real_data.py::test_durable_stage_recovery_in_separate_runner": "05177fecf1cacbf4c5d024bb114f54a8f8afdf53f99284db7a5fa36adeb00569",
+          "tests/test_cloud_independence_real_data.py::test_new_slice_registered_readonly_preparation": "9c058ebdcab33b9cb3a069b80482d231ddc098418b6bed80e9d00e1e073ac736",
+          "tests/test_combined_availability_package_real_data.py::test_combined_reviewed_availability_source_package": "29fc9b571e576b356bbca08808e69937a01081fb76f6737875168df3f8375df0",
+          "tests/test_combined_availability_publication_real_data.py::test_combined_availability_complete_snapshot_prepare": "cc06cf359d3f08300ad63392bab2b155d8f92c65a7c820e7767001d3cb4cf4a5",
+          "tests/test_lal_participation_stage_real_data.py::test_retained_lal_sources_close_both_populations_and_reverse_mixed_records": "e26351273d93c623e5fe77ab1bac5006b83b7a175ca784d32eae23eaaaab42fb",
+          "tests/test_lebron_publication_real_data.py::test_lebron_participation_complete_snapshot_prepare": "65e0f3ee04c03d416803a1275d478d418c13dd4cda77bc475139359017a6ec78",
+          "tests/test_lebron_season_participation_real_data.py::test_authorized_sources_qualify_full_observed_season_and_home_counts": "abf1f255e4e18f4ef713d804b6143ed252f69673de899c370a2885811cc45733",
+          "tests/test_mixed_participation_real_data.py::test_qualified_season_mixed_team_record_and_api": "35804665918cab1c769f05ef9c0e6bc58c3f342baf2f8f3c6c99483485242ebd",
+          "tests/test_original_window_mixed_participation_real_data.py::test_original_mixed_windows_keep_raw_population_and_execute_registered_cases": "35804665918cab1c769f05ef9c0e6bc58c3f342baf2f8f3c6c99483485242ebd",
+          "tests/test_participation_coverage_real_data.py::test_current_lebron_population_and_exact_missing_requirement": "8f30ff92f25f1e754b6e7c7fa4423d5fb313b1f2af9737a2e1a1a3b22fb87d96",
+          "tests/test_r2_publication_real_data.py::test_reviewed_opening_package_complete_snapshot_prepare": "7d3a390f263b001cbcbaedc0b44ca7ccdf139128c3eaf66f07d85b6972aefd17",
+          "tests/test_retained_k08_package_real_data.py::test_build_retained_six_game_overlay": "80c35d02bad41465bbabc210638656f81948984ed38cb67c443657d03eaf1af6",
+          "tests/test_retained_k08_publication_real_data.py::test_retained_k08_complete_snapshot_prepare": "f9135adb62bad3e290e7b39f219a4149d60d1987c2c8db11bf930c41a048ab20"
+        }
+      },
+      "literal_current": {
+        "additional": {
+          "tests/test_compound_event_routing_integrity.py::test_special_event_finder_queries_still_answer[How often has Nikola Jokic recorded a triple-double this season?]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_explicit_intent_queries.py::TestCountResult::test_league_threshold_games_all_meet_threshold": "602b3f3da5ea02d3d9058bca44da0640a21e34f8c29fc16d1d370335a1edf1c0",
+          "tests/test_leaderboard_metric_boundary.py::test_approved_shorthand_still_answers[assists leaders this season-season_leaders-ast]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_leaderboard_metric_boundary.py::test_approved_shorthand_still_answers[best 3P% this season-season_leaders-fg3_pct]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_leaderboard_metric_boundary.py::test_approved_shorthand_still_answers[most rebounds this season-season_leaders-reb]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_leaderboard_metric_boundary.py::test_approved_shorthand_still_answers[most threes made this season-season_leaders-fg3m]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_leaderboard_metric_boundary.py::test_approved_shorthand_still_answers[top scorers this season-season_leaders-pts]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_leaderboard_metric_boundary.py::test_combined_and_cumulative_wording_ranks_the_season_total[cumulative points leaders this season]": "9c9747a0c47745120fde7beb8dd1a1f6ecb055ae1d8f99d05ee0543db9d97b67",
+          "tests/test_leaderboard_metric_boundary.py::test_combined_and_cumulative_wording_ranks_the_season_total[most points total this season]": "9c9747a0c47745120fde7beb8dd1a1f6ecb055ae1d8f99d05ee0543db9d97b67",
+          "tests/test_leaderboard_metric_boundary.py::test_per_game_aggregation_is_what_the_leaderboard_computes[average points leaders this season-pts]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_leaderboard_metric_boundary.py::test_per_game_aggregation_is_what_the_leaderboard_computes[points per game leaders this season-pts]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_leaderboard_metric_boundary.py::test_per_game_backed_metrics_answer_total_wording_with_the_total[cumulative points leaders this season-pts_total]": "9c9747a0c47745120fde7beb8dd1a1f6ecb055ae1d8f99d05ee0543db9d97b67",
+          "tests/test_leaderboard_metric_boundary.py::test_per_game_backed_metrics_answer_total_wording_with_the_total[most points total this season-pts_total]": "9c9747a0c47745120fde7beb8dd1a1f6ecb055ae1d8f99d05ee0543db9d97b67",
+          "tests/test_leaderboard_metric_boundary.py::test_per_game_backed_metrics_answer_total_wording_with_the_total[total points leaders this season-pts_total]": "9c9747a0c47745120fde7beb8dd1a1f6ecb055ae1d8f99d05ee0543db9d97b67",
+          "tests/test_leaderboard_metric_boundary.py::test_ranking_branch_answers_when_a_metric_is_named[bench_leaderboard]": "b3bc5857cc9b317e92eb41689c60faaf2301174aea80f6f045fb6d957f45f1de",
+          "tests/test_leaderboard_metric_boundary.py::test_ranking_branch_answers_when_a_metric_is_named[league_player_leaderboard]": "acc8c2eafc6fa4aa456c95cc7097890cd687115974160ba016a563759f1fdfae",
+          "tests/test_leaderboard_metric_boundary.py::test_ranking_branch_answers_when_a_metric_is_named[rookie_leaderboard]": "1b44bfbcca4b91982777f78939d1bc183181d819b46a7a879d2f38b762824445",
+          "tests/test_leaderboard_metric_boundary.py::test_ranking_branch_answers_when_a_metric_is_named[sophomore_leaderboard]": "600255c8d4c364f2518206c2000ce2041d62a6b0b7c4c08f8e150b10dcf4f361",
+          "tests/test_leaderboard_metric_boundary.py::test_ranking_branch_answers_when_a_metric_is_named[starter_leaderboard]": "11f8e07440f1ace81615e17a898fe29db8b0b98d860a3606062f293af69b5cde",
+          "tests/test_leaderboard_metric_boundary.py::test_ranking_branch_answers_when_a_metric_is_named[top_player_games]": "546ed2dce332135c784013daaf8d8c210c128d2a48e38d0e8a03991aef9c8ae4",
+          "tests/test_leaderboard_metric_boundary.py::test_ranking_branch_answers_when_a_metric_is_named[top_team_games]": "c6aeac3134378e102345559f01101b5b456a9b50975a4177c42762d67f13a5a4",
+          "tests/test_leaderboard_metric_boundary.py::test_single_game_ranking_answers_with_the_raw_game_stat[ast]": "264252e44f845a55c3d7634f7aebe25d04a27c01c8fac4d0727704adceb7b6e4",
+          "tests/test_leaderboard_metric_boundary.py::test_single_game_ranking_answers_with_the_raw_game_stat[pts]": "3cabba1114d99a6087a4c57f16f4219115e56d3d5fa74688228ecc1ce57169dc",
+          "tests/test_leaderboard_metric_boundary.py::test_single_game_ranking_answers_with_the_raw_game_stat[reb]": "490f1849f43ba3e40eebf86f6de3e4097ad0a428c0df2ba6a1b0cd339abc2191",
+          "tests/test_leaderboard_metric_boundary.py::test_top_game_shorthands_still_answer[highest scoring game this season-pts]": "0d9639b89004641b952ca8fa91332b23c9284c2cde8fcda6bca63f9489c8fb33",
+          "tests/test_leaderboard_metric_boundary.py::test_total_aggregation_returns_the_season_total_leaderboard[cumulative]": "9c9747a0c47745120fde7beb8dd1a1f6ecb055ae1d8f99d05ee0543db9d97b67",
+          "tests/test_leaderboard_metric_boundary.py::test_total_aggregation_returns_the_season_total_leaderboard[total_prefix]": "9c9747a0c47745120fde7beb8dd1a1f6ecb055ae1d8f99d05ee0543db9d97b67",
+          "tests/test_leaderboard_metric_boundary.py::test_total_aggregation_returns_the_season_total_leaderboard[total_suffix]": "9c9747a0c47745120fde7beb8dd1a1f6ecb055ae1d8f99d05ee0543db9d97b67",
+          "tests/test_natural_leaderboard_queries.py::test_natural_highest_ts_pct_raw_smoke": "8f1c596e093983cce3f4c9104a486f1ede6b8f0947226ca0313f96217ba0b6c8",
+          "tests/test_natural_leaderboard_queries.py::test_natural_most_30_point_games_raw_smoke": "3f915046262916aa2f0090a677ebf5490d152ab2bfb568b21ab1f1653e2d5403",
+          "tests/test_natural_leaderboard_queries.py::test_natural_top_scorers_raw_smoke": "2c14dfada9935b42c29dc3dc83b0d0d36359b41c909a12724e35c9a161999f1a",
+          "tests/test_occurrence_queries.py::TestServiceCompatibility::test_distinct_player_count_natural": "602b3f3da5ea02d3d9058bca44da0640a21e34f8c29fc16d1d370335a1edf1c0",
+          "tests/test_query_smoke_phase.py::test_api_phase_query_smoke[hottest-3-game-scoring-stretch-this-year]": "16b0fd395786f0b021618297cf332472a1f17c7358e1185c396e82655c08449e",
+          "tests/test_query_smoke_phase.py::test_api_phase_query_smoke[lakers-this-season]": "16b0fd395786f0b021618297cf332472a1f17c7358e1185c396e82655c08449e",
+          "tests/test_query_smoke_phase.py::test_cli_phase_query_smoke[best-5-man-lineups-this-season]": "16b0fd395786f0b021618297cf332472a1f17c7358e1185c396e82655c08449e",
+          "tests/test_query_smoke_phase.py::test_cli_phase_query_smoke[hottest-3-game-scoring-stretch-this-year]": "16b0fd395786f0b021618297cf332472a1f17c7358e1185c396e82655c08449e",
+          "tests/test_query_smoke_phase.py::test_cli_phase_query_smoke[lakers-this-season]": "16b0fd395786f0b021618297cf332472a1f17c7358e1185c396e82655c08449e",
+          "tests/test_query_smoke_stable.py::test_api_stable_query_smoke[curry-5-threes-this-season]": "16b0fd395786f0b021618297cf332472a1f17c7358e1185c396e82655c08449e",
+          "tests/test_query_smoke_stable.py::test_api_stable_query_smoke[top-scorers-this-season]": "16b0fd395786f0b021618297cf332472a1f17c7358e1185c396e82655c08449e",
+          "tests/test_query_smoke_stable.py::test_cli_stable_query_smoke[curry-5-threes-this-season]": "16b0fd395786f0b021618297cf332472a1f17c7358e1185c396e82655c08449e",
+          "tests/test_query_smoke_stable.py::test_cli_stable_query_smoke[top-scorers-this-season]": "16b0fd395786f0b021618297cf332472a1f17c7358e1185c396e82655c08449e",
+          "tests/test_result_contracts.py::TestLabeledLeaderboardOutput::test_team_leaderboard_raw_has_label": "bebcc2079de91a056ab2f0b017d7c756b663873e2d83f56cc693e3a71037838a",
+          "tests/test_ui_failure_coverage.py::TestBarePlayerVsPlayerAmbiguousBoundary::test_disambiguated_player_comparison_still_executes[How do LeBron James and Kevin Durant compare this season?]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestDateFilterDropPrevention::test_team_record_location_and_date_guardrails[What is the Knicks road record this season?-None-None-True]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_center_rebound_leaders_execute_with_position_filter": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_league_wide_team_advanced_leaderboards_still_execute[What team has the highest offensive rating this season?-off_rating]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_league_wide_team_advanced_leaderboards_still_execute[What teams have the best net rating this year?-net_rating]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_league_wide_team_advanced_leaderboards_still_execute[best defensive rating teams this season-def_rating]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_league_wide_team_advanced_leaderboards_still_execute[fastest pace teams this season-pace]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_league_wide_team_advanced_leaderboards_still_execute[team pace leaders this season-pace]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_nearby_supported_queries_still_execute[Malik Monk off the bench this season-player_game_summary-role-bench]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_nearby_supported_queries_still_execute[Nikola Jokic as a starter this season-player_game_summary-role-starter]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_opponent_conference_team_record_filter_returns_supported_result": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_question_form_lebron_durant_comparison_preserves_both_players": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_single_team_advanced_stat_summaries_answer_with_rank[Warriors defensive rating this season-def_rating]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_single_team_advanced_stat_summaries_answer_with_rank[Warriors net rating this season-net_rating]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_single_team_advanced_stat_summaries_answer_with_rank[Warriors offensive rating this season-off_rating]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_single_team_advanced_stat_summaries_answer_with_rank[Warriors pace this season-pace]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_supported_turnover_steal_block_leaderboards_still_execute[Who averages the most turnovers per game this season?-tov]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_supported_turnover_steal_block_leaderboards_still_execute[Who leads the league in blocks this season?-blk]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_supported_turnover_steal_block_leaderboards_still_execute[Who leads the league in steals this season?-stl]": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestTopPerformanceAndTeamStretchBoundaries::test_player_rolling_stretch_still_returns_rows": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestTopPerformanceAndTeamStretchBoundaries::test_single_game_assist_leaders_execute_as_top_performances": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestTopPerformanceAndTeamStretchBoundaries::test_single_game_rebound_leaders_execute_as_top_performances": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestTopPerformanceAndTeamStretchBoundaries::test_team_scoped_rolling_stretch_returns_team_rows_not_player_rows": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48"
+        }
+      },
+      "snapshot_deployed_binding": {
+        "prior": {
+          "tests/test_deployed_completion_contracts.py::test_deployed_nonadjacent_seasons_keep_opponent_and_filter[player]": "70cb951df8b0024e081b660c2942844f24f6b300d194525be9fe6b7dda7d03f1",
+          "tests/test_deployed_completion_contracts.py::test_deployed_nonadjacent_seasons_keep_opponent_and_filter[team]": "70cb951df8b0024e081b660c2942844f24f6b300d194525be9fe6b7dda7d03f1",
+          "tests/test_deployed_completion_contracts.py::test_deployed_own_and_opponent_scoring_have_distinct_owners[player]": "70cb951df8b0024e081b660c2942844f24f6b300d194525be9fe6b7dda7d03f1",
+          "tests/test_deployed_completion_contracts.py::test_deployed_own_and_opponent_scoring_have_distinct_owners[team]": "70cb951df8b0024e081b660c2942844f24f6b300d194525be9fe6b7dda7d03f1",
+          "tests/test_deployed_sample_order_contract.py::test_deployed_s5_sample_order[date-player]": "70cb951df8b0024e081b660c2942844f24f6b300d194525be9fe6b7dda7d03f1",
+          "tests/test_deployed_sample_order_contract.py::test_deployed_s5_sample_order[date-team]": "70cb951df8b0024e081b660c2942844f24f6b300d194525be9fe6b7dda7d03f1",
+          "tests/test_deployed_sample_order_contract.py::test_deployed_s5_sample_order[qualifying-player]": "70cb951df8b0024e081b660c2942844f24f6b300d194525be9fe6b7dda7d03f1",
+          "tests/test_deployed_sample_order_contract.py::test_deployed_s5_sample_order[qualifying-team]": "70cb951df8b0024e081b660c2942844f24f6b300d194525be9fe6b7dda7d03f1",
+          "tests/test_deployed_sample_order_contract.py::test_deployed_s5_sample_order[window-player]": "70cb951df8b0024e081b660c2942844f24f6b300d194525be9fe6b7dda7d03f1",
+          "tests/test_deployed_sample_order_contract.py::test_deployed_s5_sample_order[window-team]": "70cb951df8b0024e081b660c2942844f24f6b300d194525be9fe6b7dda7d03f1"
+        }
+      },
+      "snapshot_qualified_meaning": {
+        "additional": {
+          "tests/test_opponent_played_real_data.py::test_understood_road_setting_is_not_an_unresolved_second_player[with-2023-24-22300684-1-totals0]": "069ac574f3501167164fd8f47f356a2e17a575bf62f0cb3032adc65864467e20",
+          "tests/test_structured_participation_real_data.py::test_historical_pair_bound_and_same_game_other_team": "abacec215a4ed7ad794d18aa5760d264a6e284826256806d416208042941f08a",
+          "tests/test_structured_participation_real_data.py::test_published_absence_clauses_preserve_subject_bound_and_pair": "0548a66bdb5f9c613d3fca19a78bfa32699b216c8c0d62386275bfdb34c37e29"
+        }
+      },
+      "snapshot_relative_clock": {
+        "additional": {
+          "tests/test_query_service.py::TestOpponentConferenceTeamRecords::test_celtics_current_season_record_against_east": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_query_service.py::TestOpponentConferenceTeamRecords::test_conference_record_matches_explicit_opponent_list": "05215574b4ae2f0ddf9156a898b9a918b658cd643d46b746f9552f854eb72220",
+          "tests/test_query_service.py::TestOpponentConferenceTeamRecords::test_missing_membership_file_falls_back_to_historical_alignment": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestDateFilterDropPrevention::test_date_window_cases_preserve_supported_filters_and_refuse_advanced_fallback": "644a220697b8ec454b6d6501fec67b4b7fa04df2c0dee408a1a2012d09301174",
+          "tests/test_ui_failure_coverage.py::TestOpponentQualityPlayoffTeamSemantics::test_tatum_against_playoff_teams_uses_regular_season_quality_sample": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestWithoutPlayer::test_most_points_allowed_leaderboard_ranks_highest_opponent_ppg": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestWithoutPlayer::test_opponent_ppg_leaders_use_team_leaderboard_rows": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48",
+          "tests/test_ui_failure_coverage.py::TestWithoutPlayer::test_points_allowed_leaderboard_ranks_opponent_ppg": "f2f20c6c836fdfc330e44c914fca4c1ba6b388361f408c263e224864f0fd5f48"
+        }
+      }
+    }
+  },
+  "raw_qa": {
+    "full_participation_or_status": [
+      "suns_without_booker",
+      "suns_without_booker_shorthand",
+      "bucks_without_giannis",
+      "knicks_without_brunson",
+      "pqa_availability_synonym_reaves_available",
+      "warriors_wins_without_curry",
+      "anthony_davis_without_lebron_summary"
+    ],
+    "literal_current": [
+      "jokic_triple_double_count",
+      "points_per_game_leader",
+      "biggest_scoring_games",
+      "hottest_3_game_scoring_stretch",
+      "most_points_last_night",
+      "assist_leaders_this_season",
+      "rebound_leaders_this_season",
+      "steal_leaders_this_season",
+      "block_leaders_this_season",
+      "ts_percentage_leader",
+      "three_point_percentage_leader",
+      "best_offensive_teams",
+      "team_efg_leaders",
+      "team_wins_leaderboard",
+      "most_assists_single_game",
+      "most_rebounds_single_game",
+      "most_rebounds_single_game_this_year_public_sweep",
+      "top_team_scoring_games",
+      "top_scoring_games_single_game_007",
+      "highest_team_scoring_games_single_game_007",
+      "most_points_by_team_in_game_007",
+      "highest_scoring_teams_season_leader_boundary_007",
+      "luka_best_game_this_season",
+      "warriors_top_scoring_games",
+      "jokic_season_summary",
+      "luka_stats_this_season_public_sweep",
+      "tatum_vs_lakers_no_result",
+      "tatum_good_teams",
+      "jokic_home_stats",
+      "celtics_overall_record",
+      "lakers_home_record",
+      "players_40_point_count",
+      "players_10_assist_count",
+      "lakers_held_opponents_under_100_count",
+      "curry_5_threes_finder",
+      "best_5_game_assist_stretch",
+      "jokic_5_game_rebound_stretch",
+      "team_5_game_scoring_stretch",
+      "jokic_home_away_split",
+      "total_rebound_leaders_this_year",
+      "steals_per_game_leaders",
+      "free_throw_percentage_leader",
+      "minutes_leaders_supported",
+      "three_point_attempt_leaders_basic_stat",
+      "usage_rate_leader",
+      "plus_minus_leader",
+      "most_30_point_games",
+      "offensive_rating_team_leader",
+      "net_rating_team_leaders",
+      "fewest_points_allowed_team_leader",
+      "team_scoring_leaders",
+      "team_three_point_leaders",
+      "team_road_record_leaders",
+      "team_free_throw_percentage_leaders",
+      "most_threes_single_game",
+      "most_blocks_single_game",
+      "most_steals_single_game",
+      "plus_minus_single_game",
+      "luka_highest_scoring_game",
+      "tatum_playoff_teams_summary",
+      "maxey_without_embiid_summary",
+      "knicks_road_record",
+      "celtics_road_losses_finder",
+      "curry_5_threes_count",
+      "luka_40_point_count",
+      "wemby_5_blocks_count",
+      "teams_120_point_count_answer_text_review",
+      "c2_league_best_team_stretch",
+      "centers_rebound_leaders_wave4",
+      "guards_scoring_leaders_wave4",
+      "forwards_efg_leaders_wave4",
+      "point_guard_assist_leaders_wave4",
+      "centers_blocks_leaders_wave4",
+      "forwards_fg_percentage_leaders_wave4",
+      "rookie_scoring_leaders_wave4",
+      "bench_scoring_leaders_wave4",
+      "starter_assist_leaders_wave4",
+      "jokic_as_starter_summary_wave4",
+      "malik_monk_off_bench_summary_wave4",
+      "lakers_home_away_split_wave4",
+      "thunder_wins_losses_split_wave4",
+      "warriors_lakers_this_season_comparison_wave4",
+      "efg_player_leader_wave4",
+      "turnover_leaders_wave4",
+      "fewest_turnovers_leaders_wave4",
+      "personal_foul_leaders_wave4",
+      "pace_team_leaders_wave4",
+      "def_rating_team_leaders_wave4",
+      "most_points_allowed_team_leaders_wave4",
+      "opponent_ppg_leaders_wave4",
+      "assist_percentage_leader_wave4",
+      "turnover_rate_leader_wave4",
+      "celtics_against_east_record_wave4",
+      "which_player_assist_leaders_wave5",
+      "who_had_highest_true_shooting_wave5",
+      "thirty_point_games_hyphen_wave5",
+      "leaders_in_steals_wave5",
+      "worst_road_record_wave5",
+      "tatum_versus_good_teams_wave5",
+      "who_averaged_blocks_wave5",
+      "tatum_points_in_wins_wave5",
+      "question_form_lebron_durant_comparison_wave2b",
+      "celtics_bucks_comparison_this_season_wave5",
+      "warriors_lakers_record_this_season_wave5",
+      "rookie_assist_leaders_wave5",
+      "bench_rebound_leaders_wave5",
+      "players_personal_fouls_wave5",
+      "true_shooting_leaders_phrase_wave5",
+      "warriors_net_rating_single_team_wave5",
+      "fastest_pace_teams_wave5",
+      "pqa_player_stats_sentence_luka_played",
+      "pqa_player_stats_synonym_luka_averages",
+      "pqa_top_games_synonym_single_game_rebounds",
+      "fan_playoff_stats_this_year_honest_season",
+      "fan_kings_pace_scalar",
+      "fan_who_dropped_50_this_season",
+      "fan_jokic_vs_embiid_this_season",
+      "opponent_quality_player_leaderboard_refuses_unfiltered",
+      "opponent_quality_team_leaderboard_refuses_unfiltered",
+      "b1_most_30_point_10_rebound_games",
+      "b1_most_10_assist_0_turnover_games",
+      "b1_games_with_10_assists_0_turnovers_list",
+      "b1_how_often_player_10_assists_0_turnovers",
+      "b1_best_three_point_pct_minimum_attempts",
+      "b1_team_three_point_pct_minimum_attempts",
+      "b1_most_games_played",
+      "b1_who_played_most_games",
+      "c2_league_longest_20_point_streak",
+      "c2_league_longest_winning_streak",
+      "c2_compound_condition_streak",
+      "c2_unsized_team_stretch",
+      "c2_player_three_point_shooting_stretch"
+    ],
+    "snapshot_spelling": [
+      "pqa_availability_sentence_luka_plays"
+    ]
+  },
+  "filters": {
+    "already_applied": [
+      [
+        "season_team_leaders",
+        "min_games"
+      ]
+    ],
+    "bound_to_existing_consumer": [
+      [
+        "team_occurrence",
+        "min_games"
+      ]
+    ],
+    "unfinished_combination": [
+      [
+        "player_summary",
+        "min_games"
+      ],
+      [
+        "player_game_finder",
+        "min_games"
+      ],
+      [
+        "player_compare",
+        "min_games"
+      ],
+      [
+        "player_split",
+        "min_games"
+      ],
+      [
+        "player_streak",
+        "min_games"
+      ],
+      [
+        "player_stretch",
+        "role_starter"
+      ],
+      [
+        "player_stretch",
+        "role_bench"
+      ],
+      [
+        "player_stretch",
+        "min_games"
+      ],
+      [
+        "top_player_games",
+        "min_games"
+      ],
+      [
+        "top_team_games",
+        "min_games"
+      ],
+      [
+        "team_record",
+        "role_starter"
+      ],
+      [
+        "team_record",
+        "role_bench"
+      ],
+      [
+        "team_record_leaderboard",
+        "role_starter"
+      ],
+      [
+        "team_record_leaderboard",
+        "role_bench"
+      ],
+      [
+        "team_record_leaderboard",
+        "min_games"
+      ],
+      [
+        "team_matchup_record",
+        "role_starter"
+      ],
+      [
+        "team_matchup_record",
+        "role_bench"
+      ],
+      [
+        "team_matchup_record",
+        "min_games"
+      ],
+      [
+        "team_split",
+        "role_starter"
+      ],
+      [
+        "team_split",
+        "role_bench"
+      ],
+      [
+        "team_split",
+        "min_games"
+      ],
+      [
+        "team_streak",
+        "role_starter"
+      ],
+      [
+        "team_streak",
+        "role_bench"
+      ],
+      [
+        "team_streak",
+        "min_games"
+      ],
+      [
+        "team_occurrence",
+        "role_starter"
+      ],
+      [
+        "team_occurrence",
+        "role_bench"
+      ],
+      [
+        "team_compare",
+        "role_starter"
+      ],
+      [
+        "team_compare",
+        "role_bench"
+      ],
+      [
+        "team_compare",
+        "min_games"
+      ],
+      [
+        "game_finder",
+        "role_starter"
+      ],
+      [
+        "game_finder",
+        "min_games"
+      ],
+      [
+        "playoff_history",
+        "role_starter"
+      ],
+      [
+        "playoff_history",
+        "role_bench"
+      ],
+      [
+        "playoff_history",
+        "min_games"
+      ],
+      [
+        "record_by_decade",
+        "role_starter"
+      ],
+      [
+        "record_by_decade",
+        "role_bench"
+      ],
+      [
+        "record_by_decade",
+        "min_games"
+      ]
+    ],
+    "no_signal": [
+      [
+        "lineup_leaderboard",
+        "home_only"
+      ],
+      [
+        "lineup_leaderboard",
+        "wins_only"
+      ],
+      [
+        "lineup_leaderboard",
+        "opponent"
+      ],
+      [
+        "lineup_leaderboard",
+        "opponent_quality"
+      ],
+      [
+        "lineup_leaderboard",
+        "opponent_conference"
+      ],
+      [
+        "lineup_leaderboard",
+        "opponent_division"
+      ],
+      [
+        "lineup_leaderboard",
+        "clutch"
+      ],
+      [
+        "lineup_leaderboard",
+        "quarter"
+      ],
+      [
+        "lineup_leaderboard",
+        "half"
+      ],
+      [
+        "lineup_leaderboard",
+        "role_starter"
+      ],
+      [
+        "lineup_leaderboard",
+        "role_bench"
+      ],
+      [
+        "lineup_leaderboard",
+        "back_to_back"
+      ],
+      [
+        "lineup_leaderboard",
+        "rest_days"
+      ],
+      [
+        "lineup_leaderboard",
+        "one_possession"
+      ],
+      [
+        "lineup_leaderboard",
+        "nationally_televised"
+      ],
+      [
+        "lineup_leaderboard",
+        "position_guards"
+      ],
+      [
+        "lineup_leaderboard",
+        "position_centers"
+      ],
+      [
+        "lineup_leaderboard",
+        "last_n"
+      ],
+      [
+        "lineup_leaderboard",
+        "without_player"
+      ],
+      [
+        "lineup_leaderboard",
+        "date_window"
+      ],
+      [
+        "lineup_leaderboard",
+        "special_event"
+      ],
+      [
+        "lineup_leaderboard",
+        "min_games"
+      ],
+      [
+        "player_on_off",
+        "home_only"
+      ],
+      [
+        "player_on_off",
+        "wins_only"
+      ],
+      [
+        "player_on_off",
+        "opponent"
+      ],
+      [
+        "player_on_off",
+        "opponent_quality"
+      ],
+      [
+        "player_on_off",
+        "opponent_conference"
+      ],
+      [
+        "player_on_off",
+        "opponent_division"
+      ],
+      [
+        "player_on_off",
+        "clutch"
+      ],
+      [
+        "player_on_off",
+        "quarter"
+      ],
+      [
+        "player_on_off",
+        "half"
+      ],
+      [
+        "player_on_off",
+        "role_starter"
+      ],
+      [
+        "player_on_off",
+        "role_bench"
+      ],
+      [
+        "player_on_off",
+        "back_to_back"
+      ],
+      [
+        "player_on_off",
+        "rest_days"
+      ],
+      [
+        "player_on_off",
+        "one_possession"
+      ],
+      [
+        "player_on_off",
+        "nationally_televised"
+      ],
+      [
+        "player_on_off",
+        "position_guards"
+      ],
+      [
+        "player_on_off",
+        "position_centers"
+      ],
+      [
+        "player_on_off",
+        "last_n"
+      ],
+      [
+        "player_on_off",
+        "without_player"
+      ],
+      [
+        "player_on_off",
+        "date_window"
+      ],
+      [
+        "player_on_off",
+        "special_event"
+      ],
+      [
+        "player_on_off",
+        "min_games"
+      ]
+    ]
+  }
+}
