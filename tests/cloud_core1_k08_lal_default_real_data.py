@@ -15,7 +15,7 @@ from nbatools.api_handlers import query_result_to_payload
 from nbatools.commands._reported_absence_reasons import coverage_note
 from nbatools.commands._seasons import default_end_season
 from nbatools.commands.natural_query import parse_query
-from nbatools.data_source import reset_data_source_cache
+from nbatools.data_source import data_generation_context, data_path, reset_data_source_cache
 from nbatools.dataframe_cache import clear_frame_cache
 from nbatools.query_service import execute_natural_query, execute_structured_query
 from tests.cloud_composed_participation_stage_real_data import (
@@ -79,6 +79,26 @@ def assert_public_rest(body, expected=REST_COVERAGE):
     )
     assert coverage_note(expected) in body["notes"]
     assert not body["result"]["sections"]
+
+
+def test_published_lakers_rest_survives_shared_object_reuse():
+    manifests = {
+        "availability-lal-team-2025-v1-20261127": (
+            "2239be14825fed08e13da1cc118dd1082ea1f1edca86661ea39a7503ed5cce50"
+        ),
+        "availability-bos-team-2025-v1-20261128": (
+            "e075b2b7969ed2e068952f2c307b0b39f015b7fc2118e9fb002afc5d2f5a343b"
+        ),
+    }
+    with data_generation_context() as generation:
+        raw = data_path("data/metadata/generation_manifest.json").read_bytes()
+        assert _sha(raw) == manifests[generation]
+        response = TestClient(app).post("/query", json={"query": QUESTIONS[18]})
+        assert response.status_code == 200
+        body = response.json()
+        assert body["route"] == "team_record"
+        assert body["result"]["metadata"]["without_player"] == "Luka Dončić"
+        assert_public_rest(body)
 
 
 def full_name_key(value):
