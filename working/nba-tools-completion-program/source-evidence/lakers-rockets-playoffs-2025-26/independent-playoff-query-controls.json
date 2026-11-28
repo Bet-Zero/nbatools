@@ -1,0 +1,84 @@
+[
+  {
+    "game_ids": [
+      "0042500175",
+      "0042500176",
+      "0042500221",
+      "0042500222",
+      "0042500223",
+      "0042500224"
+    ],
+    "query": "Lakers record with Austin Reaves in the 2025-26 playoffs",
+    "scope": "team",
+    "summary": {
+      "games": 6,
+      "losses": 5,
+      "pts_avg": 101.0,
+      "pts_total": 606,
+      "wins": 1
+    }
+  },
+  {
+    "game_ids": [
+      "0042500171",
+      "0042500172",
+      "0042500173",
+      "0042500174"
+    ],
+    "query": "Lakers record without Austin Reaves in the 2025-26 playoffs",
+    "scope": "team",
+    "summary": {
+      "games": 4,
+      "losses": 1,
+      "pts_avg": 104.0,
+      "pts_total": 416,
+      "wins": 3
+    }
+  },
+  {
+    "game_ids": [
+      "0042500172"
+    ],
+    "query": "Rockets record with Kevin Durant in the 2025-26 playoffs",
+    "scope": "team",
+    "summary": {
+      "games": 1,
+      "losses": 1,
+      "pts_avg": 94.0,
+      "pts_total": 94,
+      "wins": 0
+    }
+  },
+  {
+    "game_ids": [
+      "0042500171",
+      "0042500173",
+      "0042500174",
+      "0042500175",
+      "0042500176"
+    ],
+    "query": "Rockets record without Kevin Durant in the 2025-26 playoffs",
+    "scope": "team",
+    "summary": {
+      "games": 5,
+      "losses": 3,
+      "pts_avg": 99.6,
+      "pts_total": 498,
+      "wins": 2
+    }
+  },
+  {
+    "game_ids": [
+      "0042500172"
+    ],
+    "query": "Lakers record vs Rockets when opponent Kevin Durant plays in the 2025-26 playoffs",
+    "scope": "opponent",
+    "summary": {
+      "games": 1,
+      "losses": 0,
+      "pts_avg": 101.0,
+      "pts_total": 101,
+      "wins": 1
+    }
+  }
+]

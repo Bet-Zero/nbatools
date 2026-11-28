@@ -1,0 +1,189 @@
+{
+  "cases_passed": 5,
+  "external_requests": 0,
+  "observed": [
+    {
+      "game_ids": [
+        "0042500175",
+        "0042500176",
+        "0042500221",
+        "0042500222",
+        "0042500223",
+        "0042500224"
+      ],
+      "http_status": 200,
+      "query": "Lakers record with Austin Reaves in the 2025-26 playoffs",
+      "result_reason": null,
+      "result_status": "ok",
+      "route": "team_record",
+      "scope": "team",
+      "season_type": "Playoffs",
+      "summary": [
+        {
+          "ast_avg": 22.833,
+          "blk_avg": 4.0,
+          "efg_pct_avg": 0.517,
+          "fg3m_avg": 10.667,
+          "games": 6,
+          "losses": 5,
+          "plus_minus_avg": -8.333,
+          "pts_avg": 101.0,
+          "reb_avg": 40.0,
+          "season_end": "2025-26",
+          "season_start": "2025-26",
+          "season_type": "Playoffs",
+          "stl_avg": 5.5,
+          "team_name": "Los Angeles Lakers",
+          "tov_avg": 16.167,
+          "ts_pct_avg": 0.557,
+          "win_pct": 0.167,
+          "wins": 1
+        }
+      ]
+    },
+    {
+      "game_ids": [
+        "0042500171",
+        "0042500172",
+        "0042500173",
+        "0042500174"
+      ],
+      "http_status": 200,
+      "query": "Lakers record without Austin Reaves in the 2025-26 playoffs",
+      "result_reason": null,
+      "result_status": "ok",
+      "route": "team_record",
+      "scope": "team",
+      "season_type": "Playoffs",
+      "summary": [
+        {
+          "ast_avg": 25.25,
+          "blk_avg": 6.5,
+          "efg_pct_avg": 0.577,
+          "fg3m_avg": 10.0,
+          "games": 4,
+          "losses": 1,
+          "plus_minus_avg": 0.25,
+          "pts_avg": 104.0,
+          "reb_avg": 38.5,
+          "season_end": "2025-26",
+          "season_start": "2025-26",
+          "season_type": "Playoffs",
+          "stl_avg": 9.0,
+          "team_name": "Los Angeles Lakers",
+          "tov_avg": 18.25,
+          "ts_pct_avg": 0.615,
+          "win_pct": 0.75,
+          "wins": 3
+        }
+      ]
+    },
+    {
+      "game_ids": [
+        "0042500172"
+      ],
+      "http_status": 200,
+      "query": "Rockets record with Kevin Durant in the 2025-26 playoffs",
+      "result_reason": null,
+      "result_status": "ok",
+      "route": "team_record",
+      "scope": "team",
+      "season_type": "Playoffs",
+      "summary": [
+        {
+          "ast_avg": 23.0,
+          "blk_avg": 6.0,
+          "efg_pct_avg": 0.444,
+          "fg3m_avg": 7.0,
+          "games": 1,
+          "losses": 1,
+          "plus_minus_avg": -7.0,
+          "pts_avg": 94.0,
+          "reb_avg": 42.0,
+          "season_end": "2025-26",
+          "season_start": "2025-26",
+          "season_type": "Playoffs",
+          "stl_avg": 8.0,
+          "team_name": "Houston Rockets",
+          "tov_avg": 15.0,
+          "ts_pct_avg": 0.483,
+          "win_pct": 0.0,
+          "wins": 0
+        }
+      ]
+    },
+    {
+      "game_ids": [
+        "0042500171",
+        "0042500173",
+        "0042500174",
+        "0042500175",
+        "0042500176"
+      ],
+      "http_status": 200,
+      "query": "Rockets record without Kevin Durant in the 2025-26 playoffs",
+      "result_reason": null,
+      "result_status": "ok",
+      "route": "team_record",
+      "scope": "team",
+      "season_type": "Playoffs",
+      "summary": [
+        {
+          "ast_avg": 20.4,
+          "blk_avg": 5.2,
+          "efg_pct_avg": 0.472,
+          "fg3m_avg": 10.6,
+          "games": 5,
+          "losses": 3,
+          "plus_minus_avg": -1.6,
+          "pts_avg": 99.6,
+          "reb_avg": 41.4,
+          "season_end": "2025-26",
+          "season_start": "2025-26",
+          "season_type": "Playoffs",
+          "stl_avg": 12.2,
+          "team_name": "Houston Rockets",
+          "tov_avg": 12.4,
+          "ts_pct_avg": 0.515,
+          "win_pct": 0.4,
+          "wins": 2
+        }
+      ]
+    },
+    {
+      "game_ids": [
+        "0042500172"
+      ],
+      "http_status": 200,
+      "query": "Lakers record vs Rockets when opponent Kevin Durant plays in the 2025-26 playoffs",
+      "result_reason": null,
+      "result_status": "ok",
+      "route": "team_record",
+      "scope": "opponent",
+      "season_type": "Playoffs",
+      "summary": [
+        {
+          "ast_avg": 21.0,
+          "blk_avg": 5.0,
+          "efg_pct_avg": 0.549,
+          "fg3m_avg": 13.0,
+          "games": 1,
+          "losses": 0,
+          "plus_minus_avg": 7.0,
+          "pts_avg": 101.0,
+          "reb_avg": 37.0,
+          "season_end": "2025-26",
+          "season_start": "2025-26",
+          "season_type": "Playoffs",
+          "stl_avg": 11.0,
+          "team_name": "Los Angeles Lakers",
+          "tov_avg": 12.0,
+          "ts_pct_avg": 0.599,
+          "win_pct": 1.0,
+          "wins": 1
+        }
+      ]
+    }
+  ],
+  "production_writes": 0
+}

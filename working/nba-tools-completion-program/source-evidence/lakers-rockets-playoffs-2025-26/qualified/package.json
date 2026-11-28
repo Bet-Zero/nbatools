@@ -1,0 +1,43 @@
+{
+  "base_generation": "availability-bos-team-2025-v1-20261128",
+  "base_manifest_sha256": "e075b2b7969ed2e068952f2c307b0b39f015b7fc2118e9fb002afc5d2f5a343b",
+  "generation_id": "availability-lal-hou-playoffs-2025-v1-20261128",
+  "overlays": {
+    "qualified-overlay.zip": "0589f283fe37c0b056ae7ee375f8cd62feccc10daa4a735088e07ae129a9b1ef"
+  },
+  "schema_version": 2,
+  "team_scopes": [
+    {
+      "appearance_proof_sha256": "fc0c19d66e1baae423bfba816d47b0aa8469fbbd9b651511f168ef8a34def205",
+      "game_ids": [
+        42500171,
+        42500172,
+        42500173,
+        42500174,
+        42500175,
+        42500176,
+        42500221,
+        42500222,
+        42500223,
+        42500224
+      ],
+      "season": "2025-26",
+      "season_type": "Playoffs",
+      "team_id": 1610612747
+    },
+    {
+      "appearance_proof_sha256": "699a892c4d2e91bcbfaff91e013c6f3f63e282adecb77a1eba7ce05b7998a103",
+      "game_ids": [
+        42500171,
+        42500172,
+        42500173,
+        42500174,
+        42500175,
+        42500176
+      ],
+      "season": "2025-26",
+      "season_type": "Playoffs",
+      "team_id": 1610612745
+    }
+  ]
+}
