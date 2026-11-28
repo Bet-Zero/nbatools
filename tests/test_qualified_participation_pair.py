@@ -295,6 +295,7 @@ def test_positive_sibling_cannot_hide_unknown_absence_on_original_candidates(
         "Lakers record without LeBron James and with Anthony Davis vs Celtics in {season} from {iso} to {iso}",
         "Lakers record vs Celtics from {named} to {named} without LeBron James and with Anthony Davis",
         "Lakers record vs Celtics when Anthony Davis played but LeBron James did not play from {named} to {named}",
+        "Lakers record vs Celtics with Anthony Davis and without LeBron James between {named} and {named}",
     ],
 )
 def test_date_scope_is_owned_before_mixed_participation_qualification(qualified_pair, query):

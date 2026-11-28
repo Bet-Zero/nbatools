@@ -249,7 +249,7 @@ def requested_mixed_availability(text: str) -> AvailabilityConjunction | None:
     window_stop = rf"|\s+{re.escape(window.group(0))}" if window else ""
     stop = (
         r"(?=\s+(?:and|while|when|but|record|games?|this|last|in|for|since|vs\.?"
-        r"|versus|against|at|on|from|during|over|before|after|through|until|home|away)\b"
+        r"|versus|against|at|on|from|between|during|over|before|after|through|until|home|away)\b"
         + window_stop
         + r"|[?!,;:]|$)"
     )
