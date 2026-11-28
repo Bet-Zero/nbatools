@@ -14,6 +14,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--base-url", required=True, help="Deployment base URL to probe")
     parser.add_argument(
+        "--snapshot-generation",
+        help="Expected immutable generation during approved snapshot recovery",
+    )
+    parser.add_argument(
         "--timeout",
         type=float,
         default=20.0,
@@ -28,7 +32,9 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = build_parser().parse_args()
-    report = run_deployment_smoke(args.base_url, timeout=args.timeout)
+    report = run_deployment_smoke(
+        args.base_url, timeout=args.timeout, snapshot_generation=args.snapshot_generation
+    )
     rendered = json.dumps(report.to_dict(), indent=2)
 
     if args.output:

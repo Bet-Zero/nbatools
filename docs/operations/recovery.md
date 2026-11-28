@@ -110,9 +110,47 @@ John Matthew approved these Queue E objectives on 2026-07-22:
 - **Recovery point objective (RPO): 24 hours.** At incident time, the newest
   independently recoverable trusted generation may be no more than 24 hours
   older than the affected state.
-- **Recovery time objective (RTO): 8 hours.** Measure from the first confirmed
+- **Strict Live recovery time objective (RTO) is 8 hours.** Measure from the first confirmed
   failed production-monitor probe until the service again passes readiness and
   the required post-recovery deployment smoke.
+
+### Snapshot recovery
+
+The owner approved a separate eight-hour snapshot recovery objective on
+2026-11-27. Start the clock at the first confirmed snapshot-service failure.
+Use the failed monitor report's `checked_at` timestamp after the configured
+retry rule has resolved the probe. Report the detection interval separately
+from the recovery time. The known Live-only blocker and a missing scheduled
+run do not start a snapshot incident clock.
+
+Once the exact last-good app and data pair is serving, run the production
+monitor against the approved target and the restored immutable generation.
+Require `snapshot_status=passed`. Confirm the deployment ID, commit, generation
+and manifest against the reviewed last-good evidence before and after all
+eight post-recovery snapshot smoke checks. Any identity change invalidates
+that smoke and leaves the clock running.
+
+```bash
+python tools/deployment_smoke.py --base-url "$RECOVERED_URL" \
+  --snapshot-generation "$LAST_GOOD_GENERATION" \
+  --output "$RECOVERY_SMOKE_RECEIPT"
+```
+
+This explicit recovery mode verifies the expected immutable generation and
+accepts strict HTTP 200 readiness or a typed HTTP 503 with exactly the approved
+`new_season_not_loaded` blocker. It requires positive query answers, including
+the completed 2025–26 Celtics record against East opponents. Use the default
+strict smoke and current-season checks for strict Live. Follow the existing
+scope and gates for protected releases. Escalate an unexpected blocker,
+identity mismatch, or smoke failure and keep the original clock running.
+
+Stop the snapshot clock when both snapshot health and the full bound
+post-recovery snapshot smoke pass. Record the later completion timestamp and
+compare elapsed UTC time with eight hours. Record strict Live readiness
+separately. Follow the existing approval requirements for deployment, pointer
+changes and recovery writes.
+
+### Detection and backup requirements
 
 The two-hour monitor interval creates a separate detection gap of up to roughly
 two hours; every live receipt must record the last known-good probe, first
@@ -253,9 +291,9 @@ eight-hour RTO, a detection interval, or a production data-loss window.
 3. Prepare a normal revert PR for the smallest failing change. Do not rewrite
    history, force-push, reset, or bypass CI.
 4. Require the standard lint, docs, frontend, and Python CI gates.
-5. Deploy or promote only with separate authorization, then run deployment
-   smoke and record the deployment identifier, source commit, request IDs,
-   readiness generation, results, operator, and timestamps.
+5. Deploy or promote only with separate authorization, then run the applicable
+   recovery checks. Record the deployment identifier, source commit, request
+   IDs, readiness generation, results, operator, and timestamps.
 
 A passing revert PR proves repository recovery only. It does not prove the
 deployed application changed until the authorized deployment and smoke evidence
@@ -292,8 +330,9 @@ leaves the active pointer unchanged.
 
 If the write result is uncertain, re-read the pointer and manifest before
 deciding any further action. After a successful recovery, check the restored
-app/data pair, approved required answers and readiness or snapshot status.
-Retain the failed candidate and the recovery evidence.
+app/data pair and approved required answers. Complete the applicable Live or
+[snapshot recovery](#snapshot-recovery) checks and retain the failed candidate
+and recovery evidence.
 
 If a retained generation is incomplete, restore its exact immutable bytes and
 checksum metadata from an independently retained backup or provider recovery
@@ -428,7 +467,9 @@ Every live recovery exercise or incident must record:
 - validation/checksum results before the pointer or deployment changes;
 - each mutation, its result, measured detection/recovery time, and data-loss
   window;
-- post-recovery health, readiness, and deployment-smoke evidence; and
+- snapshot or strict Live incident scope, first confirmed failure timestamp,
+  post-recovery health and strict readiness observations, and all applicable
+  deployment-smoke results with their completion timestamps; and
 - remaining exceptions, follow-up owner, and expiry.
 
 The owner approved preparation of a live drill but explicitly did not authorize

@@ -62,11 +62,11 @@ John Matthew approved the Queue E operating policy on 2026-07-22:
   monitored by John Matthew as project and incident owner.
 
 The representative query is the completed-season public example `top 10
-scorers 2025-26`. Its text is part of repository configuration, not retained
-user input. The generated monitor report omits request bodies and query text;
-it contains only the policy, stable case names, timings, response status,
-allowlisted response summaries, and bounded request IDs. Every response read is
-capped at 1 MiB; exceeding the cap fails immediately without retaining the body.
+scorers 2025-26`. The monitor checks the requested regular-season scoring basis
+and ten ordered rows with distinct player identities and finite points per
+game. The receipt contains the policy, stable case names, timings, response
+status, allowlisted summaries, and bounded request IDs. The response read
+limit is 1 MiB.
 
 The HTTP socket timeout is deliberately 10 seconds longer than each latency
 objective. That grace does not relax the 2/10/15-second pass thresholds; it
@@ -74,15 +74,24 @@ allows a slow serverless response to finish so the monitor can classify it as
 latency, apply the single approved retry, and retain a measured duration. A
 socket failure beyond that grace remains a transport failure.
 
-Each run attempts all three checks and records every failure. The
-`live_readiness` and `snapshot_status` fields report separate observations.
-Snapshot probes can pass with strict Live readiness still failing only when
-health and the representative query pass, and timely HTTP 503 readiness
-reports the expected immutable generation and exactly one well-formed
-`new_season_not_loaded` blocker. Any unexpected snapshot failure remains
-visible. The overall exit, alert policy and recovery targets still follow
-the strict verdict. Keep the workflow's tracked expected generation in sync
-with the exact generation selected by future protected releases or recovery.
+The owner approved the snapshot alert and recovery policy on November 27,
+2026. Each run attempts all three checks. With strict Live readiness
+reporting HTTP 503, the overall snapshot verdict passes only when timely
+health and scoring pass and the native readiness response identifies the
+expected immutable generation and exactly one well-formed
+`new_season_not_loaded` blocker. That case records `live_readiness: failed`,
+`snapshot_status: passed`, and `notification_required: false`. Other
+readiness blockers, malformed responses, wrong generations, and failures
+of the health or scoring checks are actionable. A well-formed expected
+readiness response that exceeds the time objective gets the usual single
+latency retry. Strict Live readiness records its own outcome.
+
+The overall scheduled exit drives the approved GitHub Actions notification
+route. Keep the tracked expected generation bound to the exact generation
+selected by future protected releases or recovery. Measure the eight-hour
+snapshot recovery objective from the first confirmed snapshot failure to
+passing snapshot operation and the required post-recovery smoke.
+[Recovery runbook](recovery.md#approved-recovery-objectives)
 
 The workflow fixes its target to the accepted production endpoint in tracked
 configuration. It has no dispatch URL input, secret, or mutable repository
@@ -111,14 +120,13 @@ alerts that are always firing stop being read. The eight-case deployment smoke
 remains the release/promotion gate; the three-case monitor is deliberately
 cheaper and is not a replacement.
 
-The 30-day objective has 360 intended two-hour slots. Calculate service success
-only across completed normal scheduled runs; at a complete 360-run window,
-99.0% requires at least 357 successful runs. Report scheduling coverage
-separately against all 360 intended slots. A delayed or dropped workflow is a
-monitoring-coverage gap with unknown service state, not evidence that the app
-was unavailable. Manual and synthetic notification-test runs are excluded.
-Before 30 days of history exists, report the available observation window
-rather than claiming the rolling objective is proven.
+The 30-day objective has 360 intended two-hour slots. Measure snapshot success
+prospectively from the approved policy on completed normal scheduled runs. At
+a complete 360-run window, 99.0% requires at least 357 successful runs.
+Report scheduling coverage against all 360 slots and classify delayed or
+dropped runs as unknown service state. Report the available snapshot-policy
+window and track strict Live readiness separately. The pre-policy strict,
+manual and synthetic runs retain their original verdicts and scopes.
 
 `workflow_dispatch` exposes an approved `synthetic-alert` mode. Its isolated
 job checks out no code, installs nothing, makes zero application or R2 requests,

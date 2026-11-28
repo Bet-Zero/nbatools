@@ -32,8 +32,25 @@ def _response_for(slug: str) -> tuple[int, Mapping[str, str], bytes]:
     return (
         200,
         {"x-request-id": "req-query"},
-        b'{"ok":true,"route":"season_leaders","result_status":"ok"}',
+        json.dumps(_scoring_payload()).encode(),
     )
+
+
+def _scoring_payload() -> dict:
+    return {
+        "ok": True,
+        "route": "season_leaders",
+        "result_status": "ok",
+        "result": {
+            "metadata": {"season": "2025-26", "season_type": "Regular Season", "stat": "pts"},
+            "sections": {
+                "leaderboard": [
+                    {"rank": rank, "player_id": rank, "games_played": 64, "pts_per_game": 35 - rank}
+                    for rank in range(1, 11)
+                ]
+            },
+        },
+    }
 
 
 def _slug_from_url(url: str) -> str:
@@ -110,13 +127,7 @@ def test_response_summary_redacts_raw_query_body_and_unsafe_request_id() -> None
             200,
             {"x-request-id": "secret request id with spaces"},
             json.dumps(
-                {
-                    "ok": True,
-                    "route": "season_leaders",
-                    "result_status": "ok",
-                    "query": private_query,
-                    "notes": ["private response note"],
-                }
+                _scoring_payload() | {"query": private_query, "notes": ["private response note"]}
             ).encode(),
         )
 
@@ -354,7 +365,7 @@ def _known_live_gap_payload() -> dict:
     ("probe_failures", "snapshot_status"),
     [(set(), "passed"), ({"representative_query"}, "failed"), ({"health"}, "failed")],
 )
-def test_readiness_http_error_keeps_all_probes_and_strict_verdict(
+def test_readiness_http_error_keeps_strict_live_and_scoped_alert_verdict(
     probe_failures: set[str], snapshot_status: str
 ) -> None:
     calls: list[str] = []
@@ -384,11 +395,11 @@ def test_readiness_http_error_keeps_all_probes_and_strict_verdict(
         "https://deploy.example", expected_generation=EXPECTED_GENERATION, fetcher=fetcher
     )
 
-    assert report.ok is False
-    assert report.notification_required is True
+    assert report.ok is (not probe_failures)
+    assert report.notification_required is bool(probe_failures)
     assert report.live_readiness == "failed"
     assert report.snapshot_status == snapshot_status
-    assert set(report.failures) == {"readiness", *probe_failures}
+    assert set(report.failures) == ({"readiness", *probe_failures} if probe_failures else set())
     assert report.failure_count == len(report.failures)
     assert calls == [
         "https://deploy.example/health",
@@ -411,6 +422,7 @@ def test_readiness_http_error_keeps_all_probes_and_strict_verdict(
         (200, {}),
         (503, {"active_generation": "different-generation"}),
         (503, {"immutable_generation": "true"}),
+        (503, {"immutable_generation": 1}),
         (503, {"status": "ready"}),
         (503, {"slices": [{}]}),
         (503, {"blockers": ["new_season_not_loaded"]}),
@@ -478,7 +490,8 @@ def test_http_error_body_transport_failure_retries_and_does_not_stop_query() -> 
     assert "private transport detail" not in json.dumps(report.to_dict())
 
 
-def test_strict_ready_on_wrong_generation_still_fails_monitor() -> None:
+@pytest.mark.parametrize("matching_generation", [True, False])
+def test_strict_ready_must_report_the_pinned_generation(matching_generation: bool) -> None:
     def fetcher(url, method, body, timeout):
         slug = _slug_from_url(url)
         if slug == "readiness":
@@ -486,7 +499,7 @@ def test_strict_ready_on_wrong_generation_still_fails_monitor() -> None:
                 "ready": True,
                 "status": "ready",
                 "blockers": [],
-                "active_generation": "wrong",
+                "active_generation": EXPECTED_GENERATION if matching_generation else "wrong",
             }
             return 200, {}, json.dumps(ready).encode()
         return _response_for(slug)
@@ -496,14 +509,14 @@ def test_strict_ready_on_wrong_generation_still_fails_monitor() -> None:
     )
 
     assert report.live_readiness == "passed"
-    assert report.snapshot_status == "failed"
-    assert report.ok is False
-    assert report.notification_required is True
-    assert report.failures == ["unexpected_active_generation"]
+    assert report.snapshot_status == ("passed" if matching_generation else "failed")
+    assert report.ok is matching_generation
+    assert report.notification_required is not matching_generation
+    assert report.failures == ([] if matching_generation else ["unexpected_active_generation"])
 
 
 def test_late_known_live_gap_does_not_pass_snapshot_probe(monkeypatch) -> None:
-    ticks = iter([0.0, 0.1, 1.0, 11.1, 12.0, 12.1])
+    ticks = iter([0.0, 0.1, 1.0, 11.1, 12.0, 22.1, 23.0, 23.1])
     monkeypatch.setattr("nbatools.production_monitoring.perf_counter", lambda: next(ticks))
 
     def fetcher(url, method, body, timeout):
@@ -518,7 +531,81 @@ def test_late_known_live_gap_does_not_pass_snapshot_probe(monkeypatch) -> None:
 
     assert report.snapshot_status == "failed"
     assert report.live_readiness == "failed"
+    assert report.notification_required
+    assert [a.failure_kind for a in report.cases[1].attempts] == ["latency", "latency"]
     assert report.cases[-1].ok
+
+
+def test_known_live_gap_can_recover_from_one_latency_retry(monkeypatch) -> None:
+    ticks = iter([0.0, 0.1, 1.0, 11.1, 12.0, 13.0, 14.0, 14.1])
+    monkeypatch.setattr("nbatools.production_monitoring.perf_counter", lambda: next(ticks))
+
+    def fetcher(url, method, body, timeout):
+        slug = _slug_from_url(url)
+        if slug == "readiness":
+            return 503, {}, json.dumps(_known_live_gap_payload()).encode()
+        return _response_for(slug)
+
+    report = run_production_monitor(
+        "https://deploy.example", expected_generation=EXPECTED_GENERATION, fetcher=fetcher
+    )
+
+    assert report.ok and not report.notification_required
+    assert report.live_readiness == "failed"
+    first, last = report.cases[1].attempts
+    assert first.failure_kind == "latency" and not first.known_live_gap
+    assert not last.ok and last.known_live_gap
+
+
+@pytest.mark.parametrize(
+    "damage", ["season", "empty", "duplicate", "boolean", "nonfinite", "oversize_integer"]
+)
+def test_known_live_gap_cannot_hide_invalid_scoring(damage) -> None:
+    payload = _scoring_payload()
+    result = payload["result"]
+    rows = result["sections"]["leaderboard"]
+    if damage == "season":
+        result["metadata"]["season"] = "2024-25"
+    elif damage == "empty":
+        rows.clear()
+    elif damage == "duplicate":
+        rows[1]["player_id"] = rows[0]["player_id"]
+    elif damage == "boolean":
+        rows[0]["games_played"] = True
+    elif damage == "oversize_integer":
+        rows[0]["pts_per_game"] = 10**500
+    else:
+        rows[0]["pts_per_game"] = float("inf")
+
+    def fetcher(url, method, body, timeout):
+        slug = _slug_from_url(url)
+        if slug == "readiness":
+            return 503, {}, json.dumps(_known_live_gap_payload()).encode()
+        if slug == "representative_query":
+            return 200, {}, json.dumps(payload).encode()
+        return _response_for(slug)
+
+    report = run_production_monitor(
+        "https://deploy.example", expected_generation=EXPECTED_GENERATION, fetcher=fetcher
+    )
+
+    assert not report.ok and report.notification_required
+    assert report.snapshot_status == "failed" and report.live_readiness == "failed"
+    assert "representative_query" in report.failures
+    assert len(report.cases[-1].attempts) == 1
+
+
+def test_known_live_gap_fails_without_generation_pin() -> None:
+    def fetcher(url, method, body, timeout):
+        slug = _slug_from_url(url)
+        if slug == "readiness":
+            return 503, {}, json.dumps(_known_live_gap_payload()).encode()
+        return _response_for(slug)
+
+    report = run_production_monitor("https://deploy.example", fetcher=fetcher)
+
+    assert not report.ok and report.notification_required
+    assert report.snapshot_status == "failed" and report.live_readiness == "failed"
 
 
 def test_synthetic_failure_is_network_free_and_safe() -> None:
