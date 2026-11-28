@@ -8,7 +8,7 @@ from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from http.client import HTTPException
-from math import isfinite
+from sys import float_info
 from time import perf_counter
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -448,7 +448,7 @@ def _scoring_rows_are_valid(payload: dict[str, Any]) -> bool:
     if not isinstance(rows, list) or len(rows) != 10:
         return False
     seen: set[int] = set()
-    previous_points = float("inf")
+    previous_points = float_info.max
     for rank, row in enumerate(rows, start=1):
         if not isinstance(row, dict):
             return False
@@ -466,7 +466,6 @@ def _scoring_rows_are_valid(payload: dict[str, Any]) -> bool:
             or type(games) is not int
             or games <= 0
             or type(points) not in {int, float}
-            or (type(points) is float and not isfinite(points))
             or not 0 < points <= previous_points
         ):
             return False

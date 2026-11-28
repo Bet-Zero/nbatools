@@ -126,8 +126,9 @@ run do not start a snapshot incident clock.
 Once the exact last-good app and data pair is serving, run the production
 monitor against the approved target and the restored immutable generation.
 Require `snapshot_status=passed`. Confirm the deployment ID, commit, generation
-and manifest against the reviewed last-good evidence, then run all eight
-post-recovery snapshot smoke checks on the same app and data pair.
+and manifest against the reviewed last-good evidence before and after all
+eight post-recovery snapshot smoke checks. Any identity change invalidates
+that smoke and leaves the clock running.
 
 ```bash
 python tools/deployment_smoke.py --base-url "$RECOVERED_URL" \

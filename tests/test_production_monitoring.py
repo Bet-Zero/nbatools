@@ -557,7 +557,9 @@ def test_known_live_gap_can_recover_from_one_latency_retry(monkeypatch) -> None:
     assert not last.ok and last.known_live_gap
 
 
-@pytest.mark.parametrize("damage", ["season", "empty", "duplicate", "boolean", "nonfinite"])
+@pytest.mark.parametrize(
+    "damage", ["season", "empty", "duplicate", "boolean", "nonfinite", "oversize_integer"]
+)
 def test_known_live_gap_cannot_hide_invalid_scoring(damage) -> None:
     payload = _scoring_payload()
     result = payload["result"]
@@ -570,6 +572,8 @@ def test_known_live_gap_cannot_hide_invalid_scoring(damage) -> None:
         rows[1]["player_id"] = rows[0]["player_id"]
     elif damage == "boolean":
         rows[0]["games_played"] = True
+    elif damage == "oversize_integer":
+        rows[0]["pts_per_game"] = 10**500
     else:
         rows[0]["pts_per_game"] = float("inf")
 
