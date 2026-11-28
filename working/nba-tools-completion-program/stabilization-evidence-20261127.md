@@ -84,3 +84,55 @@ The prepared verifier change has focused independent review and remains isolated
 until the corrected frozen release is accepted. The original archive and its
 source and receipt identities remain available.
 [Prepared transition](https://github.com/Bet-Zero/nbatools/commit/5446f6c3490d2e54c896a2c1d606ccaf908571e9)
+
+## Release check reconciliation
+
+The [exact case inventory](stabilization-release-scope-20261127.json) records
+all 232 failed numerical IDs, including the 90 additional IDs. The 142 earlier
+IDs all recurred. The snapshot corrections address 21 IDs. Ten deployed
+historical questions had been stopped by a strict readiness binding. Eight
+relative-date tests use numerical expectations for a fixed April 2026 clock.
+Three participation expectations needed the accepted team-versus-opponent
+meaning or the subsequently qualified inactive rows. The remaining 65
+literal-current and two incomplete full-season participation positives keep
+their original assertions. The remaining 144 fail in original source, stage,
+profile, or delivery contexts against the Cleveland run's single active pin.
+Historical source and delivery receipts retain their original identities.
+
+Ten deployed historical tests passed through the public alias using the
+checksum-verified Cleveland data for the independent expected rows. The
+readiness bracket accepts the fully typed single known blocker on that exact
+snapshot. The endpoint continues to report HTTP 503 for strict Live readiness.
+
+The 39 sweep differences were 18 minimum-games floors and 21 starter/bench
+conditions. The team-points leaderboard already used the floor, and the
+team-occurrence route now forwards it to its existing consumer. Both routes have
+an independent discriminating control above the 82-game sample. The 37
+unfinished combinations returned explicit filter limitations with no false
+answer on the restored data. They remain recorded as desired combinations.
+
+The full R2 jobs continue to execute their complete populations and retain
+their original exit status. `python -m tools.verify_snapshot_release` uses
+the same run's authenticated artifact digests, the complete numerical case
+population, the original Raw QA corpus, and all configured filter comparisons.
+New or altered failures and newly lost comparison signal require review.
+
+## Additional hosted operating evidence
+
+The spelling-corrected deployment `dpl_EoKjoaxSjNbDAB1ordqetqtFtfoo` returned
+all three simultaneous historical requests in 6.206–11.627 s across workers.
+A warm cohort of the broad ranking, Curry summary and Ty Jerome rostered
+record returned all three in 1.187–5.030 s. Overlapping native intervals and
+shared evolving cache counters indicate a common worker in that cohort.
+Peak observed process RSS was 807.742 MiB and the minimum observed completion
+volume headroom was 278,290,432 bytes. Effective worker memory allocation was
+unavailable. These measurements describe the observed workload. The separately
+parked unprimed K12 claim retains its original gates.
+
+Under one controlled native worker with 100 ms per object, the duplicate-read
+repair reduced 217 to 166 GETs for the same 163 distinct keys and saved
+85,767,228 transferred bytes. It preserved all three complete answers and the
+follow-up rostered result. Peak observed RSS fell from 900.824 to 784.719 MiB
+with 271,658,867 sampled disk bytes in both runs. A two-slot comparison rejected
+an otherwise valid third answer and had higher measured RSS. The existing
+three-slot policy is retained. The final-build hosted recheck follows integration.

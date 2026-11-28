@@ -14,6 +14,7 @@ from zipfile import ZipFile
 
 import yaml
 
+from tools.filter_execution_sweep import VERDICTS
 from tools.raw_query_answer_qa import (
     failed_case_ids_from_rows,
     load_corpus,
@@ -189,6 +190,7 @@ def filters(archive, generation, scope):
         == summary["executed_comparisons"]
         > 0
         and counters == Counter(summary["verdict_counts"])
+        and counters.keys() <= set(VERDICTS)
         and pairs.keys() == configured,
         "Filter evidence identity or selection differs",
     )

@@ -27,16 +27,19 @@ Effective hosted memory and the same-worker resource envelope remain unqualified
 [Deadline](https://github.com/Bet-Zero/nbatools/pull/661) ·
 [Advisories](https://github.com/Bet-Zero/nbatools/pull/662)
 
-**Current queue.** The 44 fresh original captures and 40 timing repeats passed
-independent review. Resolve the historical source and release-verifier failures
-at their intended data and deployment bindings. Keep literal-current positives
-open in the Live ledger. Finish the required hosted operating proof and
-corrected release acceptance before landing the prepared
-[W6A transition](w6a-transition.md). The prospective
+**Current queue.** Validate the integrated release and its public deployment
+using the [reconciled release checks](stabilization-evidence-20261127.md#release-check-reconciliation).
+All 232 prior numerical failure IDs and 39 dropped conditions have explicit
+dispositions. Qualified history keeps its original evidence binding. The new
+download coalescer preserves request deadlines and avoids repeated verified
+object transfers. On release acceptance, land the prepared
+[W6A transition](w6a-transition.md) with its independent equivalence receipt.
+The prospective
 [read-only recovery handoff](../../docs/operations/recovery.md#uncertain-protected-candidate-activation)
 is ready before the next protected activation. Strict Live remains 503 for
 `new_season_not_loaded`. The scheduled monitor separately executed historical
-scoring successfully. [Scheduled monitor](https://github.com/Bet-Zero/nbatools/actions/runs/46075927174)
+scoring successfully. Its overall alert and recovery policy awaits the owner's
+decision on the scoped snapshot exception. [Scheduled monitor](https://github.com/Bet-Zero/nbatools/actions/runs/46075927174)
 
 **Original product ledger.** K08 remains 16 PASS / 26 MISSING DATA / 4 LIVE.
 The next capability is #33, “Lakers record without Davis.” The held 2025–26
