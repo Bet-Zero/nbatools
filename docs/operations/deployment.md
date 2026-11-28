@@ -287,6 +287,13 @@ separate protected approvals.
    pin or assign a production alias. A pin used outside `VERCEL_ENV=preview`,
    an empty pin, or a mismatching R2 manifest fails closed. No request parameter
    can select a generation; no local data is uploaded into Vercel.
+
+   For an approved Vercel share link, use the deployment's `_vercel_share`
+   exchange on the immutable hostname. Confirm that a subsequent ordinary GET
+   in the same session returns the NBA Tools page before sending a query. An SSO
+   redirect can set a cookie without granting access. Record the status and
+   request identifiers, keep the link value out of receipts, and revoke it
+   immediately after qualification.
 5. On at most two fresh deployments, make the **first query POST**, before any
    readiness/query warm-up: `Cavaliers record without Caris LeVert in 2024-25`.
    Save the actual HTTP response, request/deployment identifiers and external
