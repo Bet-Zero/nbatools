@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 from pathlib import Path
 from typing import Any
@@ -218,14 +219,6 @@ def test_unverified_availability_blocks_publication_before_remote_writes(tmp_pat
     assert client.put_order == []
 
 
-class FakeBody:
-    def __init__(self, payload: bytes):
-        self.payload = payload
-
-    def read(self) -> bytes:
-        return self.payload
-
-
 class FakeClientError(Exception):
     def __init__(self, code: str, message: str, status: int):
         self.response = {
@@ -257,7 +250,7 @@ class FakeR2Client:
 
     def get_object(self, *, Bucket: str, Key: str) -> dict[str, Any]:
         response = self.head_object(Bucket=Bucket, Key=Key)
-        return {**response, "Body": FakeBody(self.objects[Key])}
+        return {**response, "Body": io.BytesIO(self.objects[Key])}
 
     def put_object(self, **kwargs: Any) -> dict[str, str]:
         key = kwargs["Key"]

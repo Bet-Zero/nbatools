@@ -24,7 +24,7 @@ def generation(tmp_path):
                 "sha256": hashlib.sha256(value.encode()).hexdigest(),
             }
         )
-    manifest = {"generation_id": "test-generation", "files": entries}
+    manifest = {"schema_version": 1, "generation_id": "test-generation", "files": entries}
     return manifest
 
 
@@ -38,8 +38,13 @@ def report(tmp_path):
     )
 
 
-def test_observed_games_and_player_completeness_are_different(tmp_path):
-    result = report(tmp_path)
+@pytest.mark.parametrize("schema", [1, 2])
+def test_observed_games_and_player_completeness_are_different(tmp_path, schema):
+    manifest = generation(tmp_path)
+    if schema == 2:
+        manifest["schema_version"] = 2
+        manifest["files"][0]["storage_generation"] = "test-origin"
+    result = scan_generation(manifest, lambda path: tmp_path / path, origin="test", evidence={})
     frame = next(f for f in result["files"] if f.get("dataset") == "raw/player_game_stats")
     assert frame["game_coverage"]["missing_game_ids"] == ["22500002"]
     assert frame["team_game_coverage"]["missing_keys"] == [

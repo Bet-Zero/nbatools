@@ -102,6 +102,7 @@ jobs:
       candidate_sha: ${{ steps.resolve.outputs.candidate_sha }}
       reviewed_sha: ${{ steps.resolve.outputs.reviewed_sha }}
       generation: ${{ steps.resolve.outputs.generation }}
+      manifest_sha256: ${{ steps.resolve.outputs.manifest_sha256 }}
       scope: ${{ steps.resolve.outputs.scope }}
       tests: ${{ steps.resolve.outputs.tests }}
       raw_qa_cases: ${{ steps.resolve.outputs.raw_qa_cases }}
@@ -147,6 +148,7 @@ jobs:
     environment: r2-validation
     outputs:
       generation: ${{ steps.pin.outputs.generation }}
+      manifest_sha256: ${{ steps.pin.outputs.manifest_sha256 }}
       candidate_sha: ${{ needs.request.outputs.candidate_sha }}
       reviewed_sha: ${{ needs.request.outputs.reviewed_sha }}
       scope: ${{ needs.request.outputs.scope }}
@@ -158,6 +160,8 @@ jobs:
       R2_ACCESS_KEY_ID: ${{ secrets.R2_VALIDATION_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
       NBATOOLS_DATA_GENERATION: ${{ needs.request.outputs.generation }}
+      NBATOOLS_DATA_GENERATION_MANIFEST_SHA256: ${{ needs.request.outputs.manifest_sha256 }}
+      APPROVED_BACKUP_GENERATION: ${{ inputs.backup_generation }}
     steps:
       - name: Check out the resolved candidate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -186,6 +190,8 @@ jobs:
         id: pin
         run: |
           python - <<'PY'
+          from contextlib import nullcontext
+          import json
           import os
 
           required = (
@@ -205,21 +211,32 @@ jobs:
                   "receive them. See docs/operations/deployment.md."
               )
 
-          from nbatools.data_source import (
-              current_data_generation,
-              data_glob,
-              data_source_mode,
-          )
+          from nbatools import data_source
 
-          if data_source_mode() != "r2":
+          if data_source.data_source_mode() != "r2":
               raise SystemExit("DATA_SOURCE did not resolve to r2")
 
-          generation = current_data_generation()
-          if not generation or generation == "legacy":
-              raise SystemExit("Validation requires an immutable generation, not legacy data")
-          # Pin before probing so a pointer change cannot validate another snapshot.
-          os.environ["NBATOOLS_DATA_GENERATION"] = generation
-          player_game_files = data_glob("raw/player_game_stats/*.csv")
+          backup_generation = os.environ.get("APPROVED_BACKUP_GENERATION")
+          if backup_generation:
+              os.environ.pop("NBATOOLS_DATA_GENERATION", None)
+          # Older manual target revisions expose only the identifier.
+          manifest_digest = getattr(data_source, "current_data_manifest_sha256", lambda: None)
+          pin = getattr(data_source, "data_generation_context", None)
+          context = pin() if pin else nullcontext(data_source.current_data_generation())
+          requested_digest = os.environ.get("NBATOOLS_DATA_GENERATION_MANIFEST_SHA256")
+          with context as generation:
+              if not generation or generation == "legacy":
+                  raise SystemExit("Validation requires an immutable generation, not legacy data")
+              if backup_generation and generation != backup_generation:
+                  raise SystemExit("Active data changed after the approved publication")
+              manifest_sha256 = manifest_digest()
+              if requested_digest and manifest_sha256 != requested_digest:
+                  raise SystemExit("Target did not authenticate the requested manifest checksum")
+              player_game_files = data_source.data_glob("raw/player_game_stats/*.csv")
+              if manifest_sha256 and not requested_digest:
+                  document = json.loads(data_source.data_read_text("metadata/generation_manifest.json"))
+                  if document["schema_version"] == 1:
+                      manifest_sha256 = None
           if not player_game_files:
               raise SystemExit(
                   "R2 was reachable but the active generation exposed no "
@@ -228,6 +245,7 @@ jobs:
 
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
               handle.write(f"generation={generation}\n")
+              handle.write(f"manifest_sha256={manifest_sha256 or ''}\n")
 
           print(
               "R2 read check passed; pinned generation "
@@ -250,6 +268,7 @@ jobs:
       R2_ACCESS_KEY_ID: ${{ secrets.R2_VALIDATION_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
       NBATOOLS_DATA_GENERATION: ${{ needs.preflight.outputs.generation }}
+      NBATOOLS_DATA_GENERATION_MANIFEST_SHA256: ${{ needs.preflight.outputs.manifest_sha256 }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -325,6 +344,7 @@ jobs:
       R2_ACCESS_KEY_ID: ${{ secrets.R2_VALIDATION_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
       NBATOOLS_DATA_GENERATION: ${{ needs.preflight.outputs.generation }}
+      NBATOOLS_DATA_GENERATION_MANIFEST_SHA256: ${{ needs.preflight.outputs.manifest_sha256 }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -382,6 +402,7 @@ jobs:
       R2_ACCESS_KEY_ID: ${{ secrets.R2_VALIDATION_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
       NBATOOLS_DATA_GENERATION: ${{ needs.preflight.outputs.generation }}
+      NBATOOLS_DATA_GENERATION_MANIFEST_SHA256: ${{ needs.preflight.outputs.manifest_sha256 }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -554,6 +575,7 @@ jobs:
           assert not any(os.environ.get(k) for k in ('R2_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY'))
           os.environ['NBATOOLS_DATA_ROOT'] = str(Path('recovered').resolve())
           os.environ.pop('NBATOOLS_DATA_GENERATION', None)
+          os.environ.pop('NBATOOLS_DATA_GENERATION_MANIFEST_SHA256', None)
           from nbatools.data_source import data_read_csv
           rows = data_read_csv('data/raw/player_game_stats/2025-26_regular_season.csv')
           assert len(rows) > 1000 and {'player_id', 'game_id', 'pts'}.issubset(rows.columns)

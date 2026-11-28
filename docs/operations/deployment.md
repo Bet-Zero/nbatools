@@ -333,6 +333,27 @@ the [read-only reconciliation and backup handoff](recovery.md#uncertain-protecte
 Keep the previous generation. Further activation or recovery writes require
 their own authority.
 
+### Candidate manifests with shared objects
+
+`python -m tools.plan_generation_reuse` compares two pinned local manifests and
+reports the candidate checksum, required origins and exact incremental writes.
+A shared-object manifest references an earlier physical object at the same
+logical path and only when size and SHA-256 match. Each reference names the
+physical origin directly. Reuse changes the candidate manifest checksum, so
+qualify and approve that exact candidate separately.
+
+A reviewed package can opt in with `reuse_unchanged: true` for candidate-only
+upload. The read-only preparation binds the full logical inventory, incremental
+bytes and PUT count. The writer verifies shared bodies before staging changed
+objects, and the independent verifier checks the complete logical generation.
+The activation pointer still authenticates one manifest. A full backup resolves
+the references and preserves a standalone archive of every logical file.
+
+Keep all origin prefixes protected. Pruning refuses to run when shared-object
+manifests exist. Plan storage and recovery with the active, previous, candidate
+and referenced origin objects retained. Deploy readers that support shared
+objects before qualifying a candidate that uses them.
+
 ### Agent-initiated targeted requests
 
 The owner authorized automatic targeted validation on 2026-10-15. An agent with
@@ -346,7 +367,7 @@ fresh `r2-validation/<task>-<candidate-short-sha>` branch at that exact candidat
 The candidate must include this workflow extension. Add one final commit changing
 only `.github/r2-validation-request.json`, then push that branch normally (never
 force-push another session's work). That dedicated branch/path push starts the
-existing workflow automatically. The manifest has exactly these fields:
+existing workflow automatically. The request manifest uses these required fields:
 
 ```json
 {
@@ -364,6 +385,10 @@ example is a historical snapshot, not a freshness claim. Selectors are existing
 Python files under `tests/` or individual pytest node ids, and Raw QA ids name
 existing corpus cases. At least one selection is required. A misspelled node or
 case, unmarked numerical selection, or required skip fails acceptance.
+
+For a shared-object generation, add `manifest_sha256` with the exact
+independently verified digest. The read-only workflow uses it to authenticate
+the specified generation even when it is no longer active.
 
 The resolver checks the push repository, full branch ref and exact pushed SHA.
 The request commit must have **one parent equal to `reviewed_sha`** and change

@@ -184,16 +184,13 @@ def scan_generation(manifest, path_for, *, origin, evidence):
     for name, expected in sorted(entries.items()):
         path = path_for(name)
         raw = path.read_bytes()
-        if (
-            len(raw) != expected["size_bytes"]
-            or hashlib.sha256(raw).hexdigest() != expected["sha256"]
-        ):
+        if len(raw) != expected.size_bytes or hashlib.sha256(raw).hexdigest() != expected.sha256:
             raise ValueError(f"Generation object integrity mismatch: {name}")
         season, kind = _slice(name)
         record = {
             "path": name,
             "bytes": len(raw),
-            "sha256": expected["sha256"],
+            "sha256": expected.sha256,
             "season": season,
             "season_type": kind,
             "integrity": "verified",
@@ -302,7 +299,7 @@ def scan_generation(manifest, path_for, *, origin, evidence):
         "origin": origin,
         "evidence": evidence,
         "file_count": len(entries),
-        "total_bytes": sum(f["size_bytes"] for f in entries.values()),
+        "total_bytes": sum(item.size_bytes for item in entries.values()),
         "files": records,
         "game_catalogs": catalogs,
         "recorded_pipeline_receipts": recorded_slices,

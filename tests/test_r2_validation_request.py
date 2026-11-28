@@ -93,12 +93,21 @@ def test_valid_push_binds_reviewed_parent_exact_request_sha_and_generation(repo)
         "candidate_sha": _git(repo[0], "rev-parse", "HEAD"),
         "reviewed_sha": repo[1]["reviewed_sha"],
         "generation": "controlled-immutable-fixture",
+        "manifest_sha256": "",
         "scope": "targeted",
         "tests": "tests/test_reviewed.py::test_reviewed",
         "raw_qa_cases": "controlled-case",
         "automatic": "true",
     }
     assert outputs["candidate_sha"] != outputs["reviewed_sha"]
+
+
+def test_valid_push_can_bind_the_exact_generation_manifest(repo):
+    repo[1]["manifest_sha256"] = "a" * 64
+    result, outputs = run_request(repo)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert outputs["generation"] == "controlled-immutable-fixture"
+    assert outputs["manifest_sha256"] == "a" * 64
 
 
 @pytest.mark.parametrize(
@@ -115,6 +124,9 @@ def test_valid_push_binds_reviewed_parent_exact_request_sha_and_generation(repo)
         ("generation", "snapshot\ninjected=value"),
         ("generation", "../snapshot"),
         ("generation", 42),
+        ("manifest_sha256", ""),
+        ("manifest_sha256", 42),
+        ("manifest_sha256", "a" * 64 + "\ninjected=value"),
         ("tests", "tests/test_reviewed.py"),
         ("tests", [None]),
         ("tests", [" "]),
