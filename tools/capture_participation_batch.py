@@ -256,9 +256,10 @@ def capture_batch(
         attempts.append(attempt)
         _update(attempt_path, dict(attempts=attempts))
         target = rejected / name
+        received_path = sources / name
         try:
             path = f"nba_stats/json/{job['endpoint']}/{year}/{job['game_id']}.json"
-            witness = fetch(path, target, PIN)
+            witness = fetch(path, target, PIN, direct_200=True)
             raw = target.read_bytes()
             attempt.update(size_bytes=len(raw), sha256=_digest(raw))
             if (
@@ -268,16 +269,26 @@ def capture_batch(
                 != (job["url"], len(raw), attempt["sha256"])
             ):
                 raise ValueError("Archive body differs from the pinned Git blob or reader receipt")
-            target.rename(sources / name)
-            files[name] = dict(
+            receipt = dict(
                 **job,
                 size_bytes=len(raw),
                 sha256=attempt["sha256"],
                 retrieved_at=datetime.now(UTC).isoformat(),
             )
+            updated_files = files | {name: receipt}
+            target.rename(received_path)
+            _update(manifest_path, dict(repository=MIRROR, revision=PIN, files=updated_files))
+            files = updated_files
             attempt["status"] = "received_exact"
-            _update(manifest_path, dict(repository=MIRROR, revision=PIN, files=files))
         except (RequestException, OSError, ValueError, KeyError) as exc:
+            if received_path.is_file():
+                try:
+                    received_path.rename(target)
+                except OSError as retention_error:
+                    attempt["retention_error"] = str(retention_error)
+                    target = received_path
+            if target.is_file():
+                attempt["retained_original"] = target.relative_to(output).as_posix()
             if target.is_file() and "size_bytes" not in attempt:
                 attempt.update(
                     size_bytes=target.stat().st_size, sha256=_digest(target.read_bytes())

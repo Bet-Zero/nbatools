@@ -1,15 +1,20 @@
 """Exercise the exact planner-to-capture-to-stage handoff without network access."""
 
 import hashlib
+import io
 import json
 
 import pytest
 from requests import HTTPError, Response
+from requests.adapters import HTTPAdapter
+from urllib3.response import HTTPResponse
 
 from nbatools.data_source import reset_data_source_cache
 from tests.test_plan_participation_collection import retained_collection  # noqa: F401
 from tests.test_structured_participation import source  # noqa: F401
+from tools import capture_participation_batch as capture
 from tools.capture_participation_batch import capture_batch
+from tools.cloud_nba_archive import fetch_capture
 from tools.plan_participation_collection import (
     REMOTE_BODY_BOUND_BYTES,
     _source_url,
@@ -33,7 +38,7 @@ def _write(path, payload):
     return _sha(raw)
 
 
-def _no_fetch(*args):
+def _no_fetch(*args, **kwargs):
     pytest.fail(f"Unplanned request: {args[0]}")
 
 
@@ -99,7 +104,8 @@ def test_one_missing_original_enters_native_stage_without_recollecting_held(
     captured = tmp_path / "captured"
     requests = []
 
-    def fetch(path, destination, revision):
+    def fetch(path, destination, revision, *, direct_200):
+        assert direct_200
         requests.append(path)
         assert path == f"nba_stats/json/boxscoresummaryv3/2026/{GAME}.json"
         raw = _exact_summary()
@@ -161,7 +167,8 @@ def test_failure_receipt_keeps_observable_bytes_and_prevents_repeat(draft, tmp_p
     captured = tmp_path / "failure"
     wrong = b'{"substituted":true}'
 
-    def fetch(path, target, revision):
+    def fetch(path, target, revision, *, direct_200):
+        assert direct_200
         if fault == "http":
             response = Response()
             response.status_code = 403
@@ -186,6 +193,72 @@ def test_failure_receipt_keeps_observable_bytes_and_prevents_repeat(draft, tmp_p
     assert not (captured / "sources" / MISSING).exists()
     with pytest.raises(ValueError, match="already attempted"):
         _capture(draft, tmp_path / "blocked-repeat", prior_attempts=[attempts])
+
+
+def test_failed_manifest_commit_keeps_bytes_and_reports_original_pending(
+    draft, tmp_path, monkeypatch
+):
+    output = tmp_path / "manifest-write-failure"
+    exact = _exact_summary()
+    persist = capture._update
+
+    def update(path, payload):
+        if path.name == "sources.json" and MISSING in payload["files"]:
+            raise OSError("controlled sources manifest commit failure")
+        return persist(path, payload)
+
+    def fetch(path, destination, revision, *, direct_200):
+        assert direct_200
+        destination.write_bytes(exact)
+        return dict(
+            url=_source_url(2026, "boxscoresummaryv3", GAME), bytes=len(exact), sha256=_sha(exact)
+        )
+
+    monkeypatch.setattr(capture, "_update", update)
+    summary = _capture(draft, output, fetch=fetch)
+    (attempt,) = json.loads((output / "capture-attempts.json").read_bytes())["attempts"]
+    manifest = json.loads((output / "sources.json").read_bytes())
+    assert not summary["complete"] and summary["remaining_originals"] == [MISSING]
+    assert MISSING not in manifest["files"] and not (output / "sources" / MISSING).exists()
+    assert attempt["status"] == "failed" and attempt["error_type"] == "OSError"
+    assert "manifest commit failure" in attempt["error"]
+    assert (output / attempt["retained_original"]).read_bytes() == exact
+
+
+@pytest.mark.parametrize("status", [200, 302, 206])
+def test_adapter_reads_only_direct_200_bodies(draft, tmp_path, monkeypatch, status):
+    decoded = _exact_summary() if status == 200 else b"x" * 8_100_000
+    raw = HTTPResponse(
+        body=io.BytesIO(decoded),
+        preload_content=False,
+        headers={"Content-Length": str(len(decoded))},
+        status=status,
+    )
+    urls = []
+
+    def send(adapter, request, **kwargs):
+        urls.append(request.url)
+        assert len(urls) == 1, "Reached an unplanned second host"
+        response = Response()
+        response.request = request
+        response.url = request.url
+        response.status_code = status
+        response.headers["Location"] = "https://redirect-fixture.invalid/overscope"
+        response.raw = raw
+        return response
+
+    monkeypatch.setattr(HTTPAdapter, "send", send)
+    output = tmp_path / "nondirect"
+    summary = _capture(draft, output, fetch=fetch_capture)
+    (attempt,) = json.loads((output / "capture-attempts.json").read_bytes())["attempts"]
+    assert urls == [_source_url(2026, "boxscoresummaryv3", GAME)] and summary["body_requests"] == 1
+    if status == 200:
+        assert summary["complete"] and summary["measured_body_bytes"] == len(decoded)
+        assert (output / "sources" / MISSING).read_bytes() == decoded
+    else:
+        assert raw.tell() == 0 and summary["measured_body_bytes"] == 0
+        assert not summary["complete"] and summary["remaining_originals"] == [MISSING]
+        assert attempt["status"] == "failed" and attempt["http_status"] == status
 
 
 @pytest.mark.parametrize("fault", ["plan_sha", "request", "cap", "scope", "blob"])
