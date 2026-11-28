@@ -83,6 +83,7 @@ ADVISORY_JOBS = ()
 # Pins one generation for the whole run. The engine honours it over the live
 # pointer -- see `_resolve_active_data_generation` in data_source.
 GENERATION_ENV = "NBATOOLS_DATA_GENERATION"
+MANIFEST_SHA_ENV = "NBATOOLS_DATA_GENERATION_MANIFEST_SHA256"
 
 SUPPRESSORS = ("|| true", "|| exit 0", "; true", "set +e", "|| :")
 
@@ -131,7 +132,7 @@ def _credential_check_script() -> str:
     for line in body.splitlines():
         if line.strip() == "PY":
             break
-        lines.append(line.removeprefix("          "))
+        lines.append(line)
     return "\n".join(lines)
 
 
@@ -374,6 +375,7 @@ def test_every_gate_judges_the_one_pinned_generation() -> None:
     assert "generation" in outputs, (
         f"{PREFLIGHT_JOB} must expose the pinned generation as an output; it has {sorted(outputs)}."
     )
+    assert outputs.get("manifest_sha256") == "${{ steps.pin.outputs.manifest_sha256 }}"
 
     expected = f"${{{{ needs.{PREFLIGHT_JOB}.outputs.generation }}}}"
     for name, job in _jobs().items():
@@ -385,6 +387,10 @@ def test_every_gate_judges_the_one_pinned_generation() -> None:
             f"needs.{PREFLIGHT_JOB}.outputs.generation; it has {pinned!r}. "
             f"Resolving the generation independently makes the gates judge "
             f"possibly different data."
+        )
+        assert (
+            job["env"].get(MANIFEST_SHA_ENV)
+            == f"${{{{ needs.{PREFLIGHT_JOB}.outputs.manifest_sha256 }}}}"
         )
 
 
