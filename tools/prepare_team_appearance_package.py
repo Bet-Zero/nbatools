@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import json
 import re
@@ -39,6 +40,35 @@ def _append_appearance_scope(previous: dict, incoming: dict) -> dict:
         "unqualified": previous["unqualified"] + incoming["unqualified"],
         "source_requests": previous["source_requests"] + incoming["source_requests"],
     }
+
+
+def _final_team_games(data, before, relative, team_id, season, kind):
+    source = data / relative
+    if _file_sha(source) != before[relative]["sha256"]:
+        raise ValueError("Team-season denominator differs from the immutable base")
+    population = {}
+    with source.open(newline="", encoding="utf-8") as rows:
+        for row in csv.DictReader(rows):
+            if str(team_id) not in {
+                row["team_a_id"],
+                row["team_b_id"],
+                row["home_team_id"],
+                row["away_team_id"],
+            }:
+                continue
+            home, away = int(row["home_team_id"]), int(row["away_team_id"])
+            game = int(row["game_id"])
+            if (
+                team_id not in {home, away}
+                or row["status"].casefold() != "final"
+                or row["season"] != season
+                or row["season_type"] != kind
+                or home == away
+                or game in population
+            ):
+                raise ValueError("Team-season denominator contains unfinished or conflicting games")
+            population[game] = (row["game_date"], home, away)
+    return population
 
 
 def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, base_data=None):
@@ -86,11 +116,9 @@ def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, ba
         proof["season"] != season
         or proof["season_type"] != kind
         or proof["scope"] != "complete_team_appearance_lists"
-        or {side["game_id"] for side in proof["sides"] if side["team_id"] == team_id}
-        != set(game_ids)
-        or any(side["game_id"] not in game_ids for side in proof["sides"])
-        or len({(side["game_id"], side["team_id"]) for side in proof["sides"]})
-        != len(proof["sides"])
+        or any(side["team_id"] != team_id for side in proof["sides"])
+        or len(proof["sides"]) != len(game_ids)
+        or {side["game_id"] for side in proof["sides"]} != set(game_ids)
     ):
         raise ValueError("Proof does not cover the exact reviewed team-season population")
 
@@ -110,6 +138,16 @@ def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, ba
     ):
         raise ValueError("Preparation base differs from the retained package")
     before = {item["path"]: item for item in manifest["files"]}
+    games, schedule = (
+        _final_team_games(data, before, f"raw/{family}/{suffix}.csv", team_id, season, kind)
+        for family in ("games", "schedule")
+    )
+    if (
+        games != schedule
+        or games.keys() != set(game_ids)
+        or any(side["game_date"] != games[side["game_id"]][0] for side in proof["sides"])
+    ):
+        raise ValueError("Package omits or conflicts with a finalized team-season game")
     base_ready = perf_counter()
     staged = compose_overlays(
         [(overlay, packet["overlay_sha256"])],
