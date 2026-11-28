@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "b2f1c46069785069043a5c3673dedd76f1ce59ae",
+  "generation": "availability-lal-team-2025-v1-20261127",
+  "manifest_sha256": "2239be14825fed08e13da1cc118dd1082ea1f1edca86661ea39a7503ed5cce50",
+  "tests": [
+    "tests/cloud_core1_k08_lal_default_real_data.py::test_published_lakers_rest_survives_shared_object_reuse"
+  ],
+  "raw_qa_cases": []
+}
