@@ -1,0 +1,171 @@
+{
+  "generation_id": "availability-lal-team-2025-v1-20261127",
+  "manifest_sha256": "2239be14825fed08e13da1cc118dd1082ea1f1edca86661ea39a7503ed5cce50",
+  "requests": [
+    {
+      "query": "Lakers record without Davis in 2025-26",
+      "status": 200,
+      "elapsed_seconds": 6.108054059997812,
+      "provider_request_id": "sfo1::iad1::tzrn7-1795853526492-39056ff31e93",
+      "body_sha256": "ae4169a9e4a7df2a43b27a9e2c008333f92fc06f89439135679989ef9495c9a3",
+      "cold": {
+        "cold_proof": {
+          "worker": "8d4352242f0b41228045af0b7a3f173f",
+          "invocation": 1,
+          "generation": "availability-lal-team-2025-v1-20261127",
+          "manifest_sha256": "2239be14825fed08e13da1cc118dd1082ea1f1edca86661ea39a7503ed5cce50",
+          "frame_entries_before": 0,
+          "disk_cache_empty": true,
+          "appearance_loads": 1,
+          "appearance_loads_completed": 1,
+          "elapsed_ms": 3587,
+          "succeeded": true
+        },
+        "http_elapsed_seconds": 6.108054059997812,
+        "answer": {
+          "query": "Lakers record without Davis in 2025-26",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "games": 82,
+            "wins": 53,
+            "losses": 29,
+            "win_pct": 0.646,
+            "pts_avg": 116.341,
+            "reb_avg": 40.988,
+            "ast_avg": 25.878,
+            "fg3m_avg": 11.829,
+            "stl_avg": 8.549,
+            "blk_avg": 4.28,
+            "tov_avg": 13.78,
+            "plus_minus_avg": 1.756,
+            "efg_pct_avg": 0.573,
+            "ts_pct_avg": 0.609
+          }
+        }
+      },
+      "passed": true
+    },
+    {
+      "query": "Los Angeles Lakers home record in 2025-26 when Rui Hachimura played but Marcus Smart did not play",
+      "status": 200,
+      "elapsed_seconds": 0.5382811919989763,
+      "provider_request_id": "sfo1::iad1::vds4b-1795853532628-2f0b04780652",
+      "body_sha256": "622d76c0e2c6ecbb88c12af2cce526325d40a94948cb44261d9dcb03a52d1bd6",
+      "passed": true
+    },
+    {
+      "query": "What was the Lakers record without Jake LaRavia in the 2025-26 regular season?",
+      "status": 200,
+      "elapsed_seconds": 0.4235433479989297,
+      "provider_request_id": "sfo1::iad1::tbvd5-1795853533114-44e0b63467b4",
+      "body_sha256": "585852baf8757f5af43b8fe1b6da567c19733bb100b7d36b5b1ef4360b1a344a",
+      "passed": true
+    },
+    {
+      "query": "Lakers home record against the Warriors when opponent Stephen Curry played in 2025-26",
+      "status": 200,
+      "elapsed_seconds": 0.2878433839978243,
+      "provider_request_id": "sfo1::iad1::2xdg2-1795853533534-d1d97e0b5734",
+      "body_sha256": "63bf12f11faa2c101d14df668ba8ec3bd286dc4485950c6c3ab071137ab9a13f",
+      "passed": true
+    },
+    {
+      "query": "Lakers record without Georges Niang anywhere in the game vs Jazz in 2025-26",
+      "status": 200,
+      "elapsed_seconds": 0.29348430300160544,
+      "provider_request_id": "sfo1::iad1::8zccz-1795853533837-8e1a33b6d8e7",
+      "body_sha256": "08ede9a90c436b4f1b64e8725a1b1bc4a7d7573d94392d61f843e6417bfdf2d4",
+      "passed": true
+    },
+    {
+      "query": "Lakers record without Luke Kennard while rostered in 2025-26",
+      "status": 200,
+      "elapsed_seconds": 0.3429380769994168,
+      "provider_request_id": "sfo1::iad1::vrbbg-1795853534159-5be9860eb019",
+      "body_sha256": "4848112a91fd276c269a5d542653ba0e57882e91920faa695edfde87fbb6bdd9",
+      "passed": true
+    },
+    {
+      "query": "What was the Lakers record with James in 2025-26?",
+      "status": 200,
+      "elapsed_seconds": 0.900074463999772,
+      "provider_request_id": "sfo1::iad1::ml278-1795853534457-d636e8accf01",
+      "body_sha256": "4bb05e034f639f9035b3551e9b5bf0eeaa480d638fa2895ded811f14f30c8ba1",
+      "passed": true
+    }
+  ],
+  "deployment": "dpl_H16VGUSWbwXycshorMDZYMDaWhPB",
+  "deployment_url": "https://nbatools-ikraybzdu-zeros-projects-686e97fc.vercel.app",
+  "first_query_passed": true,
+  "followup_checks_passed": 6,
+  "runtime_sha": "31ff58e53321b0278c7a660b101ec8ea5244d312",
+  "preview_sha": "8e33636a5c23b047ceb321301af0bc02bfd40c3c",
+  "upload_receipt": {
+    "run_id": 46121655390,
+    "asset_id": 803752339,
+    "sha256": "d5d04484878b0c5828cd67e6ac4b5f6f0f997a87e7dc7039ecf60d1678f83b94",
+    "candidate_puts": 1545,
+    "active_pointer_puts": 0
+  },
+  "protected_access": {
+    "provider_ready": true,
+    "unauthenticated_preview_redirected_to_sso": true,
+    "initial_401": {
+      "query": "Lakers record without Davis in 2025-26",
+      "status": 401,
+      "elapsed_seconds": 0.17409726299956674,
+      "provider_request_id": "sfo1::rql8j-1795853329001-a03dfa7dada7",
+      "body_sha256": "ce4611839f4afa6ffd5946fbbc44203d61319f2858d7bd8a8f84cfa273b17e60"
+    },
+    "replacement_session": [
+      {
+        "mode": "access-link",
+        "status": 302,
+        "app_page": false,
+        "different_origin_redirect": true,
+        "cookies_count": 1,
+        "provider_request_id": "sfo1::s4njc-1795853525680-69287d3029a2"
+      },
+      {
+        "mode": "same-session",
+        "status": 302,
+        "app_page": false,
+        "different_origin_redirect": true,
+        "cookies_count": 1,
+        "provider_request_id": "sfo1::7q96r-1795853525937-ec6610b1efbb"
+      },
+      {
+        "mode": "access-link",
+        "status": 307,
+        "app_page": false,
+        "different_origin_redirect": false,
+        "cookies_count": 2,
+        "provider_request_id": "sfo1::jbq6v-1795853526032-ea00d653f9bb"
+      },
+      {
+        "mode": "same-session",
+        "status": 200,
+        "app_page": true,
+        "different_origin_redirect": false,
+        "cookies_count": 2,
+        "provider_request_id": "sfo1:sfo1:sfo1::f27vs-1795853526115-47d656905132"
+      }
+    ],
+    "temporary_links_revoked": 2
+  },
+  "responses_archive": {
+    "path": "hosted-qualification-responses.zip",
+    "sha256": "abe2c7d6e494f791d42ba60099fee09e3acf6a4f3351fe8b0e15220b9aa7cb73",
+    "bytes": 16409
+  },
+  "independent_review": {
+    "reviewer": "/root/checker",
+    "status": "accepted",
+    "raw_responses_verified": 7,
+    "deployment_and_upload_bindings_verified": true,
+    "cold_game_ids_and_scores_verified": 82
+  }
+}

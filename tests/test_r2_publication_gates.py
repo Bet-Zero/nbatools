@@ -320,8 +320,9 @@ def test_activation_readiness_requires_one_exact_blocker():
         (200, {"status": "ok"}, True),
     ],
 )
-def test_activation_requires_health_before_deployed_answers(
-    tmp_path, monkeypatch, status, body, healthy
+@pytest.mark.parametrize("activation", [True, False])
+def test_publication_requires_health_before_deployed_answers(
+    tmp_path, monkeypatch, status, body, healthy, activation
 ):
     item = dict(path="raw/data.csv", size_bytes=3, sha256=gate.digest(b"abc"))
     pointer = dict(generation_id="target", previous_generation_id="base")
@@ -344,7 +345,12 @@ def test_activation_requires_health_before_deployed_answers(
     def get(url, *, timeout):
         if url.endswith("/readiness"):
             return SimpleNamespace(
-                status_code=503, json=lambda: _native_activation_readiness("target")
+                status_code=503 if activation else 200,
+                json=lambda: (
+                    _native_activation_readiness("target")
+                    if activation
+                    else dict(active_generation="target", ready=True)
+                ),
             )
         assert url == "https://nbatools.vercel.app/health"
         probes.append("health")
@@ -365,20 +371,30 @@ def test_activation_requires_health_before_deployed_answers(
         {"file_count": 1, "prepared_manifest_sha256": "hash"},
     )
     if healthy:
-        gate.verify_published_snapshot(*args, activation=True)
+        gate.verify_published_snapshot(*args, activation=activation)
     else:
         with pytest.raises(ValueError, match="health"):
-            gate.verify_published_snapshot(*args, activation=True)
+            gate.verify_published_snapshot(*args, activation=activation)
     receipt = json.loads((tmp_path / "receipt.json").read_text())
+    assert receipt["deployed_readiness_http_status"] == (503 if activation else 200)
     if healthy:
         assert probes == ["health", "answers"]
-        assert receipt["publication_state"] == "candidate_activated_historical_verified"
+        assert receipt["publication_state"] == (
+            "candidate_activated_historical_verified" if activation else "published_and_verified"
+        )
         assert receipt["deployed_health"] == {"http_status": 200, "status": "ok"}
         assert receipt["deployed_answers"] == ["registered answer"]
     else:
         assert probes == ["health"]
-        assert receipt["publication_state"] == "candidate_activation_verification_failed"
-    assert receipt["operational_acceptance_complete"] is False
+        assert receipt["publication_state"] == (
+            "candidate_activation_verification_failed"
+            if activation
+            else "published_verification_failed"
+        )
+    if activation:
+        assert receipt["operational_acceptance_complete"] is False
+    else:
+        assert "operational_acceptance_complete" not in receipt
 
 
 def test_activation_binds_independent_receipt_and_hosted_candidate(monkeypatch):
@@ -642,13 +658,16 @@ def test_postpublication_verifies_bytes_and_final_pointer(tmp_path, monkeypatch,
         _validate_r2_manifest_inventory=lambda *a: None,
     )
     monkeypatch.setattr(gate, "publisher_modules", lambda *a: module)
-    monkeypatch.setattr(
-        gate.requests,
-        "get",
-        lambda *a, **k: SimpleNamespace(
-            status_code=200, json=lambda: {"ready": True, "active_generation": "target"}
-        ),
-    )
+
+    def get(url, *, timeout):
+        if url == "https://nbatools.vercel.app/readiness":
+            return SimpleNamespace(
+                status_code=200, json=lambda: {"ready": True, "active_generation": "target"}
+            )
+        assert url == "https://nbatools.vercel.app/health"
+        return SimpleNamespace(status_code=200, json=lambda: {"status": "ok"})
+
+    monkeypatch.setattr(gate.requests, "get", get)
     monkeypatch.setattr(
         gate.requests,
         "post",

@@ -43,11 +43,11 @@ jobs:
         env:
           PYTHONPATH: src
           PRODUCTION_MONITOR_BASE_URL: https://nbatools.vercel.app
-          PRODUCTION_MONITOR_EXPECTED_GENERATION: availability-cleveland-2024-v3-20261124
+          GH_TOKEN: ${{ github.token }}
         run: >-
           python tools/production_monitor.py
           --base-url "$PRODUCTION_MONITOR_BASE_URL"
-          --expected-generation "$PRODUCTION_MONITOR_EXPECTED_GENERATION"
+          --expected-verified-publication
 
   synthetic-alert:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'synthetic-alert' }}

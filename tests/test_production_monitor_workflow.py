@@ -27,14 +27,11 @@ WORKFLOW = ROOT / ".github/workflows/production-monitor.yml"
 
 STABLE_PRODUCTION_ALIAS = "https://nbatools.vercel.app"
 TARGET_ENV_KEY = "PRODUCTION_MONITOR_BASE_URL"
-GENERATION_ENV_KEY = "PRODUCTION_MONITOR_EXPECTED_GENERATION"
-EXPECTED_GENERATION = "availability-cleveland-2024-v3-20261124"
 MONITOR_ENTRYPOINT = "tools/production_monitor.py"
 RETIRED_TARGET = "nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app"
 
 CANONICAL_MONITOR_COMMAND = (
-    f'python {MONITOR_ENTRYPOINT} --base-url "${TARGET_ENV_KEY}" '
-    f'--expected-generation "${GENERATION_ENV_KEY}"'
+    f'python {MONITOR_ENTRYPOINT} --base-url "${TARGET_ENV_KEY}" --expected-verified-publication'
 )
 MONITOR_STEP_NAME = "Run production monitor"
 SYNTHETIC_STEP_NAME = "Trigger approved network-free notification failure"
@@ -214,8 +211,8 @@ def test_exactly_one_executable_step_runs_the_canonical_monitor_command() -> Non
     assert command.count(MONITOR_ENTRYPOINT) == 1
     assert command.count("--base-url") == 1
     assert command.count(TARGET_ENV_KEY) == 1
-    assert command.count("--expected-generation") == 1
-    assert command.count(GENERATION_ENV_KEY) == 1
+    assert command.count("--expected-verified-publication") == 1
+    assert "--expected-generation" not in command
     assert "=" not in command, "the command must not assign or reassign a variable"
     assert not re.search(r"[;&|`\n]", command), "no chaining, pipe, or substitution"
     assert "$(" not in command and "${" not in command
@@ -240,7 +237,7 @@ def test_monitor_target_is_the_stable_alias_with_no_alternate_source() -> None:
     assert monitor_step["env"] == {
         "PYTHONPATH": "src",
         TARGET_ENV_KEY: STABLE_PRODUCTION_ALIAS,
-        GENERATION_ENV_KEY: EXPECTED_GENERATION,
+        "GH_TOKEN": "${{ github.token }}",
     }
 
     scopes = _env_scopes(payload)

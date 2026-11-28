@@ -2273,8 +2273,28 @@
       "generation_id": "availability-lal-team-2025-v1-20261127",
       "operations": [
         "validate",
-        "upload_candidate"
+        "upload_candidate",
+        "activate_candidate"
       ],
+      "activation": {
+        "upload_run_id": 46121655390,
+        "upload_receipt_asset_id": 803752339,
+        "upload_receipt_sha256": "d5d04484878b0c5828cd67e6ac4b5f6f0f997a87e7dc7039ecf60d1678f83b94",
+        "manifest_sha256": "2239be14825fed08e13da1cc118dd1082ea1f1edca86661ea39a7503ed5cce50",
+        "hosted": {
+          "pr": 672,
+          "runtime_sha": "31ff58e53321b0278c7a660b101ec8ea5244d312",
+          "deployment_id": "dpl_H16VGUSWbwXycshorMDZYMDaWhPB",
+          "preview_sha": "8e33636a5c23b047ceb321301af0bc02bfd40c3c",
+          "generation_id": "availability-lal-team-2025-v1-20261127",
+          "manifest_sha256": "2239be14825fed08e13da1cc118dd1082ea1f1edca86661ea39a7503ed5cce50",
+          "request_id": "sfo1::iad1::tzrn7-1795853526492-39056ff31e93",
+          "response_sha256": "ae4169a9e4a7df2a43b27a9e2c008333f92fc06f89439135679989ef9495c9a3",
+          "elapsed_seconds": 6.108054059997812,
+          "first_query_passed": true,
+          "followup_checks_passed": 6
+        }
+      },
       "deployed_checks": [
         {
           "query": "Lakers record without Davis in 2025-26",
