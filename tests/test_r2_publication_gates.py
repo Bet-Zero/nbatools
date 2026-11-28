@@ -320,8 +320,9 @@ def test_activation_readiness_requires_one_exact_blocker():
         (200, {"status": "ok"}, True),
     ],
 )
-def test_activation_requires_health_before_deployed_answers(
-    tmp_path, monkeypatch, status, body, healthy
+@pytest.mark.parametrize("activation", [True, False])
+def test_publication_requires_health_before_deployed_answers(
+    tmp_path, monkeypatch, status, body, healthy, activation
 ):
     item = dict(path="raw/data.csv", size_bytes=3, sha256=gate.digest(b"abc"))
     pointer = dict(generation_id="target", previous_generation_id="base")
@@ -344,7 +345,12 @@ def test_activation_requires_health_before_deployed_answers(
     def get(url, *, timeout):
         if url.endswith("/readiness"):
             return SimpleNamespace(
-                status_code=503, json=lambda: _native_activation_readiness("target")
+                status_code=503 if activation else 200,
+                json=lambda: (
+                    _native_activation_readiness("target")
+                    if activation
+                    else dict(active_generation="target", ready=True)
+                ),
             )
         assert url == "https://nbatools.vercel.app/health"
         probes.append("health")
@@ -365,20 +371,30 @@ def test_activation_requires_health_before_deployed_answers(
         {"file_count": 1, "prepared_manifest_sha256": "hash"},
     )
     if healthy:
-        gate.verify_published_snapshot(*args, activation=True)
+        gate.verify_published_snapshot(*args, activation=activation)
     else:
         with pytest.raises(ValueError, match="health"):
-            gate.verify_published_snapshot(*args, activation=True)
+            gate.verify_published_snapshot(*args, activation=activation)
     receipt = json.loads((tmp_path / "receipt.json").read_text())
+    assert receipt["deployed_readiness_http_status"] == (503 if activation else 200)
     if healthy:
         assert probes == ["health", "answers"]
-        assert receipt["publication_state"] == "candidate_activated_historical_verified"
+        assert receipt["publication_state"] == (
+            "candidate_activated_historical_verified" if activation else "published_and_verified"
+        )
         assert receipt["deployed_health"] == {"http_status": 200, "status": "ok"}
         assert receipt["deployed_answers"] == ["registered answer"]
     else:
         assert probes == ["health"]
-        assert receipt["publication_state"] == "candidate_activation_verification_failed"
-    assert receipt["operational_acceptance_complete"] is False
+        assert receipt["publication_state"] == (
+            "candidate_activation_verification_failed"
+            if activation
+            else "published_verification_failed"
+        )
+    if activation:
+        assert receipt["operational_acceptance_complete"] is False
+    else:
+        assert "operational_acceptance_complete" not in receipt
 
 
 def test_activation_binds_independent_receipt_and_hosted_candidate(monkeypatch):
@@ -607,6 +623,79 @@ def test_bucket_budget_counts_existing_generations_and_never_prunes():
         gate.bucket_budget(Client(), "bucket", policy, dict(total_bytes=51, file_count=3))
 
 
+def test_object_reuse_preparation_binds_approved_hash_and_write_budget(tmp_path, monkeypatch):
+    from nbatools.commands.pipeline import generation_publication
+
+    stable = {"path": "stable.csv", "sha256": gate.digest(b"abc"), "size_bytes": 3}
+    base = dict(schema_version=1, generation_id="base", files=[stable])
+    staged = dict(schema_version=1, generation_id="target", files=[stable])
+    package = dict(
+        script="script",
+        generation_id="target",
+        reuse_unchanged=True,
+        publisher_sha="publisher",
+        script_sha256="script",
+        inventory_sha256="inventory",
+        operations=["validate", "upload_candidate"],
+    )
+    policy = {"max_snapshot_bytes": 3, "max_snapshot_objects": 1, "max_bucket_bytes": 10_010_000}
+    base_hash = gate.digest(generation_publication.manifest_bytes(base))
+    inventory = dict(base_generation="base", base_manifest_sha256=base_hash)
+    monkeypatch.setattr(gate, "load_package", lambda *a: (policy, package, inventory))
+    monkeypatch.setattr(gate, "acquire_overlay", lambda *a: {"passed": 1})
+    monkeypatch.setattr(gate, "publisher_modules", lambda *a: generation_publication)
+
+    class Client:
+        def get_paginator(self, operation):
+            assert operation == "list_objects_v2"
+            return self
+
+        def paginate(self, **kwargs):
+            yield {"Contents": [{"Size": 100}]}
+
+    monkeypatch.setattr(
+        generation_publication, "_resolve_r2_target", lambda **k: (Client(), "bucket")
+    )
+    monkeypatch.setattr(
+        gate,
+        "verify_pointer_manifest",
+        lambda *a: ({"generation_id": "base"}, base, base_hash),
+    )
+
+    def stage(command, **kwargs):
+        directory = Path(command[command.index("--work-dir") + 1])
+        raw = generation_publication.manifest_bytes(staged)
+        manifest = directory / "validation/generations/target/metadata/generation_manifest.json"
+        manifest.parent.mkdir(parents=True)
+        manifest.write_bytes(raw)
+        gate.write_json(
+            directory / "local-validation.json",
+            dict(manifest_sha256=gate.digest(raw), file_count=1, total_bytes=3),
+        )
+
+    monkeypatch.setattr(gate.subprocess, "run", stage)
+    receipt, *_ = gate.prepare("sample", tmp_path, tmp_path / "owner-visible")
+    manifest, footprint = generation_publication.plan_object_reuse(staged, base)
+    assert receipt["prepared_manifest_sha256"] == gate.digest(manifest)
+    assert receipt["object_reuse"]["standalone_manifest_sha256"] != gate.digest(manifest)
+    assert footprint["reused_data_bytes"] == 3
+    assert receipt["operation_budget"]["candidate_object_puts"] == 1
+    assert receipt["operation_budget"]["active_pointer_puts"] == 0
+    assert receipt["budget"]["conservative_projected_bytes"] == 10_000_100 + len(manifest)
+
+    prepared = receipt | {
+        "operation_budget": receipt["operation_budget"] | {"candidate_object_puts": 2}
+    }
+    with pytest.raises(ValueError, match="owner-visible preparation"):
+        gate.prepare("sample", tmp_path, tmp_path / "different", expected=prepared)
+
+    package.pop("reuse_unchanged")
+    standalone, *_ = gate.prepare("sample", tmp_path, tmp_path / "standalone")
+    assert "object_reuse" not in standalone
+    assert standalone["operation_budget"]["candidate_object_puts"] == 2
+    assert standalone["budget"]["conservative_projected_bytes"] == 10_000_103
+
+
 @pytest.mark.parametrize("corrupt,drift", [(False, False), (True, False), (False, True)])
 def test_postpublication_verifies_bytes_and_final_pointer(tmp_path, monkeypatch, corrupt, drift):
     from types import SimpleNamespace
@@ -642,13 +731,16 @@ def test_postpublication_verifies_bytes_and_final_pointer(tmp_path, monkeypatch,
         _validate_r2_manifest_inventory=lambda *a: None,
     )
     monkeypatch.setattr(gate, "publisher_modules", lambda *a: module)
-    monkeypatch.setattr(
-        gate.requests,
-        "get",
-        lambda *a, **k: SimpleNamespace(
-            status_code=200, json=lambda: {"ready": True, "active_generation": "target"}
-        ),
-    )
+
+    def get(url, *, timeout):
+        if url == "https://nbatools.vercel.app/readiness":
+            return SimpleNamespace(
+                status_code=200, json=lambda: {"ready": True, "active_generation": "target"}
+            )
+        assert url == "https://nbatools.vercel.app/health"
+        return SimpleNamespace(status_code=200, json=lambda: {"status": "ok"})
+
+    monkeypatch.setattr(gate.requests, "get", get)
     monkeypatch.setattr(
         gate.requests,
         "post",

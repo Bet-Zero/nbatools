@@ -8,7 +8,11 @@ from fastapi.testclient import TestClient
 
 from nbatools.api import app
 from nbatools.candidate_preview import MANIFEST_ENV
-from nbatools.data_source import current_data_generation, reset_data_source_cache
+from nbatools.data_source import (
+    DATA_GENERATION_MANIFEST_ENV,
+    current_data_generation,
+    reset_data_source_cache,
+)
 from nbatools.dataframe_cache import clear_frame_cache
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.query]
@@ -22,6 +26,7 @@ CLE = 1610612739
 
 def test_verified_cleveland_generation_answers_against_independent_oracle(monkeypatch, tmp_path):
     assert current_data_generation() == GENERATION
+    monkeypatch.delenv(DATA_GENERATION_MANIFEST_ENV, raising=False)
     monkeypatch.setenv(MANIFEST_ENV, MANIFEST)
     monkeypatch.setenv("VERCEL_ENV", "preview")
     monkeypatch.setenv("NBATOOLS_R2_CACHE_DIR", str(tmp_path))

@@ -19,6 +19,7 @@ MAX_SELECTORS = 20
 MAX_CASES = 20
 REPOSITORY = "Bet-Zero/nbatools"
 SHA = re.compile(r"[a-f0-9]{40}")
+MANIFEST_SHA = re.compile(r"[a-f0-9]{64}")
 TEST = re.compile(r"tests/[][A-Za-z0-9_./:-]+")
 CASE = re.compile(r"[A-Za-z0-9_][A-Za-z0-9_.-]*")
 GENERATION = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}")
@@ -62,6 +63,7 @@ def resolve_request(env: dict[str, str]) -> dict[str, str]:
     if not SHA.fullmatch(actual_sha):
         raise ValueError("Checkout has no resolved candidate SHA")
     event_name = env.get("GITHUB_EVENT_NAME")
+    manifest_sha256 = ""
     if generation := env.get("BACKUP_GENERATION", ""):
         if (
             event_name != "workflow_dispatch"
@@ -107,10 +109,14 @@ def resolve_request(env: dict[str, str]) -> dict[str, str]:
             REQUEST_PATH.read_text(encoding="utf-8"), object_pairs_hook=_unique_object
         )
         required = {"schema_version", "reviewed_sha", "generation", "tests", "raw_qa_cases"}
-        if not isinstance(request, dict) or set(request) != required:
+        if not isinstance(request, dict) or set(request) - {"manifest_sha256"} != required:
             raise ValueError("Automatic request must contain exactly the documented schema fields")
         if type(request["schema_version"]) is not int or request["schema_version"] != 1:
             raise ValueError("Unsupported automatic request schema_version")
+        if "manifest_sha256" in request:
+            manifest_sha256 = request["manifest_sha256"]
+            if not isinstance(manifest_sha256, str) or not MANIFEST_SHA.fullmatch(manifest_sha256):
+                raise ValueError("manifest_sha256 must be an exact manifest checksum")
         reviewed_sha = request["reviewed_sha"]
         if not isinstance(reviewed_sha, str) or not SHA.fullmatch(reviewed_sha):
             raise ValueError("reviewed_sha must be an exact commit SHA")
@@ -165,6 +171,7 @@ def resolve_request(env: dict[str, str]) -> dict[str, str]:
         "candidate_sha": actual_sha,
         "reviewed_sha": reviewed_sha,
         "generation": generation,
+        "manifest_sha256": manifest_sha256,
         "scope": scope,
         "tests": " ".join(tests),
         "raw_qa_cases": " ".join(cases),

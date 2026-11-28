@@ -334,6 +334,14 @@ app/data pair and approved required answers. Complete the applicable Live or
 [snapshot recovery](#snapshot-recovery) checks and retain the failed candidate
 and recovery evidence.
 
+The scheduled monitor updates its expected generation only after a successful
+pointer switch has an independently verified durable publication receipt. A
+verified rollback needs its own durable record linking owner authorization and
+the exact recovery run to the prior and restored pointer, manifest and object
+hashes, and the successful post-recovery checks. Until that reviewed receipt is
+available to the monitor, a changed pointer raises a generation mismatch. Run
+the separate authorized recovery smoke against the explicitly selected generation.
+
 If a retained generation is incomplete, restore its exact immutable bytes and
 checksum metadata from an independently retained backup or provider recovery
 source before retrying rollback. Never manufacture a manifest, overwrite a

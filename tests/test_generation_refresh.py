@@ -10,6 +10,7 @@ import pytest
 
 from nbatools.commands.pipeline.generation_publication import (
     GENERATION_MANIFEST_PATH,
+    SHA256_METADATA_KEY,
     GenerationConflictError,
     GenerationPublicationError,
     GenerationValidationError,
@@ -49,6 +50,7 @@ class FakeR2Client:
 
     def __init__(self) -> None:
         self.objects: dict[str, bytes] = {}
+        self.metadata: dict[str, dict[str, str]] = {}
         self.modified: dict[str, datetime] = {}
         self.deleted: list[str] = []
         self.fail_delete_keys: set[str] = set()
@@ -56,6 +58,7 @@ class FakeR2Client:
 
     def put(self, key: str, payload: bytes, modified: datetime | None = None) -> None:
         self.objects[key] = payload
+        self.metadata[key] = {SHA256_METADATA_KEY: hashlib.sha256(payload).hexdigest()}
         self.modified[key] = modified or datetime(2026, 7, 16, tzinfo=UTC)
 
     def head_object(self, *, Bucket: str, Key: str) -> dict[str, Any]:
@@ -65,6 +68,7 @@ class FakeR2Client:
         return {
             "ContentLength": len(payload),
             "LastModified": self.modified[Key],
+            "Metadata": self.metadata[Key],
             "ETag": f'"{hashlib.md5(payload, usedforsecurity=False).hexdigest()}"',
         }
 
@@ -113,9 +117,10 @@ def _publish(
             }
         )
     manifest = {"schema_version": 1, "generation_id": generation, "files": records}
+    manifest_raw = json.dumps(manifest).encode()
     client.put(
         f"generations/{generation}/{GENERATION_MANIFEST_PATH}",
-        json.dumps(manifest).encode(),
+        manifest_raw,
         modified,
     )
     if activate:
@@ -126,7 +131,7 @@ def _publish(
                     "schema_version": 1,
                     "generation_id": generation,
                     "previous_generation_id": previous,
-                    "manifest_sha256": None,
+                    "manifest_sha256": hashlib.sha256(manifest_raw).hexdigest(),
                     "published_at": "2026-07-16T00:00:00+00:00",
                 }
             ).encode(),
@@ -310,6 +315,16 @@ def test_prune_refuses_without_an_active_pointer() -> None:
 
     with pytest.raises(GenerationPublicationError, match="refusing to prune"):
         prune_r2_generations(keep=2, client=client, bucket_name=BUCKET)
+
+
+def test_prune_rejects_a_replaced_active_manifest_even_with_updated_metadata() -> None:
+    client = FakeR2Client()
+    _three_generations(client)
+    key = f"generations/c/{GENERATION_MANIFEST_PATH}"
+    client.put(key, client.objects[key] + b"\n")
+    with pytest.raises(GenerationPublicationError, match="checksum differs"):
+        prune_r2_generations(keep=2, client=client, bucket_name=BUCKET)
+    assert client.deleted == []
 
 
 def test_publication_refuses_a_base_the_pointer_has_moved_away_from(tmp_path: Path) -> None:

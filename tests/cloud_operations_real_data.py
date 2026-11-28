@@ -65,6 +65,7 @@ def test_live_player_identity_uses_authenticated_pointer(monkeypatch):
     assert data_source.data_source_mode() == "r2"
     requested_generation = os.environ[data_source.DATA_GENERATION_ENV]
     monkeypatch.delenv(data_source.DATA_GENERATION_ENV)
+    monkeypatch.delenv(data_source.DATA_GENERATION_MANIFEST_ENV, raising=False)
     with data_source.data_generation_context() as active:
         assert active == requested_generation
         manifest = data_source.verified_generation_files()
