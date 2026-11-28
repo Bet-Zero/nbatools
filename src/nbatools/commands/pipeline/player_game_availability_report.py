@@ -70,6 +70,50 @@ def live_identity_rows(payload, *, game_id, game_date, home_team_id, away_team_i
     return frame
 
 
+def retained_identity_rows(directory: Path, identity_hash: str, **scope):
+    """Replay the exact official identity supplement bound to a Final Box import."""
+    if re.fullmatch(r"[a-f0-9]{64}", identity_hash) is None:
+        raise ValueError("Invalid availability identity source digest")
+    receipt_path = directory / f"{identity_hash}.receipt.json"
+    raw_path = directory / f"{identity_hash}.identity.json"
+    receipt_raw = receipt_path.read_bytes()
+    receipt = json.loads(receipt_raw)
+    raw = raw_path.read_bytes()
+    retrieved = datetime.fromisoformat(receipt["retrieved_at"])
+    payload = json.loads(raw)
+    profiles = payload.get("source_kind") == "official_player_profiles"
+    expected_url = (
+        "derived:official_profile_identities_v1"
+        if profiles
+        else f"{IDENTITY_ROOT}/boxscore_{scope['game_id']:010d}.json"
+    )
+    if (
+        receipt.get("source_url") != expected_url
+        or receipt.get("sha256") != identity_hash
+        or receipt.get("raw_file") != raw_path.name
+        or receipt.get("size_bytes") != len(raw)
+        or retrieved.tzinfo is None
+        or hashlib.sha256(raw).hexdigest() != identity_hash
+    ):
+        raise ValueError("Availability identity source receipt/bytes mismatch")
+    files = {
+        receipt_path.name: hashlib.sha256(receipt_raw).hexdigest(),
+        raw_path.name: identity_hash,
+    }
+    if not profiles:
+        return live_identity_rows(payload, **scope), profiles, files
+
+    from nbatools.commands.pipeline.player_game_availability_profiles import validate_profile_index
+
+    identities = validate_profile_index(payload, directory)
+    for item in payload["identities"]:
+        digest = item["profile_sha256"]
+        receipt = f"{digest}.receipt.json"
+        files[receipt] = hashlib.sha256((directory / receipt).read_bytes()).hexdigest()
+        files[f"{digest}.profile.html"] = digest
+    return identities, profiles, files
+
+
 def _fetch_live_identities(directory: Path, **scope):
     url = f"{IDENTITY_ROOT}/boxscore_{scope['game_id']:010d}.json"
     request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
@@ -370,6 +414,7 @@ def official_report_as_v3(
     data_root: Path,
     cached_reports: Path | None = None,
     imported_team_ids: list[int] | None = None,
+    cached_identity_sha256: str = "",
 ) -> tuple[pd.DataFrame, str]:
     """Build source-listed played/DNP/inactive rows for one verified NBA report."""
     safe = season_type.lower().replace(" ", "_")
@@ -387,6 +432,8 @@ def official_report_as_v3(
         raise ValueError("Report team scope must be a nonempty subset of the canonical teams")
     if imported_team_ids is not None and cached_reports is None:
         raise ValueError("Explicit report team scope requires a retained source")
+    if cached_identity_sha256 and cached_reports is None:
+        raise ValueError("Explicit report identity requires a retained source")
     away, home = by_id[away_team_id][0], by_id[home_team_id][0]
     ref = f"{game_date.replace('-', '')}_{away}{home}"
     url = f"{SOURCE_ROOT}/{game_date.replace('-', '')}/{ref}.pdf"
@@ -415,6 +462,29 @@ def official_report_as_v3(
     identity_digest = ""
     cdn_unavailable = False
     profile_records = []
+    identity_files = {}
+
+    def merge_identities(extra):
+        for row in extra.itertuples(index=False):
+            same = people[people.team_id.eq(row.team_id)]
+            if (same.normalized.eq(row.normalized) & ~same.player_id.eq(row.player_id)).any() or (
+                people.player_id.eq(row.player_id) & ~people.normalized.eq(row.normalized)
+            ).any():
+                raise ValueError("Official identity conflicts with canonical NBA identity")
+        return pd.concat([people, extra], ignore_index=True).drop_duplicates()
+
+    if cached_identity_sha256:
+        extra, _, identity_files = retained_identity_rows(
+            cached_reports,
+            cached_identity_sha256,
+            game_id=game_id,
+            game_date=game_date,
+            home_team_id=home_team_id,
+            away_team_id=away_team_id,
+            by_id=by_id,
+        )
+        people = merge_identities(extra)
+        identity_digest = cached_identity_sha256
 
     def identify(ident, name, used, *, surname):
         nonlocal people, identity_digest, cdn_unavailable
@@ -448,15 +518,7 @@ def official_report_as_v3(
                     name, ident, surname, data_root / "raw/player_game_availability_sources"
                 )
                 profile_records.append(record)
-            for row in extra.itertuples(index=False):
-                same = people[people.team_id.eq(row.team_id)]
-                if (
-                    same.normalized.eq(row.normalized) & ~same.player_id.eq(row.player_id)
-                ).any() or (
-                    people.player_id.eq(row.player_id) & ~people.normalized.eq(row.normalized)
-                ).any():
-                    raise ValueError("Official identity conflicts with canonical NBA identity")
-            people = pd.concat([people, extra], ignore_index=True).drop_duplicates()
+            people = merge_identities(extra)
             return _identify(people, ident, name, used, surname=surname)
 
     used: set[int] = set()
@@ -518,6 +580,8 @@ def official_report_as_v3(
             profile_records, data_root / "raw/player_game_availability_sources"
         )
     frame.attrs["identity_source_sha256"] = identity_digest
+    if identity_files:
+        frame.attrs["identity_source_files"] = identity_files
     receipt = data_root / "raw/player_game_availability_sources" / f"{ref}.json"
     if receipt.exists():
         frame.attrs["source_sha256"] = json.loads(receipt.read_text())["sha256"]

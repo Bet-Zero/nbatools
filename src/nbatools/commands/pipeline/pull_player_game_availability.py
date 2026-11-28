@@ -380,42 +380,24 @@ def validate_publication(root: Path) -> None:
                 raise ValueError("Inconsistent availability identity source")
             if identity_hashes[0]:
                 from nbatools.commands.pipeline.player_game_availability_report import (
-                    IDENTITY_ROOT,
                     _name,
-                    live_identity_rows,
+                    retained_identity_rows,
                 )
 
-                identity_hash = identity_hashes[0]
-                identity_receipt = json.loads(
-                    (source_dir / f"{identity_hash}.receipt.json").read_text()
+                identities, profiles, _ = retained_identity_rows(
+                    source_dir,
+                    identity_hashes[0],
+                    game_id=int(game_id),
+                    game_date=str(game.game_date),
+                    home_team_id=int(game.home_team_id),
+                    away_team_id=int(game.away_team_id),
+                    by_id={int(t.team_id): (t.team_abbr, t.pts) for t in teams.itertuples()},
                 )
-                identity_raw = (source_dir / f"{identity_hash}.identity.json").read_bytes()
-                retrieved = datetime.fromisoformat(identity_receipt["retrieved_at"])
-                identity_payload = json.loads(identity_raw)
-                profiles = identity_payload.get("source_kind") == "official_player_profiles"
-                expected_identity_url = (
-                    "derived:official_profile_identities_v1"
-                    if profiles
-                    else f"{IDENTITY_ROOT}/boxscore_{int(game_id):010d}.json"
-                )
-                if (
-                    identity_receipt.get("source_url") != expected_identity_url
-                    or identity_receipt.get("sha256") != identity_hash
-                    or identity_receipt.get("raw_file") != f"{identity_hash}.identity.json"
-                    or identity_receipt.get("size_bytes") != len(identity_raw)
-                    or retrieved.tzinfo is None
-                    or hashlib.sha256(identity_raw).hexdigest() != identity_hash
-                ):
-                    raise ValueError("Availability identity source receipt/bytes mismatch")
                 if profiles:
                     from nbatools.commands.pipeline.player_game_availability_espn import (
                         _nba_players,
                     )
-                    from nbatools.commands.pipeline.player_game_availability_profiles import (
-                        validate_profile_index,
-                    )
 
-                    identities = validate_profile_index(identity_payload, source_dir)
                     canonical = _nba_players(root, season, str(kind).lower().replace(" ", "_"))
                     for item in identities.itertuples():
                         if (
@@ -432,15 +414,6 @@ def validate_publication(root: Path) -> None:
                     identities = pd.concat(
                         [canonical, identities], ignore_index=True
                     ).drop_duplicates()
-                else:
-                    identities = live_identity_rows(
-                        identity_payload,
-                        game_id=int(game_id),
-                        game_date=str(game.game_date),
-                        home_team_id=int(game.home_team_id),
-                        away_team_id=int(game.away_team_id),
-                        by_id={int(t.team_id): (t.team_abbr, t.pts) for t in teams.itertuples()},
-                    )
                 for row in rows.itertuples():
                     match = identities[
                         identities.player_id.eq(row.player_id) & identities.team_id.eq(row.team_id)
