@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "cee3df5ff1d3c8b85c7feb0b13e1446425dea423",
+  "generation": "availability-cleveland-2024-v3-20261124",
+  "tests": ["tests/cloud_verified_appearance_real_data.py::test_verified_cleveland_generation_answers_against_independent_oracle"],
+  "raw_qa_cases": []
+}
