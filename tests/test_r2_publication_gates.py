@@ -607,6 +607,79 @@ def test_bucket_budget_counts_existing_generations_and_never_prunes():
         gate.bucket_budget(Client(), "bucket", policy, dict(total_bytes=51, file_count=3))
 
 
+def test_object_reuse_preparation_binds_approved_hash_and_write_budget(tmp_path, monkeypatch):
+    from nbatools.commands.pipeline import generation_publication
+
+    stable = {"path": "stable.csv", "sha256": gate.digest(b"abc"), "size_bytes": 3}
+    base = dict(schema_version=1, generation_id="base", files=[stable])
+    staged = dict(schema_version=1, generation_id="target", files=[stable])
+    package = dict(
+        script="script",
+        generation_id="target",
+        reuse_unchanged=True,
+        publisher_sha="publisher",
+        script_sha256="script",
+        inventory_sha256="inventory",
+        operations=["validate", "upload_candidate"],
+    )
+    policy = {"max_snapshot_bytes": 3, "max_snapshot_objects": 1, "max_bucket_bytes": 10_010_000}
+    base_hash = gate.digest(generation_publication.manifest_bytes(base))
+    inventory = dict(base_generation="base", base_manifest_sha256=base_hash)
+    monkeypatch.setattr(gate, "load_package", lambda *a: (policy, package, inventory))
+    monkeypatch.setattr(gate, "acquire_overlay", lambda *a: {"passed": 1})
+    monkeypatch.setattr(gate, "publisher_modules", lambda *a: generation_publication)
+
+    class Client:
+        def get_paginator(self, operation):
+            assert operation == "list_objects_v2"
+            return self
+
+        def paginate(self, **kwargs):
+            yield {"Contents": [{"Size": 100}]}
+
+    monkeypatch.setattr(
+        generation_publication, "_resolve_r2_target", lambda **k: (Client(), "bucket")
+    )
+    monkeypatch.setattr(
+        gate,
+        "verify_pointer_manifest",
+        lambda *a: ({"generation_id": "base"}, base, base_hash),
+    )
+
+    def stage(command, **kwargs):
+        directory = Path(command[command.index("--work-dir") + 1])
+        raw = generation_publication.manifest_bytes(staged)
+        manifest = directory / "validation/generations/target/metadata/generation_manifest.json"
+        manifest.parent.mkdir(parents=True)
+        manifest.write_bytes(raw)
+        gate.write_json(
+            directory / "local-validation.json",
+            dict(manifest_sha256=gate.digest(raw), file_count=1, total_bytes=3),
+        )
+
+    monkeypatch.setattr(gate.subprocess, "run", stage)
+    receipt, *_ = gate.prepare("sample", tmp_path, tmp_path / "owner-visible")
+    manifest, footprint = generation_publication.plan_object_reuse(staged, base)
+    assert receipt["prepared_manifest_sha256"] == gate.digest(manifest)
+    assert receipt["object_reuse"]["standalone_manifest_sha256"] != gate.digest(manifest)
+    assert footprint["reused_data_bytes"] == 3
+    assert receipt["operation_budget"]["candidate_object_puts"] == 1
+    assert receipt["operation_budget"]["active_pointer_puts"] == 0
+    assert receipt["budget"]["conservative_projected_bytes"] == 10_000_100 + len(manifest)
+
+    prepared = receipt | {
+        "operation_budget": receipt["operation_budget"] | {"candidate_object_puts": 2}
+    }
+    with pytest.raises(ValueError, match="owner-visible preparation"):
+        gate.prepare("sample", tmp_path, tmp_path / "different", expected=prepared)
+
+    package.pop("reuse_unchanged")
+    standalone, *_ = gate.prepare("sample", tmp_path, tmp_path / "standalone")
+    assert "object_reuse" not in standalone
+    assert standalone["operation_budget"]["candidate_object_puts"] == 2
+    assert standalone["budget"]["conservative_projected_bytes"] == 10_000_103
+
+
 @pytest.mark.parametrize("corrupt,drift", [(False, False), (True, False), (False, True)])
 def test_postpublication_verifies_bytes_and_final_pointer(tmp_path, monkeypatch, corrupt, drift):
     from types import SimpleNamespace

@@ -26,9 +26,9 @@ from nbatools.commands.pipeline.generation_publication import (
     _head_r2_object,
     _read_r2_pointer,
     _resolve_r2_target,
-    _safe_relative_path,
 )
 from nbatools.data_source import GENERATIONS_DIR, LEGACY_GENERATION, PLAYER_NAMES_PATH
+from nbatools.generation_manifest import REUSE_SCHEMA, STANDALONE_SCHEMA, parse_generation_files
 from nbatools.r2_errors import format_client_error
 
 # Files publication derives itself; downloading them would only be overwritten.
@@ -73,26 +73,35 @@ def download_active_generation(
     s3_client, bucket = _resolve_r2_target(
         client=client, bucket_name=bucket_name, env=env, env_file=env_file
     )
-    generation = _read_r2_pointer(s3_client, bucket).generation_id
+    pointer = _read_r2_pointer(s3_client, bucket)
+    generation = pointer.generation_id
     if generation == LEGACY_GENERATION:
         raise GenerationPublicationError("No active immutable generation to download")
     prefix = f"{GENERATIONS_DIR}/{generation}"
-    manifest = json.loads(_get_bytes(s3_client, bucket, f"{prefix}/{GENERATION_MANIFEST_PATH}"))
-    files = manifest.get("files")
-    if not isinstance(files, list) or not files:
-        raise GenerationValidationError(f"Generation manifest lists no files: {generation}")
+    raw = _get_bytes(s3_client, bucket, f"{prefix}/{GENERATION_MANIFEST_PATH}")
+    manifest = json.loads(raw)
+    try:
+        files = parse_generation_files(manifest, generation)
+    except (KeyError, TypeError, ValueError) as exc:
+        raise GenerationValidationError(
+            f"Invalid active generation manifest: {generation}"
+        ) from exc
+    if (
+        pointer.manifest_sha256 is not None
+        and hashlib.sha256(raw).hexdigest() != pointer.manifest_sha256
+        or manifest["schema_version"] == REUSE_SCHEMA
+        and pointer.manifest_sha256 is None
+    ):
+        raise GenerationValidationError("Active generation manifest is unauthenticated")
 
     dest.mkdir(parents=True, exist_ok=True)
     total = 0
     count = 0
-    for item in files:
-        relative = _safe_relative_path(str(item.get("path", ""))).as_posix()
+    for relative, item in files.items():
         if relative in _DERIVED_PATHS:
             continue
-        payload = _get_bytes(s3_client, bucket, f"{prefix}/{relative}")
-        if len(payload) != item.get("size_bytes") or hashlib.sha256(
-            payload
-        ).hexdigest() != item.get("sha256"):
+        payload = _get_bytes(s3_client, bucket, item.object_key(generation, relative))
+        if len(payload) != item.size_bytes or hashlib.sha256(payload).hexdigest() != item.sha256:
             raise GenerationValidationError(
                 f"Downloaded file does not match the generation manifest: {relative}"
             )
@@ -169,6 +178,15 @@ def prune_r2_generations(
         if head is None or head.get("LastModified") is None:
             result.ignored.append(generation)
             continue
+        manifest_key = f"{GENERATIONS_DIR}/{generation}/{GENERATION_MANIFEST_PATH}"
+        document = json.loads(_get_bytes(s3_client, bucket, manifest_key))
+        if document.get("schema_version") != STANDALONE_SCHEMA:
+            raise GenerationPublicationError(
+                "Pruning requires a reviewed reachability and retention policy for shared objects"
+            )
+        # A v1 manifest cannot carry reuse references. Reject corrupt inventories
+        # before inferring that an older prefix is unreferenced.
+        parse_generation_files(document, generation)
         published.append((head["LastModified"], generation))
 
     published.sort(reverse=True)

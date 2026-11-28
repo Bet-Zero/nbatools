@@ -26,6 +26,13 @@ import pandas as pd
 
 from nbatools.admission_control import QueryWorkExpired, remaining_query_work
 from nbatools.development_data import MANIFEST, selected_snapshot
+from nbatools.generation_manifest import (
+    GENERATIONS_DIR,
+    LEGACY_GENERATION,
+    REUSE_SCHEMA,
+    GenerationFile,
+    parse_generation_files,
+)
 from nbatools.r2_errors import format_client_error, is_not_found
 
 DATA_SOURCE_ENV = "DATA_SOURCE"
@@ -39,8 +46,6 @@ GENERATION_MANIFEST_PATH = Path("metadata/generation_manifest.json")
 # before playoffs, rows in file order), derived at publication so a cold process
 # can build its player name and id indexes from one small file.
 PLAYER_NAMES_PATH = Path("metadata/player_names.csv")
-GENERATIONS_DIR = "generations"
-LEGACY_GENERATION = "legacy"
 REQUIRED_R2_ENV_VARS = (
     "R2_ACCOUNT_ID",
     "R2_ACCESS_KEY_ID",
@@ -58,12 +63,6 @@ _SHA256_PATTERN = re.compile(r"[a-f0-9]{64}")
 class _Generation:
     id: str
     manifest_sha256: str | None = None
-
-
-@dataclass(frozen=True)
-class GenerationFile:
-    size_bytes: int
-    sha256: str
 
 
 _REQUEST_GENERATION: ContextVar[_Generation | None] = ContextVar(
@@ -509,6 +508,9 @@ class _R2DataSource:
                 # Transient failure: fall back to HEAD now, try the manifest again later.
                 return None
             files = None
+        else:
+            if document.get("schema_version") == REUSE_SCHEMA:
+                raise DataSourceError("Object reuse requires an authenticated generation manifest")
         self._generation_files[generation] = files
         return files
 
@@ -522,28 +524,7 @@ class _R2DataSource:
             return manifest
         raw = self._fetch(GENERATION_MANIFEST_PATH, generation).read_bytes()
         try:
-            document = json.loads(raw)
-            if document["schema_version"] != 1 or document["generation_id"] != generation.id:
-                raise ValueError("Wrong schema or generation")
-            files = document["files"]
-            if not isinstance(files, list) or not files:
-                raise ValueError("Missing file inventory")
-            entries = {}
-            for item in files:
-                name, size, digest = item["path"], item["size_bytes"], item["sha256"]
-                path = Path(name)
-                if (
-                    path.is_absolute()
-                    or not path.parts
-                    or ".." in path.parts
-                    or path.as_posix() != name
-                    or name in entries
-                    or type(size) is not int
-                    or size < 0
-                    or not _SHA256_PATTERN.fullmatch(digest)
-                ):
-                    raise ValueError("Invalid file inventory record")
-                entries[name] = GenerationFile(size, digest)
+            entries = parse_generation_files(json.loads(raw), generation.id)
         except (ValueError, KeyError, TypeError) as exc:
             raise DataSourceError("Invalid authenticated generation manifest") from exc
         manifest = MappingProxyType(entries)
@@ -592,12 +573,13 @@ class _R2DataSource:
     def _fetch(self, rel_path: Path, generation: _Generation) -> Path:
         expected_hash = generation.manifest_sha256
         expected_size = None
+        key = self._generation_key(rel_path, generation=generation.id)
         if expected_hash is not None and rel_path != GENERATION_MANIFEST_PATH:
             entry = self.verified_manifest(generation).get(rel_path.as_posix())
             if entry is None:
                 raise FileNotFoundError(f"File is absent from the generation manifest: {rel_path}")
             expected_hash, expected_size = entry.sha256, entry.size_bytes
-        key = self._generation_key(rel_path, generation=generation.id)
+            key = entry.object_key(generation.id, rel_path.as_posix())
         cache_path = self._cache_path(rel_path, generation)
         if str(cache_path) in self._downloaded_keys and cache_path.exists():
             return cache_path

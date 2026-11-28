@@ -326,6 +326,27 @@ the [read-only reconciliation and backup handoff](recovery.md#uncertain-protecte
 Keep the previous generation. Further activation or recovery writes require
 their own authority.
 
+### Candidate manifests with shared objects
+
+`python -m tools.plan_generation_reuse` compares two pinned local manifests and
+reports the candidate checksum, required origins and exact incremental writes.
+A shared-object manifest references an earlier physical object at the same
+logical path and only when size and SHA-256 match. Each reference names the
+physical origin directly. Reuse changes the candidate manifest checksum, so
+qualify and approve that exact candidate separately.
+
+A reviewed package can opt in with `reuse_unchanged: true` for candidate-only
+upload. The read-only preparation binds the full logical inventory, incremental
+bytes and PUT count. The writer verifies shared bodies before staging changed
+objects, and the independent verifier checks the complete logical generation.
+The activation pointer still authenticates one manifest. A full backup resolves
+the references and preserves a standalone archive of every logical file.
+
+Keep all origin prefixes protected. Pruning refuses to run when shared-object
+manifests exist. Plan storage and recovery with the active, previous, candidate
+and referenced origin objects retained. Deploy readers that support shared
+objects before qualifying a candidate that uses them.
+
 ### Agent-initiated targeted requests
 
 The owner authorized automatic targeted validation on 2026-10-15. An agent with

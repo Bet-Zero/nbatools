@@ -83,6 +83,12 @@ def load_package(name, publisher):
         raise ValueError("Invalid package identifier")
     if not re.fullmatch(r"[0-9a-f]{40}", package["publisher_sha"]):
         raise ValueError("Publisher must be an immutable commit")
+    if "reuse_unchanged" in package and (
+        package["reuse_unchanged"] is not True
+        or "upload_candidate" not in package.get("operations", [])
+        or "publish" in package.get("operations", [])
+    ):
+        raise ValueError("Object reuse requires a reviewed upload-only candidate")
     for key in ("script", "inventory"):
         path = PurePosixPath(package[key])
         if path.is_absolute() or ".." in path.parts:
@@ -282,7 +288,7 @@ def verify_pointer_manifest(client, bucket, generation):
     return pointer, manifest, digest(raw)
 
 
-def bucket_budget(client, bucket, policy, local):
+def bucket_budget(client, bucket, policy, local, *, candidate_write_bytes=None):
     if (
         local["total_bytes"] > policy["max_snapshot_bytes"]
         or local["file_count"] > policy["max_snapshot_objects"]
@@ -295,7 +301,8 @@ def bucket_budget(client, bucket, policy, local):
         if pages > 100:
             raise ValueError("Bucket inventory exceeds the bounded operation budget")
         used += sum(item["Size"] for item in page.get("Contents", []))
-    projected = used + local["total_bytes"] + 10_000_000
+    increment = local["total_bytes"] if candidate_write_bytes is None else candidate_write_bytes
+    projected = used + increment + 10_000_000
     if projected > policy["max_bucket_bytes"]:
         raise ValueError(
             "Immutable generation would exceed the storage ceiling; no pruning authorized"
@@ -306,6 +313,23 @@ def bucket_budget(client, bucket, policy, local):
         "limit_bytes": policy["max_bucket_bytes"],
         "inventory_list_requests": pages,
     }
+
+
+def prepare_reuse(publication, staging, generation, local, base):
+    manifest = staging / "validation/generations" / generation / "metadata/generation_manifest.json"
+    raw = manifest.read_bytes()
+    if digest(raw) != local["manifest_sha256"]:
+        raise ValueError("Standalone candidate differs from its local validation")
+    document = json.loads(raw)
+    if document.get("generation_id") != generation:
+        raise ValueError("Standalone candidate generation differs")
+    _, reuse = publication.plan_object_reuse(document, base)
+    if (reuse["logical_files"], reuse["logical_data_bytes"]) != (
+        local["file_count"],
+        local["total_bytes"],
+    ):
+        raise ValueError("Object-reuse proposal differs from locally validated inventory")
+    return reuse
 
 
 def prepare(name, publisher, work, *, expected=None):
@@ -335,7 +359,7 @@ def prepare(name, publisher, work, *, expected=None):
     client, bucket = publication._resolve_r2_target(
         client=None, bucket_name=None, env=None, env_file=None
     )
-    pointer, _, base_hash = verify_pointer_manifest(client, bucket, inventory["base_generation"])
+    pointer, base, base_hash = verify_pointer_manifest(client, bucket, inventory["base_generation"])
     if inventory.get("base_manifest_sha256") not in (None, base_hash):
         raise ValueError("Base manifest differs from the reviewed package")
     subprocess.run(
@@ -355,7 +379,12 @@ def prepare(name, publisher, work, *, expected=None):
         check=True,
     )
     local = json.loads((work / "staging/local-validation.json").read_text())
-    budget = bucket_budget(client, bucket, policy, local)
+    reuse = None
+    write_budget = {}
+    if package.get("reuse_unchanged"):
+        reuse = prepare_reuse(publication, work / "staging", package["generation_id"], local, base)
+        write_budget["candidate_write_bytes"] = reuse["planned_candidate_write_bytes"]
+    budget = bucket_budget(client, bucket, policy, local, **write_budget)
     after, _, after_hash = verify_pointer_manifest(client, bucket, inventory["base_generation"])
     if after != pointer or after_hash != base_hash:
         raise ValueError("Active base changed during snapshot preparation")
@@ -373,7 +402,9 @@ def prepare(name, publisher, work, *, expected=None):
         "base_generation": inventory["base_generation"],
         "base_manifest_sha256": base_hash,
         "generation_id": package["generation_id"],
-        "prepared_manifest_sha256": local["manifest_sha256"],
+        "prepared_manifest_sha256": (
+            reuse["reuse_manifest_sha256"] if reuse else local["manifest_sha256"]
+        ),
         "file_count": local["file_count"],
         "total_bytes": local["total_bytes"],
         "workflow_sha": os.environ.get("GITHUB_SHA"),
@@ -383,9 +414,13 @@ def prepare(name, publisher, work, *, expected=None):
         "publication_state": "prepared_no_writes",
         "base_pointer": pointer,
     }
+    if reuse:
+        receipt["object_reuse"] = {"standalone_manifest_sha256": local["manifest_sha256"], **reuse}
     if "upload_candidate" in package.get("operations", []):
         receipt["operation_budget"] = {
-            "candidate_object_puts": local["file_count"] + 1,
+            "candidate_object_puts": (
+                reuse["planned_candidate_puts"] if reuse else local["file_count"] + 1
+            ),
             "active_pointer_puts": 0,
             "maximum_bucket_list_requests_per_inventory": 100,
             "read_requests_ceiling": 100_000,
@@ -457,6 +492,7 @@ def upload_candidate(name, publisher, work, prepared_path):
         owner_approval=approvals,
     )
     write_json(work / "publication.json", receipt)
+    reuse = {"reuse_unchanged": True} if "object_reuse" in receipt else {}
     try:
         result = publication.upload_r2_candidate(
             receipt["generation_id"],
@@ -465,6 +501,7 @@ def upload_candidate(name, publisher, work, prepared_path):
             expected_base_manifest_sha256=receipt["base_manifest_sha256"],
             expected_manifest_sha256=receipt["prepared_manifest_sha256"],
             env_file=None,
+            **reuse,
         )
         receipt.update(
             publication_state="candidate_verified_not_activated", publication=asdict(result)
@@ -942,13 +979,18 @@ def verify_published_snapshot(
         )
         if len(manifest["files"]) != receipt["file_count"]:
             raise ValueError("Published generation object count differs")
-        checked = []
-        for item in manifest["files"]:
-            key = f"generations/{package['generation_id']}/{item['path']}"
-            payload = client.get_object(Bucket=bucket, Key=key)["Body"].read()
-            if len(payload) != item["size_bytes"] or digest(payload) != item["sha256"]:
-                raise ValueError("Published object byte verification failed")
-            checked.append(item)
+        checked = manifest["files"]
+        if manifest.get("schema_version") == 2:
+            publication.verify_r2_generation_bodies(
+                client, bucket, package["generation_id"], manifest
+            )
+        else:
+            # Historical frozen publishers may predate the shared location resolver.
+            for item in checked:
+                key = f"generations/{package['generation_id']}/{item['path']}"
+                payload = client.get_object(Bucket=bucket, Key=key)["Body"].read()
+                if len(payload) != item["size_bytes"] or digest(payload) != item["sha256"]:
+                    raise ValueError("Published object byte verification failed")
         after, _, _ = verify_pointer_manifest(client, bucket, package["generation_id"])
         if not same_pointer(after, pointer):
             raise ValueError("Active pointer moved during verification")

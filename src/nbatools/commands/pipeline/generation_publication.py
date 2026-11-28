@@ -28,6 +28,12 @@ from nbatools.data_source import (
     season_file_order,
     validate_data_generation_id,
 )
+from nbatools.generation_manifest import (
+    REUSE_SCHEMA,
+    manifest_bytes,
+    parse_generation_files,
+    plan_object_reuse,
+)
 from nbatools.r2_errors import (
     format_client_error,
     is_not_found,
@@ -85,6 +91,7 @@ class _PointerState:
     previous_generation_id: str | None
     fingerprint: str | None
     etag: str | None = None
+    manifest_sha256: str | None = None
 
 
 @dataclass(frozen=True)
@@ -346,6 +353,8 @@ def _inspect_r2_rollback(
 
     if expected is None:
         manifest, manifest_sha256 = _validate_r2_rollback_target(client, bucket, target)
+        if manifest is not None and manifest["schema_version"] == REUSE_SCHEMA:
+            verify_r2_generation_bodies(client, bucket, target, manifest)
     else:
         manifest_sha256 = expected.previous_manifest_sha256
         manifest = verify_r2_candidate(client, bucket, target, manifest_sha256)
@@ -369,25 +378,10 @@ def validate_staged_generation(stage: Path, generation_id: str) -> dict[str, Any
         document = json.loads(manifest_path.read_text(encoding="utf-8"))
     except Exception as exc:
         raise GenerationValidationError(f"Generation manifest is unreadable: {exc}") from exc
-    if not isinstance(document, dict):
-        raise GenerationValidationError("Generation manifest must be a JSON object")
-    if document.get("schema_version") != GENERATION_MANIFEST_SCHEMA_VERSION:
-        raise GenerationValidationError("Generation manifest schema_version is invalid")
-    if document.get("generation_id") != generation:
-        raise GenerationValidationError("Generation manifest identifier does not match staging")
-    expected = document.get("files")
-    if not isinstance(expected, list) or not expected:
-        raise GenerationValidationError("Generation manifest must list at least one data file")
-
-    expected_by_path: dict[str, dict[str, Any]] = {}
-    for item in expected:
-        if not isinstance(item, dict) or not isinstance(item.get("path"), str):
-            raise GenerationValidationError("Generation manifest contains an invalid file record")
-        path = _safe_relative_path(item["path"])
-        key = path.as_posix()
-        if key in expected_by_path:
-            raise GenerationValidationError(f"Generation manifest contains duplicate path: {key}")
-        expected_by_path[key] = item
+    try:
+        expected_by_path = parse_generation_files(document, generation)
+    except (AttributeError, KeyError, TypeError, ValueError) as exc:
+        raise GenerationValidationError(f"Generation manifest is invalid: {exc}") from exc
 
     actual_files = {
         path.relative_to(stage).as_posix(): path
@@ -401,9 +395,9 @@ def validate_staged_generation(stage: Path, generation_id: str) -> dict[str, Any
         )
     for key, path in actual_files.items():
         item = expected_by_path[key]
-        if item.get("size_bytes") != path.stat().st_size:
+        if item.size_bytes != path.stat().st_size:
             raise GenerationValidationError(f"Generation file size mismatch: {key}")
-        if item.get("sha256") != _file_sha256(path):
+        if item.sha256 != _file_sha256(path):
             raise GenerationValidationError(f"Generation file checksum mismatch: {key}")
 
     _validate_dataset_receipts(stage)
@@ -560,7 +554,7 @@ def _write_generation_manifest(stage: Path, generation: str) -> Path:
     }
     path = stage / GENERATION_MANIFEST_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(document, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_bytes(manifest_bytes(document))
     return path
 
 
@@ -710,6 +704,7 @@ def upload_r2_candidate(
     expected_base: str,
     expected_base_manifest_sha256: str,
     expected_manifest_sha256: str,
+    reuse_unchanged: bool = False,
     client: Any | None = None,
     bucket_name: str | None = None,
     env_file: Path | None = None,
@@ -730,11 +725,28 @@ def upload_r2_candidate(
         staged = Path(temp) / generation
         _build_staged_generation(source_dir.resolve(), staged, generation)
         manifest = validate_staged_generation(staged, generation)
+        reused_paths: set[str] = set()
+        if reuse_unchanged:
+            base_raw = _candidate_base_manifest(
+                client, bucket, expected_base, expected_base_manifest_sha256
+            )
+            raw, _ = plan_object_reuse(manifest, json.loads(base_raw))
+            (staged / GENERATION_MANIFEST_PATH).write_bytes(raw)
+            manifest = json.loads(raw)
+            reused_paths = {
+                path
+                for path, item in parse_generation_files(manifest, generation).items()
+                if item.storage_generation is not None
+            }
         if _file_sha256(staged / GENERATION_MANIFEST_PATH) != expected_manifest_sha256:
             raise GenerationValidationError("Candidate differs from approved manifest")
+        if reused_paths:
+            for relative, item in parse_generation_files(manifest, generation).items():
+                if relative in reused_paths:
+                    _verify_object_body(client, bucket, item.object_key(generation, relative), item)
         if _read_r2_pointer(client, bucket) != start:
             raise GenerationConflictError("Active base changed before candidate upload")
-        _publish_r2_files(client, bucket, staged, generation)
+        _publish_r2_files(client, bucket, staged, generation, reused_paths=reused_paths)
     verify_r2_candidate(client, bucket, generation, expected_manifest_sha256)
     if _read_r2_pointer(client, bucket) != start:
         raise GenerationConflictError("Active base changed during candidate upload")
@@ -755,12 +767,40 @@ def verify_r2_candidate(client, bucket, generation, expected_manifest_sha256):
     manifest, actual = _validate_r2_rollback_target(client, bucket, generation)
     if actual != expected_manifest_sha256:
         raise GenerationValidationError("Candidate manifest differs from approved checksum")
-    for item in manifest["files"]:
-        key = f"{GENERATIONS_DIR}/{generation}/{item['path']}"
-        raw = client.get_object(Bucket=bucket, Key=key)["Body"].read()
-        if len(raw) != item["size_bytes"] or hashlib.sha256(raw).hexdigest() != item["sha256"]:
-            raise GenerationValidationError(f"Candidate object checksum differs: {key}")
+    verify_r2_generation_bodies(client, bucket, generation, manifest)
     return manifest
+
+
+def verify_r2_generation_bodies(client, bucket, generation, manifest):
+    for relative, item in parse_generation_files(manifest, generation).items():
+        _verify_object_body(client, bucket, item.object_key(generation, relative), item)
+
+
+def _verify_object_body(client, bucket, key, item):
+    body = client.get_object(Bucket=bucket, Key=key)["Body"]
+    digest = hashlib.sha256()
+    remaining = item.size_bytes
+    try:
+        while remaining:
+            chunk = body.read(min(remaining, 1024 * 1024))
+            if not chunk:
+                break
+            remaining -= len(chunk)
+            digest.update(chunk)
+        matches = remaining == 0 and not body.read(1) and digest.hexdigest() == item.sha256
+    finally:
+        body.close()
+    if not matches:
+        raise GenerationValidationError(f"Candidate object checksum differs: {key}")
+
+
+def _candidate_base_manifest(client, bucket, generation, expected_hash):
+    raw = client.get_object(
+        Bucket=bucket, Key=f"{GENERATIONS_DIR}/{generation}/{GENERATION_MANIFEST_PATH}"
+    )["Body"].read()
+    if hashlib.sha256(raw).hexdigest() != expected_hash:
+        raise GenerationConflictError("Active base manifest differs from approved input")
+    return raw
 
 
 def _candidate_base(client, bucket, generation, expected_base, expected_hash):
@@ -829,9 +869,13 @@ def activate_r2_candidate(
     )
 
 
-def _publish_r2_files(client: Any, bucket: str, staged: Path, generation: str) -> None:
+def _publish_r2_files(
+    client: Any, bucket: str, staged: Path, generation: str, *, reused_paths: set[str] | None = None
+) -> None:
     for path in _iter_snapshot_files(staged):
         relative = path.relative_to(staged).as_posix()
+        if reused_paths and relative in reused_paths:
+            continue
         key = f"{GENERATIONS_DIR}/{generation}/{relative}"
         sha256 = _file_sha256(path)
         size = path.stat().st_size
@@ -907,6 +951,7 @@ def _read_r2_pointer(client: Any, bucket: str) -> _PointerState:
         state.previous_generation_id,
         state.fingerprint,
         etag,
+        state.manifest_sha256,
     )
 
 
@@ -977,31 +1022,22 @@ def _validate_r2_manifest_inventory(
     generation: str,
     document: dict[str, Any],
 ) -> None:
-    if document.get("schema_version") != GENERATION_MANIFEST_SCHEMA_VERSION:
-        raise GenerationValidationError(f"R2 rollback generation schema is invalid: {generation}")
-    files = document.get("files")
-    if not isinstance(files, list) or not files:
-        raise GenerationValidationError(f"R2 rollback generation inventory is empty: {generation}")
-    seen: set[str] = set()
-    for item in files:
-        if not isinstance(item, dict) or not isinstance(item.get("path"), str):
-            raise GenerationValidationError(
-                f"R2 rollback generation has an invalid file record: {generation}"
-            )
-        relative = _safe_relative_path(item["path"]).as_posix()
-        if relative in seen:
-            raise GenerationValidationError(
-                f"R2 rollback generation has a duplicate file: {relative}"
-            )
-        seen.add(relative)
-        key = f"{GENERATIONS_DIR}/{generation}/{relative}"
+    try:
+        files = parse_generation_files(document, generation)
+    except (AttributeError, KeyError, TypeError, ValueError) as exc:
+        raise GenerationValidationError(
+            f"R2 rollback generation manifest is invalid: {exc}"
+        ) from exc
+    for relative, item in files.items():
+        key = item.object_key(generation, relative)
         response = _head_r2_object(client, bucket, key)
         metadata = (response or {}).get("Metadata") or {}
         if response is None:
             raise GenerationObjectValidationError(generation, key, "missing")
-        if response.get("ContentLength") != item.get("size_bytes") or metadata.get(
-            SHA256_METADATA_KEY
-        ) != item.get("sha256"):
+        if (
+            response.get("ContentLength") != item.size_bytes
+            or metadata.get(SHA256_METADATA_KEY) != item.sha256
+        ):
             raise GenerationObjectValidationError(generation, key, "metadata_mismatch")
 
 
@@ -1076,7 +1112,14 @@ def _parse_pointer(payload: bytes, *, fingerprint: str) -> _PointerState:
                 "Active generation pointer previous_generation_id is invalid"
             )
         previous = _validated_generation_id(previous_raw)
-    return _PointerState(generation, previous, fingerprint)
+    digest = document.get("manifest_sha256")
+    if digest is not None and (
+        not isinstance(digest, str) or not re.fullmatch(r"[a-f0-9]{64}", digest)
+    ):
+        raise GenerationValidationError(
+            "Active generation pointer has an invalid manifest checksum"
+        )
+    return _PointerState(generation, previous, fingerprint, manifest_sha256=digest)
 
 
 def _logical_data_path(value: str) -> Path:

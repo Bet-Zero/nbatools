@@ -23,6 +23,7 @@ from nbatools.commands.pipeline.generation_publication import (
     _safe_relative_path,
     validate_staged_generation,
 )
+from nbatools.generation_manifest import GENERATIONS_DIR, parse_generation_files
 from tools.r2_publication import (
     BACKUP_MAX_ARCHIVE as MAX_ARCHIVE,
 )
@@ -57,27 +58,20 @@ def qualified_activation_manifest(generation, manifest_sha256):
 
 
 def inventory(manifest):
-    files = manifest["files"]
-    if not 0 < len(files) <= MAX_FILES:
+    files = parse_generation_files(manifest, manifest["generation_id"])
+    if len(files) > MAX_FILES:
         raise ValueError("Backup file count exceeds bound")
-    result = {}
     total = 0
-    for item in files:
-        key = _safe_relative_path(item["path"]).as_posix()
-        if (
-            not key.startswith(("raw/", "processed/", "metadata/"))
-            or key in result
-            or key == GENERATION_MANIFEST_PATH.as_posix()
-        ):
+    for key, item in files.items():
+        if not key.startswith(("raw/", "processed/", "metadata/")):
             raise ValueError("Unexpected or duplicate backup path")
-        size = item["size_bytes"]
-        if not isinstance(size, int) or size < 0 or size > MAX_BYTES:
+        size = item.size_bytes
+        if size > MAX_BYTES:
             raise ValueError("Invalid backup file size")
         total += size
-        result[key] = item
     if total > MAX_BYTES:
         raise ValueError("Backup total exceeds bound")
-    return result
+    return files
 
 
 def _verified_object(client, bucket, key, *, size, digest):
@@ -99,16 +93,19 @@ def candidate_backup_preflight(client, bucket, generation, manifest_sha256, mani
     ):
         raise ValueError("Candidate backup manifest differs from the approved checksum")
     manifest = json.loads(manifest_raw)
-    if manifest.get("schema_version") != 1 or manifest.get("generation_id") != generation:
+    if manifest.get("generation_id") != generation:
         raise ValueError("Candidate backup manifest has the wrong schema or generation")
     files = inventory(manifest)
-    prefix = f"generations/{generation}/"
     with tempfile.TemporaryFile() as handle:
         with zipfile.ZipFile(handle, "w", zipfile.ZIP_DEFLATED) as zipped:
             zipped.writestr(GENERATION_MANIFEST_PATH.as_posix(), manifest_raw)
             for key, item in sorted(files.items()):
                 raw = _verified_object(
-                    client, bucket, prefix + key, size=item["size_bytes"], digest=item["sha256"]
+                    client,
+                    bucket,
+                    item.object_key(generation, key),
+                    size=item.size_bytes,
+                    digest=item.sha256,
                 )
                 zipped.writestr(key, raw)
                 if handle.tell() > MAX_ARCHIVE:
@@ -120,7 +117,7 @@ def candidate_backup_preflight(client, bucket, generation, manifest_sha256, mani
         "generation_id": generation,
         "manifest_sha256": manifest_sha256,
         "files": len(files),
-        "data_bytes": sum(item["size_bytes"] for item in files.values()),
+        "data_bytes": sum(item.size_bytes for item in files.values()),
         "archive_bytes": archive_bytes,
         "r2_writes": 0,
     }
@@ -139,17 +136,20 @@ def export_backup(output, generation, *, client=None, bucket=None, expected_poin
     files = inventory(manifest)
     stage = output / "validation"
     stage.mkdir()
-    prefix = f"generations/{generation}/"
     # Preserve original derived files and receipt bytes, including the manifest.
     for key, expected in files.items():
         raw = _verified_object(
-            client, bucket, prefix + key, size=expected["size_bytes"], digest=expected["sha256"]
+            client,
+            bucket,
+            expected.object_key(generation, key),
+            size=expected.size_bytes,
+            digest=expected.sha256,
         )
         path = stage / key
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(raw)
     key = GENERATION_MANIFEST_PATH
-    body = client.get_object(Bucket=bucket, Key=prefix + key.as_posix())["Body"]
+    body = client.get_object(Bucket=bucket, Key=f"{GENERATIONS_DIR}/{generation}/{key}")["Body"]
     try:
         raw_manifest = body.read(BACKUP_MAX_MANIFEST_BYTES + 1)
     finally:
@@ -183,7 +183,7 @@ def export_backup(output, generation, *, client=None, bucket=None, expected_poin
         "archive_sha256": sha(archive),
         "archive_bytes": archive.stat().st_size,
         "files": len(files),
-        "data_bytes": sum(item["size_bytes"] for item in files.values()),
+        "data_bytes": sum(item.size_bytes for item in files.values()),
         "captured_at": datetime.now(UTC).isoformat(),
         "workflow_run_id": os.environ.get("GITHUB_RUN_ID"),
         "workflow_sha": os.environ.get("GITHUB_SHA"),
@@ -279,11 +279,11 @@ def restore_backup(archive, receipt, destination):
             or manifest["generation_id"] != receipt["generation_id"]
         ):
             raise ValueError("Backup inventory mismatch")
-        if sum(item["size_bytes"] for item in files.values()) != receipt["data_bytes"]:
+        if sum(item.size_bytes for item in files.values()) != receipt["data_bytes"]:
             raise ValueError("Backup byte inventory mismatch")
         for item in entries:
             expected = files.get(item.filename)
-            if expected and item.file_size != expected["size_bytes"]:
+            if expected and item.file_size != expected.size_bytes:
                 raise ValueError("Backup member size mismatch")
         destination.mkdir(parents=True)
         qualified = qualified_activation_manifest(
@@ -294,7 +294,7 @@ def restore_backup(archive, receipt, destination):
             path.parent.mkdir(parents=True, exist_ok=True)
             raw = zipped.read(item)
             expected = files.get(item.filename)
-            if qualified and expected and hashlib.sha256(raw).hexdigest() != expected["sha256"]:
+            if qualified and expected and hashlib.sha256(raw).hexdigest() != expected.sha256:
                 raise ValueError("Restored backup object differs from the qualified manifest")
             path.write_bytes(raw)
     if not qualified:

@@ -137,7 +137,10 @@ def prepare(artifact_dir: Path, code_root: Path, work: Path, generation: str, ba
         or manifest["generation_id"] != packet["base_generation"]
     ):
         raise ValueError("Preparation base differs from the retained package")
-    before = {item["path"]: item for item in manifest["files"]}
+    before = {
+        item["path"]: {key: value for key, value in item.items() if key != "storage_generation"}
+        for item in manifest["files"]
+    }
     games, schedule = (
         _final_team_games(data, before, f"raw/{family}/{suffix}.csv", team_id, season, kind)
         for family in ("games", "schedule")
