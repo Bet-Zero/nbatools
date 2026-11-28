@@ -37,21 +37,34 @@ recovery objective. [Monitoring and recovery evidence](stabilization-evidence-20
 `2239be14825fed08e13da1cc118dd1082ea1f1edca86661ea39a7503ed5cce50`.
 It certifies all 82 Lakers sides. Independent upload verification checked all
 1,544 data files and confirmed zero active-pointer writes. The protected preview
-passed the 6.11-second cold query and all six follow-ups. Cleveland is serving.
-Run the exact read-only activation preparation and check the scheduled monitor
-against the verified publication record. The owner then decides on the
-one-pointer activation. [Upload receipt](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-46121655390) ·
-[Hosted qualification](source-evidence/lakers-team-season-2025-26/hosted-qualification.json)
+passed the 6.11-second cold query and all six follow-ups. The updated production
+monitor passed against the immutable Cleveland base while strict Live readiness
+remained failed. Main `99d63aec` is deployed and full CI passed.
+Read-only activation preparation verified the unchanged Cleveland base and
+measured a 67,053,005-byte backup for all 1,544 files. The next action is the
+owner's decision on one conditional pointer PUT and zero snapshot PUTs in run
+46126604835. After approval, verify deployed answers, backup, clean restore and
+the new generation in production monitoring.
+[Upload](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-46121655390) ·
+[Hosted proof](source-evidence/lakers-team-season-2025-26/hosted-qualification.json) ·
+[Monitor](https://github.com/Bet-Zero/nbatools/actions/runs/46125995235) ·
+[Owner gate](https://github.com/Bet-Zero/nbatools/actions/runs/46126604835)
 
-**W8 and W9.** The independent acquisition and shared-object candidates are in
-[PR 673](https://github.com/Bet-Zero/nbatools/pull/673) and
-[PR 674](https://github.com/Bet-Zero/nbatools/pull/674). An exact offline Lakers
+**W8 and W9.** The independently reviewed acquisition, storage and grouped
+preparation candidates are in
+[PR 673](https://github.com/Bet-Zero/nbatools/pull/673),
+[PR 674](https://github.com/Bet-Zero/nbatools/pull/674) and
+[PR 676](https://github.com/Bet-Zero/nbatools/pull/676). An exact offline Lakers
 comparison projected 86 PUTs and 3,115,859 bytes with reuse. The complete
-1,544-file archive and clean restore passed locally. W8 still requires the
-applicable R2 checks, grouped preparation review and a second independently
-qualified real scope for grouped expansion evidence. W6B remains an archive
-migration trigger. W9 still requires selected Live scope, fresh source evidence,
-positive deployed answers and a measured publication and recovery cadence.
+1,544-file archive and clean restore passed locally. Targeted R2 verification
+passed the independent Cleveland answer and full backup. Main stays frozen
+during activation. The offline league survey covered 1,230 games. Boston is the
+next scope, with 69 of 82 complete team sides and 13 archive-indexed gaps.
+The first draft binds four originals to the reviewed capture and native stage.
+Run that bounded two-game acquisition after Lakers delivery. Broader shared
+publication still needs a real released scope and clean recovery evidence.
+W6B remains an archive migration trigger. W9 needs fresh source evidence,
+positive Live answers and a measured publication and recovery cadence.
 
 **Original product ledger.** K08 remains 16 PASS / 26 MISSING DATA / 4 LIVE.
 The 2025–26 Lakers team-season slice uses all 82 final games. Requirement #33,
