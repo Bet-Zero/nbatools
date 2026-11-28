@@ -1,0 +1,67 @@
+{
+  "base_generation": "availability-cleveland-2024-v3-20261124",
+  "base_manifest_sha256": "d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034",
+  "generation_id": "availability-lal-team-2025-v1-20261127",
+  "schema_version": 1,
+  "code_files": [
+    {
+      "path": "tools/prepare_team_appearance_package.py",
+      "sha256": "75f9a5c6eccc36398f4617b40cfade0778390056131970e979c53305393e51f9"
+    },
+    {
+      "path": "tools/compose_participation_overlays.py",
+      "sha256": "f2b0971b021e73c370d2bba9e2fc5c60c93db162d77f99b9628f4cdde40804e7"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/player_game_availability_report.py",
+      "sha256": "4c34adfe9ad5f97772f9be5f6015121a49afbe518d5eac0d69cf293dc8a7a400"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/pull_player_game_availability.py",
+      "sha256": "e21e936692c5deea9677314e5769b57c8577f6b9a047a44c058bf364cef85683"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/team_appearance_coverage.py",
+      "sha256": "986b1a197c3ba7b0df8772ada3e008d33e6057202dbc104e9bfa48e43db86a85"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/generation_publication.py",
+      "sha256": "d54e856dfeeb8e26332923aedab6bed5230b618296fa920509998f11c8b245c4"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/generation_refresh.py",
+      "sha256": "678e515898e9318789f88d2f621fb7fa34944df94260e6c25072cee047d79ca5"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "0b72c72977f474538b6b7bf4cfc390fd6bded62f8fd9041e58a2a92c57c7e8f7"
+    },
+    {
+      "path": "uv.lock",
+      "sha256": "9e37abdc3e4c0cf95670157638ff9e8d936470cd9376c3ca26c3005899b223f3"
+    }
+  ],
+  "retained_files": [
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/lakers-team-season-2025-26/qualified/package.json",
+      "sha256": "7efdc46aa6ec5b1ef5d8b1767fd216cb6c5e8ca95b938421b73f5ec598090fff"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/lakers-team-season-2025-26/qualified/qualified-overlay.zip",
+      "sha256": "e53f2bb975921c52395ef299e37cbca2ac19f30aa079162687992507eae796e8"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/lakers-team-season-2025-26/qualified/2025-26_regular_season.json",
+      "sha256": "3667b57837075e9178a10fc1c0baf4aae5ddbe58c04706e313b7e1f6084e2fb5"
+    }
+  ],
+  "source_qualification": {
+    "selected_team_games": 82,
+    "retained_replayed": 54,
+    "structured_original_game_pairs": 26,
+    "final_box_fallback_games": 2,
+    "final_box_capture_run_id": 46098952952,
+    "independent_source_sha256": "2b3c2d111a5a0f5ec67e7974c8ff87453a78a4fd397d19970493319469551315",
+    "scope": "complete_selected_lakers_sides_only"
+  }
+}
