@@ -1,6 +1,8 @@
 import hashlib
 import io
 import json
+import struct
+import zlib
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -71,7 +73,9 @@ def test_pack_is_deterministic_and_append_keeps_original_packs(tmp_path):
         read_source_index(inventory(root), reader)
 
 
-@pytest.mark.parametrize("fault", ["tampered_index", "tampered_pack", "undeclared", "wrong_member"])
+@pytest.mark.parametrize(
+    "fault", ["tampered_index", "tampered_pack", "undeclared", "wrong_member", "hidden_output"]
+)
 def test_bad_archive_or_member_fails_even_with_a_new_physical_manifest(tmp_path, fault):
     source = add(tmp_path, "evidence.json", b"exact source")
     index, _ = pack_sources(tmp_path, {})
@@ -93,12 +97,22 @@ def test_bad_archive_or_member_fails_even_with_a_new_physical_manifest(tmp_path,
         return
     data = io.BytesIO()
     with ZipFile(data, "w", ZIP_DEFLATED) as zipped:
+        raw = b"wrong source" if fault == "wrong_member" else b"exact source"
         zipped.writestr(
-            Path(source).name, b"wrong source" if fault == "wrong_member" else b"exact source"
+            Path(source).name, raw + (b" hidden output" if fault == "hidden_output" else b"")
         )
         if fault == "undeclared":
             zipped.writestr("other.json", b"undeclared")
     raw = data.getvalue()
+    if fault == "hidden_output":
+        # Keep the authenticated declared output and CRC while the compressed
+        # stream contains additional bytes after the claimed original.
+        malformed = bytearray(raw)
+        central = malformed.index(b"PK\x01\x02")
+        initial = b"exact source"
+        struct.pack_into("<I", malformed, central + 16, zlib.crc32(initial))
+        struct.pack_into("<I", malformed, central + 24, len(initial))
+        raw = bytes(malformed)
     pack = f"{PACK_DIR}/{hashlib.sha256(raw).hexdigest()}.zip"
     original.unlink()
     (tmp_path / pack).write_bytes(raw)
@@ -107,5 +121,7 @@ def test_bad_archive_or_member_fails_even_with_a_new_physical_manifest(tmp_path,
     (tmp_path / INDEX).write_text(json.dumps(doc))
     physical = inventory(tmp_path)
     parsed = read_source_index(physical, reader)
-    with pytest.raises(ValueError, match="inventory differs|differ from their inventory"):
+    with pytest.raises(
+        ValueError, match="inventory differs|differ from their inventory|decoded size"
+    ):
         dict(unpack_sources(parsed, physical, reader))

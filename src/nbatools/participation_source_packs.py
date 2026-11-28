@@ -7,7 +7,9 @@ import io
 import json
 import re
 import stat
+import struct
 import tempfile
+import zlib
 from collections import defaultdict
 from collections.abc import Callable, Collection, Iterator, Mapping
 from contextlib import contextmanager
@@ -160,11 +162,35 @@ def unpack_sources(
                     ):
                         raise ValueError(f"Invalid participation source ZIP member: {relative}")
                     if selected is None or relative in selected:
-                        with zipped.open(member) as body:
-                            raw = body.read(item.size_bytes + 1)
+                        raw = _decode_member(zipped, member, archive, item.size_bytes)
                         yield relative, _checked_bytes(raw, item.size_bytes, item.sha256, relative)
         except BadZipFile as exc:
             raise ValueError(f"Malformed participation source ZIP: {pack}") from exc
+
+
+def _decode_member(zipped: ZipFile, member: ZipInfo, archive: bytes, length: int) -> bytes:
+    # Opening checks the local filename and member overlap. Decode the raw
+    # stream because ZipExtFile otherwise clips data to the declared length.
+    with zipped.open(member):
+        name_bytes, extra_bytes = struct.unpack_from("<HH", archive, member.header_offset + 26)
+        start = member.header_offset + 30 + name_bytes + extra_bytes
+        compressed = memoryview(archive)[start : start + member.compress_size]
+        decoder = zlib.decompressobj(-zlib.MAX_WBITS)
+        try:
+            raw = decoder.decompress(compressed, length + 1)
+        except zlib.error as exc:
+            raise ValueError(f"Malformed participation source member: {member.filename}") from exc
+        if (
+            len(raw) != length
+            or not decoder.eof
+            or decoder.unused_data
+            or decoder.unconsumed_tail
+            or zlib.crc32(raw) != member.CRC
+        ):
+            raise ValueError(
+                f"Participation source decoded size or checksum differs: {member.filename}"
+            )
+        return raw
 
 
 def read_disk(root: Path, relative: str) -> bytes:
