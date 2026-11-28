@@ -234,6 +234,10 @@ def requested_mixed_availability(text: str) -> AvailabilityConjunction | None:
     conjunction needs its own polarity marker on each side, such as WITHOUT
     A AND WITH B, or WITH A OUT AND B PLAYING. OR and extra actors stay unread.
     """
+    from nbatools.commands._date_utils import (
+        _explicit_date_range_pattern,
+        strip_explicit_calendar_date_clauses,
+    )
     from nbatools.commands._matchup_utils import detect_team_in_text
     from nbatools.commands._parse_helpers import _original_participation_window, detect_stat
 
@@ -246,10 +250,17 @@ def requested_mixed_availability(text: str) -> AvailabilityConjunction | None:
     state_end = re.compile(rf"\s+({state})$")
     window = _original_participation_window(text)
     window_stop = rf"|\s+{re.escape(window.group(0))}" if window else ""
+    calendar_range = re.search(_explicit_date_range_pattern(), text)
+    calendar_stop = (
+        rf"|\s+{re.escape(calendar_range.group(0))}"
+        if calendar_range and calendar_range.group("between")
+        else ""
+    )
     stop = (
         r"(?=\s+(?:and|while|when|but|record|games?|this|last|in|for|since|vs\.?"
         r"|versus|against|at|on|from|during|over|before|after|through|until|home|away)\b"
         + window_stop
+        + calendar_stop
         + r"|[?!,;:]|$)"
     )
     patterns = [
@@ -299,6 +310,9 @@ def requested_mixed_availability(text: str) -> AvailabilityConjunction | None:
             + " " * (window.end() - window.start())
             + remainder[window.end() :]
         )
+    # A comma inside a calendar date belongs to the date reader. Mask only
+    # its recognized scope so a separate, unowned actor still blocks the pair.
+    remainder = strip_explicit_calendar_date_clauses(remainder)
     for tail in re.split(r"\b(?:and|while|when|but)\b|[,;]", remainder)[1:]:
         tail = tail.strip()
         # Date/opponent/schedule scope belongs to the existing scope readers;
