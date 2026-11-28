@@ -28,6 +28,7 @@ from nbatools.data_source import (
     data_read_csv,
     data_read_text,
 )
+from nbatools.generation_manifest import MANIFEST_PATH, parse_generation_files
 
 MAX_ACTIVE_LAG_HOURS = 24
 NEW_SEASON_NOT_LOADED = "new_season_not_loaded"
@@ -418,7 +419,7 @@ def _season_state(snapshot: ReadinessSnapshot) -> SeasonState:
 def _inspect_runtime_generation(generation: str) -> tuple[bool, str | None]:
     if generation == LEGACY_GENERATION:
         return False, "The active runtime uses mutable legacy canonical paths."
-    path = Path("data/metadata/generation_manifest.json")
+    path = Path("data") / MANIFEST_PATH
     if not data_exists(path):
         return False, "The active immutable generation manifest is missing."
     try:
@@ -427,12 +428,12 @@ def _inspect_runtime_generation(generation: str) -> tuple[bool, str | None]:
         return False, f"The active generation manifest is unreadable: {exc}"
     if not isinstance(document, dict):
         return False, "The active generation manifest is not a JSON object."
-    if document.get("schema_version") != 1:
-        return False, "The active generation manifest schema is unsupported."
     if document.get("generation_id") != generation:
         return False, "The active pointer and generation manifest identifiers differ."
-    if not isinstance(document.get("files"), list) or not document["files"]:
-        return False, "The active generation manifest has no immutable file inventory."
+    try:
+        parse_generation_files(document, generation)
+    except (KeyError, TypeError, ValueError) as exc:
+        return False, f"The active generation manifest has an invalid immutable inventory: {exc}"
     return True, None
 
 
