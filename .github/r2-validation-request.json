@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "6e6af65dbac8e7a58aa8589d692745943cc76748",
+  "generation": "availability-lal-team-2025-v1-20261127",
+  "manifest_sha256": "2239be14825fed08e13da1cc118dd1082ea1f1edca86661ea39a7503ed5cce50",
+  "tests": [
+    "tests/test_team_appearance_scope_real_data.py::test_published_lakers_mixed_record_preserves_written_dates",
+    "tests/cloud_core1_k08_lal_default_real_data.py::test_published_lakers_rest_survives_shared_object_reuse"
+  ],
+  "raw_qa_cases": []
+}
