@@ -13,6 +13,7 @@ import os
 import re
 import subprocess
 import sys
+from contextlib import nullcontext
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -40,15 +41,26 @@ PIN = "2e44b7c039f104bc6b41a1de494411e83a03714e"
 SUFFIX = "2025-26_regular_season.csv"
 
 
-def fetch_capture(path: str, destination: Path, revision: str) -> dict:
+class _DirectArchiveSession(requests.Session):
+    def get_redirect_target(self, response):
+        # Requests can read a redirect body while preparing Response.next even
+        # with redirects disabled. In direct mode there is no next request.
+        return None
+
+
+def fetch_capture(path: str, destination: Path, revision: str, *, direct_200: bool = False) -> dict:
     url = f"https://raw.githubusercontent.com/{MIRROR}/{revision}/{path}"
-    with requests.get(url, timeout=30, stream=True) as response:
-        response.raise_for_status()
-        payload = bytearray()
-        for chunk in response.iter_content(65536):
-            payload.extend(chunk)
-            if len(payload) > 8_000_000:
-                raise ValueError("Capture exceeds bounded 8MB limit")
+    options = {"allow_redirects": False} if direct_200 else {}
+    with _DirectArchiveSession() if direct_200 else nullcontext(requests) as client:
+        with client.get(url, timeout=30, stream=True, **options) as response:
+            response.raise_for_status()
+            if direct_200 and response.status_code != 200:
+                raise requests.HTTPError("Archive must return a direct HTTP 200", response=response)
+            payload = bytearray()
+            for chunk in response.iter_content(65536):
+                payload.extend(chunk)
+                if len(payload) > 8_000_000:
+                    raise ValueError("Capture exceeds bounded 8MB limit")
     destination.write_bytes(payload)
     return {"url": url, "bytes": len(payload), "sha256": hashlib.sha256(payload).hexdigest()}
 
