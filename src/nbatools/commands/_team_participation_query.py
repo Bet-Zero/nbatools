@@ -1,8 +1,11 @@
 """Declare team-record participation meaning without changing other routes."""
 
 import re
+from collections.abc import Mapping
+from dataclasses import dataclass
+from typing import Any, Literal, cast
 
-from nbatools.commands.entity_resolution import resolve_player
+from nbatools.commands.entity_resolution import ResolutionResult, resolve_player
 
 ROSTERED = re.compile(r"\bwhile (?:rostered|on (?:the|this) team)\b", re.I)
 ANYWHERE = re.compile(r"\b(?:anywhere in (?:the )?game|on either team|for either team)\b", re.I)
@@ -11,6 +14,73 @@ OPPOSING = re.compile(
     r"|(?:with|without) (?:the )?opponent)\b",
     re.I,
 )
+_PARTICIPATION_INTRO = re.compile(r"\b(without|w/o|with|w/)\s+", re.I)
+_EXCLUSION = re.compile(
+    r"\b(?:not|except|excluding|exclude|unless|never|neither|nor|other\s+than)\b", re.I
+)
+AppearanceScope = Literal["team", "opponent", "game"]
+ParticipationScope = Literal["team", "opponent", "game", "rostered", "legacy"]
+TEAM_ACTOR_AMBIGUITY = "team_participation"
+
+
+@dataclass(frozen=True)
+class ParticipationPredicate:
+    names: tuple[str, ...]
+    played: bool
+
+    @classmethod
+    def from_reference(cls, reference: str, *, played: bool) -> "ParticipationPredicate":
+        return cls(tuple(re.split(r"\s+and\s+", reference, flags=re.I)), played)
+
+
+def participation_predicates(
+    with_player: str | None, without_player: str | None
+) -> tuple[ParticipationPredicate, ...]:
+    return tuple(
+        ParticipationPredicate.from_reference(name, played=played)
+        for name, played in ((with_player, True), (without_player, False))
+        if name
+    )
+
+
+@dataclass(frozen=True)
+class TeamRecordParticipation:
+    """Bind the team, season, actor conditions and the requested record sample."""
+
+    team: str
+    season: str | None
+    season_type: str
+    scope: ParticipationScope
+    predicates: tuple[ParticipationPredicate, ...]
+    last_n: int | None
+    last_n_scope: str | None
+    wins_only: bool
+    losses_only: bool
+
+    @classmethod
+    def from_record(cls, kwargs: Mapping[str, Any]) -> "TeamRecordParticipation":
+        scope = participation_scope_for(kwargs)
+        if scope not in {"team", "opponent", "game", "rostered", "legacy"}:
+            raise ValueError("Unknown participation scope")
+        return cls(
+            team=kwargs["team"],
+            season=kwargs.get("season"),
+            season_type=kwargs.get("season_type", "Regular Season"),
+            scope=scope,
+            predicates=participation_predicates(
+                kwargs.get("with_player"), kwargs.get("without_player")
+            ),
+            last_n=kwargs.get("last_n"),
+            last_n_scope=kwargs.get("last_n_scope", "qualifying"),
+            wins_only=kwargs.get("wins_only", False),
+            losses_only=kwargs.get("losses_only", False),
+        )
+
+    @property
+    def appearance_scope(self) -> AppearanceScope | None:
+        if self.scope in {"team", "opponent", "game"}:
+            return cast(AppearanceScope, self.scope)
+        return None
 
 
 def _scalar_role_clause(query, kwargs, scope):
@@ -25,11 +95,13 @@ def _scalar_role_clause(query, kwargs, scope):
         _tail_is_read_scope,
     )
 
-    actors = [(mode, kwargs.get(mode + "_player")) for mode in ("with", "without")]
-    actors = [(mode, name) for mode, name in actors if name]
-    if len(actors) != 1 or re.search(r"\band\b|[,;&]", actors[0][1], re.I):
+    predicates = participation_predicates(kwargs.get("with_player"), kwargs.get("without_player"))
+    if len(predicates) != 1 or len(predicates[0].names) != 1:
         return False
-    mode, name = actors[0]
+    (name,) = predicates[0].names
+    if re.search(r"\band\b|[,;&]", name, re.I):
+        return False
+    mode = "with" if predicates[0].played else "without"
     text = query.lower()
     if scope == "opponent":
         if ANYWHERE.search(text) or ROSTERED.search(text):
@@ -59,6 +131,7 @@ def _scalar_role_clause(query, kwargs, scope):
         intro = introductions[-1]
         declared = intro[1]
         fragment = text[intro.end() : marker.start()].strip()
+        fragment = re.sub(r"\s+(?:plays?|played|playing)$", "", fragment)
         start, end = intro.start(), marker.end()
     if (
         declared != mode
@@ -70,9 +143,7 @@ def _scalar_role_clause(query, kwargs, scope):
     # cannot disappear behind a scalar role declaration. Only fully consumed
     # primary numeric-stat clauses may remain alongside ordinary scope.
     remaining = text[:start] + " " * (end - start) + text[end:]
-    if re.search(
-        r"\b(?:not|except|excluding|exclude|unless|never|neither|nor|other\s+than)\b", remaining
-    ):
+    if _EXCLUSION.search(remaining):
         return False  # Negation/exclusion of the role is not a parsed operator.
     for marker in re.finditer(r"\b(with|without|when|while|if)\s+", remaining):
         if marker[1] not in {"with", "when"}:
@@ -105,6 +176,81 @@ def clean_scope_words(query):
     if not re.search(r"\brecord\b", query, re.I):
         return query
     return ANYWHERE.sub("", ROSTERED.sub("", query))
+
+
+def contextual_team_actor(reference, kwargs, scope) -> ResolutionResult | None:
+    """Resolve a whole single-token reference only in the selected TEAM scope."""
+    if (
+        scope != "team"
+        or not isinstance(reference, str)
+        or not reference.replace("'", "").replace("-", "").isalpha()
+        or not isinstance(kwargs.get("team"), str)
+        or not isinstance(kwargs.get("season"), str)
+        or kwargs.get("start_season")
+        or kwargs.get("end_season")
+    ):
+        return None
+    from nbatools.commands._team_appearances import resolve_complete_team_actor
+
+    return resolve_complete_team_actor(
+        reference, kwargs["team"], kwargs["season"], kwargs.get("season_type", "Regular Season")
+    )
+
+
+def _bind_condition(parsed, mode, name):
+    kwargs = parsed["route_kwargs"]
+    kwargs[mode + "_player"] = name
+    kwargs.pop("unsupported_filters", None)
+    kwargs.pop("unresolved_availability_player", None)
+    parsed["notes"] = [
+        n for n in (parsed.get("notes") or []) if not n.startswith("unsupported_boundary:")
+    ]
+
+
+def _bind_contextual_condition(query, parsed, scope):
+    from nbatools.commands._constants import normalize_text
+    from nbatools.commands._matchup_utils import _tail_is_read_scope
+
+    kwargs = parsed["route_kwargs"]
+    reference = kwargs.get("unresolved_availability_player")
+    if not reference or kwargs.get("with_player") or kwargs.get("without_player"):
+        return
+    text = normalize_text(query)
+    intros = list(_PARTICIPATION_INTRO.finditer(text))
+    if len(intros) != 1 or _EXCLUSION.search(text):
+        return
+    (intro,) = intros
+    actor = re.compile(rf"{re.escape(reference)}(?![\w.'\-])").match(text, intro.end())
+    if actor is None or not _tail_is_read_scope(text, actor.end()):
+        return
+    resolution = contextual_team_actor(reference, kwargs, scope)
+    if resolution is None:
+        return
+    if resolution.is_ambiguous:
+        kwargs.pop("unsupported_filters")
+        kwargs["participation_scope"] = scope
+        parsed["entity_ambiguity"] = dict(
+            type="player",
+            input=reference,
+            candidates=resolution.candidates,
+            source=TEAM_ACTOR_AMBIGUITY,
+        )
+        parsed["notes"] = [
+            note
+            for note in (parsed.get("notes") or [])
+            if not note.startswith("unsupported_boundary:")
+        ]
+        return
+    name = resolution.resolved
+    if not name:
+        return
+    ambiguity = parsed.get("entity_ambiguity")
+    if ambiguity and (ambiguity.get("type") != "player" or name not in ambiguity["candidates"]):
+        return
+    mode = "without" if intro[1] in {"without", "w/o"} else "with"
+    _bind_condition(parsed, mode, name)
+    if ambiguity:
+        parsed["entity_ambiguity"] = None
 
 
 def apply_team_participation_scope(query, parsed):
@@ -142,9 +288,12 @@ def apply_team_participation_scope(query, parsed):
         kwargs["unsupported_filters"] = sorted(blocked | {"unread_participation_clause"})
         kwargs["participation_scope"] = scope
         return parsed
+    mixed = parsed.get("mixed_availability")
+    played_condition = mixed and any(clause.appearance_absence for clause in mixed.clauses)
     # Colloquial OUT/DNP/sits retains the accepted rostered interpretation.
     if (
-        not re.search(r"\bwithout\b", query, re.I)
+        not re.search(r"\b(?:without|w/o)\b", query, re.I)
+        and not played_condition
         and kwargs.get("without_player")
         and scope == "team"
     ):
@@ -180,12 +329,9 @@ def apply_team_participation_scope(query, parsed):
                 and _only_the_name(part, name)
                 for part, name, result in zip(parts, resolved, resolutions)
             ):
-                kwargs[match[1].lower() + "_player"] = " and ".join(resolved)
-                kwargs.pop("unsupported_filters", None)
-                kwargs.pop("unresolved_availability_player", None)
-                parsed["notes"] = [
-                    n for n in parsed.get("notes", []) if not n.startswith("unsupported_boundary:")
-                ]
+                _bind_condition(parsed, match[1].lower(), " and ".join(resolved))
+    if kwargs.get("unsupported_filters") == ["unresolved_player_availability"]:
+        _bind_contextual_condition(query, parsed, scope)
     if kwargs.get("with_player") or kwargs.get("without_player"):
         kwargs["participation_scope"] = scope
     return parsed

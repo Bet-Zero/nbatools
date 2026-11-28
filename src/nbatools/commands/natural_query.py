@@ -399,7 +399,6 @@ from nbatools.commands._playoff_record_route_utils import (
     try_record_leaderboard_route,
 )
 from nbatools.commands._teammate_resolution import (
-    AvailabilityClause,
     AvailabilityConjunction,
     availability_pair,
     exact_condition_name,
@@ -3656,11 +3655,7 @@ def _build_parse_state(query: str) -> dict:
                         None if name else clause.players,
                     )
                 if name:
-                    resolved_clauses.append(
-                        AvailabilityClause(
-                            clause.mode, name, clause.start, clause.end, clause.reported_reason
-                        )
-                    )
+                    resolved_clauses.append(clause._replace(players=name))
             primary = detect_player_resolved(mixed_availability_requested.mask_clause(presence_q))
             player = primary.resolved if primary.is_confident else None
             entity_ambiguity = (

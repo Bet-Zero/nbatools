@@ -99,6 +99,9 @@ def qualify_retained_appearances(
                         ]
                 elif record["source"] == "report":
                     game = games.loc[game_id]
+                    identity_hashes = old.identity_source_sha256.fillna("").unique()
+                    if len(identity_hashes) != 1:
+                        raise ValueError("Inconsistent availability identity source")
                     raw, reference = official_report_as_v3(
                         game_id=game_id,
                         game_date=str(game.game_date),
@@ -109,6 +112,7 @@ def qualify_retained_appearances(
                         data_root=scratch,
                         cached_reports=sources,
                         imported_team_ids=record.get("imported_team_ids"),
+                        cached_identity_sha256=identity_hashes[0],
                     )
                     receipt_path = sources / f"{reference}.json"
                     receipt = json.loads(receipt_path.read_bytes())
@@ -116,6 +120,12 @@ def qualify_retained_appearances(
                     files[f"raw/player_game_availability_sources/{receipt['raw_file']}"] = receipt[
                         "sha256"
                     ]
+                    files.update(
+                        {
+                            f"raw/player_game_availability_sources/{name}": digest
+                            for name, digest in raw.attrs.get("identity_source_files", {}).items()
+                        }
+                    )
                     replay = normalize_boxscore_availability(
                         raw,
                         game_id=game_id,

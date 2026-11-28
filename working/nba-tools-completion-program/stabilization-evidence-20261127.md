@@ -181,3 +181,53 @@ give the applicable single-worker measurements. The separate unprimed K12
 claim stays parked.
 
 [Final request and provider receipt](source-evidence/stabilization-20261127/hosted-final.json)
+
+## Approved monitoring and recovery
+
+The owner approved the scoped snapshot alert verdict and eight-hour recovery
+objective on November 27. [PR #670](https://github.com/Bet-Zero/nbatools/pull/670)
+merged as `fb317169e5d3cacf56be9b282021cc021285eda9`, tree
+`d82915e61b550b0d2575eef3fcaa76ad5a507bbe`. The exact-head review passed 126
+affected tests and sixteen independent controls. An unexpected sentinel failure
+exited the monitor with status 1 and required the existing notification. The
+owner confirmed that unchanged GitHub Actions notification route with the July
+23 confirmation of the [network-free alert run](https://github.com/Bet-Zero/nbatools/actions/runs/29908352141).
+The production monitor kept strict Live readiness failed
+and verified timely scoring, health and the exact immutable snapshot.
+
+The stable alias served
+[`dpl_2MZJPoa68k8T1qidZmdmFsVg6yPF`](https://vercel.com/zeros-projects-686e97fc/nbatools/dpl_2MZJPoa68k8T1qidZmdmFsVg6yPF).
+The locked Python 3.12/uv 0.13.5 build preserved the accepted browser bundle
+SHA-256 `2283d4d9a67e5d5387bf93687ebaaee426e28574bd1dc7898b1c9430140830af`.
+[Post-merge CI](https://github.com/Bet-Zero/nbatools/actions/runs/46094109175) passed
+all blocking checks. The existing development security advisory is informational.
+
+The [main manual probe](https://github.com/Bet-Zero/nbatools/actions/runs/46094466126)
+checked health in 0.293 seconds, readiness in 2.259 seconds, and scoring in
+3.601 seconds. The sole expected `new_season_not_loaded` blocker still returned
+HTTP 503. The active immutable generation matched
+`availability-cleveland-2024-v3-20261124` and the verified data manifest
+`d574144512821d202249e1d87926cbbfd053126b7f1e6960582f4a9b52149034`.
+
+Eight production recovery smoke cases passed on that same deployment and data.
+The receipt's SHA-256 is
+`ad56a73f0b4d1b4401dd9470ccf8e57bb17ed7c0668e8f86e66b16795de39af9`.
+The Celtics' completed 2025–26 East record matched the independently computed
+36–16 in 52 games. Seven function requests correlated with the serving
+deployment. The alias and immutable generation were confirmed before and after
+smoke. An isolated native recovery control kept the clock running when health
+and scoring recovered but one post-recovery smoke check still failed. All eight
+passing stopped that four-second control. The real independent backup preserved
+1,461 files and 423,517,896 data bytes and restored without R2 credentials.
+The eight-hour objective applies to confirmed snapshot incidents. The
+controlled exercise measures the decision and verification path.
+[Verified backup and restore](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-45763092143)
+
+The [subsequent scheduled run](https://github.com/Bet-Zero/nbatools/actions/runs/46097846832)
+completed on the same main revision and serving alias. It began at 02:23 UTC,
+six minutes after the intended slot. The first health response exceeded its
+objective at 2.678 seconds and the one approved retry passed in 0.215 seconds.
+Readiness verified the exact immutable snapshot and known Live gap in 5.111
+seconds. The query independently passed in 5.817 seconds. The normal workflow
+succeeded without needing an alert, and strict Live readiness remained failed.
+This closes Section 6. Monitor observation continues prospectively.

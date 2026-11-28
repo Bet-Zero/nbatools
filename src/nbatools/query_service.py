@@ -3807,8 +3807,12 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
         )
 
     # -- Entity ambiguity: return structured ambiguity result --
+    from nbatools.commands._team_participation_query import TEAM_ACTOR_AMBIGUITY
+
     entity_ambiguity = parsed.get("entity_ambiguity")
-    if entity_ambiguity and route is None:
+    if entity_ambiguity and (
+        route is None or entity_ambiguity.get("source") == TEAM_ACTOR_AMBIGUITY
+    ):
         metadata = _build_query_metadata(parsed, query, grouped_boolean_used=False)
         notes = parsed.get("notes", [])
 
@@ -3843,7 +3847,7 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
         metadata["entity_ambiguity"] = enriched_ambiguity
 
         result = NoResult(
-            query_class="unknown",
+            query_class=route_to_query_class(route) if route else "unknown",
             reason="ambiguous",
             result_status="no_result",
             result_reason="ambiguous",
@@ -3854,7 +3858,7 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
             result=result,
             metadata=metadata,
             query=query,
-            route=None,
+            route=route,
         )
 
     try:
@@ -3995,9 +3999,18 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
     if route == "team_record" and kwargs.get("without_player_reason"):
         kwargs["participation_scope"] = "legacy"
     elif route == "team_record":
-        from nbatools.commands._team_participation_query import participation_scope_for
+        from nbatools.commands._team_participation_query import (
+            contextual_team_actor,
+            participation_scope_for,
+        )
 
-        kwargs["participation_scope"] = participation_scope_for(kwargs)
+        scope = kwargs["participation_scope"] = participation_scope_for(kwargs)
+        actor_keys = [key for key in ("with_player", "without_player") if kwargs.get(key)]
+        if len(actor_keys) == 1 and not kwargs.get("unsupported_filters"):
+            (key,) = actor_keys
+            resolution = contextual_team_actor(kwargs[key], kwargs, scope)
+            if resolution is not None and resolution.is_confident:
+                kwargs[key] = resolution.resolved
     query_class = route_to_query_class(route)
 
     # Build metadata from kwargs
