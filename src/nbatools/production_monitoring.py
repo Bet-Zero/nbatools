@@ -8,6 +8,7 @@ from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from http.client import HTTPException
+from math import isfinite
 from time import perf_counter
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -21,6 +22,7 @@ from nbatools.deployment_monitoring import (
     evaluate_smoke_response,
     fetch_http,
     normalize_base_url,
+    snapshot_live_gap_matches,
 )
 
 AVAILABILITY_OBJECTIVE_PERCENT = 99.0
@@ -142,6 +144,10 @@ def default_production_monitor_cases() -> list[ProductionMonitorCase]:
                     "ok": True,
                     "route": "season_leaders",
                     "result_status": "ok",
+                    "result.metadata.season": "2025-26",
+                    "result.metadata.season_type": "Regular Season",
+                    "result.metadata.stat": "pts",
+                    "result.sections.leaderboard.__len__": 10,
                 },
             ),
             max_duration_ms=15_000.0,
@@ -156,7 +162,7 @@ def run_production_monitor(
     cases: list[ProductionMonitorCase] | None = None,
     fetcher: Fetcher = fetch_http,
 ) -> ProductionMonitorReport:
-    """Run every probe while keeping the approved overall verdict strict."""
+    """Run every probe and apply the scoped snapshot alert policy."""
 
     normalized_base_url = _normalize_monitor_base_url(base_url)
     if expected_generation is not None and not _SAFE_TOKEN.fullmatch(expected_generation):
@@ -167,6 +173,14 @@ def run_production_monitor(
     ]
     failures = [case.slug for case in case_results if not case.ok]
     readiness = next((case for case in case_results if case.slug == "readiness"), None)
+    snapshot_status = _snapshot_status(case_results, expected_generation)
+    if (
+        snapshot_status == "passed"
+        and failures == ["readiness"]
+        and readiness
+        and readiness.attempts[-1].known_live_gap
+    ):
+        failures.clear()
     if (
         readiness is not None
         and readiness.ok
@@ -186,7 +200,7 @@ def run_production_monitor(
         live_readiness=(
             "not_checked" if readiness is None else "passed" if readiness.ok else "failed"
         ),
-        snapshot_status=_snapshot_status(case_results, expected_generation),
+        snapshot_status=snapshot_status,
         expected_generation=expected_generation,
     )
 
@@ -325,7 +339,18 @@ def _run_monitor_attempt(
         )
 
     request_id = _request_id(result.headers)
-    if not result.ok:
+    shape_ok = result.ok
+    if shape_ok and case.slug == "readiness":
+        shape_ok = payload.get("ready") is True and payload.get("immutable_generation") is True
+    if shape_ok and case.slug == "representative_query":
+        shape_ok = _scoring_rows_are_valid(payload)
+    known_live_gap = (
+        case.slug == "readiness"
+        and status == 503
+        and snapshot_live_gap_matches(payload, expected_generation)
+    )
+    too_slow = duration_ms > monitor_case.max_duration_ms
+    if not shape_ok and not (known_live_gap and too_slow):
         error_code = (
             "unexpected_http_status"
             if result.status_code != case.expected_status
@@ -340,14 +365,9 @@ def _run_monitor_attempt(
             summary=safe_summary,
             failure_kind="response",
             error_code=error_code,
-            known_live_gap=(
-                case.slug == "readiness"
-                and status == 503
-                and duration_ms <= monitor_case.max_duration_ms
-                and _is_known_live_gap(payload, expected_generation)
-            ),
+            known_live_gap=known_live_gap,
         )
-    if duration_ms > monitor_case.max_duration_ms:
+    if too_slow:
         return ProductionMonitorAttempt(
             attempt=attempt_number,
             ok=False,
@@ -418,83 +438,41 @@ def _decode_payload(body: bytes) -> dict[str, Any]:
     return payload if isinstance(payload, dict) else {}
 
 
-def _is_known_live_gap(payload: dict[str, Any], expected_generation: str | None) -> bool:
-    """Match the native readiness response before reducing it for safe logging."""
-    if (
-        expected_generation is None
-        or payload.get("active_generation") != expected_generation
-        or payload.get("immutable_generation") is not True
-        or payload.get("ready") is not False
-        or payload.get("status") != "not_ready"
-        or not all(
-            isinstance(payload.get(key), str) and payload[key]
-            for key in (
-                "checked_at",
-                "season",
-                "season_state",
-                "release_exception_owner",
-            )
-        )
-        or type(payload.get("max_active_lag_hours")) is not int
-        or not isinstance(payload.get("slices"), list)
-        or not payload["slices"]
-        or not all(_has_slice_schema(row) for row in payload["slices"])
-    ):
+def _scoring_rows_are_valid(payload: dict[str, Any]) -> bool:
+    # The smoke case already checks the season, metric and leaderboard length.
+    if payload.get("ok") is not True:
         return False
-
-    exception = payload.get("exception")
-    if (
-        not isinstance(exception, dict)
-        or exception.get("applied") is not False
-        or exception.keys() != {"applied", "owner", "reason", "created_at", "expires_at", "error"}
-        or not isinstance(exception["owner"], str)
-        or any(
-            exception[key] is not None for key in ("reason", "created_at", "expires_at", "error")
-        )
-    ):
+    result = payload.get("result")
+    sections = result.get("sections") if isinstance(result, dict) else None
+    rows = sections.get("leaderboard") if isinstance(sections, dict) else None
+    if not isinstance(rows, list) or len(rows) != 10:
         return False
-
-    blockers = payload.get("blockers")
-    if not isinstance(blockers, list) or len(blockers) != 1:
-        return False
-    blocker = blockers[0]
-    return (
-        isinstance(blocker, dict)
-        and blocker.keys() == {"code", "detail"}
-        and blocker["code"] == "new_season_not_loaded"
-        and isinstance(blocker["detail"], str)
-        and bool(blocker["detail"].strip())
-    )
-
-
-def _has_slice_schema(row: Any) -> bool:
-    if not isinstance(row, dict):
-        return False
-    return (
-        all(isinstance(row.get(key), str) for key in ("season", "season_type", "validation_state"))
-        and all(
-            type(row.get(key)) is bool
-            for key in (
-                "trusted",
-                "schedule_complete",
-                "postseason_complete",
-            )
+    seen: set[int] = set()
+    previous_points = float("inf")
+    for rank, row in enumerate(rows, start=1):
+        if not isinstance(row, dict):
+            return False
+        player_id, games, points = (
+            row.get("player_id"),
+            row.get("games_played"),
+            row.get("pts_per_game"),
         )
-        and all(
-            key in row and (row[key] is None or isinstance(row[key], str))
-            for key in ("generation_id", "current_through", "expected_current_through")
-        )
-        and isinstance(row.get("errors"), list)
-        and all(isinstance(error, str) for error in row["errors"])
-        and "missing_due_game_ids" in row
-        and (
-            row["missing_due_game_ids"] is None
-            or (
-                isinstance(row["missing_due_game_ids"], list)
-                and all(isinstance(game_id, str) for game_id in row["missing_due_game_ids"])
-            )
-        )
-    )
+        if (
+            type(row.get("rank")) is not int
+            or row["rank"] != rank
+            or type(player_id) is not int
+            or player_id <= 0
+            or player_id in seen
+            or type(games) is not int
+            or games <= 0
+            or type(points) not in {int, float}
+            or (type(points) is float and not isfinite(points))
+            or not 0 < points <= previous_points
+        ):
+            return False
+        seen.add(player_id)
+        previous_points = points
+    return True
 
 
 def _safe_response_summary(slug: str, payload: dict[str, Any]) -> dict[str, Any]:

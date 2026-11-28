@@ -25,21 +25,21 @@ test and failure controls passed. The [W6A transition](w6a-transition.md)
 uses independently accepted current evidence and retains the original
 archive. [Release evidence](stabilization-evidence-20261127.md#corrected-release-acceptance)
 
-**Current queue.** The remaining Section 6 decision is the scoped snapshot
-alert and recovery policy. Scheduled monitoring runs every check and
-reports snapshot success separately from strict Live HTTP 503 for
-`new_season_not_loaded`. The project owner's existing strict overall policy
-applies until a scoped decision. The prospective
-[read-only recovery handoff](../../docs/operations/recovery.md#uncertain-protected-candidate-activation)
-is ready before the next protected activation.
-[Scheduled monitor](https://github.com/Bet-Zero/nbatools/actions/runs/46075927174)
+**Current queue.** The owner approved scoped snapshot alerts and an eight-hour
+snapshot recovery objective on November 27. Verify the approved monitor and
+the required snapshot recovery smoke on the serving deployment. Strict Live
+continues to report the unmet `new_season_not_loaded` requirement separately.
+Once the operational checks are accepted, qualify the 2025–26 Lakers as one
+reusable team-season slice for W7 and W8.
+[Monitoring policy](../../docs/operations/observability.md#approved-production-monitoring-policy) ·
+[Recovery policy](../../docs/operations/recovery.md#approved-recovery-objectives)
 
 **Original product ledger.** K08 remains 16 PASS / 26 MISSING DATA / 4 LIVE.
-The next capability is #33, “Lakers record without Davis.” The held 2025–26
-Lakers schedule covers 82 dates and has three exact Davis observations. The
-other 79 need qualified selected-side evidence and contextual name resolution.
-Rostered variants also require dated club membership and complete participation
-for those games. Source collection and any later publication follow their
-existing gates. [Original acceptance](acceptance-baseline-pr582.md) ·
+The 2025–26 Lakers team-season slice uses all 82 final games. Requirement #33,
+“Lakers record without Davis,” is one acceptance case for the slice. Verify
+complete selected-side appearance coverage, contextual identity and independent
+game records. Measure preparation, serving, publication and recovery effort
+before proposing a wider cadence. Rostered cases require dated club membership
+and qualified nonparticipation. [Original acceptance](acceptance-baseline-pr582.md) ·
 [Coverage record](data-quality/DQ-006.json) ·
 [Carry-forward](checkpoint-history-20261112.md)
