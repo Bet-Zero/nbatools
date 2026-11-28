@@ -800,12 +800,11 @@ def _resolve_active_data_generation() -> _Generation:
     digest = os.environ.get(DATA_GENERATION_MANIFEST_ENV, "")
     from nbatools.candidate_preview import MANIFEST_ENV, verify_pin
 
-    if digest:
+    if digest and data_source_mode() == "r2":
         if (
             MANIFEST_ENV in os.environ
             or os.environ.get("VERCEL")
             or os.environ.get("VERCEL_ENV")
-            or not isinstance(_get_data_source(), _R2DataSource)
             or not configured
             or configured == LEGACY_GENERATION
             or not _SHA256_PATTERN.fullmatch(digest)

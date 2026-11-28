@@ -13,6 +13,8 @@ from nbatools.commands.pipeline.generation_refresh import (
 from nbatools.data_source import (
     DATA_GENERATION_ENV,
     DATA_GENERATION_MANIFEST_ENV,
+    DATA_SOURCE_ENV,
+    LOCAL_DATA_ROOT_ENV,
     DataSourceConfigError,
     DataSourceError,
     data_generation_context,
@@ -155,6 +157,14 @@ def test_two_reused_releases_and_previous_standalone_reader(tmp_path, monkeypatc
             isolated.setenv("VERCEL_ENV", "production")
             with pytest.raises(DataSourceConfigError, match="non-Vercel"):
                 data_path(STABLE)
+        with monkeypatch.context() as isolated:
+            isolated.setenv(DATA_SOURCE_ENV, "local")
+            isolated.setenv(LOCAL_DATA_ROOT_ENV, str(tmp_path))
+            isolated.delenv(DATA_GENERATION_ENV)
+            local = tmp_path / "data" / STABLE
+            local.parent.mkdir(parents=True)
+            local.write_text("value\nlocal\n")
+            assert data_path(STABLE).read_text() == "value\nlocal\n"
     finally:
         reset_data_source_cache()
 
