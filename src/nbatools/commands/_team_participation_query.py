@@ -5,7 +5,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, Literal, cast
 
-from nbatools.commands.entity_resolution import resolve_player
+from nbatools.commands.entity_resolution import ResolutionResult, resolve_player
 
 ROSTERED = re.compile(r"\bwhile (?:rostered|on (?:the|this) team)\b", re.I)
 ANYWHERE = re.compile(r"\b(?:anywhere in (?:the )?game|on either team|for either team)\b", re.I)
@@ -20,6 +20,7 @@ _EXCLUSION = re.compile(
 )
 AppearanceScope = Literal["team", "opponent", "game"]
 ParticipationScope = Literal["team", "opponent", "game", "rostered", "legacy"]
+TEAM_ACTOR_AMBIGUITY = "team_participation"
 
 
 @dataclass(frozen=True)
@@ -130,6 +131,7 @@ def _scalar_role_clause(query, kwargs, scope):
         intro = introductions[-1]
         declared = intro[1]
         fragment = text[intro.end() : marker.start()].strip()
+        fragment = re.sub(r"\s+(?:plays?|played|playing)$", "", fragment)
         start, end = intro.start(), marker.end()
     if (
         declared != mode
@@ -176,7 +178,7 @@ def clean_scope_words(query):
     return ANYWHERE.sub("", ROSTERED.sub("", query))
 
 
-def contextual_team_actor(reference, kwargs, scope) -> str | None:
+def contextual_team_actor(reference, kwargs, scope) -> ResolutionResult | None:
     """Resolve a whole single-token reference only in the selected TEAM scope."""
     if (
         scope != "team"
@@ -201,7 +203,7 @@ def _bind_condition(parsed, mode, name):
     kwargs.pop("unsupported_filters", None)
     kwargs.pop("unresolved_availability_player", None)
     parsed["notes"] = [
-        n for n in parsed.get("notes", []) if not n.startswith("unsupported_boundary:")
+        n for n in (parsed.get("notes") or []) if not n.startswith("unsupported_boundary:")
     ]
 
 
@@ -221,7 +223,25 @@ def _bind_contextual_condition(query, parsed, scope):
     actor = re.compile(rf"{re.escape(reference)}(?![\w.'\-])").match(text, intro.end())
     if actor is None or not _tail_is_read_scope(text, actor.end()):
         return
-    name = contextual_team_actor(reference, kwargs, scope)
+    resolution = contextual_team_actor(reference, kwargs, scope)
+    if resolution is None:
+        return
+    if resolution.is_ambiguous:
+        kwargs.pop("unsupported_filters")
+        kwargs["participation_scope"] = scope
+        parsed["entity_ambiguity"] = dict(
+            type="player",
+            input=reference,
+            candidates=resolution.candidates,
+            source=TEAM_ACTOR_AMBIGUITY,
+        )
+        parsed["notes"] = [
+            note
+            for note in (parsed.get("notes") or [])
+            if not note.startswith("unsupported_boundary:")
+        ]
+        return
+    name = resolution.resolved
     if not name:
         return
     ambiguity = parsed.get("entity_ambiguity")
@@ -268,9 +288,12 @@ def apply_team_participation_scope(query, parsed):
         kwargs["unsupported_filters"] = sorted(blocked | {"unread_participation_clause"})
         kwargs["participation_scope"] = scope
         return parsed
+    mixed = parsed.get("mixed_availability")
+    played_condition = mixed and any(clause.appearance_absence for clause in mixed.clauses)
     # Colloquial OUT/DNP/sits retains the accepted rostered interpretation.
     if (
         not re.search(r"\b(?:without|w/o)\b", query, re.I)
+        and not played_condition
         and kwargs.get("without_player")
         and scope == "team"
     ):

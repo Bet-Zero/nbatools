@@ -2264,6 +2264,98 @@
         }
       ]
     },
+    "lakers-team-appearances-2025-v1": {
+      "publisher_sha": "ea80f908c885f38ed30426840e904086d76bfac7",
+      "script": "tools/prepare_team_appearance_package.py",
+      "script_sha256": "75f9a5c6eccc36398f4617b40cfade0778390056131970e979c53305393e51f9",
+      "inventory": "working/nba-tools-completion-program/source-evidence/lakers-team-season-2025-26/publication-inventory.json",
+      "inventory_sha256": "7a7e5996b144a84ded30c7c07b975e7892147d5a3195573afe45619bcc0f83ee",
+      "generation_id": "availability-lal-team-2025-v1-20261127",
+      "operations": [
+        "validate",
+        "upload_candidate"
+      ],
+      "deployed_checks": [
+        {
+          "query": "Lakers record without Davis in 2025-26",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "games": 82,
+            "wins": 53,
+            "losses": 29
+          }
+        },
+        {
+          "query": "Lakers record with Luka Doncic in 2025-26",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "games": 64,
+            "wins": 43,
+            "losses": 21
+          }
+        },
+        {
+          "query": "Lakers record without Austin Reaves in 2025-26",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "games": 31,
+            "wins": 17,
+            "losses": 14
+          }
+        },
+        {
+          "query": "Lakers record with LeBron James and without Austin Reaves in 2025-26",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "games": 25,
+            "wins": 15,
+            "losses": 10
+          }
+        },
+        {
+          "query": "Lakers home record in 2025-26 when Rui Hachimura played but Marcus Smart did not play",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "games": 10,
+            "wins": 6,
+            "losses": 4
+          }
+        },
+        {
+          "query": "Cavaliers record without Caris LeVert in 2024-25",
+          "expected_route": "team_record",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "season_start": "2024-25",
+            "season_end": "2024-25",
+            "season_type": "Regular Season",
+            "games": 44,
+            "wins": 31,
+            "losses": 13
+          }
+        }
+      ]
+    },
     "cleveland-team-appearances-2024-v1": {
       "publisher_sha": "564f2e054638df854fd7e15db22b4b04aee1c53f",
       "script": "working/nba-tools-completion-program/prepare-cleveland-candidate.py",

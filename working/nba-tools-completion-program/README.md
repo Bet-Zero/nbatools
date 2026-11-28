@@ -32,9 +32,13 @@ the clock running until the last case passed. The owner approved an eight-hour
 recovery objective. [Monitoring and recovery evidence](stabilization-evidence-20261127.md#approved-monitoring-and-recovery) ·
 [Scheduled run](https://github.com/Bet-Zero/nbatools/actions/runs/46097846832)
 
-**Current queue.** Qualify the 2025–26 Lakers as one reusable team-season slice
-for W7 and W8. Verify the scoped shared query path and exact 82-game source
-coverage, then measure serving, preparation, publication and recovery.
+**Current queue.** W7 and W8 prepared the 2025–26 Lakers candidate
+`availability-lal-team-2025-v1-20261127`, manifest
+`2239be14825fed08e13da1cc118dd1082ea1f1edca86661ea39a7503ed5cce50`.
+It certifies all 82 Lakers sides. Run merged-main read-only preparation and
+record actual storage and operation costs before the owner decides on the
+protected candidate upload. The earlier Cleveland snapshot is serving.
+[Team-season qualification](source-evidence/lakers-team-season-2025-26/README.md)
 
 **Original product ledger.** K08 remains 16 PASS / 26 MISSING DATA / 4 LIVE.
 The 2025–26 Lakers team-season slice uses all 82 final games. Requirement #33,

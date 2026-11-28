@@ -12,7 +12,11 @@ import pandas as pd
 from nbatools.commands._participation_observations import combined_observations
 from nbatools.commands._player_identity import player_name_mask
 from nbatools.commands._team_participation_query import AppearanceScope, ParticipationPredicate
-from nbatools.commands.entity_resolution import canonical_player_names_by_id, player_ids_for_name
+from nbatools.commands.entity_resolution import (
+    ResolutionResult,
+    canonical_player_names_by_id,
+    player_ids_for_name,
+)
 from nbatools.data_source import (
     data_exists,
     data_path,
@@ -134,7 +138,9 @@ def _coverage(seasons, kind, observations):
     return {(r.game_id, r.team_id): (r.day, r.players) for r in frame.itertuples()}
 
 
-def resolve_complete_team_actor(reference: str, team: str, season: str, kind: str) -> str | None:
+def resolve_complete_team_actor(
+    reference: str, team: str, season: str, kind: str
+) -> ResolutionResult | None:
     """Resolve shorthand using a complete selected side and recent club history.
 
     The immediately preceding season can identify a departed actor when no
@@ -179,7 +185,9 @@ def resolve_complete_team_actor(reference: str, team: str, season: str, kind: st
     ]
     current_ids.update(listed.astype(int))
     if len(current_ids) > 1:
-        return None
+        canonical = canonical_player_names_by_id()
+        names = sorted(canonical[str(player_id)] for player_id in current_ids)
+        return ResolutionResult(candidates=names, confidence="ambiguous")
     if current_ids:
         name = canonical_player_names_by_id().get(str(next(iter(current_ids))))
     else:
@@ -192,7 +200,9 @@ def resolve_complete_team_actor(reference: str, team: str, season: str, kind: st
             end_season=None,
             season_type=kind,
         )
-    return name if name and len(player_ids_for_name(name)) == 1 else None
+    if name and len(player_ids_for_name(name)) == 1:
+        return ResolutionResult(resolved=name, candidates=[name], confidence="confident")
+    return None
 
 
 def select_appearances(candidates, names, seasons, kind, *, played, scope="team"):

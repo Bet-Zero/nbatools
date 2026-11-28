@@ -206,6 +206,7 @@ class AvailabilityClause(NamedTuple):
     start: int
     end: int
     reported_reason: str | None = None
+    appearance_absence: bool = False
 
     def mask_clause(self, text: str) -> str:
         """Preserve offsets while excluding the condition already consumed."""
@@ -253,7 +254,7 @@ def requested_mixed_availability(text: str) -> AvailabilityConjunction | None:
     )
     patterns = [
         rf"\b(with|without|w/o|w/)\s+([\w .'\-]+?){stop}",
-        r"\b(when|while|and)\s+((?:(?!\b(?:and|or|with|without|when|while)\b)"
+        r"\b(when|while|and|but)\s+((?:(?!\b(?:and|or|but|with|without|when|while)\b)"
         rf"[\w .'\-])+?\s+{state}){stop}",
     ]
     clauses, explicit_states = [], []
@@ -267,6 +268,7 @@ def requested_mixed_availability(text: str) -> AvailabilityConjunction | None:
             suffix = state_end.search(fragment)
             mode = "without" if match.group(1) in {"without", "w/o"} else "with"
             reason = "reported_rest" if suffix and re.search(r"\brest", suffix[1]) else None
+            appearance_absence = bool(suffix and re.search(r"\bnot\s+play(?:ing)?$", suffix[1]))
             if suffix:
                 mode = (
                     "without"
@@ -279,7 +281,11 @@ def requested_mixed_availability(text: str) -> AvailabilityConjunction | None:
                 fragment = fragment[: suffix.start()].strip()
             if not fragment or re.search(r"\d|\b(?:and|or|with|without|both)\b", fragment):
                 return None
-            clauses.append(AvailabilityClause(mode, fragment, match.start(), match.end(), reason))
+            clauses.append(
+                AvailabilityClause(
+                    mode, fragment, match.start(), match.end(), reason, appearance_absence
+                )
+            )
             explicit_states.append(bool(suffix))
     if len(clauses) != 2 or {c.mode for c in clauses} != {"with", "without"}:
         return None
