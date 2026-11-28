@@ -1,0 +1,68 @@
+{
+  "base_generation": "availability-lal-team-2025-v1-20261127",
+  "base_manifest_sha256": "2239be14825fed08e13da1cc118dd1082ea1f1edca86661ea39a7503ed5cce50",
+  "generation_id": "availability-bos-team-2025-v1-20261128",
+  "schema_version": 1,
+  "code_files": [
+    {
+      "path": "tools/prepare_team_appearance_package.py",
+      "sha256": "3caae261f4f87ae44986d3c07fce5207cbc2f12972ab142fb7f051b9c8d4ce89"
+    },
+    {
+      "path": "tools/compose_participation_overlays.py",
+      "sha256": "f2b0971b021e73c370d2bba9e2fc5c60c93db162d77f99b9628f4cdde40804e7"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/player_game_availability_report.py",
+      "sha256": "4c34adfe9ad5f97772f9be5f6015121a49afbe518d5eac0d69cf293dc8a7a400"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/pull_player_game_availability.py",
+      "sha256": "e21e936692c5deea9677314e5769b57c8577f6b9a047a44c058bf364cef85683"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/team_appearance_coverage.py",
+      "sha256": "986b1a197c3ba7b0df8772ada3e008d33e6057202dbc104e9bfa48e43db86a85"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/generation_publication.py",
+      "sha256": "0efc6a6f9690a261e2b1ba0dea279ff27e1d265ab0384b510f5fdee5cf511c16"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/generation_refresh.py",
+      "sha256": "9b12a3f17a2165418ee2b86d9050e594e3e1da191bb748f0ec5db01443048ad2"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "0b72c72977f474538b6b7bf4cfc390fd6bded62f8fd9041e58a2a92c57c7e8f7"
+    },
+    {
+      "path": "uv.lock",
+      "sha256": "9e37abdc3e4c0cf95670157638ff9e8d936470cd9376c3ca26c3005899b223f3"
+    }
+  ],
+  "retained_files": [
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/boston-team-season-2025-26/qualified/2025-26_regular_season.json",
+      "sha256": "55c0b40d60462567dd46d1da3e932d6209463b028cc05eaa6adcbf06bfed60fe"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/boston-team-season-2025-26/qualified/package.json",
+      "sha256": "69bb5db22a8186cd36a95797786978e3c718187122a0d9024c6369a1736c420d"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/boston-team-season-2025-26/qualified/qualified-overlay.zip",
+      "sha256": "f2f485e2518c904870ccfef38671a64236d0c09f52bc79d38d9a54b468dad867"
+    }
+  ],
+  "source_qualification": {
+    "scope": "complete_selected_boston_sides_only",
+    "selected_team_games": 82,
+    "retained_qualified_sides": 69,
+    "new_structured_original_game_pairs": 13,
+    "independently_verified_prior_lakers_sides": 82,
+    "archive_capture_provenance_sha256": "2df20d619fa50f0e6c7e9ecbac5cbaf11e4d78c23b044dfd3e9466060ccfa6fd",
+    "independent_source_expectations_sha256": "5df354f49b8af069cff4015f27b2df579739b6d6f3224260e0de774b62b332d1",
+    "candidate_measurements_sha256": "1b221d4ee2f2dc0476fe1a2a34caf5d0aaa43d7a6a6168a9803e1456857c9d51"
+  }
+}

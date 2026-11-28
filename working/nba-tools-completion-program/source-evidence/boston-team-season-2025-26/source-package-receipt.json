@@ -1,0 +1,29 @@
+{
+  "direct_clock_source_checks": 26,
+  "manifest_sha256": "2239be14825fed08e13da1cc118dd1082ea1f1edca86661ea39a7503ed5cce50",
+  "native_listed_rows": 436,
+  "new_game_ids": [
+    "0022500908",
+    "0022500921",
+    "0022500942",
+    "0022500971",
+    "0022500986",
+    "0022500999",
+    "0022501019",
+    "0022501035",
+    "0022501054",
+    "0022501106",
+    "0022501126",
+    "0022501132",
+    "0022501149"
+  ],
+  "new_sides": 13,
+  "overlay_sha256": "f2f485e2518c904870ccfef38671a64236d0c09f52bc79d38d9a54b468dad867",
+  "package_sha256": "69bb5db22a8186cd36a95797786978e3c718187122a0d9024c6369a1736c420d",
+  "preexisting_lakers_sides": 82,
+  "prior_sides": 69,
+  "production_writes": 0,
+  "proof_sha256": "55c0b40d60462567dd46d1da3e932d6209463b028cc05eaa6adcbf06bfed60fe",
+  "qualified_sides": 82,
+  "source_and_package_seconds": 8.933
+}

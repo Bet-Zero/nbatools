@@ -46,15 +46,24 @@ reports only `new_season_not_loaded`.
 [Production monitor](https://github.com/Bet-Zero/nbatools/actions/runs/46129690500) ·
 [Original query proof](source-evidence/lakers-team-season-2025-26/original-33-production.json)
 
-**Next action for W8.** Run the pinned two-game Boston source batch against
-the restored Lakers base, then replay it through native preparation.
-Boston has 69 of 82 verified sides and 13 archive-indexed gaps. Integrate
-reviewed [acquisition](https://github.com/Bet-Zero/nbatools/pull/673),
+**Next action for W8.** Run protected read-only preparation for the
+[Boston 82-game candidate](source-evidence/boston-team-season-2025-26/README.md).
+The [acquisition](https://github.com/Bet-Zero/nbatools/pull/673),
 [shared storage](https://github.com/Bet-Zero/nbatools/pull/674), and
-[grouped preparation](https://github.com/Bet-Zero/nbatools/pull/676).
-Prove a real authorized shared-object release and clean recovery within
-the existing budget. W6B remains an archive migration trigger. W9 still
-needs fresh source evidence, positive Live answers and a measured cadence.
+[grouped preparation](https://github.com/Bet-Zero/nbatools/pull/676) changes
+are integrated. The shared-object reader preserved exact 82-game Lakers
+scoring in production and the [monitor passed](https://github.com/Bet-Zero/nbatools/actions/runs/46130934701).
+Boston's exact local shared manifest plans 43 PUTs, reusing 1,541 files.
+Confirm the live storage inventory, then seek the exact isolated upload
+decision. Hosted candidate qualification and separate activation, backup,
+restore, and monitoring still follow.
+
+W8 still needs a second meaningful shared-object release and a grouped
+expansion within the measured operating envelope. The 3,000-file limit
+requires a source retention format qualification before league-wide
+publication at the current per-game object count. W6B remains an archive
+migration trigger. W9 still needs a selected current-data scope with timely
+source arrival, positive deployed Live answers and a measured cadence.
 
 **Original product ledger.** K08 is 17 PASS / 25 MISSING DATA / 4 LIVE.
 Requirement #33, “Lakers record without Davis,” returns 53–29 across the 82
