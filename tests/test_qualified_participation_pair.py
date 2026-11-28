@@ -289,16 +289,26 @@ def test_positive_sibling_cannot_hide_unknown_absence_on_original_candidates(
     assert not result.to_dict()["sections"]
 
 
-def test_date_scope_is_owned_before_mixed_participation_qualification(qualified_pair):
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers record without LeBron James and with Anthony Davis vs Celtics in {season} from {iso} to {iso}",
+        "Lakers record vs Celtics from {named} to {named} without LeBron James and with Anthony Davis",
+        "Lakers record vs Celtics when Anthony Davis played but LeBron James did not play from {named} to {named}",
+    ],
+)
+def test_date_scope_is_owned_before_mixed_participation_qualification(qualified_pair, query):
     fixture = qualified_pair
     mask = fixture["ledger"].game_id.eq(fixture["ids"][0]) & fixture["ledger"].player_id.eq(2544)
     fixture["ledger"].loc[mask, "participation_state"] = "unknown"
     expected = fixture["teams"].loc[fixture["teams"].game_id.eq(fixture["ids"][1])]
-    day = expected.game_date.item()
+    day = pd.Timestamp(expected.game_date.item())
     result = execute_natural_query(
-        f"Lakers record without LeBron James and with Anthony Davis vs Celtics in {SEASON} from {day} to {day}"
+        query.format(iso=day.date().isoformat(), named=day.strftime("%B %d, %Y"), season=SEASON)
     )
     assert result.result_status == "ok", result.metadata
+    assert result.metadata["with_player"] == "Anthony Davis"
+    assert result.metadata["without_player"] == "LeBron James"
     assert {int(r["game_id"]) for r in result.result.to_dict()["sections"]["game_log"]} == set(
         expected.game_id
     )
