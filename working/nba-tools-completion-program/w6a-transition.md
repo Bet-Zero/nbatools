@@ -1,43 +1,53 @@
 # W6A verifier transition
 
-The transition is pending independent acceptance of the corrected frozen release.
-Do not retire the bridge before that receipt exists.
+The canonical current selector is
+`tests/cloud_core_historical_delivery_real_data.py::test_stabilization_original_historical_api_and_ui`.
+It binds the serving artifact and before/after immutable generation, original
+case identities and independent arithmetic. It checks all 44 fresh desktop and
+mobile captures and 40 timing observations, including distinct request IDs,
+capture order, screenshots, source inputs and the served asset. Only the explicit
+historical replay reads the applicability companion.
 
-## Inventory
+## Accepted equivalent evidence
 
-- `tests/cloud_core_historical_delivery_real_data.py::_run` calls
-  `_retained_applicability` in both `retained=True` and non-stabilization
-  `current_runtime=True` modes. A normal fresh dispatch selects
-  `test_stabilization_original_historical_api_and_ui`, which already bypasses it.
-- `tests/test_core_historical_applicability.py` calls the old helper in the
-  default suite, including the positive 663-file/source-inventory assertion.
-- The archive, original code binding, original case manifest, canonical label
-  correction, original driver failures and screenshot/served-asset checks are
-  separate evidence. Keep their bytes and identities.
-- The current capture selector invokes the existing provider before/after
-  source and output binding, active pointer checks, independent numerical
-  expectations and the declared 84 observation set. Keep all these gates.
+- The [original replacement run](https://github.com/Bet-Zero/nbatools/actions/runs/46078137747)
+  recorded the 84 observations against the frozen November 27 build.
+  Its [archive](https://github.com/Bet-Zero/nbatools/actions/runs/46078137747/artifacts/15236515268)
+  has SHA-256 `ee848896a76cda2018e6462a1a786c937d56cc253f87c6f9bd2af7f96ecb74ec`.
+  The independent review verified all screenshot hashes, distinct native
+  request IDs, exact original oracles and the served JavaScript. The pooled
+  p95 was 562 ms and the slowest timed repeat was 585 ms.
+- An independent replay of all 22 complete payloads on the checksum-restored
+  Cleveland generation matched the 22 recorded original payloads on the
+  corrected [release candidate](https://github.com/Bet-Zero/nbatools/pull/668).
+  Normal JSON serialization and per-request identifiers were accounted for.
+  The authenticated [full release](https://github.com/Bet-Zero/nbatools/actions/runs/46087190603)
+  and [manifest-specific consumer](https://github.com/Bet-Zero/nbatools/actions/runs/46087458901)
+  carry their exact candidate and data identities. The hosted release
+  measurements and final serving artifact are in the release evidence.
+- The transition changes verifier tests and the checkpoint. The provider
+  build and ordinary data and application inputs are verified separately from
+  these test changes. Guard cases still reject malformed archives, missing
+  or duplicate capture rows, wrong build or data, changed samples, stale
+  request IDs and reused evidence.
 
-## Smallest post-acceptance change
+## Replay the original historical context
 
-1. Record the accepted release receipt with exact reviewed source, deployed
-   artifact, served assets, versions/settings, Cleveland manifest, 22 identities,
-   44 fresh captures and 40 timing observations. Retain receipts for Raw QA,
-   filters, full tests, W3C and independent review at their real revisions.
-2. Limit `_retained_applicability` to the explicit original-context replay.
-   Keep the old source/semantic tamper tests with that replay, designated for
-   a detached checkout of the last accepted applicability companion and its
-   matching source. The original capture ZIP, bindings and historical proof
-   must remain byte-identical and reachable from the transition record.
-3. Canonical current selection uses the stabilization path with the
-   de-duplicated original/fresh capture gates. Move pre-Cleveland selectors
-   to explicitly historical context. Remove all ordinary/default-suite
-   invocations of the bridge, including the positive source population test.
-   Retain active tests against archive/case tamper, duplicate or missing rows,
-   wrong build/data, sample changes, stale IDs and non-fresh/reused evidence.
-4. Check collection and call sites for accidental default use. Run affected
-   verifier tests, original receipt replay at its matching historical context,
-   docs governance and diff check. A scoped independent reviewer verifies
-   equivalent guards and demonstrates that an unrelated current source
-   addition no longer needs a bridge change. Compare tracked build inputs to
-   establish that accepted application/browser evidence is unchanged.
+Keep `historical-live-original.zip`, `live-code-binding.json`, the latest
+reviewed historical applicability companion and their independent receipts.
+The original archive has SHA-256
+`a5c718c7498f24d787866ff4e3d53220363e00588a045607e92f5947ac2074a5`.
+Original screenshot and code bindings are reachable from the
+[historical evidence directory](https://github.com/Bet-Zero/nbatools/tree/34d8daf31f90baee77c50e93c3220f526022369a/working/nba-tools-completion-program/source-evidence/core-live-current-20261107).
+
+For a replay of the old source-binding guards and the retained original
+answers, use detached source `34d8daf31f90baee77c50e93c3220f526022369a`
+with the original `availability-lebron-season-v1-20261031` data.
+The [775-file archive](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-41259773052)
+was verified and replayed without R2 credentials or public requests by the
+independent checker. In that detached context, run
+`tests/test_core_historical_applicability.py` for the old source and tamper
+guards, and explicitly select
+`tests/cloud_core_historical_delivery_real_data.py::test_requalify_retained_actual_historical_api_and_ui`
+for the retained replay. The earlier live capture selectors and their
+original execution reports remain available at their original revisions.
