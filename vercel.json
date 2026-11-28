@@ -11,7 +11,9 @@
   "outputDirectory": "src/nbatools/ui/dist",
   "env": {
     "DATA_SOURCE": "r2",
-    "R2_BUCKET_NAME": "nbatools-data"
+    "R2_BUCKET_NAME": "nbatools-data",
+    "NBATOOLS_DATA_GENERATION": "availability-lal-team-2025-v1-20261127",
+    "NBATOOLS_PREVIEW_CANDIDATE_MANIFEST": "2239be14825fed08e13da1cc118dd1082ea1f1edca86661ea39a7503ed5cce50"
   },
   "functions": {
     "api/index.py": {
