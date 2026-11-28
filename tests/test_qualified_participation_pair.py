@@ -315,6 +315,16 @@ def test_date_scope_is_owned_before_mixed_participation_qualification(qualified_
     )
 
 
+def test_unrecognized_between_scope_cannot_produce_the_mixed_record(qualified_pair):
+    result = execute_natural_query(
+        f"Lakers record vs Celtics in {SEASON} with Anthony Davis and without LeBron James "
+        "between timeouts"
+    )
+    assert result.result_status == "no_result", result.metadata
+    assert result.result_reason == "filter_not_supported"
+    assert not result.to_dict()["sections"]
+
+
 def test_structured_request_preserves_both_scalar_predicates(qualified_pair):
     result = execute_structured_query(
         "team_record",
